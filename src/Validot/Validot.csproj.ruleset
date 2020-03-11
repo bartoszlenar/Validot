@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RuleSet Name="Validot" ToolsVersion="14.0">
+  <Include Path="../../Validot.sln.ruleset" Action="Default" />
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.FxCopAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.FxCopAnalyzers">
+
+
+  </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+
+  </Rules>
+</RuleSet>

@@ -1,0 +1,13 @@
+[*.cs]
+
+# ReSharper/Rider inspection properties
+resharper_object_creation_as_statement_highlighting = silent
+resharper_redundant_explicit_array_creation_highlighting = silent
+resharper_assignment_is_fully_discarded_highlighting = silent
+resharper_possible_multiple_enumeration_highlighting = silent
+resharper_redundant_type_arguments_of_method_highlighting = suggestion
+resharper_redundant_empty_object_or_collection_initializer_highlighting = silent
+resharper_unused_auto_property_saccessor_local_highlighting = suggestion
+resharper_unused_auto_property_accessor_global_highlighting = suggestion
+resharper_co_variant_array_conversion_highlighting = suggestion
+resharper_redundant_extends_list_entry_highlighting = suggestion

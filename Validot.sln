@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{1A57BE44
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Validot.Tests.Unit", "tests\Validot.Tests.Unit\Validot.Tests.Unit.csproj", "{6F71A1C1-319A-492F-B930-0FF4FB599918}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.csproj", "{8E371455-8546-4BF3-8879-31D4582DBB00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,8 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8E371455-8546-4BF3-8879-31D4582DBB00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E371455-8546-4BF3-8879-31D4582DBB00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFD540CD-1648-4E7B-B5C5-B6EC0C6D4D22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BFD540CD-1648-4E7B-B5C5-B6EC0C6D4D22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFD540CD-1648-4E7B-B5C5-B6EC0C6D4D22}.Debug|x64.ActiveCfg = Debug|Any CPU

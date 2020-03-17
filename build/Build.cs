@@ -222,7 +222,7 @@ class Build : NukeBuild
 
             ExecuteTool(toolPath, string.Join(" ", toolParameters.Select(p => $"\"{p}\"")));
 
-            File.Move(CodeCoverageReportsDirectory / $"Validot.{version}.coverage_report/Summary.json", CodeCoverageReportsDirectory / $"Validot.{version}.coverage_report.summary.json");
+            File.Move(CodeCoverageReportsDirectory / $"Validot.{version}.coverage_report/Summary.json", CodeCoverageReportsDirectory / $"Validot.{version}.coverage_summary.json");
         });
 
     Target Package => _ => _

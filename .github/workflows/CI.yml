@@ -1,0 +1,173 @@
+name: CI
+
+on:
+  push:
+    branches-ignore:
+      - 'wip/**'
+    paths-ignore:
+      - 'docs/**'
+  pull_request:
+    branches-ignore:
+      - 'wip/**'
+    paths-ignore:
+      - 'docs/**'
+  release:
+      types: [published]
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+        dotnet: [2.1.804, 3.1.102]
+    runs-on: ${{ matrix.os }}
+    name: Test on ${{ matrix.os }} using dotnet ${{ matrix.dotnet }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Setup dotnet 2.1 LTS
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 2.1.804
+      - name: Setup dotnet 3.1 LTS
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.102
+      - name: Setup side by side .NET SDKs on Windows
+        if: matrix.os == 'windows-latest'
+        run: |
+          SET DOTNET_21_ROOT=%DOTNET_ROOT:3.1.102=2.1.804%
+          xcopy /s /y /d %DOTNET_31_ROOT% %DOTNET_ROOT%
+        shell: cmd
+      - name: Setup side by side .NET SDKs on *nix
+        if: matrix.os != 'windows-latest'
+        run: |
+          rsync -a ${DOTNET_ROOT/3.1.102/2.1.804}/* $DOTNET_ROOT/
+      - name: Init workflow variables
+        run: pwsh .github/workflows/Init-WorkflowVariables.ps1
+      - name: Compile
+        run: pwsh build.ps1 --target compile --dotnet ${{ matrix.dotnet }} --configuration release --version ${{ env.VALIDOT_VERSION }}
+      - name: Tests
+        run: pwsh build.ps1 --target tests --skip --dotnet ${{ matrix.dotnet }} --configuration release  --version ${{ env.VALIDOT_VERSION }}
+      - name: Upload artifact; details of failed tests
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: Validot.${{ env.VALIDOT_VERSION }}.${{ matrix.dotnet }}.${{ matrix.os }}.tests.trx
+          path: artifacts/tests/Validot.${{ env.VALIDOT_VERSION }}.tests.trx
+  coverage:
+      needs: tests
+      runs-on: ubuntu-latest
+      name: Code coverage
+      steps:
+        - name: Check out code
+          uses: actions/checkout@v2
+        - name: Setup dotnet 3.1 LTS
+          uses: actions/setup-dotnet@v1
+          with:
+            dotnet-version: 3.1.102
+        - name: Init workflow variables
+          run: pwsh .github/workflows/Init-WorkflowVariables.ps1
+        - name: Analyze code coverage
+          run: pwsh build.ps1 --target codecoveragereport --dotnet 3.1.102 --configuration debug --version ${{ env.VALIDOT_VERSION }}
+        - name: Upload artifact; code coverage data
+          uses: actions/upload-artifact@v1
+          with:
+            name: Validot.${{ env.VALIDOT_VERSION }}.opencover.xml
+            path: artifacts/coverage/Validot.${{ env.VALIDOT_VERSION }}.opencover.xml
+        - name: Upload artifact; code coverage summary
+          uses: actions/upload-artifact@v1
+          with:
+            name: Validot.${{ env.VALIDOT_VERSION }}.coverage_summary.json
+            path: artifacts/coverage_reports/Validot.${{ env.VALIDOT_VERSION }}.coverage_summary.json
+        - name: Upload artifact; code coverage report
+          if: github.event_name == 'release'
+          uses: actions/upload-artifact@v1
+          with:
+            name: Validot.${{ env.VALIDOT_VERSION }}.coverage_report
+            path: artifacts/coverage_reports/Validot.${{ env.VALIDOT_VERSION }}.coverage_report
+  package:
+      needs: coverage
+      if: github.event_name == 'release'
+      runs-on: ubuntu-latest
+      name: NuGet package
+      steps:
+        - name: Checking out code
+          uses: actions/checkout@v2
+        - name: Setup dotnet 3.1 LTS
+          uses: actions/setup-dotnet@v1
+          with:
+            dotnet-version: 3.1.102
+        - name: Init workflow variables
+          run: pwsh .github/workflows/Init-WorkflowVariables.ps1
+        - name: Create package
+          run: pwsh build.ps1 --target package --dotnet 3.1.102 --configuration release --version ${{ env.VALIDOT_VERSION }}
+        - name: Upload artifact; nuget package
+          uses: actions/upload-artifact@v1
+          with:
+            name: Validot.${{ env.VALIDOT_VERSION }}.nupkg
+            path: artifacts/nuget/${{ env.VALIDOT_VERSION }}/Validot.${{ env.VALIDOT_VERSION }}.nupkg
+        - name: Upload artifact; nuget package symbols
+          uses: actions/upload-artifact@v1
+          with:
+            name: Validot.${{ env.VALIDOT_VERSION }}.symbols.nupkg
+            path: artifacts/nuget/${{ env.VALIDOT_VERSION }}/Validot.${{ env.VALIDOT_VERSION }}.symbols.nupkg
+  assets:
+      needs: package
+      if: github.event_name == 'release'
+      runs-on: ubuntu-latest
+      name: Upload release assets
+      steps:
+        - name: Checking out code
+          uses: actions/checkout@v2
+        - name: Init workflow variables
+          run: pwsh .github/workflows/Init-WorkflowVariables.ps1
+        - name: Download artifact; nuget package
+          uses: actions/download-artifact@v1
+          with:
+            name: Validot.${{ env.VALIDOT_VERSION }}.nupkg
+            path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.nuget
+        - name: Download artifact; nuget package symbols
+          uses: actions/download-artifact@v1
+          with:
+            name: Validot.${{ env.VALIDOT_VERSION }}.symbols.nupkg
+            path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.nuget
+        - name: Download artifact; code coverage data
+          uses: actions/download-artifact@v1
+          with:
+            name: Validot.${{ env.VALIDOT_VERSION }}.opencover.xml
+            path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.coverage/data
+        - name: Download artifact; code coverage summary
+          uses: actions/download-artifact@v1
+          with:
+            name: Validot.${{ env.VALIDOT_VERSION }}.coverage_summary.json
+            path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.coverage
+        - name: Download artifact; code coverage report
+          uses: actions/download-artifact@v1
+          with:
+            name: Validot.${{ env.VALIDOT_VERSION }}.coverage_report
+            path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.coverage/report
+        - name: Zip artifacts
+          run: |
+            cd artifacts
+            zip -rX Validot.${{ env.VALIDOT_VERSION }}.nuget.zip Validot.${{ env.VALIDOT_VERSION }}.nuget
+            zip -rX Validot.${{ env.VALIDOT_VERSION }}.coverage.zip Validot.${{ env.VALIDOT_VERSION }}.coverage
+        - name: Upload release asset; nuget package with symbols
+          uses: actions/upload-release-asset@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            upload_url: ${{ github.event.release.upload_url }}
+            asset_path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.nuget.zip
+            asset_name: Validot.${{ env.VALIDOT_VERSION }}.nuget.zip
+            asset_content_type: application/zip
+        - name: Upload release asset; code coverage data and reports
+          uses: actions/upload-release-asset@v1
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          with:
+            upload_url: ${{ github.event.release.upload_url }}
+            asset_path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.coverage.zip
+            asset_name: Validot.${{ env.VALIDOT_VERSION }}.coverage.zip
+            asset_content_type: application/zip
+       

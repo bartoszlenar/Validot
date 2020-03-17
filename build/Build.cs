@@ -53,6 +53,12 @@ class Build : NukeBuild
     
     [Parameter("Version. Default value is '0.0.0-timestamp'")]
     readonly string Version;
+
+    [Parameter("NuGet API. Where to publish NuGet package. Default value is 'https://api.nuget.org/v3/index.json'")]
+    readonly string NuGetApi;
+
+    [Parameter("NuGet API key, allows to publish NuGet package.")]
+    readonly string NuGetApiKey;
     
     [Parameter("Commit SHA")]
     readonly string CommitSha;
@@ -113,6 +119,7 @@ class Build : NukeBuild
                 .SetProjectFile(SourceDirectory / "Validot/Validot.csproj")
                 .SetConfiguration(Configuration)
                 .SetFramework("netstandard2.0")
+                .SetPackageId(Metadata.Title)
                 .SetTitle(Metadata.Title)
                 .SetDescription(Metadata.Description)
                 .SetRepositoryUrl(Metadata.RepositoryUrl)
@@ -215,7 +222,7 @@ class Build : NukeBuild
 
             ExecuteTool(toolPath, string.Join(" ", toolParameters.Select(p => $"\"{p}\"")));
 
-            File.Move(CodeCoverageReportsDirectory / $"Validot.{version}.coverage_report/Summary.json", CodeCoverageReportsDirectory / $"Validot.{version}.coverage_report.summary.json");
+            File.Move(CodeCoverageReportsDirectory / $"Validot.{version}.coverage_report/Summary.json", CodeCoverageReportsDirectory / $"Validot.{version}.coverage_summary.json");
         });
 
     Target Package => _ => _
@@ -239,6 +246,21 @@ class Build : NukeBuild
                 .SetAuthors(Metadata.Author)
                 .SetPackageLicenseUrl(Metadata.PackageLicenceUrl)
                 .SetPackageTags(Metadata.Tags)
+            );
+        });
+
+    Target PublishPackage => _ => _
+        .DependsOn(Package)
+        .OnlyWhenDynamic(() => NuGetApiKey != null)
+        .OnlyWhenDynamic(() => Configuration == Configuration.Release)
+        .Executes(() =>
+        {
+            var version = GetVersion();
+
+            DotNetNuGetPush(p => p
+                .SetSource(NuGetApi)
+                .SetApiKey(NuGetApiKey)
+                .SetTargetPath(NuGetDirectory / version / $"Validot.{version}.nupkg")
             );
         });
     
@@ -307,6 +329,29 @@ class Build : NukeBuild
         }
 
         return _version;
+    }
+
+    string _nuGetApi = null;
+
+    string GetNuGetApi() 
+    {
+        if (_nuGetApi is null) 
+        {
+            if (NuGetApi is null) 
+            {
+                Logger.Warn("NuGetServer: not provided.");
+
+                _nuGetApi = "https://api.nuget.org/v3/index.json";
+            }
+            else 
+            {
+                _nuGetApi = NuGetApi;
+            }
+
+            Logger.Info("NuGetApi:" + _nuGetApi);
+        }
+
+        return _nuGetApi;
     }
 
     void ExecuteTool(string toolPath, string parameters) 

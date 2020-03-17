@@ -119,6 +119,7 @@ class Build : NukeBuild
                 .SetProjectFile(SourceDirectory / "Validot/Validot.csproj")
                 .SetConfiguration(Configuration)
                 .SetFramework("netstandard2.0")
+                .SetPackageId(Metadata.Title)
                 .SetTitle(Metadata.Title)
                 .SetDescription(Metadata.Description)
                 .SetRepositoryUrl(Metadata.RepositoryUrl)

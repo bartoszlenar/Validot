@@ -53,6 +53,12 @@ class Build : NukeBuild
     
     [Parameter("Version. Default value is '0.0.0-timestamp'")]
     readonly string Version;
+
+    [Parameter("NuGet API. Where to publish NuGet package. Default value is 'https://api.nuget.org/v3/index.json'")]
+    readonly string NuGetApi;
+
+    [Parameter("NuGet API key, allows to publish NuGet package.")]
+    readonly string NuGetApiKey;
     
     [Parameter("Commit SHA")]
     readonly string CommitSha;
@@ -241,6 +247,21 @@ class Build : NukeBuild
                 .SetPackageTags(Metadata.Tags)
             );
         });
+
+    Target PublishPackage => _ => _
+        .DependsOn(Package)
+        .OnlyWhenDynamic(() => NuGetApiKey != null)
+        .OnlyWhenDynamic(() => Configuration == Configuration.Release)
+        .Executes(() =>
+        {
+            var version = GetVersion();
+
+            DotNetNuGetPush(p => p
+                .SetSource(NuGetApi)
+                .SetApiKey(NuGetApiKey)
+                .SetTargetPath(NuGetDirectory / version / $"Validot.{version}.nupkg")
+            );
+        });
     
     string _framework = null;
 
@@ -307,6 +328,29 @@ class Build : NukeBuild
         }
 
         return _version;
+    }
+
+    string _nuGetApi = null;
+
+    string GetNuGetApi() 
+    {
+        if (_nuGetApi is null) 
+        {
+            if (NuGetApi is null) 
+            {
+                Logger.Warn("NuGetServer: not provided.");
+
+                _nuGetApi = "https://api.nuget.org/v3/index.json";
+            }
+            else 
+            {
+                _nuGetApi = NuGetApi;
+            }
+
+            Logger.Info("NuGetApi:" + _nuGetApi);
+        }
+
+        return _nuGetApi;
     }
 
     void ExecuteTool(string toolPath, string parameters) 

@@ -59,6 +59,9 @@ class Build : NukeBuild
 
     [Parameter("NuGet API key, allows to publish NuGet package.")]
     readonly string NuGetApiKey;
+
+    [Parameter("CodeCov API key, allows to publish code coverage.")]
+    readonly string CodeCovApiKey;
     
     [Parameter("Commit SHA")]
     readonly string CommitSha;
@@ -263,6 +266,30 @@ class Build : NukeBuild
                 .SetTargetPath(NuGetDirectory / version / $"Validot.{version}.nupkg")
             );
         });
+
+    Target PublishCodeCoverage => _ => _
+        .DependsOn(CodeCoverage)
+        .OnlyWhenDynamic(() => CodeCovApiKey != null)
+        .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
+        .Executes(() =>
+        {
+            var framework = GetFramework();
+            var version = GetVersion();
+
+            var reportFile = CodeCoverageDirectory / $"Validot.{version}.opencover.xml";
+
+            var toolPath = InstallAndGetToolPath("codecov.tool", "1.10.0", "codecov.dll", "netcoreapp3.0");
+
+            var toolParameters = new[] 
+            {
+                $"--sha {CommitSha}",
+                $"--file {reportFile}",
+                $"--token {CodeCovApiKey}",
+                $"--required"
+            };
+
+            ExecuteTool(toolPath, string.Join(" ", toolParameters));
+        });
     
     string _framework = null;
 
@@ -393,6 +420,5 @@ class Build : NukeBuild
 
             return GlobFiles(ToolsPath, $"**/{name}/{version}/**/{frameworkPart}{executableFileName}").FirstOrDefault();
         }
-
-    }
+    }    
 }

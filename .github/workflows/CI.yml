@@ -55,7 +55,7 @@ jobs:
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.${{ matrix.dotnet }}.${{ matrix.os }}.tests.trx
           path: artifacts/tests/Validot.${{ env.VALIDOT_VERSION }}.tests.trx
-  coverage:
+  code_coverage:
       needs: tests
       runs-on: ubuntu-latest
       name: Code coverage
@@ -86,8 +86,8 @@ jobs:
           with:
             name: Validot.${{ env.VALIDOT_VERSION }}.coverage_report
             path: artifacts/coverage_reports/Validot.${{ env.VALIDOT_VERSION }}.coverage_report
-  package:
-      needs: coverage
+  nuget_package:
+      needs: tests
       if: github.event_name == 'release'
       runs-on: ubuntu-latest
       name: NuGet package
@@ -112,8 +112,8 @@ jobs:
           with:
             name: Validot.${{ env.VALIDOT_VERSION }}.symbols.nupkg
             path: artifacts/nuget/${{ env.VALIDOT_VERSION }}/Validot.${{ env.VALIDOT_VERSION }}.symbols.nupkg
-  assets:
-      needs: package
+  release_assets:
+      needs: [ code_coverage, nuget_package ] 
       if: github.event_name == 'release'
       runs-on: ubuntu-latest
       name: Upload release assets
@@ -170,4 +170,21 @@ jobs:
             asset_path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.coverage.zip
             asset_name: Validot.${{ env.VALIDOT_VERSION }}.coverage.zip
             asset_content_type: application/zip
-       
+  publish_code_coverage:
+      needs: code_coverage
+      if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
+      runs-on: ubuntu-latest
+      name: Publish code coverage
+      steps:
+        - name: Checking out code
+          uses: actions/checkout@v2
+        - name: Init workflow variables
+          run: pwsh .github/workflows/Init-WorkflowVariables.ps1
+        - name: Download artifact; code coverage data
+          uses: actions/download-artifact@v1
+          with:
+            name: Validot.${{ env.VALIDOT_VERSION }}.opencover.xml
+            path: artifacts/coverage
+        - name: Publish code coverage
+          run: pwsh build.ps1 --target publishcodecoverage --skip --dotnet 3.1.102 --configuration debug --version ${{ env.VALIDOT_VERSION }} --commitsha ${{ github.sha }} --codecovapikey ${{ secrets.CODECOV_API_KEY }} --required
+        

@@ -57,6 +57,7 @@ jobs:
           path: artifacts/tests/Validot.${{ env.VALIDOT_VERSION }}.tests.trx
   code_coverage:
       needs: tests
+      if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
       runs-on: ubuntu-latest
       name: Code coverage
       steps:

@@ -16,6 +16,11 @@ namespace Validot.Tests.Unit
             yield return new[] { "path.segment.another.segment." };
             yield return new[] { "<." };
             yield return new[] { ". " };
+            yield return new[] { ".." };
+            yield return new[] { "path..segment" };
+            yield return new[] { "path.segment..." };
+            yield return new[] { "..path.segment" };
+            yield return new[] { "path.segment...another.segment." };
             yield return new[] { ".\t" };
         }
 

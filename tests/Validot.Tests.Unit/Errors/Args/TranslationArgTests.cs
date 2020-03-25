@@ -87,6 +87,43 @@ namespace Validot.Tests.Unit.Errors.Args
         }
 
         [Fact]
+        public void Should_Stringify_ReturnArgName_If_NullParameters()
+        {
+            var translation = new Dictionary<string, string>()
+            {
+                ["key1"] = "value1",
+                ["key2"] = "value2",
+            };
+
+            var arg = new TranslationArg(translation);
+
+            var name = arg.ToString(null);
+
+            name.Should().Be("_translation");
+        }
+
+        [Fact]
+        public void Should_Stringify_ReturnArgName_If_InvalidParameterName()
+        {
+            var translation = new Dictionary<string, string>()
+            {
+                ["key1"] = "value1",
+                ["key2"] = "value2",
+            };
+
+            var arg = new TranslationArg(translation);
+
+            var key = new Dictionary<string, string>()
+            {
+                ["invalid_key"] = "value1"
+            };
+
+            var name = arg.ToString(key);
+
+            name.Should().Be("_translation");
+        }
+
+        [Fact]
         public void Should_ThrowException_When_NullKey()
         {
             new Action(() =>

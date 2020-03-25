@@ -31,12 +31,9 @@ namespace Validot.Testing
 
             if (expectedErrors == null)
             {
-                if (errors.Count == 0)
-                {
-                    return TestResult.Passed();
-                }
+                ThrowHelper.Fatal("By this point all of the checks in TestSpecification method should prevent this logical path.");
 
-                return TestResult.Failed($"No errors expected, but found errors under {errors.Count} paths");
+                return TestResult.Failed(null);
             }
 
             if (errors.Count != expectedErrors.Count)

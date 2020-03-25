@@ -6,6 +6,11 @@ namespace Validot
 
     internal static class ThrowHelper
     {
+        public static void Fatal(string message)
+        {
+            throw new ValidotException($"Oooops! Sorry! That shouldn't have happened! {Environment.NewLine}{message}{Environment.NewLine} Please raise the issue on github with this exception stacktrace and details.");
+        }
+
         public static T NullArgument<T>(T argument, string name)
             where T : class
         {

@@ -605,6 +605,178 @@ namespace Validot.Tests.Unit.Settings
                     });
             }
 
+            [Fact]
+            public void Should_Translations_ThrowException_When_NullEntryInDictionary()
+            {
+                var validatorSettings = new ValidatorSettings();
+
+                var dictionary = new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                {
+                    ["name1"] = new Dictionary<string, string>()
+                    {
+                        ["k11"] = "v11",
+                        ["k12"] = "v12",
+                        ["k13"] = null,
+                        ["k14"] = "v14",
+                    },
+                    ["name2"] = new Dictionary<string, string>()
+                    {
+                        ["k21"] = "v21",
+                        ["k22"] = "v22",
+                        ["k23"] = "v23",
+                        ["k24"] = "v24",
+                    }
+                };
+
+                Action action = () =>
+                {
+                    validatorSettings.Translations = dictionary;
+                };
+
+                action.Should().ThrowExactly<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void Should_Translations_ThrowException_When_Null()
+            {
+                var validatorSettings = new ValidatorSettings();
+
+                Action action = () =>
+                {
+                    validatorSettings.Translations = null;
+                };
+
+                action.Should().ThrowExactly<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void Should_Translations_ThrowException_When_NullInnerDictionary()
+            {
+                var validatorSettings = new ValidatorSettings();
+
+                var dictionary = new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                {
+                    ["name1"] = null,
+                    ["name2"] = new Dictionary<string, string>()
+                    {
+                        ["k21"] = "v21",
+                        ["k22"] = "v22",
+                        ["k23"] = "v23",
+                        ["k24"] = "v24",
+                    }
+                };
+
+                Action action = () =>
+                {
+                    validatorSettings.Translations = dictionary;
+                };
+
+                action.Should().ThrowExactly<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void Should_Translations_AddEntry()
+            {
+                var validatorSettings = new ValidatorSettings();
+
+                validatorSettings.Translations = new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                {
+                    ["name"] = new Dictionary<string, string>()
+                    {
+                        ["k1"] = "v1",
+                    },
+                };
+
+                validatorSettings.Translations.ShouldBeLikeTranslations(
+                    new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                    {
+                        ["name"] = new Dictionary<string, string>()
+                        {
+                            ["k1"] = "v1",
+                        },
+                    });
+            }
+
+            [Fact]
+            public void Should_Translations_OverwritePreviousValue()
+            {
+                var validatorSettings = new ValidatorSettings();
+
+                validatorSettings.Translations = new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                {
+                    ["name1"] = new Dictionary<string, string>()
+                    {
+                        ["k11"] = "v11",
+                    },
+                    ["name2"] = new Dictionary<string, string>()
+                    {
+                        ["k24"] = "v24",
+                    }
+                };
+
+                validatorSettings.Translations = new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                {
+                    ["name2"] = new Dictionary<string, string>()
+                    {
+                        ["k21"] = "v21",
+                        ["k24"] = "v24",
+                    }
+                };
+
+                validatorSettings.Translations.ShouldBeLikeTranslations(
+                    new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                    {
+                        ["name2"] = new Dictionary<string, string>()
+                        {
+                            ["k21"] = "v21",
+                            ["k24"] = "v24",
+                        }
+                    });
+            }
+
+            [Fact]
+            public void Should_Translations_PassAllEntries_WhenMoreThanOneKeysAtTopLevelDefined()
+            {
+                var validatorSettings = new ValidatorSettings();
+
+                validatorSettings.Translations = new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                {
+                    ["name1"] = new Dictionary<string, string>()
+                    {
+                        ["k11"] = "v11",
+                        ["k12"] = "v12",
+                        ["k13"] = "v13",
+                        ["k14"] = "v14",
+                    },
+                    ["name2"] = new Dictionary<string, string>()
+                    {
+                        ["k21"] = "v21",
+                        ["k22"] = "v22",
+                        ["k23"] = "v23",
+                        ["k24"] = "v24",
+                    }
+                };
+
+                validatorSettings.Translations.ShouldBeLikeTranslations(
+                    new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                    {
+                        ["name1"] = new Dictionary<string, string>()
+                        {
+                            ["k11"] = "v11",
+                            ["k12"] = "v12",
+                            ["k13"] = "v13",
+                            ["k14"] = "v14",
+                        },
+                        ["name2"] = new Dictionary<string, string>()
+                        {
+                            ["k21"] = "v21",
+                            ["k22"] = "v22",
+                            ["k23"] = "v23",
+                            ["k24"] = "v24",
+                        },
+                    });
+            }
+
             public class TestTranslationHolder : ITranslationsHolder
             {
                 public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; set; }

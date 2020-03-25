@@ -10,13 +10,11 @@ using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
-using Nuke.Common.Tools.ReportGenerator;
 using Nuke.Common.Tooling;
 
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using static Nuke.Common.Tools.ReportGenerator.ReportGeneratorTasks;
 
 [CheckBuildProjectConfigurations]
 [UnsetVisualStudioEnvironmentVariables]
@@ -110,7 +108,6 @@ class Build : NukeBuild
         .DependsOn(Clean, Restore)
         .Executes(() =>
         {
-            var framework = GetFramework();
             var version = GetVersion();
 
             var assemblyVersion = SemVerRegex.IsMatch(version) 

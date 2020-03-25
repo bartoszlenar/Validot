@@ -368,6 +368,34 @@ namespace Validot.Tests.Unit.Rules.Numbers
                 Arg.Number("tolerance", tolerance));
         }
 
+        public static IEnumerable<object[]> NonNan_Should_CollectError_MemberData()
+        {
+            yield return new object[] { 123.123D, true };
+            yield return new object[] { double.NaN, false };
+        }
+
+        [Theory]
+        [MemberData(nameof(NonNan_Should_CollectError_MemberData))]
+        public void NonNan_Should_CollectError(double model, bool shouldBeValid)
+        {
+            Tester.TestSingleRule(
+                model,
+                m => m.NonNaN(),
+                shouldBeValid,
+                MessageKey.Numbers.NonNaN);
+        }
+
+        [Theory]
+        [MemberData(nameof(NonNan_Should_CollectError_MemberData))]
+        public void NonNan_Should_CollectError_FromNullable(double model, bool shouldBeValid)
+        {
+            Tester.TestSingleRule<double?>(
+                model,
+                m => m.NonNaN(),
+                shouldBeValid,
+                MessageKey.Numbers.NonNaN);
+        }
+
         public static IEnumerable<object[]> Positive_Should_CollectError_Data()
         {
             return RulesHelper.GetTestDataCombined(

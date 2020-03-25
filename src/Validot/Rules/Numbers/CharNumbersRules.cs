@@ -122,25 +122,5 @@ namespace Validot
         {
             return @this.RuleTemplate(m => m.Value <= 0, MessageKey.Numbers.NonPositive);
         }
-
-        public static IRuleOut<char> Negative(this IRuleIn<char> @this)
-        {
-            return @this.RuleTemplate(m => m < 0, MessageKey.Numbers.Negative);
-        }
-
-        public static IRuleOut<char?> Negative(this IRuleIn<char?> @this)
-        {
-            return @this.RuleTemplate(m => m.Value < 0, MessageKey.Numbers.Negative);
-        }
-
-        public static IRuleOut<char> NonNegative(this IRuleIn<char> @this)
-        {
-            return @this.RuleTemplate(m => m >= 0, MessageKey.Numbers.NonNegative);
-        }
-
-        public static IRuleOut<char?> NonNegative(this IRuleIn<char?> @this)
-        {
-            return @this.RuleTemplate(m => m.Value >= 0, MessageKey.Numbers.NonNegative);
-        }
     }
 }

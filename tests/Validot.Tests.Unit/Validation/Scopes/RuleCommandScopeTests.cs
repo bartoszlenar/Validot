@@ -250,5 +250,32 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             shouldExecuteCount.Should().Be(shouldExecuteInfo.HasValue ? 1 : 0);
         }
+
+        [Fact]
+        public void Should_ErrorId_ThrowException_When_AssigningNull()
+        {
+            var commandScope = new RuleCommandScope<decimal>();
+
+            Action action = () =>
+            {
+                (commandScope as ICommandScope<decimal>).ErrorId = null;
+            };
+
+            action.Should().ThrowExactly<InvalidOperationException>();
+        }
+
+        [Fact]
+        public void Should_ErrorId_AssignValueAfterCast()
+        {
+            var commandScope = new RuleCommandScope<decimal>();
+
+            commandScope.ErrorId.Should().Be(-1);
+            (commandScope as ICommandScope<decimal>).ErrorId.Should().Be(-1);
+
+            (commandScope as ICommandScope<decimal>).ErrorId = 321;
+
+            commandScope.ErrorId.Should().Be(321);
+            (commandScope as ICommandScope<decimal>).ErrorId.Should().Be(321);
+        }
     }
 }

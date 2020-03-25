@@ -31,6 +31,21 @@ namespace Validot.Tests.Unit.Rules.Text
         [InlineData(@"Duy", false)]
         [InlineData(@" email@example.com", false)]
         [InlineData(@"email@example.com ", false)]
+        [InlineData(@"", false)]
+        [InlineData(@"david.jones@proseware.com", true)]
+        [InlineData(@"d.j@server1.proseware.com", true)]
+        [InlineData(@"jones@ms1.proseware.com", true)]
+        [InlineData(@"j.@server1.proseware.com", false)]
+        [InlineData(@"j@proseware.com9", true)]
+        [InlineData(@"js#internal@proseware.com", true)]
+        [InlineData(@"j_9@[129.126.118.1]", true)]
+        [InlineData(@"j..s@proseware.com", false)]
+        [InlineData(@"js*@proseware.com", false)]
+        [InlineData(@"js@proseware..com", false)]
+        [InlineData(@"js@proseware.com9", true)]
+        [InlineData(@"j.s@server1.proseware.com", true)]
+        [InlineData(@"""j""s""@proseware.com", true)]
+        [InlineData(@"js@contoso.中国", true)]
         public void Email_Should_CollectError(string model, bool expectedIsValid)
         {
             Tester.TestSingleRule(

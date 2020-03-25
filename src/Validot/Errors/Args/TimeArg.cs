@@ -57,7 +57,7 @@ namespace Validot.Errors.Args
 
         protected static string CultureParameter => "culture";
 
-        protected CultureInfo DefaultCultureInfo { get; set; } = CultureInfo.InvariantCulture;
+        protected static CultureInfo DefaultCultureInfo { get; } = CultureInfo.InvariantCulture;
 
         public abstract string ToString(IReadOnlyDictionary<string, string> parameters);
     }

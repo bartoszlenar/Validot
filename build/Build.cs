@@ -65,6 +65,9 @@ class Build : NukeBuild
     
     [Parameter("Commit SHA")]
     readonly string CommitSha;
+    
+    [Parameter("Allow warnings")]
+    readonly bool AllowWarnings = false;
 
     [Solution] readonly Solution Solution;
     
@@ -118,7 +121,7 @@ class Build : NukeBuild
 
             DotNetBuild(c => c
                 .EnableNoRestore()
-                .EnableTreatWarningsAsErrors()
+                .SetTreatWarningsAsErrors(!AllowWarnings)
                 .SetProjectFile(SourceDirectory / "Validot/Validot.csproj")
                 .SetConfiguration(Configuration)
                 .SetFramework("netstandard2.0")
@@ -149,7 +152,7 @@ class Build : NukeBuild
             {
                 DotNetBuild(c => c
                     .EnableNoRestore()
-                    .EnableTreatWarningsAsErrors()
+                    .SetTreatWarningsAsErrors(!AllowWarnings)
                     .SetProjectFile(testProject)
                     .SetConfiguration(Configuration)
                     .SetFramework(framework));

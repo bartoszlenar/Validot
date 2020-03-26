@@ -838,11 +838,183 @@ namespace Validot.Tests.Unit.Validation
                 yield return new object[] { "types_collection_nullables", specificationA, model6, "B", "B.CollectionNullableD.#0.A.B", typeof(LoopClassB) };
             }
 
+            public static IEnumerable<object[]> Loop_ThroughIndexes()
+            {
+                Specification<LoopClassA> specificationA = null;
+
+                Specification<LoopClassB> specificationB = null;
+
+                specificationA = c => c
+                    .Member(m => m.A, specificationA)
+                    .Member(m => m.B, specificationB);
+
+                specificationB = c => c
+                    .Member(m => m.A, specificationA)
+                    .Member(m => m.B, specificationB)
+                    .Member(m => m.CollectionA, m => m.AsCollection(specificationA));
+
+                var model1 = new LoopClassA()
+                {
+                    B = new LoopClassB()
+                    {
+                        CollectionA = new[]
+                        {
+                            new LoopClassA(),
+                            new LoopClassA()
+                            {
+                                B = new LoopClassB()
+                                {
+                                }
+                            }
+                        }
+                    }
+                };
+
+                model1.B.CollectionA[1].B.A = model1.B.CollectionA[1];
+
+                yield return new object[] { "indexes_same_amount", specificationA, model1, "B.CollectionA.#1", "B.CollectionA.#1.B.A", typeof(LoopClassA) };
+
+                var model2 = new LoopClassA()
+                {
+                    B = new LoopClassB()
+                    {
+                        CollectionA = new[]
+                        {
+                            new LoopClassA(),
+                            new LoopClassA()
+                            {
+                                B = new LoopClassB()
+                                {
+                                    CollectionA = new[]
+                                    {
+                                        new LoopClassA()
+                                        {
+                                            B = new LoopClassB()
+                                            {
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+
+                model2.B.CollectionA[1].B.CollectionA[0].B.A = model2.B.CollectionA[1].B.CollectionA[0];
+
+                yield return new object[] { "indexes_same_amount_nested", specificationA, model2, "B.CollectionA.#1.B.CollectionA.#0", "B.CollectionA.#1.B.CollectionA.#0.B.A", typeof(LoopClassA) };
+
+                var model3 = new LoopClassA()
+                {
+                    B = new LoopClassB()
+                    {
+                        CollectionA = new[]
+                        {
+                            new LoopClassA(),
+                            new LoopClassA()
+                            {
+                                B = new LoopClassB()
+                                {
+                                    CollectionA = new[]
+                                    {
+                                        new LoopClassA()
+                                        {
+                                            B = new LoopClassB()
+                                            {
+                                                A = new LoopClassA()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+
+                model3.B.CollectionA[1].B.CollectionA[0].B.A.B = model3.B.CollectionA[1].B.CollectionA[0].B;
+
+                yield return new object[] { "indexes_same_amount_nested_member", specificationA, model3, "B.CollectionA.#1.B.CollectionA.#0.B", "B.CollectionA.#1.B.CollectionA.#0.B.A.B", typeof(LoopClassB) };
+
+                var model4 = new LoopClassA()
+                {
+                    B = new LoopClassB()
+                    {
+                        CollectionA = new[]
+                        {
+                            new LoopClassA(),
+                            new LoopClassA()
+                            {
+                                B = new LoopClassB()
+                                {
+                                    CollectionA = new[]
+                                    {
+                                        new LoopClassA()
+                                        {
+                                            B = new LoopClassB()
+                                            {
+                                                A = new LoopClassA()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+
+                model4.B.CollectionA[1].B.CollectionA[0].B.A.B = model4.B.CollectionA[1].B;
+
+                yield return new object[] { "indexes_one_between", specificationA, model4, "B.CollectionA.#1.B", "B.CollectionA.#1.B.CollectionA.#0.B.A.B", typeof(LoopClassB) };
+
+                var model5 = new LoopClassA()
+                {
+                    B = new LoopClassB()
+                    {
+                        CollectionA = new[]
+                        {
+                            new LoopClassA(),
+                            new LoopClassA()
+                            {
+                                B = new LoopClassB()
+                                {
+                                    CollectionA = new[]
+                                    {
+                                        new LoopClassA()
+                                        {
+                                            B = new LoopClassB()
+                                            {
+                                                CollectionA = new[]
+                                                {
+                                                    new LoopClassA(),
+                                                    new LoopClassA(),
+                                                    new LoopClassA()
+                                                    {
+                                                        B = new LoopClassB()
+                                                        {
+                                                            A = new LoopClassA()
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+
+                model5.B.CollectionA[1].B.CollectionA[0].B.CollectionA[2].B = model5.B.CollectionA[1].B;
+
+                yield return new object[] { "indexes_two_between", specificationA, model5, "B.CollectionA.#1.B", "B.CollectionA.#1.B.CollectionA.#0.B.CollectionA.#2.B", typeof(LoopClassB) };
+            }
+
             [Theory]
             [MemberData(nameof(Loop_Self))]
             [MemberData(nameof(Loop_Simple))]
             [MemberData(nameof(Loop_ThroughMembers))]
             [MemberData(nameof(Loop_ThroughTypes))]
+            [MemberData(nameof(Loop_ThroughIndexes))]
             public void Should_ThrowException_InifiteReferencesLoopException_WithDetectedLoopInfo_When_ReferencesLoopDetected(string testId, Specification<LoopClassA> specification, LoopClassA model, string path, string infiniteLoopNestedPath, Type type)
             {
                 _ = testId;

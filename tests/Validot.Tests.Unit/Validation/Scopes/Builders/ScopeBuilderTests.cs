@@ -772,6 +772,22 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             }
 
             [Fact]
+            public void Should_Return_Required_When_NoPresenceCommand()
+            {
+                var context = new ScopeBuilderContext();
+
+                var builder = new ScopeBuilder();
+
+                Specification<TestClass> specification = m => m
+                    .Rule(m1 => true);
+
+                var scope = builder.Build(specification, context);
+
+                scope.Presence.Should().Be(Presence.Required);
+                scope.RequiredErrorId.Should().Be(context.RequiredErrorId);
+            }
+
+            [Fact]
             public void Should_Return_Required_When_NotNull()
             {
                 var context = new ScopeBuilderContext();
@@ -788,6 +804,23 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             }
 
             [Fact]
+            public void Should_Return_Required_When_NotNull_And_Rules()
+            {
+                var context = new ScopeBuilderContext();
+
+                var builder = new ScopeBuilder();
+
+                Specification<TestClass> specification = m => m
+                    .NotNull()
+                    .Rule(m1 => false);
+
+                var scope = builder.Build(specification, context);
+
+                scope.Presence.Should().Be(Presence.Required);
+                scope.RequiredErrorId.Should().Be(context.RequiredErrorId);
+            }
+
+            [Fact]
             public void Should_Return_Required_When_Required()
             {
                 var context = new ScopeBuilderContext();
@@ -796,6 +829,23 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
 
                 Specification<TestClass> specification = m => m
                     .Required();
+
+                var scope = builder.Build(specification, context);
+
+                scope.Presence.Should().Be(Presence.Required);
+                scope.RequiredErrorId.Should().Be(context.RequiredErrorId);
+            }
+
+            [Fact]
+            public void Should_Return_Required_When_Required_And_Rules()
+            {
+                var context = new ScopeBuilderContext();
+
+                var builder = new ScopeBuilder();
+
+                Specification<TestClass> specification = m => m
+                    .Required()
+                    .Rule(m1 => false);
 
                 var scope = builder.Build(specification, context);
 
@@ -830,6 +880,43 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 }
             }
 
+            [Theory]
+            [MemberData(nameof(AllCommandCases))]
+            public void Should_Return_Required_WithCustomError_And_Rules(string testId, Func<dynamic, ISpecificationOut<TestClass>> appendErrorCommands, ErrorContentApiHelper.ExpectedErrorContent expected)
+            {
+                testId.Should().NotBeNull();
+
+                var context = new ScopeBuilderContext();
+
+                var builder = new ScopeBuilder();
+
+                Specification<TestClass> specification = m => AppendRule(appendErrorCommands(m.Required()));
+
+                var scope = builder.Build(specification, context);
+
+                if (expected.ShouldBeEmpty(0))
+                {
+                    scope.RequiredErrorId.Should().Be(context.RequiredErrorId);
+                }
+                else
+                {
+                    scope.RequiredErrorId.Should().NotBe(context.RequiredErrorId);
+                    context.Errors.Keys.Should().Contain(scope.RequiredErrorId);
+
+                    expected.Match(context.Errors[scope.RequiredErrorId]);
+                }
+
+                dynamic AppendRule(dynamic api)
+                {
+                    if (api is IRuleIn<TestClass> ruleIn)
+                    {
+                        return RuleExtension.Rule(ruleIn, m => false);
+                    }
+
+                    throw new InvalidOperationException("Dynamic api tests failed");
+                }
+            }
+
             [Fact]
             public void Should_Return_Optional_When_Optional()
             {
@@ -839,6 +926,22 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
 
                 Specification<TestClass> specification = m => m
                     .Optional();
+
+                var scope = builder.Build(specification, context);
+
+                scope.Presence.Should().Be(Presence.Optional);
+            }
+
+            [Fact]
+            public void Should_Return_Optional_When_Optional_And_Rules()
+            {
+                var context = new ScopeBuilderContext();
+
+                var builder = new ScopeBuilder();
+
+                Specification<TestClass> specification = m => m
+                    .Optional()
+                    .Rule(m1 => false);
 
                 var scope = builder.Build(specification, context);
 

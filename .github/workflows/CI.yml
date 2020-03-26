@@ -4,13 +4,9 @@ on:
   push:
     branches-ignore:
       - 'wip/**'
-    paths-ignore:
-      - 'docs/**'
   pull_request:
     branches-ignore:
       - 'wip/**'
-    paths-ignore:
-      - 'docs/**'
   release:
       types: [published]
 

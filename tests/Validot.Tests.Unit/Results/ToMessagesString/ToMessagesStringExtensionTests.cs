@@ -56,7 +56,7 @@ namespace Validot.Tests.Unit.Results.ToMessagesString
             validationResult.Details.Received(1).GetErrorMessages(Arg.Is(null as string));
 
             messagesString.Should().NotBeNull();
-            messagesString.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).Should().HaveCount(7);
+            messagesString.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Should().HaveCount(7);
 
             messagesString.Should().Contain("p" + Environment.NewLine);
             messagesString.Should().Contain("p1: p 11" + Environment.NewLine + "p1: p 12" + Environment.NewLine + "p1: duplicate" + Environment.NewLine);
@@ -83,7 +83,7 @@ namespace Validot.Tests.Unit.Results.ToMessagesString
             validationResult.Details.Received(1).GetErrorMessages(Arg.Is(null as string));
 
             messagesString.Should().NotBeNull();
-            messagesString.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).Should().HaveCount(7);
+            messagesString.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Should().HaveCount(7);
 
             messagesString.Should().Contain("p" + Environment.NewLine);
             messagesString.Should().Contain("p 11" + Environment.NewLine + "p 12" + Environment.NewLine + "duplicate" + Environment.NewLine);
@@ -117,7 +117,7 @@ namespace Validot.Tests.Unit.Results.ToMessagesString
             validationResult.Details.Received(1).GetErrorMessages(Arg.Is("translation2"));
 
             messagesString.Should().NotBeNull();
-            messagesString.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).Should().HaveCount(7);
+            messagesString.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Should().HaveCount(7);
 
             messagesString.Should().Contain("p" + Environment.NewLine);
             messagesString.Should().Contain("p1: p 11" + Environment.NewLine + "p1: p 12" + Environment.NewLine + "p1: duplicate" + Environment.NewLine);

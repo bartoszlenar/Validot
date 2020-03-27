@@ -39,33 +39,37 @@ class Build : NukeBuild
 
     static readonly Regex SemVerRegex = new Regex(@"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$", RegexOptions.Compiled);
 
+    static readonly Regex TargetFrameworkRegex = new Regex(@"<TargetFramework>.+<\/TargetFramework>", RegexOptions.Compiled);
+    
     static readonly DateTimeOffset BuildTime = DateTimeOffset.UtcNow;
+
+    static readonly string DefaultFrameworkId = "netcoreapp3.1";
     
     public static int Main () => Execute<Build>(x => x.Compile);
 
     [Parameter]
-    readonly Configuration Configuration = Configuration.Debug;
+    Configuration Configuration = Configuration.Debug;
     
     [Parameter("dotnet framework id or SDK version (if SDK version is provided, the highest framework available is selected). Default value is 'netcoreapp3.1'")]
-    readonly string DotNet;
+    string DotNet;
     
     [Parameter("Version. Default value is '0.0.0-timestamp'")]
-    readonly string Version;
+    string Version;
 
     [Parameter("NuGet API. Where to publish NuGet package. Default value is 'https://api.nuget.org/v3/index.json'")]
-    readonly string NuGetApi;
+    string NuGetApi = "https://api.nuget.org/v3/index.json";
 
     [Parameter("NuGet API key, allows to publish NuGet package.")]
-    readonly string NuGetApiKey;
+    string NuGetApiKey;
 
     [Parameter("CodeCov API key, allows to publish code coverage.")]
-    readonly string CodeCovApiKey;
+    string CodeCovApiKey;
     
     [Parameter("Commit SHA")]
-    readonly string CommitSha;
+    string CommitSha;
     
     [Parameter("Allow warnings")]
-    readonly bool AllowWarnings = false;
+    bool AllowWarnings;
 
     [Solution] readonly Solution Solution;
     
@@ -78,13 +82,44 @@ class Build : NukeBuild
     AbsolutePath CodeCoverageReportsDirectory => ArtifactsDirectory / "coverage_reports";
     AbsolutePath NuGetDirectory => ArtifactsDirectory / "nuget";
 
-    
+    protected override void OnBuildInitialized()
+    {
+        base.OnBuildCreated();
+
+        DotNet = GetFramework(DotNet);
+        Logger.Info($"DotNet: {DotNet}");
+        
+        Version = GetVersion(Version);
+        Logger.Info($"Version: {Version}");
+
+        Logger.Info($"NuGetApi: {NuGetApi ?? "MISSING"}");
+        Logger.Info($"Configuration: {Configuration}");
+        Logger.Info($"CommitSha: {CommitSha ?? "MISSING"}");
+        Logger.Info($"AllowWarnings: {AllowWarnings}");
+
+        var nuGetApiKeyPresence = (NuGetApiKey is null) ? "MISSING" : "present";
+        Logger.Info($"NuGetApiKey: {nuGetApiKeyPresence}");
+        
+        var codeCovApiKeyPresence = (CodeCovApiKey is null) ? "MISSING" : "present";
+        Logger.Info($"CodeCovApiKey: {codeCovApiKeyPresence}");
+
+        SetFrameworkInTests(DotNet);
+    }
+
+    protected override void OnBuildFinished()
+    {
+        ResetFrameworkInTests();
+
+        base.OnBuildFinished();
+    }
+
     Target Reset => _ => _
         .Executes(() =>
         {
             EnsureCleanDirectory(TemporaryDirectory);
             EnsureCleanDirectory(ArtifactsDirectory);
             EnsureCleanDirectory(ToolsPath);
+            ResetFrameworkInTests();
         })
         .Triggers(Clean);
     
@@ -108,10 +143,8 @@ class Build : NukeBuild
         .DependsOn(Clean, Restore)
         .Executes(() =>
         {
-            var version = GetVersion();
-
-            var assemblyVersion = SemVerRegex.IsMatch(version) 
-                ? version.Substring(0, version.IndexOf(".", StringComparison.InvariantCulture)) + ".0.0.0"
+            var assemblyVersion = SemVerRegex.IsMatch(Version) 
+                ? Version.Substring(0, Version.IndexOf(".", StringComparison.InvariantCulture)) + ".0.0.0"
                 : "0.0.0.0";
 
             Logger.Info("Assembly version: " + assemblyVersion);
@@ -128,7 +161,7 @@ class Build : NukeBuild
                 .SetRepositoryUrl(Metadata.RepositoryUrl)
                 .SetPackageIconUrl(Metadata.PackageIconUrl)
                 .SetAuthors(Metadata.Author)
-                .SetInformationalVersion(version)
+                .SetInformationalVersion(Version)
                 .SetAssemblyVersion(assemblyVersion));
         });
     
@@ -138,8 +171,6 @@ class Build : NukeBuild
         .After(CompileProject)
         .Executes(() =>
         {
-            var framework = GetFramework();
-
             var testsProjects = new[]
             {
                 TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj"
@@ -152,7 +183,7 @@ class Build : NukeBuild
                     .SetTreatWarningsAsErrors(!AllowWarnings)
                     .SetProjectFile(testProject)
                     .SetConfiguration(Configuration)
-                    .SetFramework(framework));
+                    .SetFramework(DotNet));
             }
         });
 
@@ -161,19 +192,16 @@ class Build : NukeBuild
     
     Target Tests => _ => _
         .DependsOn(Compile)
-        .OnlyWhenDynamic(() => Configuration.Equals(Configuration.Release))
         .Executes(() =>
         {
-            var framework = GetFramework();
-            var version = GetVersion();
-
             DotNetTest(p => p
                 .EnableNoBuild()
+                .SetConfiguration(Configuration)
                 .SetProjectFile(Solution)
-                .SetConfiguration(Configuration.Release)
-                .SetFramework(framework)
-                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{version}.tests.trx"}")
+                .SetFramework(DotNet)
+                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.tests.trx"}")
             );
+            
         });
 
      Target CodeCoverage => _ => _
@@ -181,23 +209,18 @@ class Build : NukeBuild
         .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
         .Executes(() =>
         {
-            var framework = GetFramework();
-            var version = GetVersion();
-
-            var reportFile = CodeCoverageDirectory / $"Validot.{version}.opencover.xml";
+            var reportFile = CodeCoverageDirectory / $"Validot.{Version}.opencover.xml";
 
             DotNetTest(p => p
                 .EnableNoBuild()
                 .SetProjectFile(TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj")
                 .SetConfiguration(Configuration.Debug)
-                .SetFramework(framework)
+                .SetFramework(DotNet)
                 .AddProperty("CollectCoverage", "true")
                 .AddProperty("CoverletOutput", reportFile)
                 .AddProperty("CoverletOutputFormat", "opencover")
             );
-
-            File.Move(CodeCoverageDirectory / $"Validot.{version}.opencover.{framework}.xml", reportFile);
-
+            
             Logger.Info("CodeCoverage opencover format file location: " + reportFile);
         });
 
@@ -206,26 +229,21 @@ class Build : NukeBuild
         .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
         .Executes(() =>
         {
-            var framework = GetFramework();
-            var version = GetVersion();
-
-            var reportFile = CodeCoverageDirectory / $"Validot.{version}.opencover.xml";
-
             var toolPath = InstallAndGetToolPath("dotnet-reportgenerator-globaltool", "4.5.1", "ReportGenerator.dll", "netcoreapp3.0");
 
             var toolParameters = new[] 
             {
-                $"-reports:{CodeCoverageDirectory / $"Validot.{version}.opencover.xml"}",
+                $"-reports:{CodeCoverageDirectory / $"Validot.{Version}.opencover.xml"}",
                 $"-reporttypes:HtmlInline_AzurePipelines;JsonSummary",
-                $"-targetdir:{CodeCoverageReportsDirectory / $"Validot.{version}.coverage_report"}",
+                $"-targetdir:{CodeCoverageReportsDirectory / $"Validot.{Version}.coverage_report"}",
                 $"-historydir:{CodeCoverageReportsDirectory / "_history"}",
                 $"-title:Validot unit tests code coverage report",
-                $"-tag:v{version}" + (CommitSha is null ? "" : $", {CommitSha}"),
+                $"-tag:v{Version}" + (CommitSha is null ? "" : $", {CommitSha}"),
             };
 
             ExecuteTool(toolPath, string.Join(" ", toolParameters.Select(p => $"\"{p}\"")));
 
-            File.Move(CodeCoverageReportsDirectory / $"Validot.{version}.coverage_report/Summary.json", CodeCoverageReportsDirectory / $"Validot.{version}.coverage_summary.json");
+            File.Move(CodeCoverageReportsDirectory / $"Validot.{Version}.coverage_report/Summary.json", CodeCoverageReportsDirectory / $"Validot.{Version}.coverage_summary.json");
         });
 
     Target Package => _ => _
@@ -233,15 +251,13 @@ class Build : NukeBuild
         .OnlyWhenDynamic(() => Configuration == Configuration.Release)
         .Executes(() =>
         {
-            var version = GetVersion();
-
             DotNetPack(p => p
                 .EnableNoBuild()
                 .EnableIncludeSymbols()
                 .SetConfiguration(Configuration.Release)
                 .SetProject(SourceDirectory / "Validot/Validot.csproj")
-                .SetVersion(version)
-                .SetOutputDirectory(NuGetDirectory / version)
+                .SetVersion(Version)
+                .SetOutputDirectory(NuGetDirectory / Version)
                 .SetTitle(Metadata.Title)
                 .SetDescription(Metadata.Description)
                 .SetRepositoryUrl(Metadata.RepositoryUrl)
@@ -258,12 +274,10 @@ class Build : NukeBuild
         .OnlyWhenDynamic(() => Configuration == Configuration.Release)
         .Executes(() =>
         {
-            var version = GetVersion();
-
             DotNetNuGetPush(p => p
                 .SetSource(NuGetApi)
                 .SetApiKey(NuGetApiKey)
-                .SetTargetPath(NuGetDirectory / version / $"Validot.{version}.nupkg")
+                .SetTargetPath(NuGetDirectory / Version / $"Validot.{Version}.nupkg")
             );
         });
 
@@ -273,10 +287,7 @@ class Build : NukeBuild
         .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
         .Executes(() =>
         {
-            var framework = GetFramework();
-            var version = GetVersion();
-
-            var reportFile = CodeCoverageDirectory / $"Validot.{version}.opencover.xml";
+            var reportFile = CodeCoverageDirectory / $"Validot.{Version}.opencover.xml";
 
             var toolPath = InstallAndGetToolPath("codecov.tool", "1.10.0", "codecov.dll", "netcoreapp3.0");
 
@@ -290,95 +301,81 @@ class Build : NukeBuild
 
             ExecuteTool(toolPath, string.Join(" ", toolParameters));
         });
-    
-    string _framework = null;
 
-    string GetFramework()
+    void SetFrameworkInTests(string framework)
     {
-        if (_framework is null)
+        var testsCsprojs = new[]
         {
-            var defaultFramework = "netcoreapp3.1";
+            TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj"
+        };
 
-            if (DotNet is null)
-            {
-                Logger.Warn("DotNet: parameter not provided");
-                _framework = defaultFramework;
-            }
-            else if (DotNet.All(c => char.IsDigit(c) || c == '.'))
-            {
-                Logger.Info($"DotNet parameter recognized as SDK version: " + DotNet);
-
-                if (DotNet.StartsWith("2.1."))
-                {
-                    _framework = "netcoreapp2.1";
-                }
-                else if (DotNet.StartsWith("3.1."))
-                {
-                    _framework = "netcoreapp3.1";
-                }
-                else
-                {
-                    Logger.Warn("Unrecognized dotnet SDK version: " + DotNet);
-                    
-                    _framework = DotNet;
-                }
-            }
-            else
-            {
-                Logger.Warn("Unrecognized dotnet framework id: " + DotNet);
-
-                _framework = DotNet;
-            }
-
-            Logger.Info("DotNet: " + _framework);
+        foreach (var csproj in testsCsprojs)
+        {
+            Logger.Info($"Setting framework {framework} in {csproj}");
+            var content = TargetFrameworkRegex.Replace(File.ReadAllText(csproj), $"<TargetFramework>{framework}</TargetFramework>");
+            
+            File.WriteAllText(csproj, content);
         }
-
-        return _framework;
     }
     
-    string _version = null;
-
-    string GetVersion()
+    void ResetFrameworkInTests() => SetFrameworkInTests("netcoreapp3.1");
+    
+    string GetFramework(string dotnet)
     {
-        if (_version is null)
+        if (dotnet is null)
         {
-            if (Version is null)
-            {
-                Logger.Warn("Version: not provided.");
-                _version = $"0.0.0-{BuildTime.DayOfYear}{BuildTime.ToString("HHmmss", CultureInfo.InvariantCulture)}";
-            }
-            else
-            {
-                _version = Version;
-            }
+            Logger.Warn("DotNet: parameter not provided");
+            return DefaultFrameworkId;
+        } 
+        
+        if (dotnet.All(c => char.IsDigit(c) || c == '.'))
+        {
+            Logger.Info($"DotNet parameter recognized as SDK version: " + dotnet);
 
-            Logger.Info("Version: " + _version);
+            if (dotnet.StartsWith("2.1."))
+            {
+                return "netcoreapp2.1";
+            }
+            
+            if (dotnet.StartsWith("3.1."))
+            {
+                return "netcoreapp3.1";
+            }
+            
+            Logger.Warn("Unrecognized dotnet SDK version: " + dotnet);
+
+            return dotnet;
         }
+        
+        if (dotnet.StartsWith("netcoreapp") && dotnet.Substring("netcoreapp".Length).All(c => char.IsDigit(c) || c == '.'))
+        {
+            Logger.Info("DotNet parameter recognized as .NET Core target: " + DotNet);
+                
+            return dotnet;
+        }
+        
+        if (dotnet.StartsWith("net") && DotNet.Substring("net".Length).All(char.IsDigit))
+        {
+            Logger.Info("DotNet parameter recognized as .NET Framework target: " + dotnet);
+                
+            return dotnet;
+        }
+        
+        Logger.Warn("Unrecognized dotnet framework id: " + dotnet);
 
-        return _version;
+        return dotnet;
     }
 
-    string _nuGetApi = null;
-
-    string GetNuGetApi() 
+    string GetVersion(string version)
     {
-        if (_nuGetApi is null) 
+        if (version is null)
         {
-            if (NuGetApi is null) 
-            {
-                Logger.Warn("NuGetServer: not provided.");
-
-                _nuGetApi = "https://api.nuget.org/v3/index.json";
-            }
-            else 
-            {
-                _nuGetApi = NuGetApi;
-            }
-
-            Logger.Info("NuGetApi:" + _nuGetApi);
+            Logger.Warn("Version: not provided.");
+            
+            return $"0.0.0-{BuildTime.DayOfYear}{BuildTime.ToString("HHmmss", CultureInfo.InvariantCulture)}";
         }
 
-        return _nuGetApi;
+        return version;
     }
 
     void ExecuteTool(string toolPath, string parameters) 

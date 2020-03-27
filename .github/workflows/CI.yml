@@ -4,13 +4,9 @@ on:
   push:
     branches-ignore:
       - 'wip/**'
-    paths-ignore:
-      - 'docs/**'
   pull_request:
     branches-ignore:
       - 'wip/**'
-    paths-ignore:
-      - 'docs/**'
   release:
       types: [published]
 
@@ -55,8 +51,34 @@ jobs:
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.${{ matrix.dotnet }}.${{ matrix.os }}.tests.trx
           path: artifacts/tests/Validot.${{ env.VALIDOT_VERSION }}.tests.trx
+  tests_netframework:
+    strategy:
+      matrix:
+        os: [ windows-latest ]
+        dotnet: [ net48 ]
+    runs-on: ${{ matrix.os }}
+    name: Test on ${{ matrix.os }} using dotnet ${{ matrix.dotnet }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Setup dotnet 3.1 LTS
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.102
+      - name: Init workflow variables
+        run: pwsh .github/workflows/Init-WorkflowVariables.ps1
+      - name: Compile
+        run: pwsh build.ps1 --target compile --dotnet ${{ matrix.dotnet }} --configuration release --version ${{ env.VALIDOT_VERSION }}
+      - name: Tests
+        run: pwsh build.ps1 --target tests --skip --dotnet ${{ matrix.dotnet }} --configuration release  --version ${{ env.VALIDOT_VERSION }}
+      - name: Upload artifact; details of failed tests
+        uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: Validot.${{ env.VALIDOT_VERSION }}.${{ matrix.dotnet }}.${{ matrix.os }}.tests.trx
+          path: artifacts/tests/Validot.${{ env.VALIDOT_VERSION }}.tests.trx
   code_coverage:
-      needs: tests
+      needs: [ tests, tests_netframework ]
       if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
       runs-on: ubuntu-latest
       name: Code coverage
@@ -88,7 +110,7 @@ jobs:
             name: Validot.${{ env.VALIDOT_VERSION }}.coverage_report
             path: artifacts/coverage_reports/Validot.${{ env.VALIDOT_VERSION }}.coverage_report
   nuget_package:
-      needs: tests
+      needs: [ tests, tests_netframework ]
       if: github.event_name == 'release'
       runs-on: ubuntu-latest
       name: NuGet package

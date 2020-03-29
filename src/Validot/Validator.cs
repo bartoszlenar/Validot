@@ -41,7 +41,7 @@ namespace Validot
 
             _modelScheme.RootSpecificationScope.Validate(model, validationContext);
 
-            return validationContext.Errors.Count > 0;
+            return validationContext.Errors is null;
         }
 
         public IValidationResult Validate(T model, bool failFast = false)

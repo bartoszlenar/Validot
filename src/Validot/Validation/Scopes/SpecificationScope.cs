@@ -4,7 +4,7 @@ namespace Validot.Validation.Scopes
 
     internal class SpecificationScope<T> : ISpecificationScope<T>
     {
-        private static readonly bool IsClass = typeof(T).IsClass && default(T) == null;
+        private static readonly bool IsNullable = default(T) == null;
 
         public IReadOnlyList<ICommandScope<T>> CommandScopes { get; set; }
 
@@ -16,7 +16,7 @@ namespace Validot.Validation.Scopes
 
         public void Discover(IDiscoveryContext context)
         {
-            if (IsClass)
+            if (IsNullable)
             {
                 if (Presence == Presence.Forbidden)
                 {
@@ -39,7 +39,7 @@ namespace Validot.Validation.Scopes
 
         public void Validate(T model, IValidationContext context)
         {
-            if (IsClass)
+            if (IsNullable)
             {
                 if (model == null && Presence == Presence.Required)
                 {

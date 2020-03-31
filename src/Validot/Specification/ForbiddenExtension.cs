@@ -13,12 +13,28 @@ namespace Validot
             return ((SpecificationApi<T>)@this).AddCommand(ForbiddenCommand.Instance);
         }
 
+        public static IForbiddenOut<T?> Forbidden<T>(this IForbiddenIn<T?> @this)
+            where T : struct
+        {
+            ThrowHelper.NullArgument(@this, nameof(@this));
+
+            return ((SpecificationApi<T?>)@this).AddCommand(ForbiddenCommand.Instance);
+        }
+
         public static IForbiddenOut<T> Null<T>(this IForbiddenIn<T> @this)
             where T : class
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
 
             return ((SpecificationApi<T>)@this).AddCommand(ForbiddenCommand.Instance);
+        }
+
+        public static IForbiddenOut<T?> Null<T>(this IForbiddenIn<T?> @this)
+            where T : struct
+        {
+            ThrowHelper.NullArgument(@this, nameof(@this));
+
+            return ((SpecificationApi<T?>)@this).AddCommand(ForbiddenCommand.Instance);
         }
     }
 

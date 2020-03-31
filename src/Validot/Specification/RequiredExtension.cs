@@ -13,12 +13,28 @@ namespace Validot
             return ((SpecificationApi<T>)@this).AddCommand(RequiredCommand.Instance);
         }
 
+        public static IRequiredOut<T?> Required<T>(this IRequiredIn<T?> @this)
+            where T : struct
+        {
+            ThrowHelper.NullArgument(@this, nameof(@this));
+
+            return ((SpecificationApi<T?>)@this).AddCommand(RequiredCommand.Instance);
+        }
+
         public static IRequiredOut<T> NotNull<T>(this IRequiredIn<T> @this)
             where T : class
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
 
             return ((SpecificationApi<T>)@this).AddCommand(RequiredCommand.Instance);
+        }
+
+        public static IRequiredOut<T?> NotNull<T>(this IRequiredIn<T?> @this)
+            where T : struct
+        {
+            ThrowHelper.NullArgument(@this, nameof(@this));
+
+            return ((SpecificationApi<T?>)@this).AddCommand(RequiredCommand.Instance);
         }
     }
 

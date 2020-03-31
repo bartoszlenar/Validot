@@ -12,6 +12,14 @@ namespace Validot
 
             return ((SpecificationApi<T>)@this).AddCommand(OptionalCommand.Instance);
         }
+
+        public static IOptionalOut<T?> Optional<T>(this IOptionalIn<T?> @this)
+            where T : struct
+        {
+            ThrowHelper.NullArgument(@this, nameof(@this));
+
+            return ((SpecificationApi<T?>)@this).AddCommand(OptionalCommand.Instance);
+        }
     }
 
     namespace Specification

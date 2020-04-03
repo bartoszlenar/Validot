@@ -20,14 +20,14 @@ namespace Validot.Validation.Scopes
             {
                 if (Presence == Presence.Forbidden)
                 {
-                    context.AddError(ForbiddenErrorId);
+                    context.AddError(ForbiddenErrorId, true);
 
                     return;
                 }
 
                 if (Presence == Presence.Required)
                 {
-                    context.AddError(RequiredErrorId);
+                    context.AddError(RequiredErrorId, true);
                 }
             }
 

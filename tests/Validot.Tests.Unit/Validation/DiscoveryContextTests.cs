@@ -110,6 +110,112 @@ namespace Validot.Tests.Unit.Validation
                 context.Errors[name].ElementAt(1).Should().Be(1234);
                 context.Errors[name].ElementAt(2).Should().Be(12345);
             }
+
+            [Theory]
+            [InlineData("")]
+            [InlineData("path")]
+            [InlineData("some.nested.path")]
+            public void Should_AddError_When_AlreadyExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_False(string name)
+            {
+                var actions = Substitute.For<IDiscoveryContextActions>();
+
+                var context = new DiscoveryContext(actions);
+
+                context.EnterPath(name);
+
+                context.AddError(123);
+                context.AddError(123);
+                context.AddError(123);
+
+                context.Errors.Should().HaveCount(1);
+                context.Errors[name].Should().HaveCount(3);
+                context.Errors[name].ElementAt(0).Should().Be(123);
+                context.Errors[name].ElementAt(1).Should().Be(123);
+                context.Errors[name].ElementAt(2).Should().Be(123);
+            }
+
+            [Theory]
+            [InlineData("")]
+            [InlineData("path")]
+            [InlineData("some.nested.path")]
+            public void Should_NotAddError_When_AlreadyExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_True(string name)
+            {
+                var actions = Substitute.For<IDiscoveryContextActions>();
+
+                var context = new DiscoveryContext(actions);
+
+                context.EnterPath(name);
+
+                context.AddError(123, true);
+                context.AddError(123, true);
+                context.AddError(123, true);
+
+                context.Errors.Should().HaveCount(1);
+                context.Errors[name].Should().HaveCount(1);
+                context.Errors[name].ElementAt(0).Should().Be(123);
+            }
+
+            [Theory]
+            [InlineData("")]
+            [InlineData("path")]
+            [InlineData("some.nested.path")]
+            public void Should_AddError_When_NotExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_True(string name)
+            {
+                var actions = Substitute.For<IDiscoveryContextActions>();
+
+                var context = new DiscoveryContext(actions);
+
+                context.EnterPath(name);
+
+                context.AddError(123, true);
+                context.AddError(1234, true);
+                context.AddError(12345, true);
+
+                context.Errors.Should().HaveCount(1);
+                context.Errors[name].Should().HaveCount(3);
+                context.Errors[name].ElementAt(0).Should().Be(123);
+                context.Errors[name].ElementAt(1).Should().Be(1234);
+                context.Errors[name].ElementAt(2).Should().Be(12345);
+            }
+
+            [Fact]
+            public void Should_AddError_OnlyWhen_NotExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_True()
+            {
+                var actions = Substitute.For<IDiscoveryContextActions>();
+
+                var context = new DiscoveryContext(actions);
+
+                context.EnterPath("test1");
+
+                context.AddError(123, true);
+                context.AddError(123, true);
+                context.AddError(123, false);
+
+                context.EnterPath("test2");
+                context.AddError(123, true);
+                context.AddError(123, true);
+                context.AddError(123, false);
+
+                context.EnterPath("test3");
+                context.AddError(123, true);
+                context.AddError(123, false);
+                context.AddError(123, false);
+
+                context.Errors.Should().HaveCount(3);
+
+                context.Errors["test1"].Should().HaveCount(2);
+                context.Errors["test1"].ElementAt(0).Should().Be(123);
+                context.Errors["test1"].ElementAt(1).Should().Be(123);
+
+                context.Errors["test1.test2"].Should().HaveCount(2);
+                context.Errors["test1.test2"].ElementAt(0).Should().Be(123);
+                context.Errors["test1.test2"].ElementAt(1).Should().Be(123);
+
+                context.Errors["test1.test2.test3"].Should().HaveCount(3);
+                context.Errors["test1.test2.test3"].ElementAt(0).Should().Be(123);
+                context.Errors["test1.test2.test3"].ElementAt(1).Should().Be(123);
+                context.Errors["test1.test2.test3"].ElementAt(2).Should().Be(123);
+            }
         }
 
         public class EnterPath_And_AddingErrors

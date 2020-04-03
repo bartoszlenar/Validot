@@ -72,13 +72,13 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 if (presence == Presence.Forbidden)
                 {
-                    discoveryContext.Received().AddError(321);
+                    discoveryContext.Received().AddError(321, true);
                 }
                 else
                 {
                     if (presence == Presence.Required)
                     {
-                        discoveryContext.Received().AddError(123);
+                        discoveryContext.Received().AddError(123, true);
                     }
 
                     for (var i = 0; i < commandScopesCount; ++i)

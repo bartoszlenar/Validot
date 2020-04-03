@@ -2,7 +2,7 @@ namespace Validot.Validation
 {
     internal interface IDiscoveryContext
     {
-        void AddError(int errorId);
+        void AddError(int errorId, bool skipIfDuplicateInPath = false);
 
         void EnterPath(string name);
 

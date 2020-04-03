@@ -26,11 +26,16 @@ namespace Validot.Validation
 
         public IReadOnlyCollection<string> InfiniteReferencesLoopRoots => _infiniteReferencesLoopRoots;
 
-        public void AddError(int errorId)
+        public void AddError(int errorId, bool skipIfDuplicateInPath = false)
         {
             if (!Errors.ContainsKey(_pathsStack.Path))
             {
                 Errors.Add(_pathsStack.Path, new List<int>());
+            }
+
+            if (skipIfDuplicateInPath && Errors[_pathsStack.Path].Contains(errorId))
+            {
+                return;
             }
 
             Errors[_pathsStack.Path].Add(errorId);

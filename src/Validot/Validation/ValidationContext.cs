@@ -42,7 +42,7 @@ namespace Validot.Validation
 
         public bool ShouldFallBack => (FailFast && !(Errors is null) && Errors.Count > 0) || _overridingErrorFlag.IsDetectedAtAnylevel;
 
-        public void AddError(int errorId)
+        public void AddError(int errorId, bool skipIfDuplicateInPath = false)
         {
             if (_overridingErrorFlag.IsEnabledAtAnyLevel)
             {
@@ -53,7 +53,7 @@ namespace Validot.Validation
 
             _appendingErrorFlag.SetDetected(_pathStack.Level);
 
-            SaveError(errorId);
+            SaveError(errorId, skipIfDuplicateInPath);
         }
 
         public void EnableErrorDetectionMode(ErrorMode errorMode, int errorId)
@@ -74,12 +74,12 @@ namespace Validot.Validation
         {
             if (_overridingErrorFlag.LeaveLevelAndTryGetError(_pathStack.Level, out var overridingErrorId))
             {
-                SaveError(overridingErrorId);
+                SaveError(overridingErrorId, false);
             }
 
             if (_appendingErrorFlag.LeaveLevelAndTryGetError(_pathStack.Level, out var appendingErrorId))
             {
-                SaveError(appendingErrorId);
+                SaveError(appendingErrorId, false);
             }
 
             _pathStack.Pop();
@@ -153,7 +153,7 @@ namespace Validot.Validation
             throw new InfiniteReferencesLoopException(higherLevelPath, GetCurrentPath(), scopeId, type);
         }
 
-        private void SaveError(int errorId)
+        private void SaveError(int errorId, bool skipIfDuplicateInPath)
         {
             var shouldUseCapacityInfo = !FailFast && _modelScheme.CapacityInfo.ShouldRead;
 
@@ -173,6 +173,11 @@ namespace Validot.Validation
                     : new List<int>(1);
 
                 Errors.Add(currentPath, errors);
+            }
+
+            if (skipIfDuplicateInPath && Errors[currentPath].Contains(errorId))
+            {
+                return;
             }
 
             Errors[currentPath].Add(errorId);

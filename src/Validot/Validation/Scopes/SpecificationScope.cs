@@ -43,14 +43,14 @@ namespace Validot.Validation.Scopes
             {
                 if (model == null && Presence == Presence.Required)
                 {
-                    context.AddError(RequiredErrorId);
+                    context.AddError(RequiredErrorId, true);
 
                     return;
                 }
 
                 if (model != null && Presence == Presence.Forbidden)
                 {
-                    context.AddError(ForbiddenErrorId);
+                    context.AddError(ForbiddenErrorId, true);
 
                     return;
                 }

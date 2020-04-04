@@ -152,6 +152,101 @@ namespace Validot.Tests.Unit.Validation
                 context.Errors["entered.path"].Should().HaveCount(3);
                 context.Errors["entered.path"].Should().ContainInOrder(123, 321, 666);
             }
+
+            [Fact]
+            public void Should_AddError_When_AlreadyExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_False()
+            {
+                var modelScheme = Substitute.For<IModelScheme>();
+                modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
+
+                var context = new ValidationContext(modelScheme);
+
+                context.EnterPath("entered.path");
+
+                context.AddError(123);
+                context.AddError(123);
+                context.AddError(123);
+
+                context.Errors.Should().HaveCount(1);
+                context.Errors["entered.path"].Should().HaveCount(3);
+                context.Errors["entered.path"].Should().ContainInOrder(123, 123, 123);
+            }
+
+            [Fact]
+            public void Should_NotAddError_When_AlreadyExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_True()
+            {
+                var modelScheme = Substitute.For<IModelScheme>();
+                modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
+
+                var context = new ValidationContext(modelScheme);
+
+                context.EnterPath("entered.path");
+
+                context.AddError(123, true);
+                context.AddError(123, true);
+                context.AddError(123, true);
+
+                context.Errors.Should().HaveCount(1);
+                context.Errors["entered.path"].Should().HaveCount(1);
+                context.Errors["entered.path"].Should().ContainInOrder(123);
+            }
+
+            [Fact]
+            public void Should_AddErrors_When_NotExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_True()
+            {
+                var modelScheme = Substitute.For<IModelScheme>();
+                modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
+
+                var context = new ValidationContext(modelScheme);
+
+                context.EnterPath("entered.path");
+
+                context.AddError(123, true);
+                context.AddError(321, true);
+                context.AddError(666, true);
+
+                context.Errors.Should().HaveCount(1);
+                context.Errors["entered.path"].Should().HaveCount(3);
+                context.Errors["entered.path"].Should().ContainInOrder(123, 321, 666);
+            }
+
+            [Fact]
+            public void Should_AddError_OnlyWhen_NotExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_True()
+            {
+                var modelScheme = Substitute.For<IModelScheme>();
+                modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("test1")).Returns("test1");
+                modelScheme.GetPathForScope(Arg.Is("test1"), Arg.Is("test2")).Returns("test1.test2");
+                modelScheme.GetPathForScope(Arg.Is("test1.test2"), Arg.Is("test3")).Returns("test1.test2.test3");
+
+                var context = new ValidationContext(modelScheme);
+
+                context.EnterPath("test1");
+
+                context.AddError(123, true);
+                context.AddError(123, true);
+                context.AddError(123, false);
+
+                context.EnterPath("test2");
+                context.AddError(123, true);
+                context.AddError(123, true);
+                context.AddError(123, false);
+
+                context.EnterPath("test3");
+                context.AddError(123, true);
+                context.AddError(123, false);
+                context.AddError(123, false);
+
+                context.Errors.Should().HaveCount(3);
+
+                context.Errors["test1"].Should().HaveCount(2);
+                context.Errors["test1"].Should().ContainInOrder(123, 123);
+                
+                context.Errors["test1.test2"].Should().HaveCount(2);
+                context.Errors["test1.test2"].Should().ContainInOrder(123, 123);
+
+                context.Errors["test1.test2.test3"].Should().HaveCount(3);
+                context.Errors["test1.test2.test3"].Should().ContainInOrder(123, 123, 123);
+            }
         }
 
         public class EnterPath_And_AddingErrors

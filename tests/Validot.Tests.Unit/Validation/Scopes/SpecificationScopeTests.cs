@@ -188,14 +188,14 @@ namespace Validot.Tests.Unit.Validation.Scopes
                 {
                     if (presence == Presence.Required)
                     {
-                        validationContext.Received().AddError(Arg.Is(123));
+                        validationContext.Received().AddError(Arg.Is(123), true);
                     }
                 }
                 else
                 {
                     if (presence == Presence.Forbidden)
                     {
-                        validationContext.Received().AddError(Arg.Is(321));
+                        validationContext.Received().AddError(Arg.Is(321), true);
                     }
                     else
                     {
@@ -209,7 +209,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             if (presence == Presence.Optional)
             {
-                validationContext.DidNotReceiveWithAnyArgs().AddError(default);
+                validationContext.DidNotReceiveWithAnyArgs().AddError(default, default);
             }
 
             validationContext.DidNotReceiveWithAnyArgs().LeavePath();

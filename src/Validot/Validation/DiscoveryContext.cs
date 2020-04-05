@@ -15,9 +15,10 @@ namespace Validot.Validation
 
         private readonly Stack<int> _scopesStack = new Stack<int>();
 
-        public DiscoveryContext(IDiscoveryContextActions actions)
+        public DiscoveryContext(IDiscoveryContextActions actions, int rootSpecificationScopeId)
         {
             _actions = actions;
+            _scopesStack.Push(rootSpecificationScopeId);
         }
 
         public Dictionary<string, Dictionary<string, string>> Paths { get; } = new Dictionary<string, Dictionary<string, string>>();

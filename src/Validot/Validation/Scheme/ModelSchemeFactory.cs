@@ -19,7 +19,7 @@ namespace Validot.Validation.Scheme
 
             var rootSpecificationScopeId = scopeBuilderContext.GetOrRegisterSpecificationScope(specification);
 
-            var discoveryContext = new DiscoveryContext(scopeBuilderContext);
+            var discoveryContext = new DiscoveryContext(scopeBuilderContext, rootSpecificationScopeId);
 
             var rootSpecificationScope = (SpecificationScope<T>)scopeBuilderContext.Scopes[rootSpecificationScopeId];
 

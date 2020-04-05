@@ -22,7 +22,7 @@ namespace Validot.Tests.Unit.Validation
         {
             var actions = Substitute.For<IDiscoveryContextActions>();
 
-            _ = new DiscoveryContext(actions);
+            _ = new DiscoveryContext(actions, 0);
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace Validot.Tests.Unit.Validation
         {
             var actions = Substitute.For<IDiscoveryContextActions>();
 
-            var context = new DiscoveryContext(actions);
+            var context = new DiscoveryContext(actions, 0);
 
             context.Errors.Should().BeEmpty();
             context.Paths.Should().BeEmpty();
@@ -44,7 +44,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.AddError(123);
 
@@ -58,7 +58,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.AddError(123);
                 context.AddError(1234);
@@ -78,7 +78,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath(name);
 
@@ -96,7 +96,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath(name);
 
@@ -119,7 +119,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath(name);
 
@@ -142,7 +142,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath(name);
 
@@ -163,7 +163,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath(name);
 
@@ -183,23 +183,23 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath("test1");
 
                 context.AddError(123, true);
                 context.AddError(123, true);
-                context.AddError(123, false);
+                context.AddError(123);
 
                 context.EnterPath("test2");
                 context.AddError(123, true);
                 context.AddError(123, true);
-                context.AddError(123, false);
+                context.AddError(123);
 
                 context.EnterPath("test3");
                 context.AddError(123, true);
-                context.AddError(123, false);
-                context.AddError(123, false);
+                context.AddError(123);
+                context.AddError(123);
 
                 context.Errors.Should().HaveCount(3);
 
@@ -226,7 +226,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath(basePath);
                 context.EnterPath(newSegment);
@@ -245,7 +245,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath(basePath);
 
@@ -288,7 +288,7 @@ namespace Validot.Tests.Unit.Validation
 
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath(basePath);
                 context.EnterPath(newSegment);
@@ -308,7 +308,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath(basePath);
                 context.EnterPath(newSegment);
@@ -352,7 +352,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath(basePath);
                 context.EnterCollectionItemPath();
@@ -370,7 +370,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath("path");
                 context.EnterCollectionItemPath();
@@ -393,7 +393,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath("path");
 
@@ -409,7 +409,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath(basePath);
                 context.EnterPath(newSegment);
@@ -451,7 +451,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 context.EnterPath("base");
                 context.EnterPath("path");
@@ -501,7 +501,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 var discoverableSpecificationScope = Substitute.For<IDiscoverable>();
 
@@ -521,21 +521,21 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
-                var scopes = Enumerable.Range(0, levels).Select(i => Substitute.For<IDiscoverable>()).ToArray();
+                var scopes = Enumerable.Range(1, levels).Select(i => Substitute.For<IDiscoverable>()).ToArray();
 
-                for (var i = 0; i < levels; ++i)
+                for (var i = 1; i < levels; ++i)
                 {
                     actions.GetDiscoverableSpecificationScope(Arg.Is(i)).Returns(scopes[i]);
                 }
 
-                for (var i = 0; i < levels; ++i)
+                for (var i = 1; i < levels; ++i)
                 {
                     context.EnterScope<TestScope>(i);
                 }
 
-                for (var i = 0; i < levels; ++i)
+                for (var i = 1; i < levels; ++i)
                 {
                     actions.Received(1).GetDiscoverableSpecificationScope(i);
                     scopes[i].Received(1).Discover(Arg.Is(context));
@@ -550,7 +550,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 var discoverableSpecificationScope = Substitute.For<IDiscoverable>();
 
@@ -585,10 +585,11 @@ namespace Validot.Tests.Unit.Validation
             }
 
             [Theory]
+            [InlineData(1)]
             [InlineData(2)]
             [InlineData(5)]
             [InlineData(10)]
-            public void Should_NotEnterScope_And_Register_InfiniteReferencesLoopRootDetected_WhenLevelsBetween_And_InfiniteReferencesLoopExists(int levels)
+            public void Should_NotEnterScope_And_Register_InfiniteReferencesLoopRootDetected_WhenLevelsBetween_And_InfiniteReferencesLoopExists_NotFromRoot(int levels)
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
@@ -596,7 +597,7 @@ namespace Validot.Tests.Unit.Validation
                     a is CircularDependencyError &&
                     ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(TestScope))).Returns(666);
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 100);
 
                 var scopes = Enumerable.Range(0, levels).Select(i => Substitute.For<IDiscoverable>()).ToArray();
 
@@ -629,12 +630,58 @@ namespace Validot.Tests.Unit.Validation
                 context.InfiniteReferencesLoopRoots.Should().ContainSingle(errorLevel);
             }
 
+            [Theory]
+            [InlineData(1)]
+            [InlineData(2)]
+            [InlineData(5)]
+            [InlineData(10)]
+            public void Should_NotEnterScope_And_Register_InfiniteReferencesLoopRootDetected_WhenLevelsBetween_And_InfiniteReferencesLoopExists_FromRoot(int levels)
+            {
+                var actions = Substitute.For<IDiscoveryContextActions>();
+
+                actions.RegisterError(Arg.Is<IError>(a =>
+                    a is CircularDependencyError &&
+                    ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(TestScope))).Returns(666);
+
+                var context = new DiscoveryContext(actions, 0);
+
+                var scopes = Enumerable.Range(0, levels).Select(i => Substitute.For<IDiscoverable>()).ToArray();
+
+                for (var i = 0; i < levels; ++i)
+                {
+                    actions.GetDiscoverableSpecificationScope(Arg.Is(i)).Returns(scopes[i]);
+                }
+
+                for (var i = 1; i < levels; ++i)
+                {
+                    context.EnterPath(i.ToString(CultureInfo.InvariantCulture));
+                    context.EnterScope<TestScope>(i);
+                }
+
+                context.EnterPath(levels.ToString(CultureInfo.InvariantCulture));
+                context.EnterScope<TestScope>(0);
+
+                for (var i = 1; i < levels; ++i)
+                {
+                    actions.Received(1).GetDiscoverableSpecificationScope(i);
+                    scopes[i].Received(1).Discover(Arg.Is(context));
+                }
+
+                var errorLevel = string.Join(".", Enumerable.Range(1, levels).Select(i => i).ToArray());
+
+                context.Errors.Keys.Should().ContainSingle(errorLevel);
+                context.Errors[errorLevel].Should().HaveCount(1);
+                context.Errors[errorLevel].Single().Should().Be(666);
+
+                context.InfiniteReferencesLoopRoots.Should().ContainSingle(errorLevel);
+            }
+
             [Fact]
             public void Should_NotEnterScope_And_Populate_InfiniteReferencesLoopRootDetected_When_MultipleInfiniteReferencesLoopsExist()
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
-                var context = new DiscoveryContext(actions);
+                var context = new DiscoveryContext(actions, 0);
 
                 var discoverableSpecificationScope = Substitute.For<IDiscoverable>();
 

@@ -240,7 +240,7 @@ namespace Validot.Tests.Unit.Validation
 
                 context.Errors["test1"].Should().HaveCount(2);
                 context.Errors["test1"].Should().ContainInOrder(123, 123);
-                
+
                 context.Errors["test1.test2"].Should().HaveCount(2);
                 context.Errors["test1.test2"].Should().ContainInOrder(123, 123);
 

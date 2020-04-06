@@ -93,6 +93,14 @@ namespace Validot.Tests.Unit.Validation.Scopes
                 discoveryContext.DidNotReceiveWithAnyArgs().AddError(default);
             }
 
+            if (presence == Presence.Forbidden)
+            {
+                for (var i = 0; i < commandScopesCount; ++i)
+                {
+                    commandScopes[i].DidNotReceiveWithAnyArgs().Discover(default);
+                }
+            }
+
             discoveryContext.DidNotReceiveWithAnyArgs().LeavePath();
             discoveryContext.DidNotReceiveWithAnyArgs().EnterPath(default);
             discoveryContext.DidNotReceiveWithAnyArgs().EnterCollectionItemPath();
@@ -210,6 +218,14 @@ namespace Validot.Tests.Unit.Validation.Scopes
             if (presence == Presence.Optional)
             {
                 validationContext.DidNotReceiveWithAnyArgs().AddError(default, default);
+            }
+
+            if (nullModel)
+            {
+                for (var i = 0; i < commandScopesCount; ++i)
+                {
+                    commandScopes[i].DidNotReceiveWithAnyArgs().Validate(default, default);
+                }
             }
 
             validationContext.DidNotReceiveWithAnyArgs().LeavePath();

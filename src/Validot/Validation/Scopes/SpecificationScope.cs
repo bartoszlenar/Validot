@@ -41,14 +41,17 @@ namespace Validot.Validation.Scopes
         {
             if (IsNullable)
             {
-                if (model == null && Presence == Presence.Required)
+                if (model == null)
                 {
-                    context.AddError(RequiredErrorId, true);
+                    if (Presence == Presence.Required)
+                    {
+                        context.AddError(RequiredErrorId, true);
+                    }
 
                     return;
                 }
 
-                if (model != null && Presence == Presence.Forbidden)
+                if (Presence == Presence.Forbidden)
                 {
                     context.AddError(ForbiddenErrorId, true);
 

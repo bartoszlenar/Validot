@@ -10,16 +10,16 @@ namespace Validot.Tests.Unit.Errors
 
     using Xunit;
 
-    public class CircularDependencyErrorTests
+    public class ReferenceLoopErrorTests
     {
         [Fact]
         public void Should_Initialize()
         {
-            var error = new CircularDependencyError(typeof(DateTimeOffset?));
+            var error = new ReferenceLoopError(typeof(DateTimeOffset?));
 
             error.Messages.Should().NotBeNull();
             error.Messages.Count.Should().Be(1);
-            error.Messages.Single().Should().Be(MessageKey.Global.CircularDependency);
+            error.Messages.Single().Should().Be(MessageKey.Global.ReferenceLoop);
             error.Codes.Should().NotBeNull();
             error.Codes.Should().BeEmpty();
         }

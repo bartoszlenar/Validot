@@ -1,5 +1,6 @@
 namespace Validot.Validation.Scheme
 {
+    using System;
     using System.Collections.Generic;
 
     using Validot.Settings.Capacities;
@@ -9,9 +10,11 @@ namespace Validot.Validation.Scheme
     {
         ICapacityInfo CapacityInfo { get; }
 
-        bool InfiniteReferencesLoopsDetected { get; }
+        bool IsReferenceLoopPossible { get; }
 
         int RootSpecificationScopeId { get; }
+
+        Type RootModelType { get; }
 
         ISpecificationScope<T> GetSpecificationScope<T>(int specificationScopeId);
 

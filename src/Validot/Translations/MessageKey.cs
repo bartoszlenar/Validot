@@ -238,7 +238,7 @@ namespace Validot.Translations
 
             public static string Default { get; private set; }
 
-            public static string CircularDependency { get; private set; }
+            public static string ReferenceLoop { get; private set; }
         }
     }
 }

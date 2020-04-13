@@ -299,7 +299,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
             modelScheme.ErrorsMap["TestNested"].Should().Contain(baseError.Key);
         }
 
-        public class InfiniteReferencesLoopsDetected
+        public class ReferenceLoopDetected
         {
             public class SelfLoop
             {
@@ -342,7 +342,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var modelScheme = ModelSchemeFactory.Create(specificationA, capacityInfo);
 
-                modelScheme.InfiniteReferencesLoopsDetected.Should().BeFalse();
+                modelScheme.IsReferenceLoopPossible.Should().BeFalse();
             }
 
             [Fact]
@@ -356,7 +356,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var modelScheme = ModelSchemeFactory.Create(specificationA, capacityInfo);
 
-                modelScheme.InfiniteReferencesLoopsDetected.Should().BeFalse();
+                modelScheme.IsReferenceLoopPossible.Should().BeFalse();
             }
 
             [Fact]
@@ -372,7 +372,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var modelScheme = ModelSchemeFactory.Create(specificationA, capacityInfo);
 
-                modelScheme.InfiniteReferencesLoopsDetected.Should().BeFalse();
+                modelScheme.IsReferenceLoopPossible.Should().BeFalse();
             }
 
             [Fact]
@@ -386,7 +386,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var modelScheme = ModelSchemeFactory.Create(specification, capacityInfo);
 
-                modelScheme.InfiniteReferencesLoopsDetected.Should().BeTrue();
+                modelScheme.IsReferenceLoopPossible.Should().BeTrue();
             }
 
             [Fact]
@@ -402,7 +402,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var modelScheme = ModelSchemeFactory.Create(specificationA, capacityInfo);
 
-                modelScheme.InfiniteReferencesLoopsDetected.Should().BeTrue();
+                modelScheme.IsReferenceLoopPossible.Should().BeTrue();
             }
 
             [Fact]
@@ -420,7 +420,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var modelScheme = ModelSchemeFactory.Create(specificationA, capacityInfo);
 
-                modelScheme.InfiniteReferencesLoopsDetected.Should().BeTrue();
+                modelScheme.IsReferenceLoopPossible.Should().BeTrue();
             }
         }
     }

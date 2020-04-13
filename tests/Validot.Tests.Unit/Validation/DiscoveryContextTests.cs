@@ -34,7 +34,7 @@ namespace Validot.Tests.Unit.Validation
 
             context.Errors.Should().BeEmpty();
             context.Paths.Should().BeEmpty();
-            context.InfiniteReferencesLoopRoots.Should().BeEmpty();
+            context.ReferenceLoopRoots.Should().BeEmpty();
         }
 
         public class AddError
@@ -546,7 +546,7 @@ namespace Validot.Tests.Unit.Validation
             [InlineData("")]
             [InlineData("path")]
             [InlineData("test.path")]
-            public void Should_NotEnterScope_And_Register_InfiniteReferencesLoopRoot_InfiniteReferencesLoopExists(string name)
+            public void Should_NotEnterScope_And_Register_ReferenceLoopRoot_When_LoopExists(string name)
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
@@ -557,8 +557,8 @@ namespace Validot.Tests.Unit.Validation
                 actions.GetDiscoverableSpecificationScope(Arg.Is(123)).Returns(discoverableSpecificationScope);
 
                 actions.RegisterError(Arg.Is<IError>(a =>
-                    a is CircularDependencyError &&
-                    ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(TestScope))).Returns(666);
+                    a is ReferenceLoopError &&
+                    ((a as ReferenceLoopError).Args.Single() as TypeArg).Value == typeof(TestScope))).Returns(666);
 
                 context.EnterScope<TestScope>(123);
 
@@ -574,14 +574,14 @@ namespace Validot.Tests.Unit.Validation
                 discoverableSpecificationScope.Received(1).Discover(Arg.Is(context));
 
                 actions.Received(1).RegisterError(Arg.Is<IError>(a =>
-                    a is CircularDependencyError &&
-                    ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(TestScope)));
+                    a is ReferenceLoopError &&
+                    ((a as ReferenceLoopError).Args.Single() as TypeArg).Value == typeof(TestScope)));
 
                 context.Errors.Keys.Should().ContainSingle(name);
                 context.Errors[name].Should().HaveCount(1);
                 context.Errors[name].Single().Should().Be(666);
 
-                context.InfiniteReferencesLoopRoots.Should().ContainSingle(name);
+                context.ReferenceLoopRoots.Should().ContainSingle(name);
             }
 
             [Theory]
@@ -589,13 +589,13 @@ namespace Validot.Tests.Unit.Validation
             [InlineData(2)]
             [InlineData(5)]
             [InlineData(10)]
-            public void Should_NotEnterScope_And_Register_InfiniteReferencesLoopRootDetected_WhenLevelsBetween_And_InfiniteReferencesLoopExists_NotFromRoot(int levels)
+            public void Should_NotEnterScope_And_Register_ReferenceLoopRoot_When_LevelsBetween_And_ReferenceLoopExists_NotFromRoot(int levels)
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
                 actions.RegisterError(Arg.Is<IError>(a =>
-                    a is CircularDependencyError &&
-                    ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(TestScope))).Returns(666);
+                    a is ReferenceLoopError &&
+                    ((a as ReferenceLoopError).Args.Single() as TypeArg).Value == typeof(TestScope))).Returns(666);
 
                 var context = new DiscoveryContext(actions, 100);
 
@@ -627,7 +627,7 @@ namespace Validot.Tests.Unit.Validation
                 context.Errors[errorLevel].Should().HaveCount(1);
                 context.Errors[errorLevel].Single().Should().Be(666);
 
-                context.InfiniteReferencesLoopRoots.Should().ContainSingle(errorLevel);
+                context.ReferenceLoopRoots.Should().ContainSingle(errorLevel);
             }
 
             [Theory]
@@ -635,13 +635,13 @@ namespace Validot.Tests.Unit.Validation
             [InlineData(2)]
             [InlineData(5)]
             [InlineData(10)]
-            public void Should_NotEnterScope_And_Register_InfiniteReferencesLoopRootDetected_WhenLevelsBetween_And_InfiniteReferencesLoopExists_FromRoot(int levels)
+            public void Should_NotEnterScope_And_Register_ReferenceLoopRoot_When_LevelsBetween_And_ReferenceLoopExists_FromRoot(int levels)
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
                 actions.RegisterError(Arg.Is<IError>(a =>
-                    a is CircularDependencyError &&
-                    ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(TestScope))).Returns(666);
+                    a is ReferenceLoopError &&
+                    ((a as ReferenceLoopError).Args.Single() as TypeArg).Value == typeof(TestScope))).Returns(666);
 
                 var context = new DiscoveryContext(actions, 0);
 
@@ -673,11 +673,11 @@ namespace Validot.Tests.Unit.Validation
                 context.Errors[errorLevel].Should().HaveCount(1);
                 context.Errors[errorLevel].Single().Should().Be(666);
 
-                context.InfiniteReferencesLoopRoots.Should().ContainSingle(errorLevel);
+                context.ReferenceLoopRoots.Should().ContainSingle(errorLevel);
             }
 
             [Fact]
-            public void Should_NotEnterScope_And_Populate_InfiniteReferencesLoopRootDetected_When_MultipleInfiniteReferencesLoopsExist()
+            public void Should_NotEnterScope_And_Populate_ReferenceLoopRoots_When_MultipleReferenceLoopsExist()
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
 
@@ -688,16 +688,16 @@ namespace Validot.Tests.Unit.Validation
                 actions.GetDiscoverableSpecificationScope(Arg.Is(123)).Returns(discoverableSpecificationScope);
 
                 actions.RegisterError(Arg.Is<IError>(a =>
-                    a is CircularDependencyError &&
-                    ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(TestScope))).Returns(666);
+                    a is ReferenceLoopError &&
+                    ((a as ReferenceLoopError).Args.Single() as TypeArg).Value == typeof(TestScope))).Returns(666);
 
                 actions.RegisterError(Arg.Is<IError>(a =>
-                    a is CircularDependencyError &&
-                    ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(int))).Returns(667);
+                    a is ReferenceLoopError &&
+                    ((a as ReferenceLoopError).Args.Single() as TypeArg).Value == typeof(int))).Returns(667);
 
                 actions.RegisterError(Arg.Is<IError>(a =>
-                    a is CircularDependencyError &&
-                    ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(DateTimeOffset?))).Returns(668);
+                    a is ReferenceLoopError &&
+                    ((a as ReferenceLoopError).Args.Single() as TypeArg).Value == typeof(DateTimeOffset?))).Returns(668);
 
                 context.EnterScope<TestScope>(123);
                 context.EnterScope<int>(321);
@@ -721,16 +721,16 @@ namespace Validot.Tests.Unit.Validation
                 actions.Received(1).GetDiscoverableSpecificationScope(Arg.Is(333));
 
                 actions.Received(1).RegisterError(Arg.Is<IError>(a =>
-                    a is CircularDependencyError &&
-                    ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(TestScope)));
+                    a is ReferenceLoopError &&
+                    ((a as ReferenceLoopError).Args.Single() as TypeArg).Value == typeof(TestScope)));
 
                 actions.Received(1).RegisterError(Arg.Is<IError>(a =>
-                    a is CircularDependencyError &&
-                    ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(int)));
+                    a is ReferenceLoopError &&
+                    ((a as ReferenceLoopError).Args.Single() as TypeArg).Value == typeof(int)));
 
                 actions.Received(1).RegisterError(Arg.Is<IError>(a =>
-                    a is CircularDependencyError &&
-                    ((a as CircularDependencyError).Args.Single() as TypeArg).Value == typeof(DateTimeOffset?)));
+                    a is ReferenceLoopError &&
+                    ((a as ReferenceLoopError).Args.Single() as TypeArg).Value == typeof(DateTimeOffset?)));
 
                 context.Errors.Keys.Should().Contain("base.path");
                 context.Errors["base.path"].Should().HaveCount(2);
@@ -739,9 +739,9 @@ namespace Validot.Tests.Unit.Validation
                 context.Errors["base.path.nested"].Should().HaveCount(1);
                 context.Errors["base.path.nested"].ElementAt(0).Should().Be(668);
 
-                context.InfiniteReferencesLoopRoots.Should().HaveCount(2);
-                context.InfiniteReferencesLoopRoots.Should().Contain("base.path");
-                context.InfiniteReferencesLoopRoots.Should().Contain("base.path.nested");
+                context.ReferenceLoopRoots.Should().HaveCount(2);
+                context.ReferenceLoopRoots.Should().Contain("base.path");
+                context.ReferenceLoopRoots.Should().Contain("base.path.nested");
             }
         }
     }

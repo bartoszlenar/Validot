@@ -9,7 +9,7 @@ namespace Validot.Validation
     {
         private readonly IDiscoveryContextActions _actions;
 
-        private readonly List<string> _infiniteReferencesLoopRoots = new List<string>();
+        private readonly List<string> _referenceLoopRoots = new List<string>();
 
         private readonly PathStack _pathsStack = new PathStack();
 
@@ -25,7 +25,7 @@ namespace Validot.Validation
 
         public Dictionary<string, List<int>> Errors { get; } = new Dictionary<string, List<int>>();
 
-        public IReadOnlyCollection<string> InfiniteReferencesLoopRoots => _infiniteReferencesLoopRoots;
+        public IReadOnlyCollection<string> ReferenceLoopRoots => _referenceLoopRoots;
 
         public void AddError(int errorId, bool skipIfDuplicateInPath = false)
         {
@@ -46,12 +46,13 @@ namespace Validot.Validation
         {
             if (_scopesStack.Contains(id))
             {
-                var circularErrorId = _actions.RegisterError(new CircularDependencyError(typeof(T)));
-                AddError(circularErrorId);
+                var referenceLoopErrorId = _actions.RegisterError(new ReferenceLoopError(typeof(T)));
 
-                if (!_infiniteReferencesLoopRoots.Contains(_pathsStack.Path))
+                AddError(referenceLoopErrorId);
+
+                if (!_referenceLoopRoots.Contains(_pathsStack.Path))
                 {
-                    _infiniteReferencesLoopRoots.Add(_pathsStack.Path);
+                    _referenceLoopRoots.Add(_pathsStack.Path);
                 }
 
                 return;

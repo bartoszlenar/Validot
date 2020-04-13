@@ -2,15 +2,15 @@ namespace Validot.Validation.Stacks
 {
     using System;
 
-    public class InfiniteReferencesLoopException : ValidotException
+    public class ReferenceLoopException : ValidotException
     {
-        internal InfiniteReferencesLoopException(string path, string infiniteLoopNestedPath, int scopeId, Type type)
-            : base(GetMessage(path, infiniteLoopNestedPath, type))
+        internal ReferenceLoopException(string path, string nestedPath, int scopeId, Type type)
+            : base(GetMessage(path, nestedPath, type))
         {
             Path = path;
+            NestedPath = nestedPath;
             Type = type;
             ScopeId = scopeId;
-            InfiniteLoopNestedPath = infiniteLoopNestedPath;
         }
 
         public int ScopeId { get; }
@@ -19,7 +19,7 @@ namespace Validot.Validation.Stacks
 
         public string Path { get; }
 
-        public string InfiniteLoopNestedPath { get; }
+        public string NestedPath { get; }
 
         private static string GetMessage(string path, string infiniteLoopNestedPath, Type type)
         {
@@ -27,7 +27,7 @@ namespace Validot.Validation.Stacks
                 ? "the root path"
                 : $"the path {path}";
 
-            return $"Infinite references loop detected: object of type {type.GetFriendlyName()} is both under {pathStringified} and in the nested path {infiniteLoopNestedPath}";
+            return $"Reference loop detected: object of type {type.GetFriendlyName()} is both under {pathStringified} and in the nested path {infiniteLoopNestedPath}";
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Validot.Tests.Unit.Settings
 
             validatorSettings.Translations.Should().BeEmpty();
             validatorSettings.CapacityInfo.Should().BeNull();
-            validatorSettings.InfiniteReferencesLoopProtectionEnabled.Should().BeFalse();
+            validatorSettings.ReferenceLoopProtection.Should().BeNull();
         }
 
         [Fact]
@@ -37,28 +37,46 @@ namespace Validot.Tests.Unit.Settings
             defaultSettings.ShouldBeLikeDefault();
         }
 
-        public class WithInfiniteReferencesLoopProtection
+        public class ReferenceLoopProtection
         {
             [Fact]
-            public void Should_ReturnSelf()
+            public void Should_WithReferenceLoopProtection_ReturnSelf()
             {
                 var validatorSettings = new ValidatorSettings();
 
-                var result = validatorSettings.WithInfiniteReferencesLoopProtection();
+                var result = validatorSettings.WithReferenceLoopProtection();
 
                 result.Should().BeSameAs(validatorSettings);
             }
 
             [Fact]
-            public void Should_Set_InfiniteReferencesLoopProtectionEnabled_ToTrue()
+            public void Should_WithReferenceLoopProtection_Set_ReferenceLoopProtection_To_True()
             {
                 var validatorSettings = new ValidatorSettings();
 
-                validatorSettings.InfiniteReferencesLoopProtectionEnabled.Should().BeFalse();
+                validatorSettings.WithReferenceLoopProtection();
 
-                validatorSettings.WithInfiniteReferencesLoopProtection();
+                validatorSettings.ReferenceLoopProtection.Should().BeTrue();
+            }
 
-                validatorSettings.InfiniteReferencesLoopProtectionEnabled.Should().BeTrue();
+            [Fact]
+            public void Should_WithoutReferenceLoopProtection_ReturnSelf()
+            {
+                var validatorSettings = new ValidatorSettings();
+
+                var result = validatorSettings.WithoutReferenceLoopProtection();
+
+                result.Should().BeSameAs(validatorSettings);
+            }
+
+            [Fact]
+            public void Should_WithoutReferenceLoopProtection_Set_ReferenceLoopProtection_To_False()
+            {
+                var validatorSettings = new ValidatorSettings();
+
+                validatorSettings.WithoutReferenceLoopProtection();
+
+                validatorSettings.ReferenceLoopProtection.Should().BeFalse();
             }
         }
 

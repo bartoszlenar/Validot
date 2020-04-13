@@ -42,7 +42,7 @@ namespace Validot.Validation.Scheme
                 discoveryContext.Errors.ToDictionary(p => p.Key, p => (IReadOnlyList<int>)p.Value),
                 discoveryContext.Paths.ToDictionary(p => p.Key, p => (IReadOnlyDictionary<string, string>)p.Value),
                 capacityInfo,
-                discoveryContext.InfiniteReferencesLoopRoots.Count > 0);
+                discoveryContext.ReferenceLoopRoots.Count > 0);
         }
     }
 }

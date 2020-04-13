@@ -1,7 +1,6 @@
 namespace Validot.Validation.Scopes
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     internal class CollectionCommandScope<T, TItem> : CommandScope<T>
         where T : IEnumerable<TItem>

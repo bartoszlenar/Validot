@@ -12,29 +12,38 @@ namespace Validot.Validation
     {
         private readonly ErrorFlag _appendingErrorFlag = new ErrorFlag(10);
 
-        private readonly IModelScheme _modelScheme;
-
         private readonly ErrorFlag _overridingErrorFlag = new ErrorFlag(10);
+
+        private readonly IModelScheme _modelScheme;
 
         private readonly PathStack _pathStack = new PathStack();
 
         private readonly ReferencesStack _referencesStack;
 
-        public ValidationContext(IModelScheme modelScheme, bool failFast = false, bool infiniteReferencesLoopProtectionEnabled = false)
+        private readonly bool _referencesLoopProtectionEnabled;
+
+        public ValidationContext(IModelScheme modelScheme, bool failFast, ReferenceLoopProtectionSettings referenceLoopProtectionSettings)
         {
             _modelScheme = modelScheme;
 
             FailFast = failFast;
 
-            InfiniteReferencesLoopProtectionEnabled = modelScheme.InfiniteReferencesLoopsDetected && infiniteReferencesLoopProtectionEnabled;
+            ReferenceLoopProtectionSettings = referenceLoopProtectionSettings;
 
-            if (InfiniteReferencesLoopProtectionEnabled)
+            if (!(referenceLoopProtectionSettings is null))
             {
+                _referencesLoopProtectionEnabled = true;
+
                 _referencesStack = new ReferencesStack();
+
+                if (_modelScheme.RootModelType.IsClass && !(referenceLoopProtectionSettings.RootModelReference is null))
+                {
+                    _referencesStack.TryPush(_modelScheme.RootSpecificationScopeId, GetCurrentPath(), referenceLoopProtectionSettings.RootModelReference, out _);
+                }
             }
         }
 
-        public bool InfiniteReferencesLoopProtectionEnabled { get; }
+        public ReferenceLoopProtectionSettings ReferenceLoopProtectionSettings { get; }
 
         public bool FailFast { get; }
 
@@ -103,9 +112,9 @@ namespace Validot.Validation
 
         public void EnterScope<T>(int scopeId, T model)
         {
-            var infiniteReferencesLoopProtectionEnabled = typeof(T).IsClass && InfiniteReferencesLoopProtectionEnabled;
+            var useReferenceLoopProtection = typeof(T).IsClass && _referencesLoopProtectionEnabled;
 
-            if (infiniteReferencesLoopProtectionEnabled && !_referencesStack.TryPush(scopeId, _pathStack.Path, model, out var higherLevelPath))
+            if (useReferenceLoopProtection && !_referencesStack.TryPush(scopeId, _pathStack.Path, model, out var higherLevelPath))
             {
                 FailWithException(higherLevelPath, scopeId, typeof(T));
 
@@ -116,13 +125,13 @@ namespace Validot.Validation
 
             specificationScope.Validate(model, this);
 
-            if (infiniteReferencesLoopProtectionEnabled)
+            if (useReferenceLoopProtection)
             {
                 _referencesStack.Pop(scopeId, out _);
             }
         }
 
-        public int? GetInfiniteReferencesLoopProtectionStackCount()
+        public int? GetLoopProtectionReferencesStackCount()
         {
             return _referencesStack?.GetStoredReferencesCount();
         }
@@ -150,7 +159,7 @@ namespace Validot.Validation
                 }
             }
 
-            throw new InfiniteReferencesLoopException(higherLevelPath, GetCurrentPath(), scopeId, type);
+            throw new ReferenceLoopException(higherLevelPath, GetCurrentPath(), scopeId, type);
         }
 
         private void SaveError(int errorId, bool skipIfDuplicateInPath)

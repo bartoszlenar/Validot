@@ -9,7 +9,7 @@ namespace Validot.Translations
             [MessageKey.Global.Default] = "Invalid",
             [MessageKey.Global.Required] = "Required",
             [MessageKey.Global.Forbidden] = "Forbidden",
-            [MessageKey.Global.CircularDependency] = "(circular dependency)",
+            [MessageKey.Global.ReferenceLoop] = "(reference loop)",
 
             [MessageKey.GuidType.EqualTo] = "Must be equal to {value}",
             [MessageKey.GuidType.NotEqualTo] = "Must not be equal to {value}",

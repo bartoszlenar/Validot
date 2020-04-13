@@ -10,6 +10,6 @@ namespace Validot.Settings
 
         ICapacityInfo CapacityInfo { get; }
 
-        bool InfiniteReferencesLoopProtectionEnabled { get; }
+        bool? ReferenceLoopProtection { get; }
     }
 }

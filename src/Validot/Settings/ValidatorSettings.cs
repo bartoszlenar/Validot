@@ -27,7 +27,7 @@ namespace Validot.Settings
 
         public ICapacityInfo CapacityInfo { get; set; }
 
-        public bool InfiniteReferencesLoopProtectionEnabled { get; set; }
+        public bool? ReferenceLoopProtection { get; set; }
 
         public static ValidatorSettings GetDefault()
         {
@@ -38,9 +38,16 @@ namespace Validot.Settings
             return settings;
         }
 
-        public ValidatorSettings WithInfiniteReferencesLoopProtection()
+        public ValidatorSettings WithReferenceLoopProtection()
         {
-            InfiniteReferencesLoopProtectionEnabled = true;
+            ReferenceLoopProtection = true;
+
+            return this;
+        }
+
+        public ValidatorSettings WithoutReferenceLoopProtection()
+        {
+            ReferenceLoopProtection = false;
 
             return this;
         }

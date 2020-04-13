@@ -1,7 +1,6 @@
 namespace Validot.Validation.Scopes
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     internal class CollectionCommandScope<T, TItem> : CommandScope<T>
         where T : IEnumerable<TItem>
@@ -19,13 +18,13 @@ namespace Validot.Validation.Scopes
 
         protected override void RunValidation(T model, IValidationContext context)
         {
-            var items = (model as IReadOnlyList<TItem>) ?? model.ToList();
+            var i = 0;
 
-            for (var i = 0; i < items.Count; ++i)
+            foreach (var item in model)
             {
                 context.EnterCollectionItemPath(i);
 
-                context.EnterScope(ScopeId, items[i]);
+                context.EnterScope(ScopeId, item);
 
                 context.LeavePath();
 
@@ -33,6 +32,8 @@ namespace Validot.Validation.Scopes
                 {
                     break;
                 }
+
+                ++i;
             }
         }
     }

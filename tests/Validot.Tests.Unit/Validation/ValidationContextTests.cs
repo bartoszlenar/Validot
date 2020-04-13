@@ -26,62 +26,114 @@ namespace Validot.Tests.Unit.Validation
             public void Should_Initialize()
             {
                 var modelScheme = Substitute.For<IModelScheme>();
-                _ = new ValidationContext(modelScheme);
+                _ = new ValidationContext(modelScheme, default, default);
             }
 
             [Fact]
             public void Should_Initialize_WithDefaultValues()
             {
                 var modelScheme = Substitute.For<IModelScheme>();
-                var validationContext = new ValidationContext(modelScheme);
+                var validationContext = new ValidationContext(modelScheme, default, default);
 
                 validationContext.FailFast.Should().BeFalse();
-                validationContext.InfiniteReferencesLoopProtectionEnabled.Should().BeFalse();
+                validationContext.ReferenceLoopProtectionSettings.Should().BeNull();
                 validationContext.Errors.Should().BeNull();
                 validationContext.ShouldFallBack.Should().BeFalse();
             }
 
             [Theory]
-            [InlineData(true)]
-            [InlineData(false)]
-            public void Should_Initialize_WithFailFast(bool failFast)
+            [InlineData(true, true)]
+            [InlineData(true, false)]
+            [InlineData(false, true)]
+            [InlineData(false, false)]
+            public void Should_Initialize_WithValues(bool failFast, bool passLoopProtectionSettings)
             {
                 var modelScheme = Substitute.For<IModelScheme>();
-                var validationContext = new ValidationContext(modelScheme, failFast);
+
+                ReferenceLoopProtectionSettings referenceLoopProtectionSettings = null;
+
+                if (passLoopProtectionSettings)
+                {
+                    modelScheme.RootModelType.Returns(typeof(object));
+                    referenceLoopProtectionSettings = new ReferenceLoopProtectionSettings();
+                }
+
+                var validationContext = new ValidationContext(modelScheme, failFast, referenceLoopProtectionSettings);
 
                 validationContext.FailFast.Should().Be(failFast);
+
+                if (passLoopProtectionSettings)
+                {
+                    validationContext.ReferenceLoopProtectionSettings.Should().BeSameAs(referenceLoopProtectionSettings);
+                }
+            }
+
+            [Theory]
+            [InlineData(true, true)]
+            [InlineData(true, false)]
+            [InlineData(false, true)]
+            [InlineData(false, false)]
+            public void Should_Initialize_ReferencesStack_With_Null_When_LoopProtectionSettings_Is_Null(bool failFast, bool rootModelTypeIsReference)
+            {
+                var modelScheme = Substitute.For<IModelScheme>();
+                modelScheme.RootModelType.Returns(rootModelTypeIsReference ? typeof(object) : typeof(int));
+
+                var validationContext = new ValidationContext(
+                    modelScheme,
+                    failFast,
+                    null);
+
+                validationContext.GetLoopProtectionReferencesStackCount().Should().BeNull();
+            }
+
+            [Theory]
+            [InlineData(true, true)]
+            [InlineData(true, false)]
+            [InlineData(false, true)]
+            [InlineData(false, false)]
+            public void Should_Initialize_ReferencesStack_With_Zero_When_LoopProtectionSettings_Has_NullRootModel(bool failFast, bool rootModelTypeIsReference)
+            {
+                var modelScheme = Substitute.For<IModelScheme>();
+                modelScheme.RootModelType.Returns(rootModelTypeIsReference ? typeof(object) : typeof(int));
+
+                var validationContext = new ValidationContext(
+                    modelScheme,
+                    failFast,
+                    new ReferenceLoopProtectionSettings());
+
+                validationContext.GetLoopProtectionReferencesStackCount().Should().Be(0);
             }
 
             [Theory]
             [InlineData(true)]
             [InlineData(false)]
-            public void Should_Initialize_InfiniteReferencesLoopProtectionEnabled_AsParameter_When_ModelScheme_InfiniteReferencesLoopsDetected_IsTrue(bool infiniteReferencesLoopProtectionEnabled)
+            public void Should_Initialize_ReferencesStack_With_One_When_LoopProtectionSettings_Has_RootModel_And_RootModelTypeInSchemeIsReferenceType(bool failFast)
             {
                 var modelScheme = Substitute.For<IModelScheme>();
-
-                modelScheme.InfiniteReferencesLoopsDetected.Returns(true);
+                modelScheme.RootModelType.Returns(typeof(object));
 
                 var validationContext = new ValidationContext(
                     modelScheme,
-                    infiniteReferencesLoopProtectionEnabled: infiniteReferencesLoopProtectionEnabled);
+                    failFast,
+                    new ReferenceLoopProtectionSettings(new object()));
 
-                validationContext.InfiniteReferencesLoopProtectionEnabled.Should().Be(infiniteReferencesLoopProtectionEnabled);
+                validationContext.GetLoopProtectionReferencesStackCount().Should().Be(1);
             }
 
             [Theory]
             [InlineData(true)]
             [InlineData(false)]
-            public void Should_Initialize_InfiniteReferencesLoopProtectionEnabled_AsFalse_When_ModelScheme_InfiniteReferencesLoopsDetected_IsFalse(bool infiniteReferencesLoopProtectionEnabled)
+            public void Should_Initialize_ReferencesStack_With_Zero_When_LoopProtectionSettings_Has_RootModel_And_RootModelTypeInSchemeIsValueType(bool failFast)
             {
                 var modelScheme = Substitute.For<IModelScheme>();
-
-                modelScheme.InfiniteReferencesLoopsDetected.Returns(false);
+                modelScheme.RootModelType.Returns(typeof(int));
 
                 var validationContext = new ValidationContext(
                     modelScheme,
-                    infiniteReferencesLoopProtectionEnabled: infiniteReferencesLoopProtectionEnabled);
+                    failFast,
+                    new ReferenceLoopProtectionSettings(new object()));
 
-                validationContext.InfiniteReferencesLoopProtectionEnabled.Should().BeFalse();
+                validationContext.GetLoopProtectionReferencesStackCount().Should().Be(0);
             }
         }
 
@@ -92,7 +144,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var modelScheme = Substitute.For<IModelScheme>();
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.AddError(123);
 
@@ -106,7 +158,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var modelScheme = Substitute.For<IModelScheme>();
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.AddError(123);
                 context.AddError(321);
@@ -123,7 +175,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
 
@@ -140,7 +192,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
 
@@ -151,6 +203,101 @@ namespace Validot.Tests.Unit.Validation
                 context.Errors.Should().HaveCount(1);
                 context.Errors["entered.path"].Should().HaveCount(3);
                 context.Errors["entered.path"].Should().ContainInOrder(123, 321, 666);
+            }
+
+            [Fact]
+            public void Should_AddError_When_AlreadyExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_False()
+            {
+                var modelScheme = Substitute.For<IModelScheme>();
+                modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
+
+                var context = new ValidationContext(modelScheme, default, default);
+
+                context.EnterPath("entered.path");
+
+                context.AddError(123);
+                context.AddError(123);
+                context.AddError(123);
+
+                context.Errors.Should().HaveCount(1);
+                context.Errors["entered.path"].Should().HaveCount(3);
+                context.Errors["entered.path"].Should().ContainInOrder(123, 123, 123);
+            }
+
+            [Fact]
+            public void Should_NotAddError_When_AlreadyExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_True()
+            {
+                var modelScheme = Substitute.For<IModelScheme>();
+                modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
+
+                var context = new ValidationContext(modelScheme, default, default);
+
+                context.EnterPath("entered.path");
+
+                context.AddError(123, true);
+                context.AddError(123, true);
+                context.AddError(123, true);
+
+                context.Errors.Should().HaveCount(1);
+                context.Errors["entered.path"].Should().HaveCount(1);
+                context.Errors["entered.path"].Should().ContainInOrder(123);
+            }
+
+            [Fact]
+            public void Should_AddErrors_When_NotExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_True()
+            {
+                var modelScheme = Substitute.For<IModelScheme>();
+                modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
+
+                var context = new ValidationContext(modelScheme, default, default);
+
+                context.EnterPath("entered.path");
+
+                context.AddError(123, true);
+                context.AddError(321, true);
+                context.AddError(666, true);
+
+                context.Errors.Should().HaveCount(1);
+                context.Errors["entered.path"].Should().HaveCount(3);
+                context.Errors["entered.path"].Should().ContainInOrder(123, 321, 666);
+            }
+
+            [Fact]
+            public void Should_AddError_OnlyWhen_NotExistsUnderSamePath_And_SkipIfDuplicateInPath_Is_True()
+            {
+                var modelScheme = Substitute.For<IModelScheme>();
+                modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("test1")).Returns("test1");
+                modelScheme.GetPathForScope(Arg.Is("test1"), Arg.Is("test2")).Returns("test1.test2");
+                modelScheme.GetPathForScope(Arg.Is("test1.test2"), Arg.Is("test3")).Returns("test1.test2.test3");
+
+                var context = new ValidationContext(modelScheme, default, default);
+
+                context.EnterPath("test1");
+
+                context.AddError(123, true);
+                context.AddError(123, true);
+                context.AddError(123, false);
+
+                context.EnterPath("test2");
+                context.AddError(123, true);
+                context.AddError(123, true);
+                context.AddError(123, false);
+
+                context.EnterPath("test3");
+                context.AddError(123, true);
+                context.AddError(123, false);
+                context.AddError(123, false);
+
+                context.Errors.Should().HaveCount(3);
+
+                context.Errors["test1"].Should().HaveCount(2);
+                context.Errors["test1"].Should().ContainInOrder(123, 123);
+
+                context.Errors["test1.test2"].Should().HaveCount(2);
+                context.Errors["test1.test2"].Should().ContainInOrder(123, 123);
+
+                context.Errors["test1.test2.test3"].Should().HaveCount(3);
+                context.Errors["test1.test2.test3"].Should().ContainInOrder(123, 123, 123);
             }
         }
 
@@ -165,7 +312,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entry.path")).Returns(pathForScope);
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entry.path");
 
@@ -184,7 +331,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entry.path")).Returns("entry.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entry.path");
                 context.EnterPath(null);
@@ -206,7 +353,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entry.path")).Returns("entry.path");
                 modelScheme.GetPathForScope(Arg.Is("entry.path"), Arg.Is("next")).Returns("entry.path.next");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entry.path");
                 context.AddError(123);
@@ -233,7 +380,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entry.path")).Returns("entry.path");
                 modelScheme.GetPathForScope(Arg.Is("entry.path"), Arg.Is("next")).Returns("entry.path.next");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entry.path");
                 context.EnterPath("next");
@@ -254,7 +401,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entry.path")).Returns("entry.path");
                 modelScheme.GetPathForScope(Arg.Is("entry.path"), Arg.Is("next")).Returns("entry.path.next");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entry.path");
                 context.EnterPath("next");
@@ -283,7 +430,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("#")).Returns($"#");
                 modelScheme.GetPathWithIndexes(Arg.Is("#"), Arg.Is<IReadOnlyCollection<string>>(a => a.Single() == "666")).Returns("#666");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterCollectionItemPath(666);
 
@@ -305,7 +452,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("#")).Returns($"entered.path.#");
                 modelScheme.GetPathWithIndexes(Arg.Is("entered.path.#"), Arg.Is<IReadOnlyCollection<string>>(a => a.Single() == "666")).Returns("entered.path.#666");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnterCollectionItemPath(666);
@@ -328,7 +475,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("#")).Returns($"entered.path.#666");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnterCollectionItemPath(666);
@@ -359,7 +506,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetSpecificationScope<TestClass>(Arg.Is(1234)).Returns(specificationScope);
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 var model = new TestClass();
 
@@ -384,7 +531,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetSpecificationScope<TestClass>(Arg.Is(1234)).Returns(specificationScope);
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 var model = new TestClass();
 
@@ -426,7 +573,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetSpecificationScope<DateTimeOffset?>(Arg.Is(3)).Returns(specificationScope3);
                 modelScheme.GetSpecificationScope<decimal>(Arg.Is(4)).Returns(specificationScope4);
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterScope(1, model1);
                 context.EnterScope(2, model2);
@@ -462,7 +609,7 @@ namespace Validot.Tests.Unit.Validation
                 var exception = new KeyNotFoundException();
                 modelScheme.GetSpecificationScope<TestClass>(Arg.Is(1234)).Throws(exception);
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 Action action = () => context.EnterScope(1234, new TestClass());
 
@@ -470,7 +617,7 @@ namespace Validot.Tests.Unit.Validation
             }
         }
 
-        public class EnterScope_And_FailWhenInfiniteReferenceLoop
+        public class EnterScope_And_Fail_When_ReferenceLoopExists
         {
             public class LoopClassA
             {
@@ -1023,21 +1170,21 @@ namespace Validot.Tests.Unit.Validation
 
                 var modelScheme = ModelSchemeFactory.Create(specification, capacityInfo);
 
-                var context = new ValidationContext(modelScheme, infiniteReferencesLoopProtectionEnabled: true);
+                var context = new ValidationContext(modelScheme, default, new ReferenceLoopProtectionSettings());
 
                 Action action = () => context.EnterScope(modelScheme.RootSpecificationScopeId, model);
 
-                var exception = action.Should().ThrowExactly<InfiniteReferencesLoopException>().And;
+                var exception = action.Should().ThrowExactly<ReferenceLoopException>().And;
 
                 exception.Path.Should().Be(path);
-                exception.InfiniteLoopNestedPath.Should().Be(infiniteLoopNestedPath);
+                exception.NestedPath.Should().Be(infiniteLoopNestedPath);
                 exception.Type.Should().Be(type);
 
                 var pathStringified = string.IsNullOrEmpty(path)
                     ? "the root path"
                     : $"the path {path}";
 
-                exception.Message.Should().Be($"Infinite references loop detected: object of type {type.GetFriendlyName()} is both under {pathStringified} and in the nested path {infiniteLoopNestedPath}");
+                exception.Message.Should().Be($"Reference loop detected: object of type {type.GetFriendlyName()} is both under {pathStringified} and in the nested path {infiniteLoopNestedPath}");
             }
         }
 
@@ -1481,7 +1628,7 @@ namespace Validot.Tests.Unit.Validation
             [MemberData(nameof(TreesExamples_Struct))]
             [MemberData(nameof(TreesExamples_Collections))]
             [MemberData(nameof(TreesExamples_Nullable))]
-            public void Should_GetInfiniteReferencesLoopProtectionStackCount_BeZero_BeforeAndAfterEnteringRootScope(string id, Specification<TestClassA> rootSpecification, TestClassA model)
+            public void Should_GetLoopProtectionReferencesStackCount_BeZero_BeforeAndAfterEnteringRootScope_When_NoRootReferenceInSettings(string id, Specification<TestClassA> rootSpecification, TestClassA model)
             {
                 _ = id;
 
@@ -1489,13 +1636,13 @@ namespace Validot.Tests.Unit.Validation
 
                 var modelScheme = ModelSchemeFactory.Create(rootSpecification, capacityInfo);
 
-                var context = new ValidationContext(modelScheme, infiniteReferencesLoopProtectionEnabled: true);
+                var context = new ValidationContext(modelScheme, default, new ReferenceLoopProtectionSettings());
 
-                context.GetInfiniteReferencesLoopProtectionStackCount().Should().Be(0);
+                context.GetLoopProtectionReferencesStackCount().Should().Be(0);
 
                 context.EnterScope(modelScheme.RootSpecificationScopeId, model);
 
-                context.GetInfiniteReferencesLoopProtectionStackCount().Should().Be(0);
+                context.GetLoopProtectionReferencesStackCount().Should().Be(0);
             }
 
             [Theory]
@@ -1503,7 +1650,7 @@ namespace Validot.Tests.Unit.Validation
             [MemberData(nameof(TreesExamples_Struct))]
             [MemberData(nameof(TreesExamples_Collections))]
             [MemberData(nameof(TreesExamples_Nullable))]
-            public void Should_GetInfiniteReferencesLoopProtectionStackCount_BeNull_BeforeAndAfterEnteringRootScope(string id, Specification<TestClassA> rootSpecification, TestClassA model)
+            public void Should_GetLoopProtectionReferencesStackCount_BeOne_BeforeAndAfterEnteringRootScope_When_RootModelReference_Exists(string id, Specification<TestClassA> rootSpecification, TestClassA model)
             {
                 _ = id;
 
@@ -1511,13 +1658,35 @@ namespace Validot.Tests.Unit.Validation
 
                 var modelScheme = ModelSchemeFactory.Create(rootSpecification, capacityInfo);
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, new ReferenceLoopProtectionSettings(new object()));
 
-                context.GetInfiniteReferencesLoopProtectionStackCount().Should().BeNull();
+                context.GetLoopProtectionReferencesStackCount().Should().Be(1);
 
                 context.EnterScope(modelScheme.RootSpecificationScopeId, model);
 
-                context.GetInfiniteReferencesLoopProtectionStackCount().Should().BeNull();
+                context.GetLoopProtectionReferencesStackCount().Should().Be(1);
+            }
+
+            [Theory]
+            [MemberData(nameof(TreesExamples_Common))]
+            [MemberData(nameof(TreesExamples_Struct))]
+            [MemberData(nameof(TreesExamples_Collections))]
+            [MemberData(nameof(TreesExamples_Nullable))]
+            public void Should_GetLoopProtectionReferencesStackCount_BeNull_BeforeAndAfterEnteringRootScope_When_RootModelReference_IsNull(string id, Specification<TestClassA> rootSpecification, TestClassA model)
+            {
+                _ = id;
+
+                var capacityInfo = Substitute.For<ICapacityInfo>();
+
+                var modelScheme = ModelSchemeFactory.Create(rootSpecification, capacityInfo);
+
+                var context = new ValidationContext(modelScheme, default, default);
+
+                context.GetLoopProtectionReferencesStackCount().Should().BeNull();
+
+                context.EnterScope(modelScheme.RootSpecificationScopeId, model);
+
+                context.GetLoopProtectionReferencesStackCount().Should().BeNull();
             }
         }
 
@@ -1528,7 +1697,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var modelScheme = Substitute.For<IModelScheme>();
 
-                var validationContext = new ValidationContext(modelScheme);
+                var validationContext = new ValidationContext(modelScheme, default, default);
 
                 validationContext.ShouldFallBack.Should().BeFalse();
             }
@@ -1538,7 +1707,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var modelScheme = Substitute.For<IModelScheme>();
 
-                var validationContext = new ValidationContext(modelScheme, true);
+                var validationContext = new ValidationContext(modelScheme, true, default);
 
                 validationContext.ShouldFallBack.Should().BeFalse();
             }
@@ -1548,7 +1717,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var modelScheme = Substitute.For<IModelScheme>();
 
-                var validationContext = new ValidationContext(modelScheme);
+                var validationContext = new ValidationContext(modelScheme, false, default);
 
                 validationContext.AddError(123);
 
@@ -1560,7 +1729,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var modelScheme = Substitute.For<IModelScheme>();
 
-                var validationContext = new ValidationContext(modelScheme, true);
+                var validationContext = new ValidationContext(modelScheme, true, default);
 
                 validationContext.AddError(123);
 
@@ -1576,7 +1745,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var modelScheme = Substitute.For<IModelScheme>();
 
-                var validationContext = new ValidationContext(modelScheme, failFast);
+                var validationContext = new ValidationContext(modelScheme, failFast, default);
 
                 validationContext.EnableErrorDetectionMode(errorMode, 123);
 
@@ -1590,7 +1759,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var modelScheme = Substitute.For<IModelScheme>();
 
-                var validationContext = new ValidationContext(modelScheme, failFast);
+                var validationContext = new ValidationContext(modelScheme, failFast, default);
 
                 validationContext.EnableErrorDetectionMode(ErrorMode.Override, 321);
                 validationContext.AddError(123);
@@ -1603,7 +1772,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var modelScheme = Substitute.For<IModelScheme>();
 
-                var validationContext = new ValidationContext(modelScheme);
+                var validationContext = new ValidationContext(modelScheme, default, default);
 
                 validationContext.AddError(1);
 
@@ -1625,7 +1794,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
 
@@ -1645,7 +1814,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 321);
@@ -1663,7 +1832,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
 
@@ -1690,7 +1859,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.AddError(1);
@@ -1709,7 +1878,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 321);
@@ -1728,7 +1897,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 321);
@@ -1750,7 +1919,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.AddError(1);
@@ -1780,7 +1949,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
 
@@ -1812,7 +1981,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 321);
@@ -1849,7 +2018,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 321);
@@ -1879,7 +2048,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 111);
@@ -1916,7 +2085,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more1")).Returns("entered.path.nested.more1");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more2")).Returns("entered.path.nested.more2");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 111);
@@ -1952,7 +2121,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more1")).Returns("entered.path.nested.more1");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more2")).Returns("entered.path.nested.more2");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 111);
@@ -1995,7 +2164,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more1")).Returns("entered.path.nested.more1");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more2")).Returns("entered.path.nested.more2");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 111);
@@ -2032,7 +2201,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("first")).Returns("first");
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("second")).Returns("second");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("first");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 321);
@@ -2059,7 +2228,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("first")).Returns("first");
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("second")).Returns("second");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("first");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 321);
@@ -2089,7 +2258,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
 
@@ -2109,7 +2278,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 321);
@@ -2127,7 +2296,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
 
@@ -2154,7 +2323,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
 
@@ -2175,7 +2344,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 321);
@@ -2194,7 +2363,7 @@ namespace Validot.Tests.Unit.Validation
                 var modelScheme = Substitute.For<IModelScheme>();
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 321);
@@ -2216,7 +2385,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("entered.path")).Returns("entered.path");
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.AddError(1);
@@ -2246,7 +2415,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
 
@@ -2275,7 +2444,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 321);
@@ -2306,7 +2475,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 321);
@@ -2336,7 +2505,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 111);
@@ -2367,7 +2536,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more1")).Returns("entered.path.nested.more1");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more2")).Returns("entered.path.nested.more2");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 111);
@@ -2400,7 +2569,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more1")).Returns("entered.path.nested.more1");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more2")).Returns("entered.path.nested.more2");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 111);
@@ -2434,7 +2603,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more1")).Returns("entered.path.nested.more1");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more2")).Returns("entered.path.nested.more2");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 111);
@@ -2465,7 +2634,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("first")).Returns("first");
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("second")).Returns("second");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("first");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 321);
@@ -2492,7 +2661,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("first")).Returns("first");
                 modelScheme.GetPathForScope(Arg.Is(""), Arg.Is("second")).Returns("second");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("first");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 321);
@@ -2521,7 +2690,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Override, 321);
@@ -2553,7 +2722,7 @@ namespace Validot.Tests.Unit.Validation
                 modelScheme.GetPathForScope(Arg.Is("entered.path"), Arg.Is("entered.path.nested")).Returns("entered.path.nested");
                 modelScheme.GetPathForScope(Arg.Is("entered.path.nested"), Arg.Is("entered.path.nested.more")).Returns("entered.path.nested.more");
 
-                var context = new ValidationContext(modelScheme);
+                var context = new ValidationContext(modelScheme, default, default);
 
                 context.EnterPath("entered.path");
                 context.EnableErrorDetectionMode(ErrorMode.Append, 321);

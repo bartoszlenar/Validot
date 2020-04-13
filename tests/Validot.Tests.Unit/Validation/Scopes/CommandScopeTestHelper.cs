@@ -118,7 +118,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 context.DidNotReceiveWithAnyArgs().EnterPath(default);
                 context.DidNotReceiveWithAnyArgs().EnableErrorDetectionMode(default, default);
-                context.DidNotReceiveWithAnyArgs().AddError(default);
+                context.DidNotReceiveWithAnyArgs().AddError(default, default);
                 context.DidNotReceiveWithAnyArgs().EnterCollectionItemPath(default);
                 context.DidNotReceiveWithAnyArgs().LeavePath();
             }

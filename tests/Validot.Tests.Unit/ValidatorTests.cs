@@ -112,46 +112,46 @@ namespace Validot.Tests.Unit
 
         [Theory]
         [MemberData(nameof(ValidationTestData.CasesForErrorsMap_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<string>> expectedErrorMapMessages)
+        public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations)
         {
             _ = name;
 
             var validator = new Validator<ValidationTestData.TestClass>(specification);
-            validator.ErrorsMap.Should().NotBeNull();
 
-            var errorMapMessages = validator.ErrorsMap.Details.GetErrorMessages();
-
-            errorMapMessages.ShouldBeLikeErrorMessages(expectedErrorMapMessages);
+            validator.ShouldHaveErrorMap(rawErrorsExpectations);
         }
 
         [Theory]
         [MemberData(nameof(ValidationTestData.CasesForValidation_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_Validate(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, IReadOnlyDictionary<string, IReadOnlyList<string>> expectedMessages)
+        public void Should_Validate(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
         {
             _ = name;
 
             var validator = new Validator<ValidationTestData.TestClass>(specification);
 
-            var result = validator.Validate(testClass);
-
-            var errorMessages = result.Details.GetErrorMessages();
-
-            errorMessages.ShouldBeLikeErrorMessages(expectedMessages);
+            validator.ShouldValidateAndHaveResult(testClass, false, rawErrorsExpectations, exceptionCase);
         }
 
         [Theory]
         [MemberData(nameof(ValidationTestData.CasesForValidationWithFailFast_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_Validate_AndFailFast(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, IReadOnlyDictionary<string, IReadOnlyList<string>> expectedMessages)
+        public void Should_Validate_AndFailFast(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
         {
             _ = name;
 
             var validator = new Validator<ValidationTestData.TestClass>(specification);
 
-            var result = validator.Validate(testClass, true);
+            validator.ShouldValidateAndHaveResult(testClass, true, rawErrorsExpectations, exceptionCase);
+        }
 
-            var errorMessages = result.Details.GetErrorMessages();
+        [Theory]
+        [MemberData(nameof(ValidationTestData.CasesForIsValid_Data), MemberType = typeof(ValidationTestData))]
+        public void Should_IsValid_Return_True_If_NoErrors(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, bool expectedIsValid, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+        {
+            _ = name;
 
-            errorMessages.ShouldBeLikeErrorMessages(expectedMessages);
+            var validator = new Validator<ValidationTestData.TestClass>(specification);
+
+            validator.ShouldHaveIsValueTrueIfNoErrors(testClass, expectedIsValid, exceptionCase);
         }
 
         [Fact]

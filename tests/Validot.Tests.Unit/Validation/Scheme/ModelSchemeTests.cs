@@ -82,135 +82,135 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_Initialize(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_Initialize(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
-                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, infiniteReferencesLoopsPossible);
+                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 modelScheme.RootSpecificationScope.Should().BeSameAs(rootSpecificationScope);
 
                 modelScheme.ErrorsRegistry.Should().BeSameAs(errorsRegistry);
                 modelScheme.ErrorsMap.Should().BeSameAs(errorsMap);
                 modelScheme.CapacityInfo.Should().NotBeNull();
-                modelScheme.InfiniteReferencesLoopsDetected.Should().Be(infiniteReferencesLoopsPossible);
+                modelScheme.IsReferenceLoopPossible.Should().Be(isReferenceLoopPossible);
                 modelScheme.RootSpecificationScopeId.Should().Be(rootSpecificationScopeId);
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullSpecificationScopes(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_ThrowException_When_Initialize_With_NullSpecificationScopes(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
                 _ = specificationScopes;
 
-                Action action = () => new ModelScheme<TestClass>(null, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, infiniteReferencesLoopsPossible);
+                Action action = () => new ModelScheme<TestClass>(null, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_RootSpecificationScopeId_NotPresentInSpecificationScopes(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_ThrowException_When_Initialize_With_RootSpecificationScopeId_NotPresentInSpecificationScopes(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
                 _ = rootSpecificationScopeId;
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, -1, errorsRegistry, errorsMap, pathsMap, capacityInfo, infiniteReferencesLoopsPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, -1, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_RootSpecificationScopeId_OfSpecificationScopeOfInvalidType(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_ThrowException_When_Initialize_With_RootSpecificationScopeId_OfSpecificationScopeOfInvalidType(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
 
                 var invalidRootSpecificationScope = new SpecificationScope<object>();
                 specificationScopes[rootSpecificationScopeId] = invalidRootSpecificationScope;
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, infiniteReferencesLoopsPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullErrorsRegistry(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_ThrowException_When_Initialize_With_NullErrorsRegistry(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
                 _ = errorsRegistry;
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, null, errorsMap, pathsMap, capacityInfo, infiniteReferencesLoopsPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, null, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullInErrorsRegistry(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_ThrowException_When_Initialize_With_NullInErrorsRegistry(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
 
                 errorsRegistry.Add(45, null);
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, infiniteReferencesLoopsPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullErrorsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_ThrowException_When_Initialize_With_NullErrorsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
                 _ = errorsMap;
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, null, pathsMap, capacityInfo, infiniteReferencesLoopsPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, null, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullInErrorsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_ThrowException_When_Initialize_With_NullInErrorsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
 
                 errorsMap.Add("some_path", null);
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, infiniteReferencesLoopsPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullPathsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_ThrowException_When_Initialize_With_NullPathsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
                 _ = pathsMap;
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, null, capacityInfo, infiniteReferencesLoopsPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, null, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullInPathsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_ThrowException_When_Initialize_With_NullInPathsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
 
                 pathsMap.Add("some_path", null);
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, infiniteReferencesLoopsPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullInPathsMapInnerDictionary(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_ThrowException_When_Initialize_With_NullInPathsMapInnerDictionary(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
 
@@ -219,19 +219,19 @@ namespace Validot.Tests.Unit.Validation.Scheme
                     ["some_entry"] = null
                 });
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, infiniteReferencesLoopsPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullCapacityInfo(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsPossible)
+            public void Should_ThrowException_When_Initialize_With_NullCapacityInfo(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
                 _ = capacityInfo;
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, null, infiniteReferencesLoopsPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, null, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }

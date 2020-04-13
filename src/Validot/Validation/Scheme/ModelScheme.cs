@@ -13,7 +13,7 @@ namespace Validot.Validation.Scheme
 
         private readonly IReadOnlyDictionary<int, object> _specificationScopes;
 
-        public ModelScheme(IReadOnlyDictionary<int, object> specificationScopes, int rootSpecificationScopeId, IReadOnlyDictionary<int, IError> errorsRegistry, IReadOnlyDictionary<string, IReadOnlyList<int>> errorsMap, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool infiniteReferencesLoopsDetected)
+        public ModelScheme(IReadOnlyDictionary<int, object> specificationScopes, int rootSpecificationScopeId, IReadOnlyDictionary<int, IError> errorsRegistry, IReadOnlyDictionary<string, IReadOnlyList<int>> errorsMap, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
         {
             ThrowHelper.NullArgument(specificationScopes, nameof(specificationScopes));
             ThrowHelper.NullInCollection(specificationScopes.Values, $"{nameof(specificationScopes)}.{nameof(specificationScopes.Values)}");
@@ -57,7 +57,8 @@ namespace Validot.Validation.Scheme
 
             ThrowHelper.NullArgument(capacityInfo, nameof(capacityInfo));
             CapacityInfo = capacityInfo;
-            InfiniteReferencesLoopsDetected = infiniteReferencesLoopsDetected;
+            IsReferenceLoopPossible = isReferenceLoopPossible;
+            RootModelType = typeof(T);
             RootSpecificationScopeId = rootSpecificationScopeId;
         }
 
@@ -67,9 +68,11 @@ namespace Validot.Validation.Scheme
 
         public SpecificationScope<T> RootSpecificationScope { get; }
 
-        public bool InfiniteReferencesLoopsDetected { get; }
+        public bool IsReferenceLoopPossible { get; }
 
         public int RootSpecificationScopeId { get; }
+
+        public Type RootModelType { get; }
 
         public ICapacityInfo CapacityInfo { get; }
 

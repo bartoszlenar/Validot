@@ -5,6 +5,7 @@
         <Rule Id="CA1032" Action="Info" />
         <Rule Id="CA1034" Action="Info" />
         <Rule Id="CA1303" Action="None" />
+        <Rule Id="CA1307" Action="Info" />
         <Rule Id="CA1308" Action="Info" />
         <Rule Id="CA1716" Action="Info" />
         <Rule Id="CA1721" Action="Info" />
@@ -12,7 +13,9 @@
     </Rules>
     <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
         <Rule Id="SA0001" Action="None" />
+        <Rule Id="SA1009" Action="None" />
         <Rule Id="SA1101" Action="None" />
+        <Rule Id="SA1111" Action="None" />
         <Rule Id="SA1201" Action="Info" />
         <Rule Id="SA1309" Action="None" />
         <Rule Id="SA1402" Action="Info" />

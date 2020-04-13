@@ -23,5 +23,12 @@ namespace Validot.Tests.Unit.Specification
             ApiTester.TestSingleCommand<object, IOptionalIn<object>, IOptionalOut<object>, OptionalCommand>(
                 s => s.Optional());
         }
+
+        [Fact]
+        public void Should_Add_OptionalCommand_When_Nullable()
+        {
+            ApiTester.TestSingleCommand<int?, IOptionalIn<int?>, IOptionalOut<int?>, OptionalCommand>(
+                s => s.Optional());
+        }
     }
 }

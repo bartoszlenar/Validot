@@ -6,13 +6,13 @@ namespace Validot.Errors
     using Validot.Errors.Args;
     using Validot.Translations;
 
-    internal sealed class CircularDependencyError : IError
+    internal sealed class ReferenceLoopError : IError
     {
-        public CircularDependencyError(Type type)
+        public ReferenceLoopError(Type type)
         {
             Messages = new[]
             {
-                MessageKey.Global.CircularDependency
+                MessageKey.Global.ReferenceLoop
             };
 
             Args = new[]

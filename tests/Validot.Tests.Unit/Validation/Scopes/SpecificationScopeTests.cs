@@ -72,13 +72,13 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 if (presence == Presence.Forbidden)
                 {
-                    discoveryContext.Received().AddError(321);
+                    discoveryContext.Received().AddError(321, true);
                 }
                 else
                 {
                     if (presence == Presence.Required)
                     {
-                        discoveryContext.Received().AddError(123);
+                        discoveryContext.Received().AddError(123, true);
                     }
 
                     for (var i = 0; i < commandScopesCount; ++i)
@@ -91,6 +91,14 @@ namespace Validot.Tests.Unit.Validation.Scopes
             if (presence == Presence.Optional)
             {
                 discoveryContext.DidNotReceiveWithAnyArgs().AddError(default);
+            }
+
+            if (presence == Presence.Forbidden)
+            {
+                for (var i = 0; i < commandScopesCount; ++i)
+                {
+                    commandScopes[i].DidNotReceiveWithAnyArgs().Discover(default);
+                }
             }
 
             discoveryContext.DidNotReceiveWithAnyArgs().LeavePath();
@@ -188,14 +196,14 @@ namespace Validot.Tests.Unit.Validation.Scopes
                 {
                     if (presence == Presence.Required)
                     {
-                        validationContext.Received().AddError(Arg.Is(123));
+                        validationContext.Received().AddError(Arg.Is(123), true);
                     }
                 }
                 else
                 {
                     if (presence == Presence.Forbidden)
                     {
-                        validationContext.Received().AddError(Arg.Is(321));
+                        validationContext.Received().AddError(Arg.Is(321), true);
                     }
                     else
                     {
@@ -209,7 +217,15 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             if (presence == Presence.Optional)
             {
-                validationContext.DidNotReceiveWithAnyArgs().AddError(default);
+                validationContext.DidNotReceiveWithAnyArgs().AddError(default, default);
+            }
+
+            if (nullModel)
+            {
+                for (var i = 0; i < commandScopesCount; ++i)
+                {
+                    commandScopes[i].DidNotReceiveWithAnyArgs().Validate(default, default);
+                }
             }
 
             validationContext.DidNotReceiveWithAnyArgs().LeavePath();

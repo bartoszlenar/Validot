@@ -19,7 +19,7 @@ namespace Validot.Validation.Scheme
 
             var rootSpecificationScopeId = scopeBuilderContext.GetOrRegisterSpecificationScope(specification);
 
-            var discoveryContext = new DiscoveryContext(scopeBuilderContext);
+            var discoveryContext = new DiscoveryContext(scopeBuilderContext, rootSpecificationScopeId);
 
             var rootSpecificationScope = (SpecificationScope<T>)scopeBuilderContext.Scopes[rootSpecificationScopeId];
 
@@ -42,7 +42,7 @@ namespace Validot.Validation.Scheme
                 discoveryContext.Errors.ToDictionary(p => p.Key, p => (IReadOnlyList<int>)p.Value),
                 discoveryContext.Paths.ToDictionary(p => p.Key, p => (IReadOnlyDictionary<string, string>)p.Value),
                 capacityInfo,
-                discoveryContext.InfiniteReferencesLoopRoots.Count > 0);
+                discoveryContext.ReferenceLoopRoots.Count > 0);
         }
     }
 }

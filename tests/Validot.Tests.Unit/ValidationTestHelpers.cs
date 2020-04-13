@@ -7,6 +7,7 @@ namespace Validot.Tests.Unit
 
     using Validot.Errors;
     using Validot.Results;
+    using Validot.Validation;
     using Validot.Validation.Stacks;
 
     public static class ValidationTestHelpers
@@ -144,6 +145,22 @@ namespace Validot.Tests.Unit
                         }
                     }
                 }
+            }
+        }
+
+        public static void ShouldMatchAmounts(this IErrorsHolder errorsHolder, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> test)
+        {
+            errorsHolder.Should().NotBeNull();
+            errorsHolder.Errors.Should().NotBeNull();
+            test.Should().NotBeNull();
+
+            errorsHolder.Errors.Should().HaveCount(test.Count);
+
+            foreach (var testPair in test)
+            {
+                errorsHolder.Errors.Keys.Should().Contain(testPair.Key);
+                errorsHolder.Errors[testPair.Key].Should().NotBeNull();
+                errorsHolder.Errors[testPair.Key].Should().HaveCount(testPair.Value.Count);
             }
         }
     }

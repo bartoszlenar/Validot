@@ -5720,5 +5720,48 @@ namespace Validot.Tests.Unit
                 }
             }
         }
+
+        public static IEnumerable<object[]> CasesForFeed_Data()
+        {
+            foreach (var c in GetCases())
+            {
+                var i = 0;
+
+                foreach (var v in c.ValidationCases.Where(v => v.ReferenceLoopExceptionCase is null))
+                {
+                    yield return new object[]
+                    {
+                        $"FEED_{c.Name}_{++i}",
+                        c.Specification,
+                        v.Model,
+                        c.ExpectedErrorsMap,
+                        v.Errors,
+                    };
+                }
+            }
+        }
+
+        public static IEnumerable<object[]> CasesForFeedMultipleTimes_Data()
+        {
+            foreach (var c in GetCases())
+            {
+                var caseData = c.ValidationCases
+                    .Where(v => v.ReferenceLoopExceptionCase is null)
+                    .Select(s => new
+                    {
+                        s.Model,
+                        s.Errors
+                    }).ToArray();
+
+                yield return new object[]
+                {
+                    $"FEED_MULTIPLE_{c.Name}",
+                    c.Specification,
+                    caseData.Select(c1 => c1.Model).ToArray(),
+                    c.ExpectedErrorsMap,
+                    caseData.Select(c1 => c1.Errors).ToArray(),
+                };
+            }
+        }
     }
 }

@@ -69,14 +69,17 @@ namespace Validot
 
             _modelScheme.RootSpecificationScope.Validate(model, validationContext);
 
-            if (!failFast &&
+            var isValid = validationContext.Errors is null;
+
+            if (!isValid &&
+                !failFast &&
                 Settings.CapacityInfo is IFeedableCapacityInfo feedableCapacityInfo &&
                 feedableCapacityInfo.ShouldFeed)
             {
                 feedableCapacityInfo.Feed(validationContext);
             }
 
-            return validationContext.Errors is null || validationContext.Errors.Count == 0
+            return isValid
                 ? ValidationResult.NoErrorsResult
                 : new ValidationResult(validationContext.Errors, _modelScheme.ErrorsRegistry, _messagesService);
         }

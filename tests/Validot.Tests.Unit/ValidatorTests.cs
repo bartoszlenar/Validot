@@ -59,6 +59,8 @@ namespace Validot.Tests.Unit
 
                 settings.CapacityInfo.Returns(capacityInfo);
 
+                settings.ReferenceLoopProtection.Returns(false);
+
                 settings.Translations.Returns(new Dictionary<string, IReadOnlyDictionary<string, string>>()
                 {
                     ["test1"] = new Dictionary<string, string>()
@@ -87,6 +89,7 @@ namespace Validot.Tests.Unit
                 validator.Settings.Translations["test2"]["nested21"].Should().Be("n21");
                 validator.Settings.Translations["test2"]["nested22"].Should().Be("n22");
                 validator.Settings.CapacityInfo.Should().BeSameAs(settings.CapacityInfo);
+                validator.Settings.ReferenceLoopProtection.Should().BeFalse();
             }
 
             [Fact]
@@ -154,6 +157,21 @@ namespace Validot.Tests.Unit
             var validator = new Validator<ValidationTestData.TestClass>(specification);
 
             validator.ShouldHaveIsValueTrueIfNoErrors(model, expectedIsValid, exceptionCase);
+        }
+
+        [Theory]
+        [MemberData(nameof(ValidationTestData.CasesForReferenceLoop_Data), MemberType = typeof(ValidationTestData))]
+        public void Should_Validate_With_ReferenceLoopProtection(string name, bool referenceLoopProtectionEnabled, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+        {
+            _ = name;
+
+            var settings = Substitute.For<IValidatorSettings>();
+
+            settings.ReferenceLoopProtection.Returns(referenceLoopProtectionEnabled);
+
+            var validator = new Validator<ValidationTestData.TestClass>(specification, settings);
+
+            validator.ShouldValidateAndHaveResult(model, false, errorCases, exceptionCase);
         }
 
         [Fact]

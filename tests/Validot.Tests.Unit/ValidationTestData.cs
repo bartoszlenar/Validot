@@ -113,6 +113,14 @@ namespace Validot.Tests.Unit
 
         private static readonly Dictionary<string, IReadOnlyList<ErrorTestCase>> NoErrors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>();
 
+        public static TestCase RenamedClone(TestCase input, string prefix) => new TestCase()
+        {
+            Name = $"{prefix}_{input.Name}",
+            Specification = input.Specification,
+            ValidationCases = input.ValidationCases,
+            ExpectedErrorsMap = input.ExpectedErrorsMap
+        };
+
         public static IReadOnlyList<TestCase> GetCases()
         {
             var cases = new List<TestCase>();
@@ -131,14 +139,6 @@ namespace Validot.Tests.Unit
             cases.AddRange(ReferecencesLoopCases().Select(c => RenamedClone(c, nameof(ReferecencesLoopCases))));
 
             return cases;
-
-            TestCase RenamedClone(TestCase input, string prefix) => new TestCase()
-            {
-                Name = $"{prefix}_{input.Name}",
-                Specification = input.Specification,
-                ValidationCases = input.ValidationCases,
-                ExpectedErrorsMap = input.ExpectedErrorsMap
-            };
         }
 
         public static IReadOnlyList<TestCase> GlobalPresenceCases { get; } = new[]
@@ -5673,6 +5673,45 @@ namespace Validot.Tests.Unit
             }
         }
 
+        public static IEnumerable<object[]> CasesForReferenceLoop_Data()
+        {
+            var cases = new List<TestCase>();
+
+            cases.AddRange(RulesCases.Select(c => RenamedClone(c, nameof(RulesCases))));
+            cases.AddRange(ReferecencesLoopCases().Select(c => RenamedClone(c, nameof(ReferecencesLoopCases))));
+
+            foreach (var c in cases)
+            {
+                var i = 0;
+
+                foreach (var v in c.ValidationCases)
+                {
+                    yield return new object[]
+                    {
+                        $"RL_T_{c.Name}_{++i}",
+                        true,
+                        c.Specification,
+                        v.Model,
+                        v.Errors,
+                        v.ReferenceLoopExceptionCase
+                    };
+
+                    if (v.ReferenceLoopExceptionCase is null)
+                    {
+                        yield return new object[]
+                        {
+                            $"RL_F_{c.Name}_{++i}",
+                            false,
+                            c.Specification,
+                            v.Model,
+                            v.Errors,
+                            v.ReferenceLoopExceptionCase
+                        };
+                    }
+                }
+            }
+        }
+
         public static IEnumerable<object[]> CasesForValidationWithFailFast_Data()
         {
             foreach (var c in GetCases())
@@ -5718,6 +5757,49 @@ namespace Validot.Tests.Unit
                         v.ReferenceLoopExceptionCase
                     };
                 }
+            }
+        }
+
+        public static IEnumerable<object[]> CasesForFeed_Data()
+        {
+            foreach (var c in GetCases())
+            {
+                var i = 0;
+
+                foreach (var v in c.ValidationCases.Where(v => v.ReferenceLoopExceptionCase is null))
+                {
+                    yield return new object[]
+                    {
+                        $"FEED_{c.Name}_{++i}",
+                        c.Specification,
+                        v.Model,
+                        c.ExpectedErrorsMap,
+                        v.Errors,
+                    };
+                }
+            }
+        }
+
+        public static IEnumerable<object[]> CasesForFeedMultipleTimes_Data()
+        {
+            foreach (var c in GetCases())
+            {
+                var caseData = c.ValidationCases
+                    .Where(v => v.ReferenceLoopExceptionCase is null)
+                    .Select(s => new
+                    {
+                        s.Model,
+                        s.Errors
+                    }).ToArray();
+
+                yield return new object[]
+                {
+                    $"FEED_MULTIPLE_{c.Name}",
+                    c.Specification,
+                    caseData.Select(c1 => c1.Model).ToArray(),
+                    c.ExpectedErrorsMap,
+                    caseData.Select(c1 => c1.Errors).ToArray(),
+                };
             }
         }
     }

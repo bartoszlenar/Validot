@@ -15,46 +15,46 @@ namespace Validot.Tests.Unit.Factory
         {
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForErrorsMap_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations)
+            public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
             {
                 _ = name;
 
                 var validator = Validator.Factory.Create(specification);
 
-                validator.ShouldHaveErrorMap(rawErrorsExpectations);
+                validator.ShouldHaveErrorMap(errorCases);
             }
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForValidation_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_Validate(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+            public void Should_Validate(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
             {
                 _ = name;
 
                 var validator = Validator.Factory.Create(specification);
 
-                validator.ShouldValidateAndHaveResult(testClass, false, rawErrorsExpectations, exceptionCase);
+                validator.ShouldValidateAndHaveResult(model, false, errorCases, exceptionCase);
             }
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForValidationWithFailFast_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_Validate_AndFailFast(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+            public void Should_Validate_AndFailFast(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
             {
                 _ = name;
 
                 var validator = Validator.Factory.Create(specification);
 
-                validator.ShouldValidateAndHaveResult(testClass, true, rawErrorsExpectations, exceptionCase);
+                validator.ShouldValidateAndHaveResult(model, true, errorCases, exceptionCase);
             }
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForIsValid_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_IsValid_Return_True_If_NoErrors(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, bool expectedIsValid, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+            public void Should_IsValid_Return_True_If_NoErrors(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, bool expectedIsValid, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
             {
                 _ = name;
 
                 var validator = Validator.Factory.Create(specification);
 
-                validator.ShouldHaveIsValueTrueIfNoErrors(testClass, expectedIsValid, exceptionCase);
+                validator.ShouldHaveIsValueTrueIfNoErrors(model, expectedIsValid, exceptionCase);
             }
         }
 
@@ -67,7 +67,7 @@ namespace Validot.Tests.Unit.Factory
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForErrorsMap_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations)
+            public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
             {
                 _ = name;
 
@@ -78,12 +78,12 @@ namespace Validot.Tests.Unit.Factory
 
                 var validator = Validator.Factory.Create(holder);
 
-                validator.ShouldHaveErrorMap(rawErrorsExpectations);
+                validator.ShouldHaveErrorMap(errorCases);
             }
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForValidation_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_Validate(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+            public void Should_Validate(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
             {
                 _ = name;
 
@@ -94,12 +94,12 @@ namespace Validot.Tests.Unit.Factory
 
                 var validator = Validator.Factory.Create(holder);
 
-                validator.ShouldValidateAndHaveResult(testClass, false, rawErrorsExpectations, exceptionCase);
+                validator.ShouldValidateAndHaveResult(model, false, errorCases, exceptionCase);
             }
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForValidationWithFailFast_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_Validate_AndFailFast(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+            public void Should_Validate_AndFailFast(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
             {
                 _ = name;
 
@@ -110,12 +110,12 @@ namespace Validot.Tests.Unit.Factory
 
                 var validator = Validator.Factory.Create(holder);
 
-                validator.ShouldValidateAndHaveResult(testClass, true, rawErrorsExpectations, exceptionCase);
+                validator.ShouldValidateAndHaveResult(model, true, errorCases, exceptionCase);
             }
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForIsValid_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_IsValid_Return_True_If_NoErrors(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, bool expectedIsValid, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+            public void Should_IsValid_Return_True_If_NoErrors(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, bool expectedIsValid, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
             {
                 _ = name;
 
@@ -126,7 +126,7 @@ namespace Validot.Tests.Unit.Factory
 
                 var validator = Validator.Factory.Create(holder);
 
-                validator.ShouldHaveIsValueTrueIfNoErrors(testClass, expectedIsValid, exceptionCase);
+                validator.ShouldHaveIsValueTrueIfNoErrors(model, expectedIsValid, exceptionCase);
             }
         }
 

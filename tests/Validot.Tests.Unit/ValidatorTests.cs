@@ -114,46 +114,46 @@ namespace Validot.Tests.Unit
 
         [Theory]
         [MemberData(nameof(ValidationTestData.CasesForErrorsMap_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations)
+        public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
         {
             _ = name;
 
             var validator = new Validator<ValidationTestData.TestClass>(specification);
 
-            validator.ShouldHaveErrorMap(rawErrorsExpectations);
+            validator.ShouldHaveErrorMap(errorCases);
         }
 
         [Theory]
         [MemberData(nameof(ValidationTestData.CasesForValidation_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_Validate(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+        public void Should_Validate(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
         {
             _ = name;
 
             var validator = new Validator<ValidationTestData.TestClass>(specification);
 
-            validator.ShouldValidateAndHaveResult(testClass, false, rawErrorsExpectations, exceptionCase);
+            validator.ShouldValidateAndHaveResult(model, false, errorCases, exceptionCase);
         }
 
         [Theory]
         [MemberData(nameof(ValidationTestData.CasesForValidationWithFailFast_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_Validate_AndFailFast(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+        public void Should_Validate_AndFailFast(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
         {
             _ = name;
 
             var validator = new Validator<ValidationTestData.TestClass>(specification);
 
-            validator.ShouldValidateAndHaveResult(testClass, true, rawErrorsExpectations, exceptionCase);
+            validator.ShouldValidateAndHaveResult(model, true, errorCases, exceptionCase);
         }
 
         [Theory]
         [MemberData(nameof(ValidationTestData.CasesForIsValid_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_IsValid_Return_True_If_NoErrors(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, bool expectedIsValid, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+        public void Should_IsValid_Return_True_If_NoErrors(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, bool expectedIsValid, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
         {
             _ = name;
 
             var validator = new Validator<ValidationTestData.TestClass>(specification);
 
-            validator.ShouldHaveIsValueTrueIfNoErrors(testClass, expectedIsValid, exceptionCase);
+            validator.ShouldHaveIsValueTrueIfNoErrors(model, expectedIsValid, exceptionCase);
         }
 
         [Fact]
@@ -202,7 +202,7 @@ namespace Validot.Tests.Unit
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForErrorsMap_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_FeedCapacityInfo_After_Creation_WithDiscoveryContext_And_ErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations)
+            public void Should_FeedCapacityInfo_After_Creation_WithDiscoveryContext_And_ErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
             {
                 _ = name;
 
@@ -218,7 +218,7 @@ namespace Validot.Tests.Unit
                     {
                         var errorsHolder = info.ArgAt<IErrorsHolder>(0);
 
-                        errorsHolder.ShouldMatchAmounts(rawErrorsExpectations);
+                        errorsHolder.ShouldMatchAmounts(errorCases);
 
                         counter++;
                     });
@@ -347,7 +347,7 @@ namespace Validot.Tests.Unit
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForFeed_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_FeedCapacityInfo_After_Validating_WithValidationContext_OnlyWhen_ErrorsFound(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass testClass, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsMap, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations)
+            public void Should_FeedCapacityInfo_After_Validating_WithValidationContext_OnlyWhen_ErrorsFound(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorsMapCases, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
             {
                 _ = name;
 
@@ -364,7 +364,7 @@ namespace Validot.Tests.Unit
                     {
                         var errorsHolder = info.ArgAt<IErrorsHolder>(0);
 
-                        errorsHolder.ShouldMatchAmounts(rawErrorsMap);
+                        errorsHolder.ShouldMatchAmounts(errorsMapCases);
 
                         discoveryCounter++;
                     });
@@ -375,7 +375,7 @@ namespace Validot.Tests.Unit
                     {
                         var errorsHolder = info.ArgAt<IErrorsHolder>(0);
 
-                        errorsHolder.ShouldMatchAmounts(rawErrorsExpectations);
+                        errorsHolder.ShouldMatchAmounts(errorCases);
 
                         validationCounter++;
                     });
@@ -390,11 +390,11 @@ namespace Validot.Tests.Unit
                 capacityInfo.ReceivedWithAnyArgs(1).Feed(default);
                 capacityInfo.Received(1).Feed(NSubstitute.Arg.Any<DiscoveryContext>());
 
-                validator.Validate(testClass);
+                validator.Validate(model);
 
                 discoveryCounter.Should().Be(1);
 
-                if (rawErrorsExpectations is null || rawErrorsExpectations.Count == 0)
+                if (errorCases is null || errorCases.Count == 0)
                 {
                     validationCounter.Should().Be(0);
                     capacityInfo.DidNotReceive().Feed(NSubstitute.Arg.Any<ValidationContext>());
@@ -410,7 +410,7 @@ namespace Validot.Tests.Unit
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForFeedMultipleTimes_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_FeedCapacityInfo_After_EachValidation_WithValidationContext_OnlyWhen_ErrorsFound(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyList<ValidationTestData.TestClass> models, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsMap, IReadOnlyList<IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>>> rawErrorsExpectations)
+            public void Should_FeedCapacityInfo_After_EachValidation_WithValidationContext_OnlyWhen_ErrorsFound(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyList<ValidationTestData.TestClass> models, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorsMapCases, IReadOnlyList<IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>>> errorCases)
             {
                  _ = name;
 
@@ -428,7 +428,7 @@ namespace Validot.Tests.Unit
                      {
                          var errorsHolder = info.ArgAt<IErrorsHolder>(0);
 
-                         errorsHolder.ShouldMatchAmounts(rawErrorsMap);
+                         errorsHolder.ShouldMatchAmounts(errorsMapCases);
 
                          discoveryCounter++;
                      });
@@ -439,7 +439,7 @@ namespace Validot.Tests.Unit
                      {
                          var errorsHolder = info.ArgAt<IErrorsHolder>(0);
 
-                         errorsHolder.ShouldMatchAmounts(rawErrorsExpectations[modelIndex]);
+                         errorsHolder.ShouldMatchAmounts(errorCases[modelIndex]);
 
                          validationCounter++;
                      });
@@ -456,7 +456,7 @@ namespace Validot.Tests.Unit
 
                  for (modelIndex = 0; modelIndex < models.Count; ++modelIndex)
                  {
-                     var isValid = rawErrorsExpectations[modelIndex] is null || rawErrorsExpectations[modelIndex].Count == 0;
+                     var isValid = errorCases[modelIndex] is null || errorCases[modelIndex].Count == 0;
 
                      var temp = validationCounter;
 
@@ -474,7 +474,7 @@ namespace Validot.Tests.Unit
 
                  discoveryCounter.Should().Be(1);
 
-                 var casesWithErrorsCount = rawErrorsExpectations.Count(c => c?.Count > 0);
+                 var casesWithErrorsCount = errorCases.Count(c => c?.Count > 0);
 
                  validationCounter.Should().Be(casesWithErrorsCount);
                  capacityInfo.Received(casesWithErrorsCount).Feed(NSubstitute.Arg.Any<ValidationContext>());

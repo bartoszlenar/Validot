@@ -49,8 +49,8 @@ jobs:
         uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: Validot.${{ env.VALIDOT_VERSION }}.${{ matrix.dotnet }}.${{ matrix.os }}.tests.trx
-          path: artifacts/tests/Validot.${{ env.VALIDOT_VERSION }}.tests.trx
+          name: Validot.${{ env.VALIDOT_VERSION }}.${{ matrix.dotnet }}.${{ matrix.os }}.testresults
+          path: artifacts/tests/Validot.${{ env.VALIDOT_VERSION }}.testresults
   tests_netframework:
     strategy:
       matrix:
@@ -75,8 +75,8 @@ jobs:
         uses: actions/upload-artifact@v1
         if: failure()
         with:
-          name: Validot.${{ env.VALIDOT_VERSION }}.${{ matrix.dotnet }}.${{ matrix.os }}.tests.trx
-          path: artifacts/tests/Validot.${{ env.VALIDOT_VERSION }}.tests.trx
+          name: Validot.${{ env.VALIDOT_VERSION }}.${{ matrix.dotnet }}.${{ matrix.os }}.testresults
+          path: artifacts/tests/Validot.${{ env.VALIDOT_VERSION }}.testresults
   code_coverage:
       needs: [ tests, tests_netframework ]
       if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
@@ -136,7 +136,7 @@ jobs:
             name: Validot.${{ env.VALIDOT_VERSION }}.symbols.nupkg
             path: artifacts/nuget/${{ env.VALIDOT_VERSION }}/Validot.${{ env.VALIDOT_VERSION }}.symbols.nupkg
   release_assets:
-      needs: [ code_coverage, nuget_package ] 
+      needs: [ code_coverage, nuget_package ]
       if: github.event_name == 'release'
       runs-on: ubuntu-latest
       name: Upload release assets
@@ -210,4 +210,3 @@ jobs:
             path: artifacts/coverage
         - name: Publish code coverage
           run: pwsh build.ps1 --target publishcodecoverage --skip --dotnet 3.1.102 --configuration debug --version ${{ env.VALIDOT_VERSION }} --commitsha ${{ github.sha }} --codecovapikey ${{ secrets.CODECOV_API_KEY }} --required
-        

@@ -173,7 +173,8 @@ class Build : NukeBuild
         {
             var testsProjects = new[]
             {
-                TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj"
+                TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj",
+                TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj"
             };
 
             foreach (var testProject in testsProjects)
@@ -190,21 +191,46 @@ class Build : NukeBuild
     Target Compile => _ => _
         .DependsOn(CompileProject, CompileTests);
     
-    Target Tests => _ => _
+    Target UnitTests => _ => _
         .DependsOn(Compile)
+        .ProceedAfterFailure()
         .Executes(() =>
         {
             DotNetTest(p => p
                 .EnableNoBuild()
                 .SetConfiguration(Configuration)
-                .SetProjectFile(Solution)
+                .SetProjectFile(TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj")
                 .SetFramework(DotNet)
-                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.tests.trx"}")
+                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.testresults"/ $"Validot.{Version}.unit.trx"}")
             );
             
+            DotNetTest(p => p
+                .EnableNoBuild()
+                .SetConfiguration(Configuration)
+                .SetProjectFile(TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj")
+                .SetFramework(DotNet)
+                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.functional.trx"}")
+            );
         });
+    
+    Target FunctionalTests => _ => _
+        .DependsOn(Compile)
+        .ProceedAfterFailure()
+        .Executes(() =>
+        {
+            DotNetTest(p => p
+                .EnableNoBuild()
+                .SetConfiguration(Configuration)
+                .SetProjectFile(TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj")
+                .SetFramework(DotNet)
+                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.functional.trx"}")
+            );
+        });
+    
+    Target Tests => _ => _
+        .DependsOn(UnitTests, FunctionalTests);
 
-     Target CodeCoverage => _ => _
+    Target CodeCoverage => _ => _
         .DependsOn(Compile)
         .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
         .Executes(() =>

@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "build\_build.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Validot.Tests.Functional", "tests\Validot.Tests.Functional\Validot.Tests.Functional.csproj", "{E5AC95A3-1613-433C-A318-9A19B24BF73F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Validot.Benchmarks", "tests\Validot.Benchmarks\Validot.Benchmarks.csproj", "{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,10 +68,23 @@ Global
 		{E5AC95A3-1613-433C-A318-9A19B24BF73F}.Release|x64.Build.0 = Release|Any CPU
 		{E5AC95A3-1613-433C-A318-9A19B24BF73F}.Release|x86.ActiveCfg = Release|Any CPU
 		{E5AC95A3-1613-433C-A318-9A19B24BF73F}.Release|x86.Build.0 = Release|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Debug|x64.Build.0 = Debug|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Debug|x86.Build.0 = Debug|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Release|x64.ActiveCfg = Release|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Release|x64.Build.0 = Release|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Release|x86.ActiveCfg = Release|Any CPU
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BFD540CD-1648-4E7B-B5C5-B6EC0C6D4D22} = {013FC1C3-9AFF-43CE-915C-6BF4FA32FE80}
 		{6F71A1C1-319A-492F-B930-0FF4FB599918} = {1A57BE44-6C94-4A7C-A2B5-EE6CDB6E9176}
 		{E5AC95A3-1613-433C-A318-9A19B24BF73F} = {1A57BE44-6C94-4A7C-A2B5-EE6CDB6E9176}
+		{D9D2BCCB-1D86-42A3-87F8-9FBA4057BD08} = {1A57BE44-6C94-4A7C-A2B5-EE6CDB6E9176}
 	EndGlobalSection
 EndGlobal

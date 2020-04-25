@@ -282,7 +282,7 @@ class Build : NukeBuild
             );
         });
     
-    Target Package => _ => _
+    Target NugetPackage => _ => _
         .DependsOn(Compile)
         .OnlyWhenDynamic(() => Configuration == Configuration.Release)
         .Executes(() =>
@@ -304,8 +304,8 @@ class Build : NukeBuild
             );
         });
 
-    Target PublishPackage => _ => _
-        .DependsOn(Package)
+    Target PublishNugetPackage => _ => _
+        .DependsOn(NugetPackage)
         .OnlyWhenDynamic(() => NuGetApiKey != null)
         .OnlyWhenDynamic(() => Configuration == Configuration.Release)
         .Executes(() =>

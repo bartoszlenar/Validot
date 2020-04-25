@@ -142,9 +142,13 @@ Specification<string> nameSpecification = _ => _
     .SingleLine()
     .Rule(name => name.All(char.IsLetterOrDigit));
 
+
+
 Specification<string> emailSpecification = _ => _
     .Email()
     .Rule(email => email.All(char.IsLowerCase)).WithMessage("Must contain only lower case characters");
+
+
 
 Specification<UserModel> userSpecification = _ => _
     .Member(m => Name, nameSpecification).WithMessage("Must comply with name rules")

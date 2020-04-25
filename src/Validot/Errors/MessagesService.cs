@@ -15,11 +15,11 @@ namespace Validot.Errors
         public MessagesService(
             IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations,
             IReadOnlyDictionary<int, IError> errors,
-            IReadOnlyDictionary<string, IReadOnlyList<int>> errorsMap)
+            IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
         {
             _translator = new MessagesTranslator(translations);
 
-            _cache = BuildMessagesCache(_translator, errors, errorsMap);
+            _cache = BuildMessagesCache(_translator, errors, errorMap);
         }
 
         public IReadOnlyList<string> TranslationsNames => _translator.TranslationsNames;
@@ -87,13 +87,13 @@ namespace Validot.Errors
             targetIndex += source.Count;
         }
 
-        private MessagesCache BuildMessagesCache(MessagesTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> errorsMap)
+        private MessagesCache BuildMessagesCache(MessagesTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
         {
             ThrowHelper.NullArgument(errors, nameof(errors));
-            ThrowHelper.NullArgument(errorsMap, nameof(errorsMap));
-            ThrowHelper.NullInCollection(errorsMap.Values.ToArray(), $"{nameof(errorsMap)}.{nameof(errorsMap.Values)}");
+            ThrowHelper.NullArgument(errorMap, nameof(errorMap));
+            ThrowHelper.NullInCollection(errorMap.Values.ToArray(), $"{nameof(errorMap)}.{nameof(errorMap.Values)}");
 
-            var uniqueErrorsIds = errorsMap.SelectMany(b => b.Value).Distinct().ToArray();
+            var uniqueErrorsIds = errorMap.SelectMany(b => b.Value).Distinct().ToArray();
 
             var cache = new MessagesCache();
 
@@ -114,11 +114,11 @@ namespace Validot.Errors
 
             foreach (var translationName in TranslationsNames)
             {
-                foreach (var errorsMapPair in errorsMap)
+                foreach (var errorMapPair in errorMap)
                 {
-                    var path = errorsMapPair.Key;
+                    var path = errorMapPair.Key;
 
-                    foreach (var errorId in errorsMapPair.Value)
+                    foreach (var errorId in errorMapPair.Value)
                     {
                         if (!cache.ContainsPathArgs(translationName, errorId) || PathsHelper.ContainsIndexes(path))
                         {

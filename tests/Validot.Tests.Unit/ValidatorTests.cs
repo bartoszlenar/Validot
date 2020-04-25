@@ -116,7 +116,7 @@ namespace Validot.Tests.Unit
         }
 
         [Theory]
-        [MemberData(nameof(ValidationTestData.CasesForErrorsMap_Data), MemberType = typeof(ValidationTestData))]
+        [MemberData(nameof(ValidationTestData.CasesForErrorMap_Data), MemberType = typeof(ValidationTestData))]
         public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
         {
             _ = name;
@@ -219,7 +219,7 @@ namespace Validot.Tests.Unit
             }
 
             [Theory]
-            [MemberData(nameof(ValidationTestData.CasesForErrorsMap_Data), MemberType = typeof(ValidationTestData))]
+            [MemberData(nameof(ValidationTestData.CasesForErrorMap_Data), MemberType = typeof(ValidationTestData))]
             public void Should_FeedCapacityInfo_After_Creation_WithDiscoveryContext_And_ErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
             {
                 _ = name;
@@ -365,7 +365,7 @@ namespace Validot.Tests.Unit
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForFeed_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_FeedCapacityInfo_After_Validating_WithValidationContext_OnlyWhen_ErrorsFound(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorsMapCases, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
+            public void Should_FeedCapacityInfo_After_Validating_WithValidationContext_OnlyWhen_ErrorsFound(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorMapCases, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
             {
                 _ = name;
 
@@ -382,7 +382,7 @@ namespace Validot.Tests.Unit
                     {
                         var errorsHolder = info.ArgAt<IErrorsHolder>(0);
 
-                        errorsHolder.ShouldMatchAmounts(errorsMapCases);
+                        errorsHolder.ShouldMatchAmounts(errorMapCases);
 
                         discoveryCounter++;
                     });
@@ -428,7 +428,7 @@ namespace Validot.Tests.Unit
 
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForFeedMultipleTimes_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_FeedCapacityInfo_After_EachValidation_WithValidationContext_OnlyWhen_ErrorsFound(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyList<ValidationTestData.TestClass> models, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorsMapCases, IReadOnlyList<IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>>> errorCases)
+            public void Should_FeedCapacityInfo_After_EachValidation_WithValidationContext_OnlyWhen_ErrorsFound(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyList<ValidationTestData.TestClass> models, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorMapCases, IReadOnlyList<IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>>> errorCases)
             {
                  _ = name;
 
@@ -446,7 +446,7 @@ namespace Validot.Tests.Unit
                      {
                          var errorsHolder = info.ArgAt<IErrorsHolder>(0);
 
-                         errorsHolder.ShouldMatchAmounts(errorsMapCases);
+                         errorsHolder.ShouldMatchAmounts(errorMapCases);
 
                          discoveryCounter++;
                      });

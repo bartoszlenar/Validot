@@ -14,7 +14,7 @@ namespace Validot.Tests.Unit.Factory
         public class ValidationWhenFromSpecification
         {
             [Theory]
-            [MemberData(nameof(ValidationTestData.CasesForErrorsMap_Data), MemberType = typeof(ValidationTestData))]
+            [MemberData(nameof(ValidationTestData.CasesForErrorMap_Data), MemberType = typeof(ValidationTestData))]
             public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
             {
                 _ = name;
@@ -66,7 +66,7 @@ namespace Validot.Tests.Unit.Factory
             }
 
             [Theory]
-            [MemberData(nameof(ValidationTestData.CasesForErrorsMap_Data), MemberType = typeof(ValidationTestData))]
+            [MemberData(nameof(ValidationTestData.CasesForErrorMap_Data), MemberType = typeof(ValidationTestData))]
             public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
             {
                 _ = name;

@@ -14,9 +14,9 @@ namespace Validot.Tests.Unit
     {
         public static void ShouldHaveErrorMap<T>(this IValidator<T> validator, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations)
         {
-            validator.ErrorsMap.Should().NotBeNull();
+            validator.ErrorMap.Should().NotBeNull();
 
-            var rawErrors = validator.ErrorsMap.Details.GetRawErrors();
+            var rawErrors = validator.ErrorMap.Details.GetRawErrors();
 
             rawErrors.ShouldMatchExpectations(rawErrorsExpectations);
         }

@@ -18,16 +18,20 @@
     <img src="https://img.shields.io/codecov/c/gh/bartoszlenar/Validot/master?style=for-the-badge&logo=codecov&logoColor=white&logoWidth=20">
   </a>
   <a href="https://www.nuget.org/packages/Validot">
-      <img src="https://img.shields.io/nuget/v/Validot?style=for-the-badge&logo=nuget&logoColor=white&logoWidth=20">
+      <img src="https://img.shields.io/nuget/v/Validot?style=for-the-badge&logo=nuget&logoColor=white&logoWidth=20&label=STABLE%20VERSION">
   </a>
-
 </p>
 <p align="center">
   <a href="https://github.com/bartoszlenar/Validot/commits/master">
     <img src="https://img.shields.io/github/last-commit/bartoszlenar/Validot/master?style=flat-square">
   </a>
   <a href="https://github.com/bartoszlenar/Validot/releases">
-    <img src="https://img.shields.io/github/release-date/bartoszlenar/Validot?style=flat-square&label=last%20release">
+    <img src="https://img.shields.io/github/release-date-pre/bartoszlenar/Validot?include_prereleases&style=flat-square&label=last%20release">
+  </a>
+  <a href="https://github.com/bartoszlenar/Validot/releases">
+    <img src="https://img.shields.io/github/v/release/bartoszlenar/Validot?include_prereleases&style=flat-square&label=last%20release">
+  </a>
+  <a>
   </a>
   <a href="https://github.com/bartoszlenar/Validot/milestone/1">
     <img alt="GitHub milestone" src="https://img.shields.io/github/milestones/progress/bartoszlenar/Validot/1?label=milestone%20v1.0&style=flat-square">
@@ -138,9 +142,13 @@ Specification<string> nameSpecification = _ => _
     .SingleLine()
     .Rule(name => name.All(char.IsLetterOrDigit));
 
+
+
 Specification<string> emailSpecification = _ => _
     .Email()
     .Rule(email => email.All(char.IsLowerCase)).WithMessage("Must contain only lower case characters");
+
+
 
 Specification<UserModel> userSpecification = _ => _
     .Member(m => Name, nameSpecification).WithMessage("Must comply with name rules")

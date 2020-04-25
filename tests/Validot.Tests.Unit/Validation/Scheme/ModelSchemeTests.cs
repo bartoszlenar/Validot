@@ -30,8 +30,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
             var errorsRegistry = new Dictionary<int, IError>();
             errorsRegistry.Add(44, new Error());
-            var errorsMap = new Dictionary<string, IReadOnlyList<int>>();
-            errorsMap.Add("path", new[] { 44 });
+            var errorMap = new Dictionary<string, IReadOnlyList<int>>();
+            errorMap.Add("path", new[] { 44 });
             var pathsMap = new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
             pathsMap.Add("", new Dictionary<string, string>()
@@ -39,7 +39,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 ["path"] = "path"
             });
 
-            var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
+            var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
             return modelScheme;
         }
@@ -57,8 +57,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 var errorsRegistry = new Dictionary<int, IError>();
                 errorsRegistry.Add(44, new Error());
 
-                var errorsMap = new Dictionary<string, IReadOnlyList<int>>();
-                errorsMap.Add("path", new[] { 44 });
+                var errorMap = new Dictionary<string, IReadOnlyList<int>>();
+                errorMap.Add("path", new[] { 44 });
 
                 var pathsMap = new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
@@ -73,7 +73,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                     specificationScopes,
                     rootSpecificationScopeId,
                     errorsRegistry,
-                    errorsMap,
+                    errorMap,
                     pathsMap,
                     Substitute.For<ICapacityInfo>(),
                     false
@@ -82,14 +82,14 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_Initialize(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_Initialize(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
-                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
+                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 modelScheme.RootSpecificationScope.Should().BeSameAs(rootSpecificationScope);
 
                 modelScheme.ErrorsRegistry.Should().BeSameAs(errorsRegistry);
-                modelScheme.ErrorsMap.Should().BeSameAs(errorsMap);
+                modelScheme.ErrorMap.Should().BeSameAs(errorMap);
                 modelScheme.CapacityInfo.Should().NotBeNull();
                 modelScheme.IsReferenceLoopPossible.Should().Be(isReferenceLoopPossible);
                 modelScheme.RootSpecificationScopeId.Should().Be(rootSpecificationScopeId);
@@ -97,73 +97,73 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullSpecificationScopes(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_ThrowException_When_Initialize_With_NullSpecificationScopes(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
                 _ = specificationScopes;
 
-                Action action = () => new ModelScheme<TestClass>(null, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
+                Action action = () => new ModelScheme<TestClass>(null, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_RootSpecificationScopeId_NotPresentInSpecificationScopes(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_ThrowException_When_Initialize_With_RootSpecificationScopeId_NotPresentInSpecificationScopes(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
                 _ = rootSpecificationScopeId;
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, -1, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, -1, errorsRegistry, errorMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_RootSpecificationScopeId_OfSpecificationScopeOfInvalidType(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_ThrowException_When_Initialize_With_RootSpecificationScopeId_OfSpecificationScopeOfInvalidType(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
 
                 var invalidRootSpecificationScope = new SpecificationScope<object>();
                 specificationScopes[rootSpecificationScopeId] = invalidRootSpecificationScope;
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullErrorsRegistry(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_ThrowException_When_Initialize_With_NullErrorsRegistry(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
                 _ = errorsRegistry;
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, null, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, null, errorMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullInErrorsRegistry(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_ThrowException_When_Initialize_With_NullInErrorsRegistry(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
 
                 errorsRegistry.Add(45, null);
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullErrorsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_ThrowException_When_Initialize_With_NullErrorMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
-                _ = errorsMap;
+                _ = errorMap;
 
                 Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, null, pathsMap, capacityInfo, isReferenceLoopPossible);
 
@@ -172,45 +172,45 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullInErrorsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_ThrowException_When_Initialize_With_NullInErrorMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
 
-                errorsMap.Add("some_path", null);
+                errorMap.Add("some_path", null);
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullPathsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_ThrowException_When_Initialize_With_NullPathsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
                 _ = pathsMap;
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, null, capacityInfo, isReferenceLoopPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, null, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullInPathsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_ThrowException_When_Initialize_With_NullInPathsMap(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
 
                 pathsMap.Add("some_path", null);
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullInPathsMapInnerDictionary(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_ThrowException_When_Initialize_With_NullInPathsMapInnerDictionary(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
 
@@ -219,19 +219,19 @@ namespace Validot.Tests.Unit.Validation.Scheme
                     ["some_entry"] = null
                 });
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, capacityInfo, isReferenceLoopPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, capacityInfo, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
 
             [Theory]
             [MemberData(nameof(Should_Initialize_Data))]
-            public void Should_ThrowException_When_Initialize_With_NullCapacityInfo(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorsMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+            public void Should_ThrowException_When_Initialize_With_NullCapacityInfo(object rootSpecificationScope, Dictionary<int, object> specificationScopes, int rootSpecificationScopeId, Dictionary<int, IError> errorsRegistry, Dictionary<string, IReadOnlyList<int>> errorMap, Dictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
             {
                 _ = rootSpecificationScope;
                 _ = capacityInfo;
 
-                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, null, isReferenceLoopPossible);
+                Action action = () => new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, null, isReferenceLoopPossible);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
@@ -250,8 +250,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var errorsRegistry = new Dictionary<int, IError>();
                 errorsRegistry.Add(44, new Error());
-                var errorsMap = new Dictionary<string, IReadOnlyList<int>>();
-                errorsMap.Add("path", new[] { 44 });
+                var errorMap = new Dictionary<string, IReadOnlyList<int>>();
+                errorMap.Add("path", new[] { 44 });
                 var pathsMap = new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
                 pathsMap.Add("", new Dictionary<string, string>()
@@ -259,7 +259,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                     ["path"] = "path"
                 });
 
-                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
+                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
                 var scope = modelScheme.GetSpecificationScope<TestClass>(10);
 
@@ -277,8 +277,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var errorsRegistry = new Dictionary<int, IError>();
                 errorsRegistry.Add(44, new Error());
-                var errorsMap = new Dictionary<string, IReadOnlyList<int>>();
-                errorsMap.Add("path", new[] { 44 });
+                var errorMap = new Dictionary<string, IReadOnlyList<int>>();
+                errorMap.Add("path", new[] { 44 });
                 var pathsMap = new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
                 pathsMap.Add("", new Dictionary<string, string>()
@@ -301,7 +301,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 var specificationScope5 = new SpecificationScope<DateTimeOffset?>();
                 specificationScopes.Add(34, specificationScope5);
 
-                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
+                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
                 modelScheme.GetSpecificationScope<TestClass>(30).Should().BeSameAs(specificationScope1);
                 modelScheme.GetSpecificationScope<TestClass>(31).Should().BeSameAs(specificationScope2);
@@ -321,8 +321,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var errorsRegistry = new Dictionary<int, IError>();
                 errorsRegistry.Add(44, new Error());
-                var errorsMap = new Dictionary<string, IReadOnlyList<int>>();
-                errorsMap.Add("path", new[] { 44 });
+                var errorMap = new Dictionary<string, IReadOnlyList<int>>();
+                errorMap.Add("path", new[] { 44 });
                 var pathsMap = new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
                 pathsMap.Add("", new Dictionary<string, string>()
@@ -333,7 +333,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 var specificationScope1 = new SpecificationScope<TestClass>();
                 specificationScopes.Add(30, specificationScope1);
 
-                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
+                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
                 Action action = () => modelScheme.GetSpecificationScope<TestClass>(123321);
                 action.Should().ThrowExactly<KeyNotFoundException>();
@@ -350,8 +350,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var errorsRegistry = new Dictionary<int, IError>();
                 errorsRegistry.Add(44, new Error());
-                var errorsMap = new Dictionary<string, IReadOnlyList<int>>();
-                errorsMap.Add("path", new[] { 44 });
+                var errorMap = new Dictionary<string, IReadOnlyList<int>>();
+                errorMap.Add("path", new[] { 44 });
                 var pathsMap = new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
                 pathsMap.Add("", new Dictionary<string, string>()
@@ -362,7 +362,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 var specificationScope1 = new SpecificationScope<decimal>();
                 specificationScopes.Add(30, specificationScope1);
 
-                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
+                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
                 Action action = () => modelScheme.GetSpecificationScope<TestClass>(30);
                 action.Should().ThrowExactly<InvalidCastException>();
@@ -434,8 +434,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 specificationScopes.Add(rootSpecificationScopeId, rootSpecificationScope);
                 var errorsRegistry = new Dictionary<int, IError>();
                 errorsRegistry.Add(44, new Error());
-                var errorsMap = new Dictionary<string, IReadOnlyList<int>>();
-                errorsMap.Add("path", new[] { 44 });
+                var errorMap = new Dictionary<string, IReadOnlyList<int>>();
+                errorMap.Add("path", new[] { 44 });
 
                 var pathsMap = new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
@@ -444,7 +444,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                     ["second"] = "third"
                 });
 
-                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
+                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
                 var path = modelScheme.GetPathForScope("first", "second");
 
@@ -461,12 +461,12 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 specificationScopes.Add(rootSpecificationScopeId, rootSpecificationScope);
                 var errorsRegistry = new Dictionary<int, IError>();
                 errorsRegistry.Add(44, new Error());
-                var errorsMap = new Dictionary<string, IReadOnlyList<int>>();
-                errorsMap.Add("path", new[] { 44 });
+                var errorMap = new Dictionary<string, IReadOnlyList<int>>();
+                errorMap.Add("path", new[] { 44 });
 
                 var pathsMap = new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
-                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
+                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
                 var path = modelScheme.GetPathForScope(basePath, newSegment);
 
@@ -482,8 +482,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 specificationScopes.Add(rootSpecificationScopeId, rootSpecificationScope);
                 var errorsRegistry = new Dictionary<int, IError>();
                 errorsRegistry.Add(44, new Error());
-                var errorsMap = new Dictionary<string, IReadOnlyList<int>>();
-                errorsMap.Add("path", new[] { 44 });
+                var errorMap = new Dictionary<string, IReadOnlyList<int>>();
+                errorMap.Add("path", new[] { 44 });
 
                 var pathsMap = new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
@@ -492,7 +492,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                     ["second"] = "third"
                 });
 
-                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
+                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
                 var path = modelScheme.GetPathForScope("first", "second");
 
@@ -508,8 +508,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 specificationScopes.Add(rootSpecificationScopeId, rootSpecificationScope);
                 var errorsRegistry = new Dictionary<int, IError>();
                 errorsRegistry.Add(44, new Error());
-                var errorsMap = new Dictionary<string, IReadOnlyList<int>>();
-                errorsMap.Add("path", new[] { 44 });
+                var errorMap = new Dictionary<string, IReadOnlyList<int>>();
+                errorMap.Add("path", new[] { 44 });
 
                 var pathsMap = new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
@@ -518,7 +518,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                     ["next_level_not_present"] = "third"
                 });
 
-                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
+                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
                 var path = modelScheme.GetPathForScope("first", "second");
 
@@ -534,8 +534,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 specificationScopes.Add(rootSpecificationScopeId, rootSpecificationScope);
                 var errorsRegistry = new Dictionary<int, IError>();
                 errorsRegistry.Add(44, new Error());
-                var errorsMap = new Dictionary<string, IReadOnlyList<int>>();
-                errorsMap.Add("path", new[] { 44 });
+                var errorMap = new Dictionary<string, IReadOnlyList<int>>();
+                errorMap.Add("path", new[] { 44 });
 
                 var pathsMap = new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
@@ -548,7 +548,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                     ["<X"] = "XPATH",
                 });
 
-                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorsMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
+                var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
                 modelScheme.GetPathForScope("first", "second").Should().Be("first.second");
                 modelScheme.GetPathForScope("A", "B").Should().Be("C");

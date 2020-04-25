@@ -29,9 +29,9 @@ namespace Validot
             Settings = (settings ?? ValidatorSettings.GetDefault()).GetVerified();
 
             _modelScheme = ModelSchemeFactory.Create(specification, Settings.CapacityInfo);
-            _messagesService = new MessagesService(Settings.Translations, _modelScheme.ErrorsRegistry, _modelScheme.ErrorsMap);
+            _messagesService = new MessagesService(Settings.Translations, _modelScheme.ErrorsRegistry, _modelScheme.ErrorMap);
 
-            ErrorsMap = new ValidationResult(_modelScheme.ErrorsMap.ToDictionary(p => p.Key, p => p.Value.ToList()), _modelScheme.ErrorsRegistry, _messagesService);
+            ErrorMap = new ValidationResult(_modelScheme.ErrorMap.ToDictionary(p => p.Key, p => p.Value.ToList()), _modelScheme.ErrorsRegistry, _messagesService);
 
             if (_modelScheme.IsReferenceLoopPossible)
             {
@@ -52,7 +52,7 @@ namespace Validot
 
         public IValidatorSettings Settings { get; }
 
-        public IValidationResult ErrorsMap { get; }
+        public IValidationResult ErrorMap { get; }
 
         public bool IsValid(T model)
         {

@@ -13,7 +13,7 @@ namespace Validot.Validation.Scheme
 
         private readonly IReadOnlyDictionary<int, object> _specificationScopes;
 
-        public ModelScheme(IReadOnlyDictionary<int, object> specificationScopes, int rootSpecificationScopeId, IReadOnlyDictionary<int, IError> errorsRegistry, IReadOnlyDictionary<string, IReadOnlyList<int>> errorsMap, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+        public ModelScheme(IReadOnlyDictionary<int, object> specificationScopes, int rootSpecificationScopeId, IReadOnlyDictionary<int, IError> errorsRegistry, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
         {
             ThrowHelper.NullArgument(specificationScopes, nameof(specificationScopes));
             ThrowHelper.NullInCollection(specificationScopes.Values, $"{nameof(specificationScopes)}.{nameof(specificationScopes.Values)}");
@@ -35,9 +35,9 @@ namespace Validot.Validation.Scheme
             ThrowHelper.NullInCollection(errorsRegistry.Values, $"{nameof(errorsRegistry)}.{nameof(errorsRegistry.Values)}");
             ErrorsRegistry = errorsRegistry;
 
-            ThrowHelper.NullArgument(errorsMap, nameof(errorsMap));
-            ThrowHelper.NullInCollection(errorsMap.Values, $"{nameof(errorsMap)}.{nameof(errorsMap.Values)}");
-            ErrorsMap = errorsMap;
+            ThrowHelper.NullArgument(errorMap, nameof(errorMap));
+            ThrowHelper.NullInCollection(errorMap.Values, $"{nameof(errorMap)}.{nameof(errorMap.Values)}");
+            ErrorMap = errorMap;
 
             ThrowHelper.NullArgument(pathsMap, nameof(pathsMap));
             ThrowHelper.NullInCollection(pathsMap.Values, $"{nameof(pathsMap)}.{nameof(pathsMap.Values)}");
@@ -64,7 +64,7 @@ namespace Validot.Validation.Scheme
 
         public IReadOnlyDictionary<int, IError> ErrorsRegistry { get; }
 
-        public IReadOnlyDictionary<string, IReadOnlyList<int>> ErrorsMap { get; }
+        public IReadOnlyDictionary<string, IReadOnlyList<int>> ErrorMap { get; }
 
         public SpecificationScope<T> RootSpecificationScope { get; }
 

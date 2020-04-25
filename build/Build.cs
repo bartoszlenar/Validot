@@ -68,6 +68,9 @@ class Build : NukeBuild
     [Parameter("Commit SHA")]
     string CommitSha;
     
+    [Parameter("If true, BenchmarkDotNet will run 'short' jobs.")]
+    bool QuickBenchmark;
+    
     [Parameter("Allow warnings")]
     bool AllowWarnings;
 
@@ -80,6 +83,7 @@ class Build : NukeBuild
     AbsolutePath TestsResultsDirectory => ArtifactsDirectory / "tests";
     AbsolutePath CodeCoverageDirectory => ArtifactsDirectory / "coverage";
     AbsolutePath CodeCoverageReportsDirectory => ArtifactsDirectory / "coverage_reports";
+    AbsolutePath BenchmarksDirectory => ArtifactsDirectory / "benchmarks";
     AbsolutePath NuGetDirectory => ArtifactsDirectory / "nuget";
 
     protected override void OnBuildInitialized()
@@ -96,6 +100,9 @@ class Build : NukeBuild
         Logger.Info($"Configuration: {Configuration}");
         Logger.Info($"CommitSha: {CommitSha ?? "MISSING"}");
         Logger.Info($"AllowWarnings: {AllowWarnings}");
+        
+        Logger.Info($"CommitSha: {CommitSha ?? "MISSING"}");
+        Logger.Info($"QuickBenchmark: {QuickBenchmark}");
 
         var nuGetApiKeyPresence = (NuGetApiKey is null) ? "MISSING" : "present";
         Logger.Info($"NuGetApiKey: {nuGetApiKeyPresence}");
@@ -173,7 +180,8 @@ class Build : NukeBuild
         {
             var testsProjects = new[]
             {
-                TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj"
+                TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj",
+                TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj"
             };
 
             foreach (var testProject in testsProjects)
@@ -192,19 +200,27 @@ class Build : NukeBuild
     
     Target Tests => _ => _
         .DependsOn(Compile)
+        .ProceedAfterFailure()
         .Executes(() =>
         {
             DotNetTest(p => p
                 .EnableNoBuild()
                 .SetConfiguration(Configuration)
-                .SetProjectFile(Solution)
+                .SetProjectFile(TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj")
                 .SetFramework(DotNet)
-                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.tests.trx"}")
+                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.testresults"/ $"Validot.{Version}.unit.trx"}")
             );
             
+            DotNetTest(p => p
+                .EnableNoBuild()
+                .SetConfiguration(Configuration)
+                .SetProjectFile(TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj")
+                .SetFramework(DotNet)
+                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.functional.trx"}")
+            );
         });
 
-     Target CodeCoverage => _ => _
+    Target CodeCoverage => _ => _
         .DependsOn(Compile)
         .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
         .Executes(() =>
@@ -246,7 +262,27 @@ class Build : NukeBuild
             File.Move(CodeCoverageReportsDirectory / $"Validot.{Version}.coverage_report/Summary.json", CodeCoverageReportsDirectory / $"Validot.{Version}.coverage_summary.json");
         });
 
-    Target Package => _ => _
+    Target Benchmarks => _ => _
+        .DependsOn(Clean)
+        .Executes(() =>
+        {
+            var benchmarksPath = BenchmarksDirectory / $"Validot.{Version}.benchmarks";
+
+            var jobShort = QuickBenchmark ? "--job short" : string.Empty;
+            
+            DotNetRun(p => p
+                .SetProjectFile(TestsDirectory / "Validot.Benchmarks/Validot.Benchmarks.csproj")
+                .SetConfiguration(Configuration.Release)
+                .SetArgumentConfigurator(a => a
+                    .Add("--")
+                    .Add($"--artifacts {benchmarksPath} {jobShort}")
+                    .Add($"--exporters GitHub StackOverflow JSON HTML")
+                    .Add("--filter *")
+                )
+            );
+        });
+    
+    Target NugetPackage => _ => _
         .DependsOn(Compile)
         .OnlyWhenDynamic(() => Configuration == Configuration.Release)
         .Executes(() =>
@@ -268,8 +304,8 @@ class Build : NukeBuild
             );
         });
 
-    Target PublishPackage => _ => _
-        .DependsOn(Package)
+    Target PublishNugetPackage => _ => _
+        .DependsOn(NugetPackage)
         .OnlyWhenDynamic(() => NuGetApiKey != null)
         .OnlyWhenDynamic(() => Configuration == Configuration.Release)
         .Executes(() =>
@@ -306,16 +342,24 @@ class Build : NukeBuild
     {
         var testsCsprojs = new[]
         {
-            TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj"
+            TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj",
+            TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj",
+            TestsDirectory / "Validot.Benchmarks/Validot.Benchmarks.csproj",
         };
 
         foreach (var csproj in testsCsprojs)
         {
-            Logger.Info($"Setting framework {framework} in {csproj}");
-            var content = TargetFrameworkRegex.Replace(File.ReadAllText(csproj), $"<TargetFramework>{framework}</TargetFramework>");
-            
-            File.WriteAllText(csproj, content);
+            SetFrameworkInCsProj(framework, csproj);
         }
+    }
+
+    void SetFrameworkInCsProj(string framework, string csProjPath)
+    {
+        Logger.Info($"Setting framework {framework} in {csProjPath}");
+        
+        var content = TargetFrameworkRegex.Replace(File.ReadAllText(csProjPath), $"<TargetFramework>{framework}</TargetFramework>");
+            
+        File.WriteAllText(csProjPath, content);
     }
     
     void ResetFrameworkInTests() => SetFrameworkInTests("netcoreapp3.1");

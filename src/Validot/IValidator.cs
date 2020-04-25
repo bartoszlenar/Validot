@@ -7,7 +7,7 @@ namespace Validot
     {
         IValidatorSettings Settings { get; }
 
-        IValidationResult ErrorsMap { get; }
+        IValidationResult ErrorMap { get; }
 
         bool IsValid(T model);
 

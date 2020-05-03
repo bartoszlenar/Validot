@@ -68,8 +68,11 @@ class Build : NukeBuild
     [Parameter("Commit SHA")]
     string CommitSha;
     
-    [Parameter("If true, BenchmarkDotNet will run 'short' jobs.")]
-    bool QuickBenchmark;
+    [Parameter("If true, BenchmarkDotNet will run full (time consuming, but more accurate) jobs.")]
+    bool FullBenchmark;
+
+    [Parameter("Benchmark filter. If empty, all benchmarks will be run.")]
+    string BenchmarkFilter;
     
     [Parameter("Allow warnings")]
     bool AllowWarnings;
@@ -102,7 +105,8 @@ class Build : NukeBuild
         Logger.Info($"AllowWarnings: {AllowWarnings}");
         
         Logger.Info($"CommitSha: {CommitSha ?? "MISSING"}");
-        Logger.Info($"QuickBenchmark: {QuickBenchmark}");
+        Logger.Info($"FullBenchmark: {FullBenchmark}");
+        Logger.Info($"BenchmarkFilter: {FullBenchmark}");
 
         var nuGetApiKeyPresence = (NuGetApiKey is null) ? "MISSING" : "present";
         Logger.Info($"NuGetApiKey: {nuGetApiKeyPresence}");
@@ -268,7 +272,8 @@ class Build : NukeBuild
         {
             var benchmarksPath = BenchmarksDirectory / $"Validot.{Version}.benchmarks";
 
-            var jobShort = QuickBenchmark ? "--job short" : string.Empty;
+            var jobShort = FullBenchmark ? string.Empty : "--job short";
+            var filter = BenchmarkFilter is null ? "*" : BenchmarkFilter;
             
             DotNetRun(p => p
                 .SetProjectFile(TestsDirectory / "Validot.Benchmarks/Validot.Benchmarks.csproj")
@@ -276,8 +281,8 @@ class Build : NukeBuild
                 .SetArgumentConfigurator(a => a
                     .Add("--")
                     .Add($"--artifacts {benchmarksPath} {jobShort}")
-                    .Add($"--exporters GitHub StackOverflow JSON HTML")
-                    .Add("--filter *")
+                    .Add("--exporters GitHub StackOverflow JSON HTML")
+                    .Add($"--filter {filter}")
                 )
             );
         });

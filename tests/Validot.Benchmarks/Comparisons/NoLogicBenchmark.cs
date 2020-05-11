@@ -8,34 +8,34 @@ namespace Validot.Benchmarks.Comparisons
     using FluentValidation;
 
     [MemoryDiagnoser]
-    public class VoidComparison
+    public class NoLogicBenchmark
     {
-        private IReadOnlyList<VoidModel> _voidModels;
+        private IReadOnlyList<VoidModel> _noLogicModels;
         
         private Validot.IValidator<VoidModel> _validotSingleRuleValidator;
 
         private Validot.IValidator<VoidModel> _validotTenRulesValidator;
         
-        private VoidModelSingleRuleValidator _fluentValidationSingleRuleValidator;
+        private NoLogicModelSingleRuleValidator _fluentValidationSingleRuleValidator;
 
-        private VoidModelTenRulesValidator _fluentValidationTenRulesValidator;
+        private NoLogicModelTenRulesValidator _fluentValidationTenRulesValidator;
 
         public class VoidModel
         {
             public object Member { get; set; }
         }
         
-        public class VoidModelSingleRuleValidator : AbstractValidator<VoidModel> 
+        public class NoLogicModelSingleRuleValidator : AbstractValidator<VoidModel> 
         {
-            public VoidModelSingleRuleValidator()
+            public NoLogicModelSingleRuleValidator()
             {
                 RuleFor(m => m.Member).Must(o => true);
             }
         }
         
-        public class VoidModelTenRulesValidator : AbstractValidator<VoidModel> 
+        public class NoLogicModelTenRulesValidator : AbstractValidator<VoidModel> 
         {
-            public VoidModelTenRulesValidator()
+            public NoLogicModelTenRulesValidator()
             {
                 RuleFor(m => m.Member).Must(o => true);
                 RuleFor(m => m.Member).Must(o => true);
@@ -57,26 +57,26 @@ namespace Validot.Benchmarks.Comparisons
         public void GlobalSetup()
         {
             _validotSingleRuleValidator = Validator.Factory.Create<VoidModel>(_ => _
-                .Member(m => m.Member, m => m.Optional().Rule(m => true))
+                .Member(m => m.Member, m => m.Optional().Rule(n => true))
             );
             
             _validotTenRulesValidator = Validator.Factory.Create<VoidModel>(_ => _
-                .Member(m => m.Member, m => m.Optional().Rule(m => true))
-                .Member(m => m.Member, m => m.Optional().Rule(m => true))
-                .Member(m => m.Member, m => m.Optional().Rule(m => true))
-                .Member(m => m.Member, m => m.Optional().Rule(m => true))
-                .Member(m => m.Member, m => m.Optional().Rule(m => true))
-                .Member(m => m.Member, m => m.Optional().Rule(m => true))
-                .Member(m => m.Member, m => m.Optional().Rule(m => true))
-                .Member(m => m.Member, m => m.Optional().Rule(m => true))
-                .Member(m => m.Member, m => m.Optional().Rule(m => true))
-                .Member(m => m.Member, m => m.Optional().Rule(m => true))
+                .Member(m => m.Member, m => m.Optional().Rule(n => true))
+                .Member(m => m.Member, m => m.Optional().Rule(n => true))
+                .Member(m => m.Member, m => m.Optional().Rule(n => true))
+                .Member(m => m.Member, m => m.Optional().Rule(n => true))
+                .Member(m => m.Member, m => m.Optional().Rule(n => true))
+                .Member(m => m.Member, m => m.Optional().Rule(n => true))
+                .Member(m => m.Member, m => m.Optional().Rule(n => true))
+                .Member(m => m.Member, m => m.Optional().Rule(n => true))
+                .Member(m => m.Member, m => m.Optional().Rule(n => true))
+                .Member(m => m.Member, m => m.Optional().Rule(n => true))
             );
 
-            _fluentValidationSingleRuleValidator = new VoidModelSingleRuleValidator();
-            _fluentValidationTenRulesValidator = new VoidModelTenRulesValidator();
+            _fluentValidationSingleRuleValidator = new NoLogicModelSingleRuleValidator();
+            _fluentValidationTenRulesValidator = new NoLogicModelTenRulesValidator();
             
-            _voidModels = Enumerable.Range(0, N).Select(m => new VoidModel() { Member = new object() }).ToList();
+            _noLogicModels = Enumerable.Range(0, N).Select(m => new VoidModel() { Member = new object() }).ToList();
         }
         
         [Benchmark]
@@ -86,7 +86,7 @@ namespace Validot.Benchmarks.Comparisons
             
             for(var i = 0; i < N; ++i)
             {
-                t = _fluentValidationSingleRuleValidator.Validate(_voidModels[i]).IsValid;
+                t = _fluentValidationSingleRuleValidator.Validate(_noLogicModels[i]).IsValid;
             }
 
             return t;
@@ -95,13 +95,11 @@ namespace Validot.Benchmarks.Comparisons
         [Benchmark]
         public bool IsValid_TenRules_FluentValidation()
         {
-            _fluentValidationTenRulesValidator.CascadeMode = CascadeMode.StopOnFirstFailure;
-            
             var t = true;
             
             for(var i = 0; i < N; ++i)
             {
-                t = _fluentValidationTenRulesValidator.Validate(_voidModels[i]).IsValid;
+                t = _fluentValidationTenRulesValidator.Validate(_noLogicModels[i]).IsValid;
             }
 
             return t;
@@ -114,7 +112,7 @@ namespace Validot.Benchmarks.Comparisons
             
             for(var i = 0; i < N; ++i)
             {
-                t = _validotSingleRuleValidator.IsValid(_voidModels[i]);
+                t = _validotSingleRuleValidator.IsValid(_noLogicModels[i]);
             }
 
             return t;
@@ -127,7 +125,7 @@ namespace Validot.Benchmarks.Comparisons
             
             for(var i = 0; i < N; ++i)
             {
-                t = _validotTenRulesValidator.IsValid(_voidModels[i]);
+                t = _validotTenRulesValidator.IsValid(_noLogicModels[i]);
             }
 
             return t;
@@ -140,7 +138,7 @@ namespace Validot.Benchmarks.Comparisons
             
             for(var i = 0; i < N; ++i)
             {
-                t = _fluentValidationSingleRuleValidator.Validate(_voidModels[i]);
+                t = _fluentValidationSingleRuleValidator.Validate(_noLogicModels[i]);
             }
 
             return t;
@@ -153,7 +151,7 @@ namespace Validot.Benchmarks.Comparisons
             
             for(var i = 0; i < N; ++i)
             {
-                t = _fluentValidationTenRulesValidator.Validate(_voidModels[i]);
+                t = _fluentValidationTenRulesValidator.Validate(_noLogicModels[i]);
             }
 
             return t;
@@ -166,7 +164,7 @@ namespace Validot.Benchmarks.Comparisons
             
             for(var i = 0; i < N; ++i)
             {
-                t = _validotSingleRuleValidator.Validate(_voidModels[i]);
+                t = _validotSingleRuleValidator.Validate(_noLogicModels[i]);
             }
 
             return t;
@@ -179,7 +177,7 @@ namespace Validot.Benchmarks.Comparisons
             
             for(var i = 0; i < N; ++i)
             {
-                t = _validotSingleRuleValidator.Validate(_voidModels[i]);
+                t = _validotSingleRuleValidator.Validate(_noLogicModels[i]);
             }
 
             return t;

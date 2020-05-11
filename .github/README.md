@@ -1,6 +1,6 @@
 <h1 align="center">
   <br />
-    <img src="../docs/logo/Validot-logo.svg" height="256px" width="256px" />
+    <img src="../assets/logo/validot-logo.svg" height="256px" width="256px" />
   <br />
   Validot
   <br />

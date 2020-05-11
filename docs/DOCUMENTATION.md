@@ -10,6 +10,8 @@ _work in progress..._
 
 _work in progress..._
 
+### Handling nulls
+
 ### Specification holder
 
 _work in progress..._
@@ -70,3 +72,10 @@ _work in progress..._
 
 _work in progress..._
 
+## Development
+
+### Build
+
+### Tests
+
+### Benchmarks

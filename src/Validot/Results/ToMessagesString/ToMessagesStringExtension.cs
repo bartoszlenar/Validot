@@ -14,7 +14,7 @@ namespace Validot
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
 
-            if (@this.IsValid)
+            if (!@this.AnyErrors)
             {
                 return string.Empty;
             }

@@ -38,28 +38,28 @@ namespace Validot.Tests.Unit.Results
         }
 
         [Fact]
-        public void IsValid_Should_BeTrue_When_NoErrors()
+        public void AnyErrors_Should_BeFalse_When_NoErrors()
         {
             var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
 
-            validationResult.IsValid.Should().BeTrue();
+            validationResult.AnyErrors.Should().BeFalse();
         }
 
         [Fact]
-        public void IsValid_Should_BeFalse_When_AnyError()
+        public void AnyErrors_Should_BeTrue_When_ResultContainsErrors()
         {
             var resultErrors = new Dictionary<string, List<int>>();
             resultErrors.Add("path", new List<int>() { 1 });
 
             var validationResult = new ValidationResult(resultErrors, new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
 
-            validationResult.IsValid.Should().BeFalse();
+            validationResult.AnyErrors.Should().BeTrue();
         }
 
         [Fact]
         public void NoErrorsResult_Should_BeResultWithoutErrors()
         {
-            ValidationResult.NoErrorsResult.IsValid.Should().BeTrue();
+            ValidationResult.NoErrorsResult.AnyErrors.Should().BeFalse();
             ValidationResult.NoErrorsResult.PathsWithErrors.Should().BeEmpty();
             ValidationResult.NoErrorsResult.RegisteredTranslationsNames.Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetErrorCodes().Should().BeEmpty();

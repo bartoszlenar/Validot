@@ -1025,7 +1025,7 @@ namespace Validot.Tests.Unit.Testing
                     s => s.Rule(m => false));
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected result IsValid: True, but found False");
+                testResult.ErrorMessage.Should().Be("Expected result IsValid: True, but AnyErrors: True");
             }
 
             [Fact]
@@ -1043,7 +1043,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected result IsValid: False, but found True");
+                testResult.ErrorMessage.Should().Be("Expected result IsValid: False, but AnyErrors: False");
             }
 
             [Fact]
@@ -1298,7 +1298,7 @@ namespace Validot.Tests.Unit.Testing
 
                 Action action = () => Tester.TestSingleRule(new object(), specification, false, "message");
 
-                action.Should().ThrowExactly<TestFailedException>().WithMessage($"Expected result IsValid: False, but found True");
+                action.Should().ThrowExactly<TestFailedException>().WithMessage($"Expected result IsValid: False, but AnyErrors: False");
             }
 
             [Fact]
@@ -1309,7 +1309,7 @@ namespace Validot.Tests.Unit.Testing
 
                 Action action = () => Tester.TestSingleRule(new object(), specification, true);
 
-                action.Should().ThrowExactly<TestFailedException>().WithMessage($"Expected result IsValid: True, but found False");
+                action.Should().ThrowExactly<TestFailedException>().WithMessage($"Expected result IsValid: True, but AnyErrors: True");
             }
 
             [Fact]

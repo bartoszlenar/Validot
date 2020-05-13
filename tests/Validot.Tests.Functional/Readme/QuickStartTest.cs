@@ -66,7 +66,7 @@ namespace Validot.Tests.Functional.Readme
 
             codesList.Should().ContainInOrder("ERR_EMAIL", "ERR_NAME");
 
-            result.IsValid.Should().BeFalse();
+            result.AnyErrors.Should().BeTrue();
         }
     }
 }

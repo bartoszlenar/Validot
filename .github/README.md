@@ -124,8 +124,8 @@ result.ToMessagesString();
 result.ToCodesList();
 // [ "ERR_EMAIL", "ERR_NAME" ]
 
-result.IsValid;
-// false
+result.AnyErrors;
+// true
 ```
 
 * [See this example's real code](../tests/Validot.Tests.Functional/Readme/QuickStartTest.cs)
@@ -207,7 +207,7 @@ A flag, list of codes or full error paths with messages. Additionally - access t
 ``` csharp
 var validationResult = validator.Validate(signUpModel);
 
-if (!validationResult.IsValid)
+if (validationResult.AnyErrors)
 {
     _logger.LogError("Errors in incoming SignUpModel: {errors}", validationResult.ToMessagesString());
 

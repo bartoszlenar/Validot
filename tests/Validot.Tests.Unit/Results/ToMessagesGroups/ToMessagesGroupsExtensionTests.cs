@@ -22,11 +22,11 @@ namespace Validot.Tests.Unit.Results.ToMessagesGroups
         }
 
         [Fact]
-        public void Should_Return_EmptyArray_When_Valid()
+        public void Should_Return_EmptyArray_When_AnyErrors_Is_False()
         {
             var validationResult = Substitute.For<IValidationResult>();
 
-            validationResult.IsValid.Returns(true);
+            validationResult.AnyErrors.Returns(false);
 
             var messagesGroups = validationResult.ToMessagesGroups();
 
@@ -38,7 +38,7 @@ namespace Validot.Tests.Unit.Results.ToMessagesGroups
         }
 
         [Fact]
-        public void Should_Return_ResultOf_GetErrorMessages_When_Invalid()
+        public void Should_Return_ResultOf_GetErrorMessages_When_AnyErrors_Is_True()
         {
             var validationResult = Substitute.For<IValidationResult>();
 
@@ -49,7 +49,7 @@ namespace Validot.Tests.Unit.Results.ToMessagesGroups
             };
 
             validationResult.Details.GetErrorMessages(Arg.Is(null as string)).Returns(errorMessages);
-            validationResult.IsValid.Returns(false);
+            validationResult.AnyErrors.Returns(true);
 
             var messagesGroups = validationResult.ToMessagesGroups();
 
@@ -61,7 +61,7 @@ namespace Validot.Tests.Unit.Results.ToMessagesGroups
         }
 
         [Fact]
-        public void Should_Return_ResultOf_GetErrorMessages_WithTranslation_When_Invalid()
+        public void Should_Return_ResultOf_GetErrorMessages_WithTranslation_When_AnyErrors_Is_True()
         {
             var validationResult = Substitute.For<IValidationResult>();
 
@@ -79,7 +79,7 @@ namespace Validot.Tests.Unit.Results.ToMessagesGroups
 
             validationResult.Details.GetErrorMessages(Arg.Is("translation1")).Returns(errorMessages1);
             validationResult.Details.GetErrorMessages(Arg.Is("translation2")).Returns(errorMessages2);
-            validationResult.IsValid.Returns(false);
+            validationResult.AnyErrors.Returns(true);
 
             var messagesGroups = validationResult.ToMessagesGroups("translation2");
 

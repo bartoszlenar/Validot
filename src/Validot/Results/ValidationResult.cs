@@ -23,15 +23,15 @@ namespace Validot.Results
 
         public ValidationResult(Dictionary<string, List<int>> resultErrors, IReadOnlyDictionary<int, IError> errorsRegistry, IMessagesService messagesService)
         {
-            IsValid = resultErrors.Count == 0;
+            AnyErrors = resultErrors.Count != 0;
 
             _resultErrors = resultErrors;
 
-            _errorCodes = !IsValid
+            _errorCodes = AnyErrors
                 ? PrepareLazyLoadedErrorCodes(resultErrors, errorsRegistry)
                 : null;
 
-            _rawErrors = !IsValid
+            _rawErrors = AnyErrors
                 ? PrepareLazyLoadedRawErrors(resultErrors, errorsRegistry)
                 : null;
 
@@ -40,7 +40,7 @@ namespace Validot.Results
 
         public static ValidationResult NoErrorsResult { get; } = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
 
-        public bool IsValid { get; }
+        public bool AnyErrors { get; }
 
         public IValidationResultDetails Details => this;
 
@@ -50,26 +50,26 @@ namespace Validot.Results
 
         public IReadOnlyList<string> GetErrorCodes()
         {
-            if (IsValid)
+            if (AnyErrors)
             {
-                return Array.Empty<string>();
+                return _errorCodes.Value;
             }
 
-            return _errorCodes.Value;
+            return Array.Empty<string>();
         }
 
         public IReadOnlyDictionary<string, IReadOnlyList<string>> GetErrorMessages(string translationName = null)
         {
-            return IsValid
-                ? EmptyMessages
-                : _messagesService.GetErrorsMessages(_resultErrors, translationName);
+            return AnyErrors
+                ? _messagesService.GetErrorsMessages(_resultErrors, translationName)
+                : EmptyMessages;
         }
 
         public IReadOnlyDictionary<string, IReadOnlyList<IError>> GetRawErrors()
         {
-            return IsValid
-                ? EmptyRawErrors
-                : _rawErrors.Value;
+            return AnyErrors
+                ? _rawErrors.Value
+                : EmptyRawErrors;
         }
 
         public IReadOnlyDictionary<string, string> GetTranslation(string translationName)

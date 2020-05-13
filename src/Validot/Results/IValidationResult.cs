@@ -2,7 +2,7 @@ namespace Validot.Results
 {
     public interface IValidationResult
     {
-        bool IsValid { get; }
+        bool AnyErrors { get; }
 
         IValidationResultDetails Details { get; }
     }

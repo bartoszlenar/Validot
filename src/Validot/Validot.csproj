@@ -27,7 +27,7 @@
 
   <PropertyGroup>
     <Deterministic>true</Deterministic>
-    <ContinuousIntegrationBuild>True</ContinuousIntegrationBuild>
+    <ContinuousIntegrationBuild Condition="'$(VALIDOT_CI)' == 'true'">true</ContinuousIntegrationBuild>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>

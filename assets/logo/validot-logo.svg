@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   id="svg186"
+   version="1.1"
+   style="zoom: 3;"
+   height="1000"
+   width="1000">
+  <style
+     id="style173"
+     type="text/css">.st0{fill:#FFFFFF;}
+	.st1{fill:#7C488C;}
+	.st2{fill:#D43B95;}
+	.st3{fill:#AF2D7C;}</style>
+  <g
+     transform="matrix(5.88,0,0,5.88,0.19999765,0.1999853)"
+     id="g184">
+    <title
+       id="title175">Validot logo</title>
+    <g
+       id="svg_1">
+      <polygon
+         class="st0"
+         points="67.150009,152.7 84.650009,152.7 163.15001,16.700005 118.15001,16.700005 117.15001,18.400002 75.949997,89.800009 51.849991,48.200003 6.8499908,48.200003 "
+         id="svg_2" />
+      <polygon
+         class="st1"
+         points="120.15001,20.200005 75.949997,96.800009 49.849991,51.700003 12.849991,51.700003 69.250015,149.2 82.650009,149.2 157.15001,20.200005 "
+         id="svg_3" />
+      <polygon
+         class="st2"
+         points="12.849991,51.700003 75.949997,96.800009 49.849991,51.700003 "
+         id="svg_4" />
+      <path
+         class="st0"
+         d="m 113.55,122.4 c -3.3,-3.3 -7.8,-5.3 -12.8,-5.3 -5,0 -9.5,2 -12.8,5.3 -3.3,3.3 -5.3,7.8 -5.3,12.8 0,5 2,9.5 5.3,12.8 3.3,3.3 7.8,5.3 12.8,5.3 5,0 9.5,-2 12.8,-5.3 3.3,-3.3 5.3,-7.8 5.3,-12.8 0,-5 -2.1,-9.5 -5.3,-12.8 z"
+         id="svg_5" />
+      <circle
+         class="st2"
+         cx="100.75"
+         cy="135.2"
+         r="14.1"
+         id="svg_6" />
+      <polygon
+         class="st3"
+         points="12.849991,51.700003 67.250015,81.800009 75.949997,96.800009 "
+         id="svg_7" />
+    </g>
+  </g>
+</svg>

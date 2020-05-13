@@ -5,6 +5,26 @@
     <CodeAnalysisRuleSet>Validot.csproj.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>Validot</PackageId>
+    <Authors>Bartosz Lenar</Authors>
+    <PackageProjectUrl>https://github.com/bartoszlenar/Validot</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/bartoszlenar/Validot.git</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>assets/logo/validot-icon.png</PackageIcon>
+    <Description>Tiny lib for great validations</Description>
+    <PackageTags>validation validator specification fluent fluent-api</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../assets/logo/validot-icon.png" Pack="true" PackagePath="assets/logo"/>
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

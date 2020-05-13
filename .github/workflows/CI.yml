@@ -126,7 +126,7 @@ jobs:
         - name: Init workflow variables
           run: pwsh .github/workflows/Init-WorkflowVariables.ps1
         - name: Create package
-          run: pwsh build.ps1 --target nugetpackage --dotnet 3.1.102 --configuration release --version ${{ env.VALIDOT_VERSION }}
+          run: pwsh build.ps1 --target nugetpackage --dotnet 3.1.102 --configuration release --commitsha ${{ github.sha }}  --version ${{ env.VALIDOT_VERSION }}
         - name: Upload artifact; nuget package
           uses: actions/upload-artifact@v1
           with:
@@ -135,8 +135,8 @@ jobs:
         - name: Upload artifact; nuget package symbols
           uses: actions/upload-artifact@v1
           with:
-            name: Validot.${{ env.VALIDOT_VERSION }}.symbols.nupkg
-            path: artifacts/nuget/${{ env.VALIDOT_VERSION }}/Validot.${{ env.VALIDOT_VERSION }}.symbols.nupkg
+            name: Validot.${{ env.VALIDOT_VERSION }}.snupkg
+            path: artifacts/nuget/${{ env.VALIDOT_VERSION }}/Validot.${{ env.VALIDOT_VERSION }}.snupkg
         - name: Publish nuget package
           run: pwsh build.ps1 --target publishnugetpackage --skip --dotnet 3.1.102 --configuration release --version ${{ env.VALIDOT_VERSION }} --commitsha ${{ github.sha }} --nugetapikey ${{ secrets.NUGET_API_KEY }}
   release_assets:
@@ -157,7 +157,7 @@ jobs:
         - name: Download artifact; nuget package symbols
           uses: actions/download-artifact@v1
           with:
-            name: Validot.${{ env.VALIDOT_VERSION }}.symbols.nupkg
+            name: Validot.${{ env.VALIDOT_VERSION }}.snupkg
             path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.nuget
         - name: Download artifact; code coverage data
           uses: actions/download-artifact@v1

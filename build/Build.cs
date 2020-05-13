@@ -229,7 +229,7 @@ class Build : NukeBuild
                 $"-targetdir:{CodeCoverageReportsDirectory / $"Validot.{Version}.coverage_report"}",
                 $"-historydir:{CodeCoverageReportsDirectory / "_history"}",
                 $"-title:Validot unit tests code coverage report",
-                $"-tag:v{Version}" + (CommitSha is null ? "" : $", {CommitSha}"),
+                $"-tag:v{Version}" + (CommitSha is null ? "" : $"+{CommitSha}"),
             };
 
             ExecuteTool(toolPath, string.Join(" ", toolParameters.Select(p => $"\"{p}\"")));
@@ -265,7 +265,6 @@ class Build : NukeBuild
         {
             DotNetPack(p => p
                 .EnableNoBuild()
-                .EnableIncludeSymbols()
                 .SetConfiguration(Configuration.Release)
                 .SetProject(SourceDirectory / "Validot/Validot.csproj")
                 .SetVersion(Version)

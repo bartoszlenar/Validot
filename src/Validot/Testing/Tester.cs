@@ -17,14 +17,14 @@ namespace Validot.Testing
 
             var shouldBeValid = expectedErrors == null;
 
-            if (result.IsValid && shouldBeValid)
+            if (!result.AnyErrors && shouldBeValid)
             {
                 return TestResult.Passed();
             }
 
-            if (result.IsValid != shouldBeValid)
+            if (result.AnyErrors == shouldBeValid)
             {
-                return TestResult.Failed($"Expected result IsValid: {shouldBeValid}, but found {result.IsValid}");
+                return TestResult.Failed($"Expected result IsValid: {shouldBeValid}, but AnyErrors: {result.AnyErrors}");
             }
 
             var errors = result.Details.GetRawErrors();

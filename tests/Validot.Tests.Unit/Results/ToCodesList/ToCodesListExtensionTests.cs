@@ -22,11 +22,11 @@ namespace Validot.Tests.Unit.Results.ToCodesList
         }
 
         [Fact]
-        public void Should_Return_EmptyArray_When_Valid()
+        public void Should_Return_EmptyArray_When_AnyErrors_Is_False()
         {
             var validationResult = Substitute.For<IValidationResult>();
 
-            validationResult.IsValid.Returns(true);
+            validationResult.AnyErrors.Returns(false);
 
             var errorCodes = validationResult.ToCodesList();
 
@@ -37,7 +37,7 @@ namespace Validot.Tests.Unit.Results.ToCodesList
         }
 
         [Fact]
-        public void Should_Return_ResultOf_GetErrorCodes_When_Invalid()
+        public void Should_Return_ResultOf_GetErrorCodes_When_AnyErrors_Is_True()
         {
             var validationResult = Substitute.For<IValidationResult>();
 
@@ -48,7 +48,7 @@ namespace Validot.Tests.Unit.Results.ToCodesList
             };
 
             validationResult.Details.GetErrorCodes().Returns(detailsErrorCodes);
-            validationResult.IsValid.Returns(false);
+            validationResult.AnyErrors.Returns(true);
 
             var errorCodes = validationResult.ToCodesList();
 

@@ -22,11 +22,11 @@ namespace Validot.Tests.Unit.Results.ToMessagesList
         }
 
         [Fact]
-        public void Should_Return_EmptyArray_When_Valid()
+        public void Should_Return_EmptyArray_When_AnyErrors_Is_False()
         {
             var validationResult = Substitute.For<IValidationResult>();
 
-            validationResult.IsValid.Returns(true);
+            validationResult.AnyErrors.Returns(false);
 
             var messagesList = validationResult.ToMessagesList();
 
@@ -41,7 +41,7 @@ namespace Validot.Tests.Unit.Results.ToMessagesList
         {
             var validationResult = Substitute.For<IValidationResult>();
 
-            validationResult.IsValid.Returns(false);
+            validationResult.AnyErrors.Returns(true);
 
             validationResult.Details.GetErrorMessages(Arg.Is(null as string)).Returns(new Dictionary<string, IReadOnlyList<string>>()
             {
@@ -72,7 +72,7 @@ namespace Validot.Tests.Unit.Results.ToMessagesList
         {
             var validationResult = Substitute.For<IValidationResult>();
 
-            validationResult.IsValid.Returns(false);
+            validationResult.AnyErrors.Returns(true);
 
             validationResult.Details.GetErrorMessages(Arg.Is(null as string)).Returns(new Dictionary<string, IReadOnlyList<string>>()
             {
@@ -103,7 +103,7 @@ namespace Validot.Tests.Unit.Results.ToMessagesList
         {
             var validationResult = Substitute.For<IValidationResult>();
 
-            validationResult.IsValid.Returns(false);
+            validationResult.AnyErrors.Returns(true);
 
             validationResult.Details.GetErrorMessages(Arg.Is("translation1")).Returns(new Dictionary<string, IReadOnlyList<string>>()
             {

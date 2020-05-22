@@ -72,7 +72,7 @@ namespace Validot.Validation
 
         public void EnterCollectionItemPath()
         {
-            var path = PathsHelper.ResolveNextLevelPath(_pathsStack.Path, PathsHelper.CollectionIndexPrefixString);
+            var path = PathHelper.ResolvePath(_pathsStack.Path, PathHelper.CollectionIndexPrefixString);
 
             _pathsStack.PushWithDiscoveryIndex(path);
         }
@@ -81,7 +81,7 @@ namespace Validot.Validation
         {
             path = path ?? string.Empty;
 
-            var resolvedPath = PathsHelper.ResolveNextLevelPath(_pathsStack.Path, path);
+            var resolvedPath = PathHelper.ResolvePath(_pathsStack.Path, path);
 
             if (!Paths.ContainsKey(_pathsStack.Path))
             {

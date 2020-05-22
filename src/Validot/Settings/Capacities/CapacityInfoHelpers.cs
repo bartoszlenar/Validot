@@ -2,8 +2,8 @@ namespace Validot.Settings.Capacities
 {
     internal class CapacityInfoHelpers : ICapacityInfoHelpers
     {
-        public bool ContainsIndexes(string path) => PathsHelper.ContainsIndexes(path);
+        public bool ContainsIndexes(string path) => PathHelper.ContainsIndexes(path);
 
-        public string GetWithoutIndexes(string path) => PathsHelper.GetWithoutIndexes(path);
+        public string GetWithoutIndexes(string path) => PathHelper.GetWithoutIndexes(path);
     }
 }

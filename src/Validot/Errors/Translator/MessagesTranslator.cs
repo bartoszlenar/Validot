@@ -104,7 +104,7 @@ namespace Validot.Errors.Translator
 
         private static IReadOnlyList<IArg> CreatePathArgsForPath(string path)
         {
-            var name = PathsHelper.GetLastLevel(path);
+            var name = PathHelper.GetLastLevel(path);
 
             return new[]
             {

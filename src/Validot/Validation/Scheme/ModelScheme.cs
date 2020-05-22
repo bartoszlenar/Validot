@@ -83,7 +83,7 @@ namespace Validot.Validation.Scheme
                 return _pathsMap[basePath][relativePath];
             }
 
-            return PathsHelper.ResolveNextLevelPath(basePath, relativePath);
+            return PathHelper.ResolvePath(basePath, relativePath);
         }
 
         public ISpecificationScope<TModel> GetSpecificationScope<TModel>(int specificationScopeId)
@@ -93,7 +93,7 @@ namespace Validot.Validation.Scheme
 
         public string GetPathWithIndexes(string path, IReadOnlyCollection<string> indexesStack)
         {
-            return PathsHelper.GetWithIndexes(path, indexesStack);
+            return PathHelper.GetWithIndexes(path, indexesStack);
         }
     }
 }

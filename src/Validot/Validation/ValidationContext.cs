@@ -96,7 +96,7 @@ namespace Validot.Validation
 
         public void EnterCollectionItemPath(int i)
         {
-            var newPath = _modelScheme.GetPathForScope(_pathStack.Path, PathsHelper.CollectionIndexPrefixString);
+            var newPath = _modelScheme.GetPathForScope(_pathStack.Path, PathHelper.CollectionIndexPrefixString);
 
             _pathStack.PushWithIndex(newPath, i);
         }
@@ -147,7 +147,7 @@ namespace Validot.Validation
         {
             if (_pathStack.HasIndexes)
             {
-                var higherLevelPathIndexesAmount = PathsHelper.GetIndexesAmount(higherLevelPath);
+                var higherLevelPathIndexesAmount = PathHelper.GetIndexesAmount(higherLevelPath);
 
                 if (higherLevelPathIndexesAmount > 0)
                 {

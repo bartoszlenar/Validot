@@ -221,7 +221,7 @@ namespace Validot.Tests.Unit.Validation
         public class EnterPath_And_AddingErrors
         {
             [Theory]
-            [MemberData(nameof(PathsTestData.ResolveNextLevelPath_AllCases), MemberType = typeof(PathsTestData))]
+            [MemberData(nameof(PathTestData.ResolvePath_AllCases), MemberType = typeof(PathTestData))]
             public void AddErrors_Should_AddToEnteredPath_AfterStepIntoNextPath(string basePath, string newSegment, string expectedPath)
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
@@ -240,7 +240,7 @@ namespace Validot.Tests.Unit.Validation
             }
 
             [Theory]
-            [MemberData(nameof(PathsTestData.ResolveNextLevelPath_AllCases), MemberType = typeof(PathsTestData))]
+            [MemberData(nameof(PathTestData.ResolvePath_AllCases), MemberType = typeof(PathTestData))]
             public void AddErrors_Should_AddToBasePath_And_EnteredPath(string basePath, string newSegment, string expectedPath)
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
@@ -281,7 +281,7 @@ namespace Validot.Tests.Unit.Validation
             }
 
             [Theory]
-            [MemberData(nameof(PathsTestData.ResolveNextLevelPath_AllCases), MemberType = typeof(PathsTestData))]
+            [MemberData(nameof(PathTestData.ResolvePath_AllCases), MemberType = typeof(PathTestData))]
             public void AddErrors_Should_AddToPreviousPathAfterStepOut(string basePath, string newSegment, string expectedPath)
             {
                 _ = expectedPath;
@@ -303,7 +303,7 @@ namespace Validot.Tests.Unit.Validation
             }
 
             [Theory]
-            [MemberData(nameof(PathsTestData.ResolveNextLevelPath_AllCases), MemberType = typeof(PathsTestData))]
+            [MemberData(nameof(PathTestData.ResolvePath_AllCases), MemberType = typeof(PathTestData))]
             public void AddErrors_Should_AddToEnteredPath_And_ToPreviousPathAfterStepOut(string basePath, string newSegment, string expectedPath)
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();
@@ -404,7 +404,7 @@ namespace Validot.Tests.Unit.Validation
             }
 
             [Theory]
-            [MemberData(nameof(PathsTestData.ResolveNextLevelPath_AllCases), MemberType = typeof(PathsTestData))]
+            [MemberData(nameof(PathTestData.ResolvePath_AllCases), MemberType = typeof(PathTestData))]
             public void Should_FillPaths(string basePath, string newSegment, string expectedPath)
             {
                 var actions = Substitute.For<IDiscoveryContextActions>();

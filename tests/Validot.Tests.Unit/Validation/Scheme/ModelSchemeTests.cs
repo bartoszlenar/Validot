@@ -393,7 +393,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
             }
 
             [Theory]
-            [MemberData(nameof(PathsTestData.GetWithIndexes_AllCases), MemberType = typeof(PathsTestData))]
+            [MemberData(nameof(PathTestData.GetWithIndexes_AllCases), MemberType = typeof(PathTestData))]
             public void Should_Resolve_CommonCases(string path, IReadOnlyCollection<string> indexesStack, string expectedPath)
             {
                 var modelScheme = GetDefault();
@@ -452,7 +452,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
             }
 
             [Theory]
-            [MemberData(nameof(PathsTestData.ResolveNextLevelPath_AllCases), MemberType = typeof(PathsTestData))]
+            [MemberData(nameof(PathTestData.ResolvePath_AllCases), MemberType = typeof(PathTestData))]
             public void Should_ReturnPathFromHelper_IfNotPresent(string basePath, string newSegment, string expectedPath)
             {
                 var rootSpecificationScope = new SpecificationScope<TestClass>();

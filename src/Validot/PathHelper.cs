@@ -5,7 +5,7 @@ namespace Validot
     using System.Text;
     using System.Text.RegularExpressions;
 
-    internal static class PathsHelper
+    internal static class PathHelper
     {
         private const char UpperLevelPointerChar = '<';
 
@@ -29,7 +29,7 @@ namespace Validot
 
         public static string CollectionIndexPrefixString { get; } = char.ToString(CollectionIndexPrefix);
 
-        public static string ResolveNextLevelPath(string basePath, string relativePath)
+        public static string ResolvePath(string basePath, string relativePath)
         {
             ThrowHelper.NullArgument(basePath, nameof(basePath));
             ThrowHelper.NullArgument(relativePath, nameof(relativePath));

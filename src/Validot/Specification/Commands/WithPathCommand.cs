@@ -8,7 +8,7 @@ namespace Validot.Specification.Commands
         {
             ThrowHelper.NullArgument(path, nameof(path));
 
-            if (!PathsHelper.IsValidAsPath(path))
+            if (!PathHelper.IsValidAsPath(path))
             {
                 throw new ArgumentException("Invalid path", nameof(path));
             }

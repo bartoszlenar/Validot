@@ -49,7 +49,7 @@ namespace Validot.Tests.Unit.Specification
         }
 
         [Theory]
-        [MemberData(nameof(PathsTestData.ValidPaths), MemberType = typeof(PathsTestData))]
+        [MemberData(nameof(PathTestData.ValidPaths), MemberType = typeof(PathTestData))]
         public void Should_Accept_ValidPaths(string path)
         {
             ApiTester.TestSingleCommand<object, IWithPathIn<object>, IWithPathOut<object>, WithPathCommand>(
@@ -61,14 +61,14 @@ namespace Validot.Tests.Unit.Specification
         }
 
         [Theory]
-        [MemberData(nameof(PathsTestData.InvalidPaths), MemberType = typeof(PathsTestData))]
+        [MemberData(nameof(PathTestData.InvalidPaths), MemberType = typeof(PathTestData))]
         public void Should_ReturnFalse_For_InvalidPaths(string path)
         {
             ApiTester.TextException<object, IWithPathIn<object>, IWithPathOut<object>>(
                 s => s.WithPath(path),
                 addingAction =>
                 {
-                    addingAction.Should().ThrowExactly<ArgumentException>().WithMessage("Invalid name*");
+                    addingAction.Should().ThrowExactly<ArgumentException>().WithMessage("Invalid path*");
                 });
         }
     }

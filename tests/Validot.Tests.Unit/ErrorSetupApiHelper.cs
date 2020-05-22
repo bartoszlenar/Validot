@@ -53,7 +53,7 @@ namespace Validot.Tests.Unit
                 "S2",
                 new Func<dynamic, ISpecificationOut<T>>(target =>
                 {
-                    target = When<T>(target, predicate);
+                    target = WithCondition<T>(target, predicate);
 
                     return target;
                 }),
@@ -69,7 +69,7 @@ namespace Validot.Tests.Unit
                 "S3",
                 new Func<dynamic, ISpecificationOut<T>>(target =>
                 {
-                    target = When<T>(target, predicate);
+                    target = WithCondition<T>(target, predicate);
 
                     target = WithName<T>(target, "name123");
 
@@ -94,11 +94,11 @@ namespace Validot.Tests.Unit
             throw new InvalidOperationException("Dynamic api tests failed");
         }
 
-        private static dynamic When<T>(dynamic api, Predicate<T> predicate)
+        private static dynamic WithCondition<T>(dynamic api, Predicate<T> predicate)
         {
-            if (api is IWhenIn<T> withNameIn)
+            if (api is IWithConditionIn<T> withNameIn)
             {
-                return WhenExtension.When<T>(withNameIn, predicate);
+                return WithConditionExtension.WithCondition<T>(withNameIn, predicate);
             }
 
             throw new InvalidOperationException("Dynamic api tests failed");

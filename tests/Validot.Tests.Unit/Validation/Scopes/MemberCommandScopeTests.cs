@@ -45,7 +45,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
         {
             var commandScope = new MemberCommandScope<TestClass, TestMember>();
 
-            commandScope.ShouldExecute = !shouldExecuteInfo.HasValue
+            commandScope.ExecutionCondition = !shouldExecuteInfo.HasValue
                 ? (Predicate<TestClass>)null
                 : m =>
                 {
@@ -97,7 +97,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             var shouldExecuteCount = 0;
 
-            commandScope.ShouldExecute = !shouldExecuteInfo.HasValue
+            commandScope.ExecutionCondition = !shouldExecuteInfo.HasValue
                 ? (Predicate<TestClass>)null
                 : m =>
                 {
@@ -156,7 +156,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             var shouldExecuteCount = 0;
 
-            commandScope.ShouldExecute = !shouldExecuteInfo.HasValue
+            commandScope.ExecutionCondition = !shouldExecuteInfo.HasValue
                 ? (Predicate<TestClass>)null
                 : m =>
                 {

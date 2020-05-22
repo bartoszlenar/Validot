@@ -16,6 +16,6 @@ namespace Validot.Validation.Scopes
 
         ErrorMode ErrorMode { get; set; }
 
-        Predicate<T> ShouldExecute { get; set; }
+        Predicate<T> ExecutionCondition { get; set; }
     }
 }

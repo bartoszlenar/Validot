@@ -6,7 +6,7 @@ namespace Validot.Validation.Scopes
 
     internal abstract class CommandScope<T> : ICommandScope<T>
     {
-        public Predicate<T> ShouldExecute { get; set; }
+        public Predicate<T> ExecutionCondition { get; set; }
 
         public int? ErrorId { get; set; }
 
@@ -33,7 +33,7 @@ namespace Validot.Validation.Scopes
 
         public void Validate(T model, IValidationContext context)
         {
-            var shouldExecute = ShouldExecute?.Invoke(model) ?? true;
+            var shouldExecute = ExecutionCondition?.Invoke(model) ?? true;
 
             if (!shouldExecute)
             {

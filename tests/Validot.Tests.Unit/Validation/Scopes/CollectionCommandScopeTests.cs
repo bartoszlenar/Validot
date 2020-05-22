@@ -61,7 +61,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
         {
             var commandScope = new CollectionCommandScope<TestCollection<TestItem>, TestItem>();
 
-            commandScope.ShouldExecute = !shouldExecuteInfo.HasValue
+            commandScope.ExecutionCondition = !shouldExecuteInfo.HasValue
                 ? (Predicate<TestCollection<TestItem>>)null
                 : m =>
                 {
@@ -125,7 +125,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             var shouldExecuteCount = 0;
 
-            commandScope.ShouldExecute = !shouldExecuteInfo.HasValue
+            commandScope.ExecutionCondition = !shouldExecuteInfo.HasValue
                 ? (Predicate<TestCollection<TestItem>>)null
                 : m =>
                 {
@@ -182,7 +182,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             var shouldExecuteCount = 0;
 
-            commandScope.ShouldExecute = !shouldExecuteInfo.HasValue
+            commandScope.ExecutionCondition = !shouldExecuteInfo.HasValue
                 ? (Predicate<TestCollection<decimal>>)null
                 : m =>
                 {
@@ -281,7 +281,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
         {
             var commandScope = new CollectionCommandScope<TestCollection<int>, int>();
 
-            commandScope.ShouldExecute = m => true;
+            commandScope.ExecutionCondition = m => true;
 
             commandScope.ErrorId = errorId;
 

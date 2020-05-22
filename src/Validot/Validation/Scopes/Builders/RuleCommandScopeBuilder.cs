@@ -12,7 +12,7 @@ namespace Validot.Validation.Scopes.Builders
 
         private string _name;
 
-        private Predicate<T> _shouldExecute;
+        private Predicate<T> _executionCondition;
 
         public RuleCommandScopeBuilder(RuleCommand<T> ruleCommand)
         {
@@ -36,7 +36,7 @@ namespace Validot.Validation.Scopes.Builders
             };
 
             ruleCommandScope.Name = _name;
-            ruleCommandScope.ShouldExecute = _shouldExecute;
+            ruleCommandScope.ExecutionCondition = _executionCondition;
             ruleCommandScope.ErrorMode = _errorsBuilder.Mode;
 
             if (_errorsBuilder.IsEmpty)
@@ -55,9 +55,9 @@ namespace Validot.Validation.Scopes.Builders
 
         public bool TryAdd(ICommand command)
         {
-            if (command is WhenCommand<T> whenCommand)
+            if (command is WithConditionCommand<T> withConditionCommand)
             {
-                _shouldExecute = whenCommand.ExecutionCondition;
+                _executionCondition = withConditionCommand.ExecutionCondition;
 
                 return true;
             }

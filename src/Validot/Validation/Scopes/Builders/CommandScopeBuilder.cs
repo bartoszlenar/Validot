@@ -14,7 +14,7 @@ namespace Validot.Validation.Scopes.Builders
 
         private string _name;
 
-        private Predicate<T> _shouldExecute;
+        private Predicate<T> _executionCondition;
 
         public CommandScopeBuilder(ICommand command, Func<ICommand, IScopeBuilderContext, ICommandScope<T>> coreBuilder)
         {
@@ -55,9 +55,9 @@ namespace Validot.Validation.Scopes.Builders
                 core.Name = _name;
             }
 
-            if (_shouldExecute != null)
+            if (_executionCondition != null)
             {
-                core.ShouldExecute = _shouldExecute;
+                core.ExecutionCondition = _executionCondition;
             }
 
             return core;
@@ -67,9 +67,9 @@ namespace Validot.Validation.Scopes.Builders
         {
             ThrowHelper.NullArgument(command, nameof(command));
 
-            if (command is WhenCommand<T> whenCommand)
+            if (command is WithConditionCommand<T> withConditionCommand)
             {
-                _shouldExecute = whenCommand.ExecutionCondition;
+                _executionCondition = withConditionCommand.ExecutionCondition;
 
                 return true;
             }

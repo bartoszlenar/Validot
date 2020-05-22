@@ -2635,7 +2635,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "single_rule_with_condition",
-                Specification = s => s.Rule(m => m.Value == 0).When(m => m.Nullable == true).WithMessage("message 1"),
+                Specification = s => s.Rule(m => m.Value == 0).WithCondition(m => m.Nullable == true).WithMessage("message 1"),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -3015,9 +3015,9 @@ namespace Validot.Tests.Unit
             {
                 Name = "many_rules_with_conditions",
                 Specification = s => s
-                    .Rule(m => m.Value == 0).When(t => false).WithMessage("message 1")
-                    .Rule(m => m.Nullable == false).When(t => true).WithMessage("message 21").WithExtraMessage("message 22")
-                    .Rule(m => m.Reference == null).When(t => true).WithMessage("message 3").WithExtraCode("code 3"),
+                    .Rule(m => m.Value == 0).WithCondition(t => false).WithMessage("message 1")
+                    .Rule(m => m.Nullable == false).WithCondition(t => true).WithMessage("message 21").WithExtraMessage("message 22")
+                    .Rule(m => m.Reference == null).WithCondition(t => true).WithMessage("message 3").WithExtraCode("code 3"),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]

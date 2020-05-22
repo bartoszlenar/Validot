@@ -81,7 +81,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
 
                 _ = cmdScope.DidNotReceive().Name;
 
-                _ = cmdScope.DidNotReceive().ShouldExecute;
+                _ = cmdScope.DidNotReceive().ExecutionCondition;
             }
 
             [Fact]
@@ -128,12 +128,12 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             }
 
             [Fact]
-            public void Should_ReturnTrue_And_SetExecutionCondition_When_WhenCommand()
+            public void Should_ReturnTrue_And_SetExecutionCondition_When_WithConditionCommand()
             {
                 Predicate<TestClass> predicate = o => true;
 
                 var context = Substitute.For<IScopeBuilderContext>();
-                var command = new WhenCommand<TestClass>(predicate);
+                var command = new WithConditionCommand<TestClass>(predicate);
 
                 var builder = new CommandScopeBuilder<TestClass>(new TestCommand(), (cmd, ctx) => Substitute.For<ICommandScope<TestClass>>());
 
@@ -143,7 +143,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
 
                 var builtScope = (ICommandScope<TestClass>)builder.Build(context);
 
-                builtScope.ShouldExecute.Should().BeSameAs(predicate);
+                builtScope.ExecutionCondition.Should().BeSameAs(predicate);
             }
 
             [Fact]

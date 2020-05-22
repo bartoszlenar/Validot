@@ -120,7 +120,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 var ruleCommandScope = (RuleCommandScope<TestClass>)scope.CommandScopes[0];
 
                 ruleCommandScope.Name.Should().Be(expectedErrorSetup.Name);
-                ruleCommandScope.ShouldExecute.Should().Be(expectedErrorSetup.ShouldExecute);
+                ruleCommandScope.ExecutionCondition.Should().Be(expectedErrorSetup.ShouldExecute);
                 ruleCommandScope.ErrorMode.Should().Be(ErrorMode.Append);
                 ruleCommandScope.IsValid.Should().BeSameAs(predicate);
 
@@ -150,7 +150,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 var ruleCommandScope = (RuleCommandScope<TestClass>)scope.CommandScopes[0];
 
                 ruleCommandScope.Name.Should().Be(expectedErrorSetup.Name);
-                ruleCommandScope.ShouldExecute.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
+                ruleCommandScope.ExecutionCondition.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
                 ruleCommandScope.ErrorMode.Should().Be(expectedErrorContent.Mode);
                 ruleCommandScope.IsValid.Should().BeSameAs(predicate);
 
@@ -210,7 +210,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 var ruleCommandScope = (RuleCommandScope<TestClass>)scope.CommandScopes[0];
 
                 ruleCommandScope.Name.Should().Be(expectedErrorSetup.Name);
-                ruleCommandScope.ShouldExecute.Should().Be(expectedErrorSetup.ShouldExecute);
+                ruleCommandScope.ExecutionCondition.Should().Be(expectedErrorSetup.ShouldExecute);
                 ruleCommandScope.ErrorMode.Should().Be(ErrorMode.Append);
                 ruleCommandScope.IsValid.Should().BeSameAs(predicate);
 
@@ -256,7 +256,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 var ruleCommandScope = (RuleCommandScope<TestClass>)scope.CommandScopes[0];
 
                 ruleCommandScope.Name.Should().Be(expectedErrorSetup.Name);
-                ruleCommandScope.ShouldExecute.Should().Be(expectedErrorSetup.ShouldExecute);
+                ruleCommandScope.ExecutionCondition.Should().Be(expectedErrorSetup.ShouldExecute);
                 ruleCommandScope.ErrorMode.Should().Be(expectedErrorContent.Mode);
                 ruleCommandScope.IsValid.Should().BeSameAs(predicate);
 
@@ -302,7 +302,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 var ruleCommandScope = (RuleCommandScope<TestClass>)scope.CommandScopes[0];
 
                 ruleCommandScope.Name.Should().Be(expectedErrorSetup.Name);
-                ruleCommandScope.ShouldExecute.Should().Be(expectedErrorSetup.ShouldExecute);
+                ruleCommandScope.ExecutionCondition.Should().Be(expectedErrorSetup.ShouldExecute);
                 ruleCommandScope.ErrorMode.Should().Be(ErrorMode.Append);
                 ruleCommandScope.IsValid.Should().BeSameAs(predicate);
 
@@ -342,7 +342,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 var ruleCommandScope = (RuleCommandScope<TestClass>)scope.CommandScopes[0];
 
                 ruleCommandScope.Name.Should().Be(expectedErrorSetup.Name);
-                ruleCommandScope.ShouldExecute.Should().Be(expectedErrorSetup.ShouldExecute);
+                ruleCommandScope.ExecutionCondition.Should().Be(expectedErrorSetup.ShouldExecute);
                 ruleCommandScope.ErrorMode.Should().Be(expectedErrorContent.Mode);
                 ruleCommandScope.IsValid.Should().BeSameAs(predicate);
 
@@ -403,7 +403,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 modelCommandScope.Name.Should().Be(expectedErrorSetup.Name);
                 modelCommandScope.ErrorMode.Should().Be(ErrorMode.Append);
                 modelCommandScope.ErrorId.Should().BeNull();
-                modelCommandScope.ShouldExecute.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
+                modelCommandScope.ExecutionCondition.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
 
                 context.Scopes.Keys.Should().Contain(modelCommandScope.ScopeId);
 
@@ -433,7 +433,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 var modelCommandScope = (ModelCommandScope<TestClass>)scope.CommandScopes[0];
 
                 modelCommandScope.Name.Should().Be(expectedErrorSetup.Name);
-                modelCommandScope.ShouldExecute.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
+                modelCommandScope.ExecutionCondition.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
                 modelCommandScope.ErrorMode.Should().Be(expectedErrorContent.Mode);
 
                 modelCommandScope.ErrorId.Should().HaveValue();
@@ -492,7 +492,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 nullableCommandScope.Name.Should().Be(expectedErrorSetup.Name);
                 nullableCommandScope.ErrorMode.Should().Be(ErrorMode.Append);
                 nullableCommandScope.ErrorId.Should().BeNull();
-                nullableCommandScope.ShouldExecute.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
+                nullableCommandScope.ExecutionCondition.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
 
                 context.Scopes.Keys.Should().Contain(nullableCommandScope.ScopeId);
 
@@ -522,7 +522,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 var nullableCommandScope = (NullableCommandScope<int>)scope.CommandScopes[0];
 
                 nullableCommandScope.Name.Should().Be(expectedErrorSetup.Name);
-                nullableCommandScope.ShouldExecute.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
+                nullableCommandScope.ExecutionCondition.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
                 nullableCommandScope.ErrorMode.Should().Be(expectedErrorContent.Mode);
 
                 nullableCommandScope.ErrorId.Should().HaveValue();
@@ -596,7 +596,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 collectionCommandScope.Name.Should().Be(expectedErrorSetup.Name);
                 collectionCommandScope.ErrorMode.Should().Be(ErrorMode.Append);
                 collectionCommandScope.ErrorId.Should().BeNull();
-                collectionCommandScope.ShouldExecute.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
+                collectionCommandScope.ExecutionCondition.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
 
                 context.Scopes.Keys.Should().Contain(collectionCommandScope.ScopeId);
 
@@ -626,7 +626,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 var collectionCommandScope = (CollectionCommandScope<TestCollection, TestClass>)scope.CommandScopes[0];
 
                 collectionCommandScope.Name.Should().Be(expectedErrorSetup.Name);
-                collectionCommandScope.ShouldExecute.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
+                collectionCommandScope.ExecutionCondition.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
                 collectionCommandScope.ErrorMode.Should().Be(expectedErrorContent.Mode);
 
                 collectionCommandScope.ErrorId.Should().HaveValue();
@@ -690,7 +690,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 memberCommandScope.Name.Should().Be(expectedErrorSetup.Name ?? "TestMember");
                 memberCommandScope.ErrorMode.Should().Be(ErrorMode.Append);
                 memberCommandScope.ErrorId.Should().BeNull();
-                memberCommandScope.ShouldExecute.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
+                memberCommandScope.ExecutionCondition.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
 
                 context.Scopes.Keys.Should().Contain(memberCommandScope.ScopeId);
 
@@ -720,7 +720,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 var memberCommandScope = (MemberCommandScope<TestParent, TestClass>)scope.CommandScopes[0];
 
                 memberCommandScope.Name.Should().Be(expectedErrorSetup.Name ?? "TestMember");
-                memberCommandScope.ShouldExecute.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
+                memberCommandScope.ExecutionCondition.Should().BeSameAs(expectedErrorSetup.ShouldExecute);
                 memberCommandScope.ErrorMode.Should().Be(expectedErrorContent.Mode);
 
                 var testParent = new TestParent()

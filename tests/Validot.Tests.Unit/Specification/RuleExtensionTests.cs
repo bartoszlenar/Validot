@@ -18,7 +18,7 @@ namespace Validot.Tests.Unit.Specification
             {
                 typeof(ISpecificationOut<object>),
                 typeof(IRuleIn<object>),
-                typeof(IWhenIn<object>),
+                typeof(IWithConditionIn<object>),
                 typeof(IWithNameIn<object>),
                 typeof(IWithErrorClearedIn<object>),
                 typeof(IWithMessageIn<object>),

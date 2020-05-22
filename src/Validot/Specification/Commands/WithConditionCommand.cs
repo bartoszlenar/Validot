@@ -2,13 +2,13 @@ namespace Validot.Specification.Commands
 {
     using System;
 
-    internal abstract class WhenCommand : ICommand
+    internal abstract class WithConditionCommand : ICommand
     {
     }
 
-    internal class WhenCommand<T> : WhenCommand
+    internal class WithConditionCommand<T> : WithConditionCommand
     {
-        public WhenCommand(Predicate<T> executionCondition)
+        public WithConditionCommand(Predicate<T> executionCondition)
         {
             ThrowHelper.NullArgument(executionCondition, nameof(executionCondition));
 

@@ -12,7 +12,7 @@ namespace Validot.Validation.Scopes
 
         public ErrorMode ErrorMode { get; set; } = ErrorMode.Override;
 
-        public Predicate<T> ShouldExecute { get; set; }
+        public Predicate<T> ExecutionCondition { get; set; }
 
         public string Name { get; set; }
 
@@ -39,7 +39,7 @@ namespace Validot.Validation.Scopes
 
         public void Validate(T model, IValidationContext context)
         {
-            var shouldExecute = ShouldExecute?.Invoke(model) ?? true;
+            var shouldExecute = ExecutionCondition?.Invoke(model) ?? true;
 
             if (!shouldExecute)
             {

@@ -5,19 +5,19 @@ namespace Validot
     using Validot.Specification;
     using Validot.Specification.Commands;
 
-    public static class WhenExtension
+    public static class WithConditionExtension
     {
-        public static IWhenOut<T> When<T>(this IWhenIn<T> @this, Predicate<T> executionCondition)
+        public static IWithConditionOut<T> WithCondition<T>(this IWithConditionIn<T> @this, Predicate<T> executionCondition)
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
 
-            return ((SpecificationApi<T>)@this).AddCommand(new WhenCommand<T>(executionCondition));
+            return ((SpecificationApi<T>)@this).AddCommand(new WithConditionCommand<T>(executionCondition));
         }
     }
 
     namespace Specification
     {
-        public interface IWhenOut<T> :
+        public interface IWithConditionOut<T> :
             ISpecificationOut<T>,
             IWithErrorClearedIn<T>,
             IWithMessageIn<T>,
@@ -27,11 +27,11 @@ namespace Validot
         {
         }
 
-        public interface IWhenIn<T>
+        public interface IWithConditionIn<T>
         {
         }
 
-        internal partial class SpecificationApi<T> : IWhenIn<T>, IWhenOut<T>
+        internal partial class SpecificationApi<T> : IWithConditionIn<T>, IWithConditionOut<T>
         {
         }
     }

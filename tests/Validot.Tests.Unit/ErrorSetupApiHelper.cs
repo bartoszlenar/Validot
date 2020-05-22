@@ -11,7 +11,7 @@ namespace Validot.Tests.Unit
         {
             public Predicate<T> ShouldExecute { get; set; }
 
-            public string Name { get; set; }
+            public string Path { get; set; }
         }
 
         public static IEnumerable<object[]> AllCases<T>()
@@ -26,7 +26,7 @@ namespace Validot.Tests.Unit
 
                 new ExpectedErrorSetup<T>()
                 {
-                    Name = null
+                    Path = null
                 }
             };
 
@@ -35,14 +35,14 @@ namespace Validot.Tests.Unit
                 "S1",
                 new Func<dynamic, ISpecificationOut<T>>(target =>
                 {
-                    target = WithName<T>(target, "name123");
+                    target = WithPath<T>(target, "name123");
 
                     return target;
                 }),
 
                 new ExpectedErrorSetup<T>()
                 {
-                    Name = "name123"
+                    Path = "name123"
                 }
             };
 
@@ -71,7 +71,7 @@ namespace Validot.Tests.Unit
                 {
                     target = WithCondition<T>(target, predicate);
 
-                    target = WithName<T>(target, "name123");
+                    target = WithPath<T>(target, "name123");
 
                     return target;
                 }),
@@ -79,16 +79,16 @@ namespace Validot.Tests.Unit
                 new ExpectedErrorSetup<T>()
                 {
                     ShouldExecute = predicate,
-                    Name = "name123"
+                    Path = "name123"
                 }
             };
         }
 
-        private static dynamic WithName<T>(dynamic api, string message)
+        private static dynamic WithPath<T>(dynamic api, string message)
         {
-            if (api is IWithNameIn<T> withNameIn)
+            if (api is IWithPathIn<T> withPathIn)
             {
-                return WithNameExtension.WithName<T>(withNameIn, message);
+                return WithPathExtension.WithPath<T>(withPathIn, message);
             }
 
             throw new InvalidOperationException("Dynamic api tests failed");
@@ -96,9 +96,9 @@ namespace Validot.Tests.Unit
 
         private static dynamic WithCondition<T>(dynamic api, Predicate<T> predicate)
         {
-            if (api is IWithConditionIn<T> withNameIn)
+            if (api is IWithConditionIn<T> withConditionIn)
             {
-                return WithConditionExtension.WithCondition<T>(withNameIn, predicate);
+                return WithConditionExtension.WithCondition<T>(withConditionIn, predicate);
             }
 
             throw new InvalidOperationException("Dynamic api tests failed");

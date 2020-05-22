@@ -10,7 +10,7 @@ namespace Validot.Validation.Scopes
 
     internal interface ICommandScope<T> : ICommandScope, IScope<T>
     {
-        string Name { get; set; }
+        string Path { get; set; }
 
         int? ErrorId { get; set; }
 

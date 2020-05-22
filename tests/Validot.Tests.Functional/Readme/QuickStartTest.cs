@@ -41,7 +41,7 @@ namespace Validot.Tests.Functional.Readme
                     .Rule(name => name.All(char.IsLetterOrDigit)).WithMessage("Must contain only letter or digits")
                 )
                 .Rule(m => m.Age >= 18 || m.Name != null)
-                    .WithName("Name")
+                    .WithPath("Name")
                     .WithMessage("Required for underaged user")
                     .WithExtraCode("ERR_NAME");
 

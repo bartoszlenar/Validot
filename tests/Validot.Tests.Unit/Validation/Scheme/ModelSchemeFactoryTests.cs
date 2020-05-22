@@ -279,8 +279,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
             Specification<TestMember> memberSpecification = c => c.Rule(x => false).WithMessage("Member error");
 
             Specification<TestClass> classSpecification = c => c
-                .Member(m => m.Member, memberSpecification).WithName("TestNested")
-                .Rule(x => false).WithName("TestNested").WithMessage("Base error");
+                .Member(m => m.Member, memberSpecification).WithPath("TestNested")
+                .Rule(x => false).WithPath("TestNested").WithMessage("Base error");
 
             var capacityInfo = Substitute.For<ICapacityInfo>();
 

@@ -2081,7 +2081,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "rule_with_different_path",
-                Specification = s => s.Rule(m => m.Value == 0).WithName("extra").WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code 1"),
+                Specification = s => s.Rule(m => m.Value == 0).WithPath("extra").WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code 1"),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2501,7 +2501,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "rule_with_different_path",
-                Specification = s => s.RuleTemplate(m => m.Value == 0, "message key").WithName("extra").WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code 1"),
+                Specification = s => s.RuleTemplate(m => m.Value == 0, "message key").WithPath("extra").WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code 1"),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2790,9 +2790,9 @@ namespace Validot.Tests.Unit
             {
                 Name = "many_rules_with_custom_unique_paths",
                 Specification = s => s
-                    .Rule(m => m.Value == 0).WithName("Name1").WithMessage("message 1")
-                    .Rule(m => m.Nullable == false).WithName("Name2").WithMessage("message 21").WithExtraMessage("message 22")
-                    .Rule(m => m.Reference == null).WithName("Name31.Name32").WithMessage("message 3").WithExtraCode("code 3"),
+                    .Rule(m => m.Value == 0).WithPath("Name1").WithMessage("message 1")
+                    .Rule(m => m.Nullable == false).WithPath("Name2").WithMessage("message 21").WithExtraMessage("message 22")
+                    .Rule(m => m.Reference == null).WithPath("Name31.Name32").WithMessage("message 3").WithExtraCode("code 3"),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2907,9 +2907,9 @@ namespace Validot.Tests.Unit
             {
                 Name = "many_rules_with_custom_paths",
                 Specification = s => s
-                    .Rule(m => m.Value == 0).WithName("Name1").WithMessage("message 1")
-                    .Rule(m => m.Nullable == false).WithName("Name2").WithMessage("message 21").WithExtraMessage("message 22")
-                    .Rule(m => m.Reference == null).WithName("Name1").WithMessage("message 3").WithExtraCode("code 3"),
+                    .Rule(m => m.Value == 0).WithPath("Name1").WithMessage("message 1")
+                    .Rule(m => m.Nullable == false).WithPath("Name2").WithMessage("message 21").WithExtraMessage("message 22")
+                    .Rule(m => m.Reference == null).WithPath("Name1").WithMessage("message 3").WithExtraCode("code 3"),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -3531,7 +3531,7 @@ namespace Validot.Tests.Unit
             {
                 Name = "Member_Rule_LevelUp",
                 Specification = s => s
-                    .Member(m => m.Member, m => m.Rule(m1 => m1.MemberText != null).WithName("<").WithMessage("message 1")),
+                    .Member(m => m.Member, m => m.Rule(m1 => m1.MemberText != null).WithPath("<").WithMessage("message 1")),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -3597,7 +3597,7 @@ namespace Validot.Tests.Unit
             {
                 Name = "Member_Renamed",
                 Specification = s => s
-                    .Member(m => m.Member, m => m.Rule(m1 => m1.MemberText != null).WithMessage("message 1")).WithName("Renamed"),
+                    .Member(m => m.Member, m => m.Rule(m1 => m1.MemberText != null).WithMessage("message 1")).WithPath("Renamed"),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -3664,7 +3664,7 @@ namespace Validot.Tests.Unit
                 Name = "Member_Rule_LevelDown",
                 Specification = s => s
                     .Member(m => m.Member, m => m
-                        .Rule(m1 => m1.MemberText != null).WithName("SomeInnerName").WithMessage("message 1")
+                        .Rule(m1 => m1.MemberText != null).WithPath("SomeInnerName").WithMessage("message 1")
                     ),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
@@ -3736,7 +3736,7 @@ namespace Validot.Tests.Unit
                 Specification = s => s
                     .Member(m => m.Member, m => m
                         .Rule(m1 => m1.MemberText != null).WithMessage("message 1")
-                    ).WithName("Member.SomeInnerName"),
+                    ).WithPath("Member.SomeInnerName"),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -3804,26 +3804,26 @@ namespace Validot.Tests.Unit
                 Specification = s => s
                     .Member(m => m.Member, m => m
                         .Rule(m1 => m1.MemberText != null).WithMessage("message 1")
-                    ).WithName("Single.Path")
+                    ).WithPath("Single.Path")
                     .Member(m => m.Collection, m => m
-                        .AsCollection<TestCollection<int>, int>(m1 => m1.Rule(m3 => m3 != 0).WithName("<").WithMessage("message 2"))
-                    ).WithName("Single.Path")
+                        .AsCollection<TestCollection<int>, int>(m1 => m1.Rule(m3 => m3 != 0).WithPath("<").WithMessage("message 2"))
+                    ).WithPath("Single.Path")
                     .Member(m => m.Collection, m => m
-                        .AsCollection<TestCollection<int>, int>(m1 => m1.Rule(m3 => m3 != 0).WithName("<<Single.Path").WithMessage("message 3"))
+                        .AsCollection<TestCollection<int>, int>(m1 => m1.Rule(m3 => m3 != 0).WithPath("<<Single.Path").WithMessage("message 3"))
                     )
                     .Member(m => m.Nullable, m => m
                         .AsNullable(m1 => m1.Rule(m3 => m3).WithMessage("message 4"))
-                    ).WithName("Single.Path")
+                    ).WithPath("Single.Path")
                     .Member(m => m.Nullable, m => m
-                        .AsNullable(m1 => m1.Rule(m3 => m3).WithName("<Single.Path").WithMessage("message 5"))
+                        .AsNullable(m1 => m1.Rule(m3 => m3).WithPath("<Single.Path").WithMessage("message 5"))
                     )
                     .Member(m => m.Self, m => m
                         .AsModel(m1 => m1.Rule(m3 => m3.Value != 0).WithMessage("message 6"))
-                    ).WithName("<Single.Path")
+                    ).WithPath("<Single.Path")
                     .Member(m => m.Self, m => m
-                        .AsModel(m1 => m1.Rule(m3 => m3.Value != 0).WithName("<Single.Path").WithMessage("message 7"))
+                        .AsModel(m1 => m1.Rule(m3 => m3.Value != 0).WithPath("<Single.Path").WithMessage("message 7"))
                     )
-                    .AsModel(m1 => m1.Rule(m3 => m3.Value != 0).WithName("Single.Path").WithMessage("message 8")),
+                    .AsModel(m1 => m1.Rule(m3 => m3.Value != 0).WithPath("Single.Path").WithMessage("message 8")),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -3959,10 +3959,10 @@ namespace Validot.Tests.Unit
                 Specification = s => s
                     .Member(m => m.Collection, m => m
                         .AsCollection<TestCollection<int>, int>(m1 => m1
-                            .Rule(m3 => m3 != 0).WithName("Zero").WithMessage("message !0")
-                            .Rule(m3 => m3 != 1).WithName("<").WithMessage("message !1")
-                            .Rule(m3 => m3 != 2).WithName("<<Up").WithMessage("message !2")
-                            .Rule(m3 => m3 != 3).WithName("Down.Down").WithMessage("message !3")
+                            .Rule(m3 => m3 != 0).WithPath("Zero").WithMessage("message !0")
+                            .Rule(m3 => m3 != 1).WithPath("<").WithMessage("message !1")
+                            .Rule(m3 => m3 != 2).WithPath("<<Up").WithMessage("message !2")
+                            .Rule(m3 => m3 != 3).WithPath("Down.Down").WithMessage("message !3")
                         )
                     ),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
@@ -4130,10 +4130,10 @@ namespace Validot.Tests.Unit
             {
                 Name = "ChainedAsModel_RenamedInside",
                 Specification = s => s
-                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(0)).WithName("M0").WithMessage("message 0"))
-                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(1)).WithName("M1").WithMessage("message 1"))
-                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(2)).WithName("M2").WithMessage("message 2"))
-                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(3)).WithName("M3").WithMessage("message 3")),
+                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(0)).WithPath("M0").WithMessage("message 0"))
+                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(1)).WithPath("M1").WithMessage("message 1"))
+                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(2)).WithPath("M2").WithMessage("message 2"))
+                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(3)).WithPath("M3").WithMessage("message 3")),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -4253,10 +4253,10 @@ namespace Validot.Tests.Unit
             {
                 Name = "ChainedAsModel_RenamedOutside",
                 Specification = s => s
-                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(0)).WithMessage("message 0")).WithName("M0")
-                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(1)).WithMessage("message 1")).WithName("M1")
-                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(2)).WithMessage("message 2")).WithName("M2")
-                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(3)).WithMessage("message 3")).WithName("M3"),
+                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(0)).WithMessage("message 0")).WithPath("M0")
+                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(1)).WithMessage("message 1")).WithPath("M1")
+                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(2)).WithMessage("message 2")).WithPath("M2")
+                    .AsModel(m => m.Rule(m1 => m1.Collection.Contains(3)).WithMessage("message 3")).WithPath("M3"),
                 ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]

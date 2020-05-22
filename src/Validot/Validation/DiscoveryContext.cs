@@ -77,20 +77,20 @@ namespace Validot.Validation
             _pathsStack.PushWithDiscoveryIndex(path);
         }
 
-        public void EnterPath(string name)
+        public void EnterPath(string path)
         {
-            name = name ?? string.Empty;
+            path = path ?? string.Empty;
 
-            var path = PathsHelper.ResolveNextLevelPath(_pathsStack.Path, name);
+            var resolvedPath = PathsHelper.ResolveNextLevelPath(_pathsStack.Path, path);
 
             if (!Paths.ContainsKey(_pathsStack.Path))
             {
                 Paths.Add(_pathsStack.Path, new Dictionary<string, string>());
             }
 
-            Paths[_pathsStack.Path][name] = path;
+            Paths[_pathsStack.Path][path] = resolvedPath;
 
-            _pathsStack.Push(path);
+            _pathsStack.Push(resolvedPath);
         }
     }
 }

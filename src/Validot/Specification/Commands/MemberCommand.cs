@@ -36,7 +36,7 @@ namespace Validot.Specification.Commands
                 {
                     GetMemberValue = cmd.MemberSelector.Compile(),
                     ScopeId = context.GetOrRegisterSpecificationScope(cmd.Specification),
-                    Name = GetMemberName(cmd.MemberSelector)
+                    Path = GetMemberName(cmd.MemberSelector)
                 };
 
                 return block;

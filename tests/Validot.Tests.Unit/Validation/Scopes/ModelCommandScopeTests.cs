@@ -34,7 +34,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(CommandScopeTestHelper.CommandScopeParameters), MemberType = typeof(CommandScopeTestHelper))]
-        public void Should_RunDiscovery(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string name)
+        public void Should_RunDiscovery(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string path)
         {
             var commandScope = new ModelCommandScope<TestClass>();
 
@@ -49,7 +49,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             commandScope.ScopeId = 123;
 
@@ -63,7 +63,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(CommandScopeTestHelper.CommandScopeParameters), MemberType = typeof(CommandScopeTestHelper))]
-        public void Should_RunValidation_OnReferenceType(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string name)
+        public void Should_RunValidation_OnReferenceType(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string path)
         {
             var commandScope = new ModelCommandScope<TestClass>();
 
@@ -85,7 +85,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             commandScope.ScopeId = 123;
 
@@ -105,7 +105,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(CommandScopeTestHelper.CommandScopeParameters), MemberType = typeof(CommandScopeTestHelper))]
-        public void Should_RunValidation_OnValueType(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string name)
+        public void Should_RunValidation_OnValueType(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string path)
         {
             var commandScope = new ModelCommandScope<decimal>();
 
@@ -127,7 +127,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             commandScope.ScopeId = 123;
 

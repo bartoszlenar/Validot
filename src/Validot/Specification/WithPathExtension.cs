@@ -3,19 +3,19 @@ namespace Validot
     using Validot.Specification;
     using Validot.Specification.Commands;
 
-    public static class WithNameExtension
+    public static class WithPathExtension
     {
-        public static IWithNameOut<T> WithName<T>(this IWithNameIn<T> @this, string name)
+        public static IWithPathOut<T> WithPath<T>(this IWithPathIn<T> @this, string name)
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
 
-            return ((SpecificationApi<T>)@this).AddCommand(new WithNameCommand(name));
+            return ((SpecificationApi<T>)@this).AddCommand(new WithPathCommand(name));
         }
     }
 
     namespace Specification
     {
-        public interface IWithNameOut<T> :
+        public interface IWithPathOut<T> :
             ISpecificationOut<T>,
             IRuleIn<T>,
             IWithErrorClearedIn<T>,
@@ -26,11 +26,11 @@ namespace Validot
         {
         }
 
-        public interface IWithNameIn<T>
+        public interface IWithPathIn<T>
         {
         }
 
-        internal partial class SpecificationApi<T> : IWithNameIn<T>, IWithNameOut<T>
+        internal partial class SpecificationApi<T> : IWithPathIn<T>, IWithPathOut<T>
         {
         }
     }

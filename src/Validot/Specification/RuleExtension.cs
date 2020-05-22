@@ -29,7 +29,7 @@ namespace Validot
             ISpecificationOut<T>,
             IRuleIn<T>,
             IWithConditionIn<T>,
-            IWithNameIn<T>,
+            IWithPathIn<T>,
             IWithErrorClearedIn<T>,
             IWithMessageIn<T>,
             IWithExtraMessageIn<T>,

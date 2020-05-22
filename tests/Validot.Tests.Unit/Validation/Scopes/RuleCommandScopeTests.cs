@@ -42,7 +42,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(Should_Discover_Data))]
-        public void Should_Discover(bool? shouldExecuteInfo, int errorId, ErrorMode errorMode, string name)
+        public void Should_Discover(bool? shouldExecuteInfo, int errorId, ErrorMode errorMode, string path)
         {
             var commandScope = new RuleCommandScope<TestClass>();
 
@@ -57,7 +57,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             var discoveryContext = Substitute.For<IDiscoveryContext>();
 
@@ -65,7 +65,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             Received.InOrder(() =>
             {
-                discoveryContext.Received().EnterPath(name);
+                discoveryContext.Received().EnterPath(path);
                 discoveryContext.Received().AddError(errorId);
                 discoveryContext.Received().LeavePath();
             });
@@ -107,7 +107,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(Should_Validate_Data))]
-        public void Should_Validate_ReferenceType(bool? shouldExecuteInfo, int errorId, ErrorMode errorMode, string name, bool isValid)
+        public void Should_Validate_ReferenceType(bool? shouldExecuteInfo, int errorId, ErrorMode errorMode, string path, bool isValid)
         {
             var commandScope = new RuleCommandScope<TestClass>();
 
@@ -129,7 +129,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             var isValidCount = 0;
 
@@ -152,7 +152,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 Received.InOrder(() =>
                 {
-                    validationContext.Received().EnterPath(name);
+                    validationContext.Received().EnterPath(path);
 
                     if (!isValid)
                     {
@@ -180,7 +180,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(Should_Validate_Data))]
-        public void Should_Validate_ValueType(bool? shouldExecuteInfo, int errorId, ErrorMode errorMode, string name, bool isValid)
+        public void Should_Validate_ValueType(bool? shouldExecuteInfo, int errorId, ErrorMode errorMode, string path, bool isValid)
         {
             var commandScope = new RuleCommandScope<decimal>();
 
@@ -202,7 +202,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             var isValidCount = 0;
 
@@ -225,7 +225,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 Received.InOrder(() =>
                 {
-                    validationContext.Received().EnterPath(name);
+                    validationContext.Received().EnterPath(path);
 
                     if (!isValid)
                     {

@@ -84,7 +84,7 @@ namespace Validot.Tests.Unit.Specification.Commands
 
             var modelBlock = (MemberCommandScope<SomeModel, object>)block;
 
-            modelBlock.Name = "SomeReferenceProperty";
+            modelBlock.Path = "SomeReferenceProperty";
             modelBlock.GetMemberValue.Should().BeOfType<Func<SomeModel, object>>();
 
             var someModel = new SomeModel()
@@ -116,7 +116,7 @@ namespace Validot.Tests.Unit.Specification.Commands
 
             var modelBlock = (MemberCommandScope<SomeModel, object>)block;
 
-            modelBlock.Name = "SomeReferenceVariable";
+            modelBlock.Path = "SomeReferenceVariable";
             modelBlock.GetMemberValue.Should().BeOfType<Func<SomeModel, object>>();
 
             var someModel = new SomeModel()
@@ -148,7 +148,7 @@ namespace Validot.Tests.Unit.Specification.Commands
 
             var modelBlock = (MemberCommandScope<SomeModel, int>)block;
 
-            modelBlock.Name = "SomeValueProperty";
+            modelBlock.Path = "SomeValueProperty";
             modelBlock.GetMemberValue.Should().BeOfType<Func<SomeModel, int>>();
 
             var someModel = new SomeModel()
@@ -180,7 +180,7 @@ namespace Validot.Tests.Unit.Specification.Commands
 
             var modelBlock = (MemberCommandScope<SomeModel, int>)block;
 
-            modelBlock.Name = "SomeValueVariable";
+            modelBlock.Path = "SomeValueVariable";
             modelBlock.GetMemberValue.Should().BeOfType<Func<SomeModel, int>>();
 
             var someModel = new SomeModel()

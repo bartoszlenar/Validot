@@ -406,7 +406,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
         public class GetPathForScope
         {
             [Fact]
-            public void Should_ThrowException_When_NullNextLevel()
+            public void Should_ThrowException_When_NullRelativePath()
             {
                 var modelScheme = GetDefault();
 
@@ -416,7 +416,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
             }
 
             [Fact]
-            public void Should_ThrowException_When_NullPath()
+            public void Should_ThrowException_When_NullBasePath()
             {
                 var modelScheme = GetDefault();
 

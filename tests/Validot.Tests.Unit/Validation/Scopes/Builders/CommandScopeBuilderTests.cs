@@ -79,7 +79,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
 
                 var cmdScope = (ICommandScope<TestClass>)builtScope;
 
-                _ = cmdScope.DidNotReceive().Name;
+                _ = cmdScope.DidNotReceive().Path;
 
                 _ = cmdScope.DidNotReceive().ExecutionCondition;
             }
@@ -147,10 +147,10 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             }
 
             [Fact]
-            public void Should_ReturnTrue_And_SetName_When_WithNameCommand()
+            public void Should_ReturnTrue_And_SetName_When_WithPathCommand()
             {
                 var context = Substitute.For<IScopeBuilderContext>();
-                var command = new WithNameCommand("some_name");
+                var command = new WithPathCommand("some_path");
 
                 var builder = new CommandScopeBuilder<TestClass>(new TestCommand(), (cmd, ctx) => Substitute.For<ICommandScope<TestClass>>());
 
@@ -160,7 +160,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
 
                 var builtScope = (ICommandScope<TestClass>)builder.Build(context);
 
-                builtScope.Name.Should().Be("some_name");
+                builtScope.Path.Should().Be("some_path");
             }
 
             [Theory]

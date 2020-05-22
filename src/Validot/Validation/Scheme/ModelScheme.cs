@@ -76,14 +76,14 @@ namespace Validot.Validation.Scheme
 
         public ICapacityInfo CapacityInfo { get; }
 
-        public string GetPathForScope(string path, string nextLevelName)
+        public string GetPathForScope(string basePath, string relativePath)
         {
-            if (_pathsMap.ContainsKey(path) && _pathsMap[path].ContainsKey(nextLevelName))
+            if (_pathsMap.ContainsKey(basePath) && _pathsMap[basePath].ContainsKey(relativePath))
             {
-                return _pathsMap[path][nextLevelName];
+                return _pathsMap[basePath][relativePath];
             }
 
-            return PathsHelper.ResolveNextLevelPath(path, nextLevelName);
+            return PathsHelper.ResolveNextLevelPath(basePath, relativePath);
         }
 
         public ISpecificationScope<TModel> GetSpecificationScope<TModel>(int specificationScopeId)

@@ -41,7 +41,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(CommandScopeTestHelper.CommandScopeParameters), MemberType = typeof(CommandScopeTestHelper))]
-        public void Should_RunDiscovery(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string name)
+        public void Should_RunDiscovery(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string path)
         {
             var commandScope = new MemberCommandScope<TestClass, TestMember>();
 
@@ -56,7 +56,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             commandScope.ScopeId = 123;
 
@@ -86,7 +86,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(CommandScopeTestHelper.CommandScopeParameters), MemberType = typeof(CommandScopeTestHelper))]
-        public void Should_RunValidation_OnReferenceTypeMember(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string name)
+        public void Should_RunValidation_OnReferenceTypeMember(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string path)
         {
             var commandScope = new MemberCommandScope<TestClass, TestMember>();
 
@@ -111,7 +111,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             commandScope.ScopeId = 123;
 
@@ -145,7 +145,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(CommandScopeTestHelper.CommandScopeParameters), MemberType = typeof(CommandScopeTestHelper))]
-        public void Should_RunValidation_OnValueTypeMember(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string name)
+        public void Should_RunValidation_OnValueTypeMember(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string path)
         {
             var commandScope = new MemberCommandScope<TestClass, decimal>();
 
@@ -170,7 +170,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             commandScope.ScopeId = 123;
 

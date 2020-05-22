@@ -12,7 +12,7 @@ namespace Validot.Validation.Scopes.Builders
 
         private ErrorBuilder _errorsBuilder;
 
-        private string _name;
+        private string _path;
 
         private Predicate<T> _executionCondition;
 
@@ -50,9 +50,9 @@ namespace Validot.Validation.Scopes.Builders
                 }
             }
 
-            if (_name != null)
+            if (_path != null)
             {
-                core.Name = _name;
+                core.Path = _path;
             }
 
             if (_executionCondition != null)
@@ -74,9 +74,9 @@ namespace Validot.Validation.Scopes.Builders
                 return true;
             }
 
-            if (command is WithNameCommand withNameCommand)
+            if (command is WithPathCommand withPathCommand)
             {
-                _name = withNameCommand.Name;
+                _path = withPathCommand.Path;
 
                 return true;
             }

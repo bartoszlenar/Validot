@@ -12,11 +12,11 @@ namespace Validot.Validation.Scopes
 
         public ErrorMode ErrorMode { get; set; } = ErrorMode.Append;
 
-        public string Name { get; set; }
+        public string Path { get; set; }
 
         public void Discover(IDiscoveryContext context)
         {
-            context.EnterPath(Name);
+            context.EnterPath(Path);
 
             if (!ErrorId.HasValue || ErrorMode == ErrorMode.Append)
             {
@@ -40,7 +40,7 @@ namespace Validot.Validation.Scopes
                 return;
             }
 
-            context.EnterPath(Name);
+            context.EnterPath(Path);
 
             if (ErrorId.HasValue)
             {

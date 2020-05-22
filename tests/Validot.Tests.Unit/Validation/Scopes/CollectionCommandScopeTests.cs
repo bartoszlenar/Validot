@@ -57,7 +57,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(CommandScopeTestHelper.CommandScopeParameters), MemberType = typeof(CommandScopeTestHelper))]
-        public void Should_RunDiscovery(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string name)
+        public void Should_RunDiscovery(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string path)
         {
             var commandScope = new CollectionCommandScope<TestCollection<TestItem>, TestItem>();
 
@@ -72,7 +72,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             commandScope.ScopeId = 123;
 
@@ -115,7 +115,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(Should_RunValidation_Data))]
-        public void Should_RunValidation_OnReferenceTypeItem(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string name, int itemsCount)
+        public void Should_RunValidation_OnReferenceTypeItem(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string path, int itemsCount)
         {
             var commandScope = new CollectionCommandScope<TestCollection<TestItem>, TestItem>();
 
@@ -139,7 +139,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             commandScope.ScopeId = 123;
 
@@ -172,7 +172,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(Should_RunValidation_Data))]
-        public void Should_RunValidation_OnValueTypeItem(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string name, int itemsCount)
+        public void Should_RunValidation_OnValueTypeItem(bool? shouldExecuteInfo, int? errorId, ErrorMode errorMode, string path, int itemsCount)
         {
             var commandScope = new CollectionCommandScope<TestCollection<decimal>, decimal>();
 
@@ -196,7 +196,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             commandScope.ScopeId = 123;
 
@@ -277,7 +277,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(Should_RunValidation_And_FallBack_Data))]
-        public void Should_RunValidation_And_FallBack(int? errorId, ErrorMode errorMode, string name, int fallBackIndex)
+        public void Should_RunValidation_And_FallBack(int? errorId, ErrorMode errorMode, string path, int fallBackIndex)
         {
             var commandScope = new CollectionCommandScope<TestCollection<int>, int>();
 
@@ -287,7 +287,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorMode = errorMode;
 
-            commandScope.Name = name;
+            commandScope.Path = path;
 
             commandScope.ScopeId = 123;
 

@@ -128,11 +128,11 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Arg_InvalidName()
             {
                 Specification<object> specification = s => s
-                    .RuleTemplate(r => false, "key1", Arg.Text("arg1", "argValue1")).WithName("member1")
-                    .RuleTemplate(r => false, "key21", Arg.Text("arg21", "argValue21")).WithName("member2")
-                    .RuleTemplate(r => false, "key22", Arg.Text("arg221", "argValue221"), Arg.Text("arg22x", "argValue222")).WithName("member2")
-                    .RuleTemplate(r => false, "key23", Arg.Text("arg23", "argValue23")).WithName("member2")
-                    .RuleTemplate(r => false, "key3", Arg.Text("arg3", "argValue3")).WithName("member3");
+                    .RuleTemplate(r => false, "key1", Arg.Text("arg1", "argValue1")).WithPath("member1")
+                    .RuleTemplate(r => false, "key21", Arg.Text("arg21", "argValue21")).WithPath("member2")
+                    .RuleTemplate(r => false, "key22", Arg.Text("arg221", "argValue221"), Arg.Text("arg22x", "argValue222")).WithPath("member2")
+                    .RuleTemplate(r => false, "key23", Arg.Text("arg23", "argValue23")).WithPath("member2")
+                    .RuleTemplate(r => false, "key3", Arg.Text("arg3", "argValue3")).WithPath("member3");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -214,11 +214,11 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Arg_InvalidType()
             {
                 Specification<object> specification = s => s
-                    .RuleTemplate(r => false, "key1", Arg.Text("arg1", "argValue1")).WithName("member1")
-                    .RuleTemplate(r => false, "key21", Arg.Text("arg21", "argValue21")).WithName("member2")
-                    .RuleTemplate(r => false, "key22", Arg.Text("arg221", "argValue221"), Arg.Text("arg222", "argValue222")).WithName("member2")
-                    .RuleTemplate(r => false, "key23", Arg.Text("arg23", "argValue23")).WithName("member2")
-                    .RuleTemplate(r => false, "key3", Arg.Text("arg3", "argValue3")).WithName("member3");
+                    .RuleTemplate(r => false, "key1", Arg.Text("arg1", "argValue1")).WithPath("member1")
+                    .RuleTemplate(r => false, "key21", Arg.Text("arg21", "argValue21")).WithPath("member2")
+                    .RuleTemplate(r => false, "key22", Arg.Text("arg221", "argValue221"), Arg.Text("arg222", "argValue222")).WithPath("member2")
+                    .RuleTemplate(r => false, "key23", Arg.Text("arg23", "argValue23")).WithPath("member2")
+                    .RuleTemplate(r => false, "key3", Arg.Text("arg3", "argValue3")).WithPath("member3");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -300,11 +300,11 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Arg_InvalidValue()
             {
                 Specification<object> specification = s => s
-                    .RuleTemplate(r => false, "key1", Arg.Text("arg1", "argValue1")).WithName("member1")
-                    .RuleTemplate(r => false, "key21", Arg.Text("arg21", "argValue21")).WithName("member2")
-                    .RuleTemplate(r => false, "key22", Arg.Text("arg221", "argValue221"), Arg.Text("arg222", "argValue22x")).WithName("member2")
-                    .RuleTemplate(r => false, "key23", Arg.Text("arg23", "argValue23")).WithName("member2")
-                    .RuleTemplate(r => false, "key3", Arg.Text("arg3", "argValue3")).WithName("member3");
+                    .RuleTemplate(r => false, "key1", Arg.Text("arg1", "argValue1")).WithPath("member1")
+                    .RuleTemplate(r => false, "key21", Arg.Text("arg21", "argValue21")).WithPath("member2")
+                    .RuleTemplate(r => false, "key22", Arg.Text("arg221", "argValue221"), Arg.Text("arg222", "argValue22x")).WithPath("member2")
+                    .RuleTemplate(r => false, "key23", Arg.Text("arg23", "argValue23")).WithPath("member2")
+                    .RuleTemplate(r => false, "key3", Arg.Text("arg3", "argValue3")).WithPath("member3");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -386,7 +386,7 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Arg_InvalidValue_Double()
             {
                 Specification<object> specification = s => s
-                    .RuleTemplate(r => false, "key", Arg.Number("arg", 123.123457D)).WithName("member");
+                    .RuleTemplate(r => false, "key", Arg.Number("arg", 123.123457D)).WithPath("member");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -417,7 +417,7 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Arg_InvalidValue_Float()
             {
                 Specification<object> specification = s => s
-                    .RuleTemplate(r => false, "key", Arg.Number("arg", 123.1235F)).WithName("member");
+                    .RuleTemplate(r => false, "key", Arg.Number("arg", 123.1235F)).WithPath("member");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -448,11 +448,11 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Args_InvalidAmount()
             {
                 Specification<object> specification = s => s
-                        .RuleTemplate(r => false, "key1", Arg.Text("arg1", "argValue1")).WithName("member1")
-                        .RuleTemplate(r => false, "key21", Arg.Text("arg21", "argValue21")).WithName("member2")
-                        .RuleTemplate(r => false, "key22", Arg.Text("arg22", "argValue22")).WithName("member2")
-                        .RuleTemplate(r => false, "key23", Arg.Text("arg23", "argValue23")).WithName("member2")
-                        .RuleTemplate(r => false, "key3", Arg.Text("arg3", "argValue3")).WithName("member3")
+                        .RuleTemplate(r => false, "key1", Arg.Text("arg1", "argValue1")).WithPath("member1")
+                        .RuleTemplate(r => false, "key21", Arg.Text("arg21", "argValue21")).WithPath("member2")
+                        .RuleTemplate(r => false, "key22", Arg.Text("arg22", "argValue22")).WithPath("member2")
+                        .RuleTemplate(r => false, "key23", Arg.Text("arg23", "argValue23")).WithPath("member2")
+                        .RuleTemplate(r => false, "key3", Arg.Text("arg3", "argValue3")).WithPath("member3")
                     ;
 
                 TestResult testResult = Tester.TestSpecification(
@@ -535,7 +535,7 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Args_Presence_ExistButNotExpected()
             {
                 Specification<object> specification = s => s
-                    .RuleTemplate(m => false, "message1", Arg.Text("arg", "argValue")).WithName("member1");
+                    .RuleTemplate(m => false, "message1", Arg.Text("arg", "argValue")).WithPath("member1");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -562,7 +562,7 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Args_Presence_NotExistButExpected()
             {
                 Specification<object> specification = s => s
-                    .RuleTemplate(m => false, "message1").WithName("member1");
+                    .RuleTemplate(m => false, "message1").WithPath("member1");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -593,20 +593,20 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Code_InvalidContent()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1").WithExtraCode("code1")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member1").WithExtraCode("code1")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraCode("code211")
                     .WithExtraCode("code212")
                     .WithExtraCode("code213")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraCode("code221")
                     .WithExtraCode("code22x")
                     .WithExtraCode("code223")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraCode("code231")
                     .WithExtraCode("code232")
                     .WithExtraCode("code233")
-                    .Rule(m => false).WithName("member3").WithExtraCode("code3");
+                    .Rule(m => false).WithPath("member3").WithExtraCode("code3");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -673,18 +673,18 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Codes_InvalidAmount()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1").WithExtraCode("code1")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member1").WithExtraCode("code1")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraCode("code211")
                     .WithExtraCode("code212")
                     .WithExtraCode("code213")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraCode("code221")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraCode("code231")
                     .WithExtraCode("code232")
                     .WithExtraCode("code233")
-                    .Rule(m => false).WithName("member3").WithExtraCode("code3");
+                    .Rule(m => false).WithPath("member3").WithExtraCode("code3");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -751,7 +751,7 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Codes_Presence_ExistButNotExpected()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1").WithMessage("message").WithExtraCode("code1").WithExtraCode("code2");
+                    .Rule(m => false).WithPath("member1").WithMessage("message").WithExtraCode("code1").WithExtraCode("code2");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -778,7 +778,7 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Codes_Presence_NotExistButExpected()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1").WithMessage("message1");
+                    .Rule(m => false).WithPath("member1").WithMessage("message1");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -809,20 +809,20 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Message_InvalidContent()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1").WithMessage("error1")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member1").WithMessage("error1")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraMessage("error211")
                     .WithExtraMessage("error212")
                     .WithExtraMessage("error213")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraMessage("error221")
                     .WithExtraMessage("error22x")
                     .WithExtraMessage("error223")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraMessage("error231")
                     .WithExtraMessage("error232")
                     .WithExtraMessage("error233")
-                    .Rule(m => false).WithName("member3").WithMessage("error3");
+                    .Rule(m => false).WithPath("member3").WithMessage("error3");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -889,18 +889,18 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Messages_InvalidAmount()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1").WithMessage("error1")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member1").WithMessage("error1")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraMessage("error211")
                     .WithExtraMessage("error212")
                     .WithExtraMessage("error213")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraMessage("error221")
-                    .Rule(m => false).WithName("member2")
+                    .Rule(m => false).WithPath("member2")
                     .WithExtraMessage("error231")
                     .WithExtraMessage("error232")
                     .WithExtraMessage("error233")
-                    .Rule(m => false).WithName("member3").WithMessage("error3");
+                    .Rule(m => false).WithPath("member3").WithMessage("error3");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -967,7 +967,7 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Messages_Presence_ExistButNotExpected()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1").WithMessage("error1").WithExtraMessage("extra1");
+                    .Rule(m => false).WithPath("member1").WithMessage("error1").WithExtraMessage("extra1");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -994,7 +994,7 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Error_Messages_Presence_NotExistButExpected()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1").WithCode("code1");
+                    .Rule(m => false).WithPath("member1").WithCode("code1");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -1050,9 +1050,9 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_Path_ExpectedPathIsMissing()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1").WithMessage("error1")
-                    .Rule(m => false).WithName("member_two").WithMessage("error2")
-                    .Rule(m => false).WithName("member3").WithMessage("error3");
+                    .Rule(m => false).WithPath("member1").WithMessage("error1")
+                    .Rule(m => false).WithPath("member_two").WithMessage("error2")
+                    .Rule(m => false).WithPath("member3").WithMessage("error3");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -1081,9 +1081,9 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_PathErrors_Amount_DifferentThanExpected()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1").WithMessage("error1")
-                    .Rule(m => false).WithName("member2").WithMessage("error2")
-                    .Rule(m => false).WithName("member3").WithMessage("error3");
+                    .Rule(m => false).WithPath("member1").WithMessage("error1")
+                    .Rule(m => false).WithPath("member2").WithMessage("error2")
+                    .Rule(m => false).WithPath("member3").WithMessage("error3");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -1137,8 +1137,8 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnFailure_When_PathsWithErrors_Amount_DifferentThanExpected()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1").WithMessage("error1")
-                    .Rule(m => false).WithName("member2").WithMessage("error2");
+                    .Rule(m => false).WithPath("member1").WithMessage("error1")
+                    .Rule(m => false).WithPath("member2").WithMessage("error2");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -1175,13 +1175,13 @@ namespace Validot.Tests.Unit.Testing
             public void Should_ReturnSuccess_When_AllAsExpected()
             {
                 Specification<object> specification = s => s
-                    .Rule(m => false).WithName("member1")
+                    .Rule(m => false).WithPath("member1")
                     .WithMessage("error1")
                     .WithExtraMessage("error1_1")
                     .WithExtraCode("code1_1")
-                    .RuleTemplate(m => false, "error21", Arg.Number("arg21", 12345.6789012345M)).WithName("member2")
-                    .RuleTemplate(m => false, "error22", Arg.Text("arg221", "awesome"), Arg.Enum("arg222", StringComparison.InvariantCultureIgnoreCase)).WithName("member2")
-                    .RuleTemplate(m => false, "error3", Arg.Type("arg3", typeof(Guid))).WithName("member3").WithExtraMessage("extramessage3").WithExtraCode("extracode3");
+                    .RuleTemplate(m => false, "error21", Arg.Number("arg21", 12345.6789012345M)).WithPath("member2")
+                    .RuleTemplate(m => false, "error22", Arg.Text("arg221", "awesome"), Arg.Enum("arg222", StringComparison.InvariantCultureIgnoreCase)).WithPath("member2")
+                    .RuleTemplate(m => false, "error3", Arg.Type("arg3", typeof(Guid))).WithPath("member3").WithExtraMessage("extramessage3").WithExtraCode("extracode3");
 
                 TestResult testResult = Tester.TestSpecification(
                     new object(),
@@ -1329,7 +1329,7 @@ namespace Validot.Tests.Unit.Testing
             {
                 var specification = new Specification<object>(m => m
                     .Rule(r => false).WithMessage("message1")
-                    .Rule(r => false).WithName("member1").WithMessage("message2"));
+                    .Rule(r => false).WithPath("member1").WithMessage("message2"));
 
                 Action action = () => Tester.TestSingleRule(new object(), specification, false, "message1");
 
@@ -1339,7 +1339,7 @@ namespace Validot.Tests.Unit.Testing
             [Fact]
             public void Should_ThrowTestFailedException_When_Error_NotInRoot()
             {
-                var specification = new Specification<object>(m => m.Rule(r => false).WithName("member1").WithMessage("message1"));
+                var specification = new Specification<object>(m => m.Rule(r => false).WithPath("member1").WithMessage("message1"));
 
                 Action action = () => Tester.TestSingleRule(new object(), specification, false, "message1");
 

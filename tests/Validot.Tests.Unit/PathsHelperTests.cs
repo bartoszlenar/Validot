@@ -326,32 +326,32 @@ namespace Validot.Tests.Unit
             }
         }
 
-        public class IsValidAsPathSegment
+        public class IsValidAsPath
         {
             [Fact]
             public void Should_ReturnFalse_When_NullPath()
             {
-                var isValidAsPathSegment = PathsHelper.IsValidAsName(null);
+                var isValidAsPath = PathsHelper.IsValidAsPath(null);
 
-                isValidAsPathSegment.Should().Be(false);
+                isValidAsPath.Should().Be(false);
             }
 
             [Theory]
             [MemberData(nameof(PathsTestData.ValidPaths), MemberType = typeof(PathsTestData))]
             public void Should_ReturnTrue_For_ValidPaths(string path)
             {
-                var isValidAsPathSegment = PathsHelper.IsValidAsName(path);
+                var isValidAsPath = PathsHelper.IsValidAsPath(path);
 
-                isValidAsPathSegment.Should().Be(true);
+                isValidAsPath.Should().Be(true);
             }
 
             [Theory]
             [MemberData(nameof(PathsTestData.InvalidPaths), MemberType = typeof(PathsTestData))]
             public void Should_ReturnFalse_For_InvalidPaths(string path)
             {
-                var isValidAsPathSegment = PathsHelper.IsValidAsName(path);
+                var isValidAsPath = PathsHelper.IsValidAsPath(path);
 
-                isValidAsPathSegment.Should().Be(false);
+                isValidAsPath.Should().Be(false);
             }
         }
     }

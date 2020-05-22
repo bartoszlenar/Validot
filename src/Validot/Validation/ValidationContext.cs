@@ -101,10 +101,10 @@ namespace Validot.Validation
             _pathStack.PushWithIndex(newPath, i);
         }
 
-        public void EnterPath(string name)
+        public void EnterPath(string path)
         {
-            var newPath = name != null
-                ? _modelScheme.GetPathForScope(_pathStack.Path, name)
+            var newPath = path != null
+                ? _modelScheme.GetPathForScope(_pathStack.Path, path)
                 : _pathStack.Path;
 
             _pathStack.Push(newPath);

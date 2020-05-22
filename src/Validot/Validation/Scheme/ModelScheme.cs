@@ -76,7 +76,7 @@ namespace Validot.Validation.Scheme
 
         public ICapacityInfo CapacityInfo { get; }
 
-        public string GetPathForScope(string basePath, string relativePath)
+        public string ResolvePath(string basePath, string relativePath)
         {
             if (_pathsMap.ContainsKey(basePath) && _pathsMap[basePath].ContainsKey(relativePath))
             {

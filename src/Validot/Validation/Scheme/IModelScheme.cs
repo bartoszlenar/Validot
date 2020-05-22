@@ -18,7 +18,7 @@ namespace Validot.Validation.Scheme
 
         ISpecificationScope<T> GetSpecificationScope<T>(int specificationScopeId);
 
-        string GetPathForScope(string basePath, string relativePath);
+        string ResolvePath(string basePath, string relativePath);
 
         string GetPathWithIndexes(string path, IReadOnlyCollection<string> indexesStack);
     }

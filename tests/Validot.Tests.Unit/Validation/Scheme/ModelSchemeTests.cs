@@ -403,14 +403,14 @@ namespace Validot.Tests.Unit.Validation.Scheme
             }
         }
 
-        public class GetPathForScope
+        public class ResolvePath
         {
             [Fact]
             public void Should_ThrowException_When_NullRelativePath()
             {
                 var modelScheme = GetDefault();
 
-                Action action = () => modelScheme.GetPathForScope("some_path", null);
+                Action action = () => modelScheme.ResolvePath("some_path", null);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
@@ -420,7 +420,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
             {
                 var modelScheme = GetDefault();
 
-                Action action = () => modelScheme.GetPathForScope(null, "some_level");
+                Action action = () => modelScheme.ResolvePath(null, "some_level");
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
@@ -446,7 +446,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
-                var path = modelScheme.GetPathForScope("first", "second");
+                var path = modelScheme.ResolvePath("first", "second");
 
                 path.Should().Be("third");
             }
@@ -468,7 +468,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
-                var path = modelScheme.GetPathForScope(basePath, newSegment);
+                var path = modelScheme.ResolvePath(basePath, newSegment);
 
                 path.Should().Be(expectedPath);
             }
@@ -494,7 +494,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
-                var path = modelScheme.GetPathForScope("first", "second");
+                var path = modelScheme.ResolvePath("first", "second");
 
                 path.Should().Be("first.second");
             }
@@ -520,7 +520,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
-                var path = modelScheme.GetPathForScope("first", "second");
+                var path = modelScheme.ResolvePath("first", "second");
 
                 path.Should().Be("first.second");
             }
@@ -550,15 +550,15 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 var modelScheme = new ModelScheme<TestClass>(specificationScopes, rootSpecificationScopeId, errorsRegistry, errorMap, pathsMap, Substitute.For<ICapacityInfo>(), false);
 
-                modelScheme.GetPathForScope("first", "second").Should().Be("first.second");
-                modelScheme.GetPathForScope("A", "B").Should().Be("C");
-                modelScheme.GetPathForScope("a", "B").Should().Be("a.B");
-                modelScheme.GetPathForScope("A", "B1").Should().Be("A.B1");
-                modelScheme.GetPathForScope("A", "b").Should().Be("c");
-                modelScheme.GetPathForScope("A", "d").Should().Be("d");
+                modelScheme.ResolvePath("first", "second").Should().Be("first.second");
+                modelScheme.ResolvePath("A", "B").Should().Be("C");
+                modelScheme.ResolvePath("a", "B").Should().Be("a.B");
+                modelScheme.ResolvePath("A", "B1").Should().Be("A.B1");
+                modelScheme.ResolvePath("A", "b").Should().Be("c");
+                modelScheme.ResolvePath("A", "d").Should().Be("d");
 
-                modelScheme.GetPathForScope("A", "<X").Should().Be("XPATH");
-                modelScheme.GetPathForScope("A", "<x").Should().Be("x");
+                modelScheme.ResolvePath("A", "<X").Should().Be("XPATH");
+                modelScheme.ResolvePath("A", "<x").Should().Be("x");
             }
         }
     }

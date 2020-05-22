@@ -96,18 +96,18 @@ namespace Validot.Validation
 
         public void EnterCollectionItemPath(int i)
         {
-            var newPath = _modelScheme.GetPathForScope(_pathStack.Path, PathHelper.CollectionIndexPrefixString);
+            var resolvedPath = _modelScheme.ResolvePath(_pathStack.Path, PathHelper.CollectionIndexPrefixString);
 
-            _pathStack.PushWithIndex(newPath, i);
+            _pathStack.PushWithIndex(resolvedPath, i);
         }
 
         public void EnterPath(string path)
         {
-            var newPath = path != null
-                ? _modelScheme.GetPathForScope(_pathStack.Path, path)
+            var resolvedPath = path != null
+                ? _modelScheme.ResolvePath(_pathStack.Path, path)
                 : _pathStack.Path;
 
-            _pathStack.Push(newPath);
+            _pathStack.Push(resolvedPath);
         }
 
         public void EnterScope<T>(int scopeId, T model)

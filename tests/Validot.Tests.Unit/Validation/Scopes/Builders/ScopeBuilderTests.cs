@@ -788,39 +788,6 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             }
 
             [Fact]
-            public void Should_Return_Required_When_NotNull()
-            {
-                var context = new ScopeBuilderContext();
-
-                var builder = new ScopeBuilder();
-
-                Specification<TestClass> specification = m => m
-                    .NotNull();
-
-                var scope = builder.Build(specification, context);
-
-                scope.Presence.Should().Be(Presence.Required);
-                scope.RequiredErrorId.Should().Be(context.RequiredErrorId);
-            }
-
-            [Fact]
-            public void Should_Return_Required_When_NotNull_And_Rules()
-            {
-                var context = new ScopeBuilderContext();
-
-                var builder = new ScopeBuilder();
-
-                Specification<TestClass> specification = m => m
-                    .NotNull()
-                    .Rule(m1 => false);
-
-                var scope = builder.Build(specification, context);
-
-                scope.Presence.Should().Be(Presence.Required);
-                scope.RequiredErrorId.Should().Be(context.RequiredErrorId);
-            }
-
-            [Fact]
             public void Should_Return_Required_When_Required()
             {
                 var context = new ScopeBuilderContext();
@@ -957,22 +924,6 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
 
                 Specification<TestClass> specification = m => m
                     .Forbidden();
-
-                var scope = builder.Build(specification, context);
-
-                scope.Presence.Should().Be(Presence.Forbidden);
-                scope.ForbiddenErrorId.Should().Be(context.ForbiddenErrorId);
-            }
-
-            [Fact]
-            public void Should_Return_Forbidden_When_Null()
-            {
-                var context = new ScopeBuilderContext();
-
-                var builder = new ScopeBuilder();
-
-                Specification<TestClass> specification = m => m
-                    .Null();
 
                 var scope = builder.Build(specification, context);
 

@@ -33,19 +33,5 @@ namespace Validot.Tests.Unit.Specification
             ApiTester.TestSingleCommand<int?, IForbiddenIn<int?>, IForbiddenOut<int?>, ForbiddenCommand>(
                 s => s.Forbidden());
         }
-
-        [Fact]
-        public void Should_Null_Add_ForbiddenCommand()
-        {
-            ApiTester.TestSingleCommand<object, IForbiddenIn<object>, IForbiddenOut<object>, ForbiddenCommand>(
-                s => s.Null());
-        }
-
-        [Fact]
-        public void Should_Null_Add_ForbiddenCommand_When_Nullable()
-        {
-            ApiTester.TestSingleCommand<int?, IForbiddenIn<int?>, IForbiddenOut<int?>, ForbiddenCommand>(
-                s => s.Null());
-        }
     }
 }

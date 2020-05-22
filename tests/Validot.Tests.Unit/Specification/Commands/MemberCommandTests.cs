@@ -14,6 +14,13 @@ namespace Validot.Tests.Unit.Specification.Commands
 
     public class MemberCommandTests
     {
+        private class SomeMember
+        {
+            public int NestedValue { get; set; }
+
+            public Type NestedObject { get; set; }
+        }
+
         private class SomeModel
         {
             public object SomeReferenceProperty { get; set; }
@@ -27,6 +34,8 @@ namespace Validot.Tests.Unit.Specification.Commands
             public object SomeFunctionReturningReference() => null;
 
             public int SomeFunctionReturningValue() => 888;
+
+            public SomeMember Member { get; set; }
         }
 
         [Fact]
@@ -194,6 +203,36 @@ namespace Validot.Tests.Unit.Specification.Commands
         }
 
         [Fact]
+        public void Should_ThrowException_When_MemberSelectorPointsMoreThanOneLevelDown_TwoLevels()
+        {
+            Specification<int> specification = s => s;
+
+            var command = new MemberCommand<SomeModel, int>(m => m.Member.NestedValue, specification);
+            var blockBuilder = command.GetScopeBuilder();
+            var buildingContext = Substitute.For<IScopeBuilderContext>();
+            buildingContext.GetOrRegisterSpecificationScope(Arg.Any<Specification<int>>()).Returns(666);
+
+            Action action = () => blockBuilder.Build(buildingContext);
+
+            action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Only one level of nesting is allowed, m => m.Member.NestedValue looks like it is going further (member of a member?)");
+        }
+
+        [Fact]
+        public void Should_ThrowException_When_MemberSelectorPointsMoreThanOneLevelDown_ThreeLevels()
+        {
+            Specification<string> specification = s => s;
+
+            var command = new MemberCommand<SomeModel, string>(m => m.Member.NestedObject.FullName, specification);
+            var blockBuilder = command.GetScopeBuilder();
+            var buildingContext = Substitute.For<IScopeBuilderContext>();
+            buildingContext.GetOrRegisterSpecificationScope(Arg.Any<Specification<string>>()).Returns(666);
+
+            Action action = () => blockBuilder.Build(buildingContext);
+
+            action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Only one level of nesting is allowed, m => m.Member.NestedObject.FullName looks like it is going further (member of a member?)");
+        }
+
+        [Fact]
         public void Should_ThrowException_When_MemberIsFunction_ReturningValueType()
         {
             Specification<int> specification = s => s;
@@ -205,7 +244,7 @@ namespace Validot.Tests.Unit.Specification.Commands
 
             Action action = () => blockBuilder.Build(buildingContext);
 
-            action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Only properties and variables are valid members to validate");
+            action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Only properties and variables are valid members to validate, m => m.SomeFunctionReturningValue() looks like it is pointing at something else (a method?).");
         }
 
         [Fact]
@@ -220,7 +259,7 @@ namespace Validot.Tests.Unit.Specification.Commands
 
             Action action = () => blockBuilder.Build(buildingContext);
 
-            action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Only properties and variables are valid members to validate");
+            action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Only properties and variables are valid members to validate, m => m.SomeFunctionReturningReference() looks like it is pointing at something else (a method?).");
         }
     }
 }

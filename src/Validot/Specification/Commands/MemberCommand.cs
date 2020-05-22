@@ -1,6 +1,7 @@
 namespace Validot.Specification.Commands
 {
     using System;
+    using System.Linq;
     using System.Linq.Expressions;
 
     using Validot.Validation.Scopes;
@@ -45,6 +46,11 @@ namespace Validot.Specification.Commands
 
         private static string GetMemberName(Expression<Func<T, TMember>> field)
         {
+            if (field.ToString().Count(c => c == '.') > 1)
+            {
+                throw new InvalidOperationException($"Only one level of nesting is allowed, {field} looks like it is going further (member of a member?)");
+            }
+
             MemberExpression memberExpression = null;
 
             if (field.Body is MemberExpression)
@@ -57,7 +63,7 @@ namespace Validot.Specification.Commands
             }
             else
             {
-                throw new InvalidOperationException("Only properties and variables are valid members to validate");
+                throw new InvalidOperationException($"Only properties and variables are valid members to validate, {field} looks like it is pointing at something else (a method?).");
             }
 
             return memberExpression.Member.Name;

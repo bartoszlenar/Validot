@@ -9,11 +9,11 @@ namespace Validot.Validation.Scheme
 
     internal class ModelScheme<T> : IModelScheme
     {
-        private readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> _pathsMap;
+        private readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> _pathMap;
 
         private readonly IReadOnlyDictionary<int, object> _specificationScopes;
 
-        public ModelScheme(IReadOnlyDictionary<int, object> specificationScopes, int rootSpecificationScopeId, IReadOnlyDictionary<int, IError> errorsRegistry, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> pathsMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+        public ModelScheme(IReadOnlyDictionary<int, object> specificationScopes, int rootSpecificationScopeId, IReadOnlyDictionary<int, IError> errorsRegistry, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> pathMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
         {
             ThrowHelper.NullArgument(specificationScopes, nameof(specificationScopes));
             ThrowHelper.NullInCollection(specificationScopes.Values, $"{nameof(specificationScopes)}.{nameof(specificationScopes.Values)}");
@@ -39,21 +39,21 @@ namespace Validot.Validation.Scheme
             ThrowHelper.NullInCollection(errorMap.Values, $"{nameof(errorMap)}.{nameof(errorMap.Values)}");
             ErrorMap = errorMap;
 
-            ThrowHelper.NullArgument(pathsMap, nameof(pathsMap));
-            ThrowHelper.NullInCollection(pathsMap.Values, $"{nameof(pathsMap)}.{nameof(pathsMap.Values)}");
+            ThrowHelper.NullArgument(pathMap, nameof(pathMap));
+            ThrowHelper.NullInCollection(pathMap.Values, $"{nameof(pathMap)}.{nameof(pathMap.Values)}");
 
-            foreach (var item in pathsMap.Values)
+            foreach (var item in pathMap.Values)
             {
                 foreach (var innerItem in item)
                 {
                     if (innerItem.Value == null)
                     {
-                        throw new ArgumentNullException($"Collection `{nameof(pathsMap)}` contains null in inner dictionary under key `{innerItem.Key}`");
+                        throw new ArgumentNullException($"Collection `{nameof(pathMap)}` contains null in inner dictionary under key `{innerItem.Key}`");
                     }
                 }
             }
 
-            _pathsMap = pathsMap;
+            _pathMap = pathMap;
 
             ThrowHelper.NullArgument(capacityInfo, nameof(capacityInfo));
             CapacityInfo = capacityInfo;
@@ -78,9 +78,9 @@ namespace Validot.Validation.Scheme
 
         public string ResolvePath(string basePath, string relativePath)
         {
-            if (_pathsMap.ContainsKey(basePath) && _pathsMap[basePath].ContainsKey(relativePath))
+            if (_pathMap.ContainsKey(basePath) && _pathMap[basePath].ContainsKey(relativePath))
             {
-                return _pathsMap[basePath][relativePath];
+                return _pathMap[basePath][relativePath];
             }
 
             return PathHelper.ResolvePath(basePath, relativePath);

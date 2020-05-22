@@ -13,7 +13,7 @@ namespace Validot.Validation.Scheme
 
         private readonly IReadOnlyDictionary<int, object> _specificationScopes;
 
-        public ModelScheme(IReadOnlyDictionary<int, object> specificationScopes, int rootSpecificationScopeId, IReadOnlyDictionary<int, IError> errorsRegistry, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> pathMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+        public ModelScheme(IReadOnlyDictionary<int, object> specificationScopes, int rootSpecificationScopeId, IReadOnlyDictionary<int, IError> errorRegistry, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> pathMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
         {
             ThrowHelper.NullArgument(specificationScopes, nameof(specificationScopes));
             ThrowHelper.NullInCollection(specificationScopes.Values, $"{nameof(specificationScopes)}.{nameof(specificationScopes.Values)}");
@@ -31,9 +31,9 @@ namespace Validot.Validation.Scheme
 
             RootSpecificationScope = (SpecificationScope<T>)specificationScopes[rootSpecificationScopeId];
 
-            ThrowHelper.NullArgument(errorsRegistry, nameof(errorsRegistry));
-            ThrowHelper.NullInCollection(errorsRegistry.Values, $"{nameof(errorsRegistry)}.{nameof(errorsRegistry.Values)}");
-            ErrorsRegistry = errorsRegistry;
+            ThrowHelper.NullArgument(errorRegistry, nameof(errorRegistry));
+            ThrowHelper.NullInCollection(errorRegistry.Values, $"{nameof(errorRegistry)}.{nameof(errorRegistry.Values)}");
+            ErrorRegistry = errorRegistry;
 
             ThrowHelper.NullArgument(errorMap, nameof(errorMap));
             ThrowHelper.NullInCollection(errorMap.Values, $"{nameof(errorMap)}.{nameof(errorMap.Values)}");
@@ -62,7 +62,7 @@ namespace Validot.Validation.Scheme
             RootSpecificationScopeId = rootSpecificationScopeId;
         }
 
-        public IReadOnlyDictionary<int, IError> ErrorsRegistry { get; }
+        public IReadOnlyDictionary<int, IError> ErrorRegistry { get; }
 
         public IReadOnlyDictionary<string, IReadOnlyList<int>> ErrorMap { get; }
 

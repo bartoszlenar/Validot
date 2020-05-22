@@ -21,18 +21,18 @@ namespace Validot.Results
 
         private readonly Dictionary<string, List<int>> _resultErrors;
 
-        public ValidationResult(Dictionary<string, List<int>> resultErrors, IReadOnlyDictionary<int, IError> errorsRegistry, IMessagesService messagesService)
+        public ValidationResult(Dictionary<string, List<int>> resultErrors, IReadOnlyDictionary<int, IError> errorRegistry, IMessagesService messagesService)
         {
             AnyErrors = resultErrors.Count != 0;
 
             _resultErrors = resultErrors;
 
             _errorCodes = AnyErrors
-                ? PrepareLazyLoadedErrorCodes(resultErrors, errorsRegistry)
+                ? PrepareLazyLoadedErrorCodes(resultErrors, errorRegistry)
                 : null;
 
             _rawErrors = AnyErrors
-                ? PrepareLazyLoadedRawErrors(resultErrors, errorsRegistry)
+                ? PrepareLazyLoadedRawErrors(resultErrors, errorRegistry)
                 : null;
 
             _messagesService = messagesService;
@@ -79,7 +79,7 @@ namespace Validot.Results
                 : EmptyTranslation;
         }
 
-        private static Lazy<IReadOnlyList<string>> PrepareLazyLoadedErrorCodes(Dictionary<string, List<int>> resultErrors, IReadOnlyDictionary<int, IError> errorsRegistry)
+        private static Lazy<IReadOnlyList<string>> PrepareLazyLoadedErrorCodes(Dictionary<string, List<int>> resultErrors, IReadOnlyDictionary<int, IError> errorRegistry)
         {
             return new Lazy<IReadOnlyList<string>>(() =>
             {
@@ -89,7 +89,7 @@ namespace Validot.Results
                 {
                     for (var i = 0; i < pair.Value.Count; ++i)
                     {
-                        capacity += errorsRegistry[pair.Value[i]].Codes?.Count ?? 0;
+                        capacity += errorRegistry[pair.Value[i]].Codes?.Count ?? 0;
                     }
                 }
 
@@ -100,7 +100,7 @@ namespace Validot.Results
                 {
                     for (var i = 0; i < pair.Value.Count; ++i)
                     {
-                        var singleErrorCodes = errorsRegistry[pair.Value[i]].Codes;
+                        var singleErrorCodes = errorRegistry[pair.Value[i]].Codes;
 
                         if (!(singleErrorCodes is null))
                         {
@@ -116,7 +116,7 @@ namespace Validot.Results
             });
         }
 
-        private static Lazy<IReadOnlyDictionary<string, IReadOnlyList<IError>>> PrepareLazyLoadedRawErrors(Dictionary<string, List<int>> resultErrors, IReadOnlyDictionary<int, IError> errorsRegistry)
+        private static Lazy<IReadOnlyDictionary<string, IReadOnlyList<IError>>> PrepareLazyLoadedRawErrors(Dictionary<string, List<int>> resultErrors, IReadOnlyDictionary<int, IError> errorRegistry)
         {
             return new Lazy<IReadOnlyDictionary<string, IReadOnlyList<IError>>>(() =>
             {
@@ -128,7 +128,7 @@ namespace Validot.Results
 
                     for (var i = 0; i < pair.Value.Count; ++i)
                     {
-                        errors[i] = errorsRegistry[pair.Value[i]];
+                        errors[i] = errorRegistry[pair.Value[i]];
                     }
 
                     dictionary.Add(pair.Key, errors);

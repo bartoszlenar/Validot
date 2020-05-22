@@ -62,7 +62,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
             var modelScheme = ModelSchemeFactory.Create(classSpecification, capacityInfo);
 
-            var error = modelScheme.ErrorsRegistry.Where(e => e.Value.Args.Count == 0 && e.Value.Codes.Count == 0 && e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value custom message");
+            var error = modelScheme.ErrorRegistry.Where(e => e.Value.Args.Count == 0 && e.Value.Codes.Count == 0 && e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value custom message");
 
             error.Should().HaveCount(1);
 
@@ -83,14 +83,14 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
             var modelScheme = ModelSchemeFactory.Create(classSpecification, capacityInfo);
 
-            var error1Candidates = modelScheme.ErrorsRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value custom message");
+            var error1Candidates = modelScheme.ErrorRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value custom message");
 
             error1Candidates.Should().HaveCount(1);
             var error1 = error1Candidates.Single();
             error1.Value.Codes.Should().BeEmpty();
             error1.Value.Args.Should().BeEmpty();
 
-            var error2Candidates = modelScheme.ErrorsRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value template message {argName}");
+            var error2Candidates = modelScheme.ErrorRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value template message {argName}");
             error2Candidates.Should().HaveCount(1);
             var error2 = error2Candidates.Single();
             error2.Value.Codes.Should().BeEmpty();
@@ -100,7 +100,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
             ((NumberArg<long>)error2Arg).Name.Should().Be("argName");
             ((NumberArg<long>)error2Arg).Value.Should().Be(666);
 
-            var error3Candidates = modelScheme.ErrorsRegistry.Where(e => e.Value.Codes.Count == 1 && e.Value.Codes.Single() == "CODE1");
+            var error3Candidates = modelScheme.ErrorRegistry.Where(e => e.Value.Codes.Count == 1 && e.Value.Codes.Single() == "CODE1");
             error3Candidates.Should().HaveCount(1);
             var error3 = error3Candidates.Single();
             error3.Value.Messages.Should().BeEmpty();
@@ -216,7 +216,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
             var modelScheme = ModelSchemeFactory.Create(classSpecification, feedableCapacityInfo);
 
-            var error1Candidates = modelScheme.ErrorsRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value template message {argName}");
+            var error1Candidates = modelScheme.ErrorRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value template message {argName}");
             error1Candidates.Should().HaveCount(1);
             var error1 = error1Candidates.Single();
             error1.Value.Codes.Should().BeEmpty();
@@ -226,20 +226,20 @@ namespace Validot.Tests.Unit.Validation.Scheme
             ((NumberArg<long>)error1Arg).Name.Should().Be("argName");
             ((NumberArg<long>)error1Arg).Value.Should().Be(666);
 
-            var error2Candidates = modelScheme.ErrorsRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value custom message");
+            var error2Candidates = modelScheme.ErrorRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value custom message");
 
             error2Candidates.Should().HaveCount(1);
             var error2 = error2Candidates.Single();
             error2.Value.Codes.Should().BeEmpty();
             error2.Value.Args.Should().BeEmpty();
 
-            var error3Candidates = modelScheme.ErrorsRegistry.Where(e => e.Value.Codes.Count == 1 && e.Value.Codes.Single() == "CODE1");
+            var error3Candidates = modelScheme.ErrorRegistry.Where(e => e.Value.Codes.Count == 1 && e.Value.Codes.Single() == "CODE1");
             error3Candidates.Should().HaveCount(1);
             var error3 = error3Candidates.Single();
             error3.Value.Messages.Should().BeEmpty();
             error3.Value.Args.Should().BeEmpty();
 
-            var errorNestedCandidates = modelScheme.ErrorsRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Nested template message");
+            var errorNestedCandidates = modelScheme.ErrorRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Nested template message");
             errorNestedCandidates.Should().HaveCount(1);
             var errorNested = errorNestedCandidates.Single();
             errorNested.Value.Codes.Should().HaveCount(1);
@@ -286,9 +286,9 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
             var modelScheme = ModelSchemeFactory.Create(classSpecification, capacityInfo);
 
-            var memberError = modelScheme.ErrorsRegistry.Single(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Member error");
+            var memberError = modelScheme.ErrorRegistry.Single(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Member error");
 
-            var baseError = modelScheme.ErrorsRegistry.Single(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Base error");
+            var baseError = modelScheme.ErrorRegistry.Single(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Base error");
 
             modelScheme.ErrorMap.Keys.Should().HaveCount(2);
             modelScheme.ErrorMap.Keys.Should().Contain("");

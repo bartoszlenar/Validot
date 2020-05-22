@@ -284,7 +284,7 @@ namespace Validot.Tests.Unit.Results
                     ["test2"] = new List<int>() { 2, 4 },
                 };
 
-                var errorsRegistry = new Dictionary<int, IError>()
+                var errorRegistry = new Dictionary<int, IError>()
                 {
                     [1] = new Error(),
                     [2] = new Error(),
@@ -292,7 +292,7 @@ namespace Validot.Tests.Unit.Results
                     [4] = new Error(),
                 };
 
-                var validationResult = new ValidationResult(resultsErrors, errorsRegistry, Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
 
                 var rawErrors = validationResult.GetRawErrors();
 
@@ -301,18 +301,18 @@ namespace Validot.Tests.Unit.Results
                 rawErrors.Keys.Should().HaveCount(2);
 
                 rawErrors["test1"].Should().HaveCount(3);
-                rawErrors["test1"].Should().Contain(x => ReferenceEquals(x, errorsRegistry[1]));
-                rawErrors["test1"].Should().Contain(x => ReferenceEquals(x, errorsRegistry[2]));
-                rawErrors["test1"].Should().Contain(x => ReferenceEquals(x, errorsRegistry[3]));
+                rawErrors["test1"].Should().Contain(x => ReferenceEquals(x, errorRegistry[1]));
+                rawErrors["test1"].Should().Contain(x => ReferenceEquals(x, errorRegistry[2]));
+                rawErrors["test1"].Should().Contain(x => ReferenceEquals(x, errorRegistry[3]));
 
                 rawErrors["test2"].Should().HaveCount(2);
-                rawErrors["test2"].Should().Contain(x => ReferenceEquals(x, errorsRegistry[2]));
-                rawErrors["test2"].Should().Contain(x => ReferenceEquals(x, errorsRegistry[4]));
+                rawErrors["test2"].Should().Contain(x => ReferenceEquals(x, errorRegistry[2]));
+                rawErrors["test2"].Should().Contain(x => ReferenceEquals(x, errorRegistry[4]));
             }
 
             public static IEnumerable<object[]> Should_ReturnPathsWithRawErrors_MoreExamples_Data()
             {
-                var errorsRegistry = new Dictionary<int, IError>()
+                var errorRegistry = new Dictionary<int, IError>()
                 {
                     [1] = new Error(),
                     [2] = new Error(),
@@ -326,10 +326,10 @@ namespace Validot.Tests.Unit.Results
                     {
                         ["test1"] = new List<int>() { 1 },
                     },
-                    errorsRegistry,
+                    errorRegistry,
                     new Dictionary<string, IReadOnlyList<IError>>()
                     {
-                        ["test1"] = new[] { errorsRegistry[1] }
+                        ["test1"] = new[] { errorRegistry[1] }
                     },
                 };
 
@@ -339,10 +339,10 @@ namespace Validot.Tests.Unit.Results
                     {
                         [""] = new List<int>() { 4 },
                     },
-                    errorsRegistry,
+                    errorRegistry,
                     new Dictionary<string, IReadOnlyList<IError>>()
                     {
-                        [""] = new[] { errorsRegistry[4] }
+                        [""] = new[] { errorRegistry[4] }
                     },
                 };
 
@@ -352,7 +352,7 @@ namespace Validot.Tests.Unit.Results
                     {
                         ["test1"] = new List<int>(),
                     },
-                    errorsRegistry,
+                    errorRegistry,
                     new Dictionary<string, IReadOnlyList<IError>>()
                     {
                         ["test1"] = new IError[] { },
@@ -368,13 +368,13 @@ namespace Validot.Tests.Unit.Results
                         ["test3"] = new List<int>() { 3 },
                         ["test4"] = new List<int>() { 4 },
                     },
-                    errorsRegistry,
+                    errorRegistry,
                     new Dictionary<string, IReadOnlyList<IError>>()
                     {
-                        ["test1"] = new[] { errorsRegistry[1] },
-                        ["test2"] = new[] { errorsRegistry[2] },
-                        ["test3"] = new[] { errorsRegistry[3] },
-                        ["test4"] = new[] { errorsRegistry[4] },
+                        ["test1"] = new[] { errorRegistry[1] },
+                        ["test2"] = new[] { errorRegistry[2] },
+                        ["test3"] = new[] { errorRegistry[3] },
+                        ["test4"] = new[] { errorRegistry[4] },
                     },
                 };
 
@@ -387,22 +387,22 @@ namespace Validot.Tests.Unit.Results
                         ["test3"] = new List<int>() { 1, 3 },
                         ["test4"] = new List<int>() { 2, 3, 4 },
                     },
-                    errorsRegistry,
+                    errorRegistry,
                     new Dictionary<string, IReadOnlyList<IError>>()
                     {
-                        ["test1"] = new[] { errorsRegistry[1] },
-                        ["test2"] = new[] { errorsRegistry[1], errorsRegistry[2] },
-                        ["test3"] = new[] { errorsRegistry[1], errorsRegistry[3] },
-                        ["test4"] = new[] { errorsRegistry[2], errorsRegistry[3], errorsRegistry[4] },
+                        ["test1"] = new[] { errorRegistry[1] },
+                        ["test2"] = new[] { errorRegistry[1], errorRegistry[2] },
+                        ["test3"] = new[] { errorRegistry[1], errorRegistry[3] },
+                        ["test4"] = new[] { errorRegistry[2], errorRegistry[3], errorRegistry[4] },
                     },
                 };
             }
 
             [Theory]
             [MemberData(nameof(Should_ReturnPathsWithRawErrors_MoreExamples_Data))]
-            public void Should_ReturnPathsWithRawErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorsRegistry, IReadOnlyDictionary<string, IReadOnlyList<IError>> expectedErrors)
+            public void Should_ReturnPathsWithRawErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, IReadOnlyDictionary<string, IReadOnlyList<IError>> expectedErrors)
             {
-                var validationResult = new ValidationResult(resultsErrors, errorsRegistry, Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
 
                 var rawErrors = validationResult.GetRawErrors();
 
@@ -445,7 +445,7 @@ namespace Validot.Tests.Unit.Results
                     ["test2"] = new List<int>() { 2, 4 },
                 };
 
-                var errorsRegistry = new Dictionary<int, IError>()
+                var errorRegistry = new Dictionary<int, IError>()
                 {
                     [1] = new Error()
                     {
@@ -465,7 +465,7 @@ namespace Validot.Tests.Unit.Results
                     },
                 };
 
-                var validationResult = new ValidationResult(resultsErrors, errorsRegistry, Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
 
                 var errorCodes = validationResult.GetErrorCodes();
 
@@ -484,7 +484,7 @@ namespace Validot.Tests.Unit.Results
 
             public static IEnumerable<object[]> Should_ReturnAllErrorCodesFromErrors_MoreExamples_Data()
             {
-                var errorsRegistry = new Dictionary<int, IError>()
+                var errorRegistry = new Dictionary<int, IError>()
                 {
                     [1] = new Error()
                     {
@@ -521,7 +521,7 @@ namespace Validot.Tests.Unit.Results
                     {
                         ["test1"] = new List<int>() { 1 },
                     },
-                    errorsRegistry,
+                    errorRegistry,
                     new Dictionary<string, int>()
                     {
                         ["CODE1"] = 1,
@@ -534,7 +534,7 @@ namespace Validot.Tests.Unit.Results
                     {
                         ["test1"] = new List<int>() { 1, 1, 1 },
                     },
-                    errorsRegistry,
+                    errorRegistry,
                     new Dictionary<string, int>()
                     {
                         ["CODE1"] = 3,
@@ -549,7 +549,7 @@ namespace Validot.Tests.Unit.Results
                         ["test2"] = new List<int>() { 1 },
                         ["test3"] = new List<int>() { 1 },
                     },
-                    errorsRegistry,
+                    errorRegistry,
                     new Dictionary<string, int>()
                     {
                         ["CODE1"] = 3,
@@ -564,7 +564,7 @@ namespace Validot.Tests.Unit.Results
                         ["test2"] = new List<int>() { 2, 4 },
                         ["test3"] = new List<int>() { 3, 4 },
                     },
-                    errorsRegistry,
+                    errorRegistry,
                     new Dictionary<string, int>()
                     {
                         ["CODE1"] = 1,
@@ -584,7 +584,7 @@ namespace Validot.Tests.Unit.Results
                         ["test3"] = new List<int>() { 3, 5 },
                         ["test4"] = new List<int>() { 6, 5 },
                     },
-                    errorsRegistry,
+                    errorRegistry,
                     new Dictionary<string, int>()
                     {
                         ["CODE2"] = 1,
@@ -605,7 +605,7 @@ namespace Validot.Tests.Unit.Results
                         ["test4"] = new List<int>() { 5 },
                         ["test5"] = new List<int>() { 5 },
                     },
-                    errorsRegistry,
+                    errorRegistry,
                     new Dictionary<string, int>()
                     {
                         ["CODE1"] = 1,
@@ -620,9 +620,9 @@ namespace Validot.Tests.Unit.Results
 
             [Theory]
             [MemberData(nameof(Should_ReturnAllErrorCodesFromErrors_MoreExamples_Data))]
-            public void Should_ReturnAllErrorCodesFromErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorsRegistry, Dictionary<string, int> expectedCodesWithCount)
+            public void Should_ReturnAllErrorCodesFromErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, Dictionary<string, int> expectedCodesWithCount)
             {
-                var validationResult = new ValidationResult(resultsErrors, errorsRegistry, Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
 
                 var errorCodes = validationResult.GetErrorCodes();
 

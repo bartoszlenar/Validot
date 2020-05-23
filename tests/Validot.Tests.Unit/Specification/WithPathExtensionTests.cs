@@ -9,12 +9,12 @@ namespace Validot.Tests.Unit.Specification
 
     using Xunit;
 
-    public class WithNameExtensionTests
+    public class WithPathExtensionTests
     {
         [Fact]
         public void Should_BeEntryPoint()
         {
-            ApiTester.TestOutputPossibilities<IWithNameOut<object>>(new[]
+            ApiTester.TestOutputPossibilities<IWithPathOut<object>>(new[]
             {
                 typeof(ISpecificationOut<object>),
                 typeof(IRuleIn<object>),
@@ -27,21 +27,21 @@ namespace Validot.Tests.Unit.Specification
         }
 
         [Fact]
-        public void Should_Add_WithNameCommand()
+        public void Should_Add_WithPathCommand()
         {
-            ApiTester.TestSingleCommand<object, IWithNameIn<object>, IWithNameOut<object>, WithNameCommand>(
-                s => s.WithName("name"),
+            ApiTester.TestSingleCommand<object, IWithPathIn<object>, IWithPathOut<object>, WithPathCommand>(
+                s => s.WithPath("path"),
                 command =>
                 {
-                    command.Name.Should().Be("name");
+                    command.Path.Should().Be("path");
                 });
         }
 
         [Fact]
         public void Should_ThrowException_When_NullName()
         {
-            ApiTester.TextException<object, IWithNameIn<object>, IWithNameOut<object>>(
-                s => s.WithName(null),
+            ApiTester.TextException<object, IWithPathIn<object>, IWithPathOut<object>>(
+                s => s.WithPath(null),
                 addingAction =>
                 {
                     addingAction.Should().ThrowExactly<ArgumentNullException>();
@@ -49,26 +49,26 @@ namespace Validot.Tests.Unit.Specification
         }
 
         [Theory]
-        [MemberData(nameof(PathsTestData.ValidPaths), MemberType = typeof(PathsTestData))]
+        [MemberData(nameof(PathTestData.ValidPaths), MemberType = typeof(PathTestData))]
         public void Should_Accept_ValidPaths(string path)
         {
-            ApiTester.TestSingleCommand<object, IWithNameIn<object>, IWithNameOut<object>, WithNameCommand>(
-                s => s.WithName(path),
+            ApiTester.TestSingleCommand<object, IWithPathIn<object>, IWithPathOut<object>, WithPathCommand>(
+                s => s.WithPath(path),
                 command =>
                 {
-                    command.Name.Should().Be(path);
+                    command.Path.Should().Be(path);
                 });
         }
 
         [Theory]
-        [MemberData(nameof(PathsTestData.InvalidPaths), MemberType = typeof(PathsTestData))]
+        [MemberData(nameof(PathTestData.InvalidPaths), MemberType = typeof(PathTestData))]
         public void Should_ReturnFalse_For_InvalidPaths(string path)
         {
-            ApiTester.TextException<object, IWithNameIn<object>, IWithNameOut<object>>(
-                s => s.WithName(path),
+            ApiTester.TextException<object, IWithPathIn<object>, IWithPathOut<object>>(
+                s => s.WithPath(path),
                 addingAction =>
                 {
-                    addingAction.Should().ThrowExactly<ArgumentException>().WithMessage("Invalid name*");
+                    addingAction.Should().ThrowExactly<ArgumentException>().WithMessage("Invalid path*");
                 });
         }
     }

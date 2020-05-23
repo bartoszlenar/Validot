@@ -90,12 +90,12 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             }
 
             [Fact]
-            public void Should_ReturnTrue_And_SetExecutionCondition_When_WhenCommand()
+            public void Should_ReturnTrue_And_SetCondition_When_WithConditionCommand()
             {
-                Predicate<object> shouldExecutePredicate = o => true;
+                Predicate<object> condition = o => true;
 
                 var context = Substitute.For<IScopeBuilderContext>();
-                var command = new WhenCommand<TestClass>(shouldExecutePredicate);
+                var command = new WithConditionCommand<TestClass>(condition);
 
                 var builder = new RuleCommandScopeBuilder<TestClass>(new RuleCommand<TestClass>(x => true));
 
@@ -105,14 +105,14 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
 
                 var builtScope = (ICommandScope<TestClass>)builder.Build(context);
 
-                builtScope.ShouldExecute.Should().BeSameAs(shouldExecutePredicate);
+                builtScope.ExecutionCondition.Should().BeSameAs(condition);
             }
 
             [Fact]
-            public void Should_ReturnTrue_And_SetName_When_WithNameCommand()
+            public void Should_ReturnTrue_And_SetName_When_WithPathCommand()
             {
                 var context = Substitute.For<IScopeBuilderContext>();
-                var command = new WithNameCommand("some_name");
+                var command = new WithPathCommand("some_path");
 
                 var builder = new RuleCommandScopeBuilder<TestClass>(new RuleCommand<TestClass>(x => true));
 
@@ -122,7 +122,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
 
                 var builtScope = (ICommandScope<TestClass>)builder.Build(context);
 
-                builtScope.Name.Should().Be("some_name");
+                builtScope.Path.Should().Be("some_path");
             }
 
             [Theory]

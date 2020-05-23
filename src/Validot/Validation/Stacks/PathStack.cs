@@ -47,7 +47,7 @@ namespace Validot.Validation.Stacks
 
         public void PushWithDiscoveryIndex(string path)
         {
-            PushWithIndex(path, PathsHelper.CollectionIndexPrefixString);
+            PushWithIndex(path, PathHelper.CollectionIndexPrefixString);
         }
 
         public void Pop()

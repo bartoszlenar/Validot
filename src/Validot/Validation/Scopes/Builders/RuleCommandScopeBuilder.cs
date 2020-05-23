@@ -10,9 +10,9 @@ namespace Validot.Validation.Scopes.Builders
 
         private readonly RuleCommand<T> _ruleCommand;
 
-        private string _name;
+        private string _path;
 
-        private Predicate<T> _shouldExecute;
+        private Predicate<T> _executionCondition;
 
         public RuleCommandScopeBuilder(RuleCommand<T> ruleCommand)
         {
@@ -35,8 +35,8 @@ namespace Validot.Validation.Scopes.Builders
                 IsValid = _ruleCommand.ValidCondition
             };
 
-            ruleCommandScope.Name = _name;
-            ruleCommandScope.ShouldExecute = _shouldExecute;
+            ruleCommandScope.Path = _path;
+            ruleCommandScope.ExecutionCondition = _executionCondition;
             ruleCommandScope.ErrorMode = _errorsBuilder.Mode;
 
             if (_errorsBuilder.IsEmpty)
@@ -55,16 +55,16 @@ namespace Validot.Validation.Scopes.Builders
 
         public bool TryAdd(ICommand command)
         {
-            if (command is WhenCommand<T> whenCommand)
+            if (command is WithConditionCommand<T> withConditionCommand)
             {
-                _shouldExecute = whenCommand.ExecutionCondition;
+                _executionCondition = withConditionCommand.ExecutionCondition;
 
                 return true;
             }
 
-            if (command is WithNameCommand withNameCommand)
+            if (command is WithPathCommand withPathCommand)
             {
-                _name = withNameCommand.Name;
+                _path = withPathCommand.Path;
 
                 return true;
             }

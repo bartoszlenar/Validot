@@ -6,17 +6,17 @@ namespace Validot.Validation.Scopes
 
     internal abstract class CommandScope<T> : ICommandScope<T>
     {
-        public Predicate<T> ShouldExecute { get; set; }
+        public Predicate<T> ExecutionCondition { get; set; }
 
         public int? ErrorId { get; set; }
 
         public ErrorMode ErrorMode { get; set; } = ErrorMode.Append;
 
-        public string Name { get; set; }
+        public string Path { get; set; }
 
         public void Discover(IDiscoveryContext context)
         {
-            context.EnterPath(Name);
+            context.EnterPath(Path);
 
             if (!ErrorId.HasValue || ErrorMode == ErrorMode.Append)
             {
@@ -33,14 +33,14 @@ namespace Validot.Validation.Scopes
 
         public void Validate(T model, IValidationContext context)
         {
-            var shouldExecute = ShouldExecute?.Invoke(model) ?? true;
+            var shouldExecute = ExecutionCondition?.Invoke(model) ?? true;
 
             if (!shouldExecute)
             {
                 return;
             }
 
-            context.EnterPath(Name);
+            context.EnterPath(Path);
 
             if (ErrorId.HasValue)
             {

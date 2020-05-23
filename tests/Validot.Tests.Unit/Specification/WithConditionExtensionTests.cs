@@ -6,15 +6,15 @@ namespace Validot.Tests.Unit.Specification
     using Validot.Specification.Commands;
     using Xunit;
 
-    public class WhenExtensionTests
+    public class WithConditionExtensionTests
     {
         [Fact]
-        public void Should_Add_WhenCommand()
+        public void Should_Add_WithConditionCommand()
         {
             Predicate<object> predicate = x => true;
 
-            ApiTester.TestSingleCommand<object, IWhenIn<object>, IWhenOut<object>, WhenCommand<object>>(
-                s => s.When(predicate),
+            ApiTester.TestSingleCommand<object, IWithConditionIn<object>, IWithConditionOut<object>, WithConditionCommand<object>>(
+                s => s.WithCondition(predicate),
                 command =>
                 {
                     command.ExecutionCondition.Should().NotBeNull();
@@ -25,7 +25,7 @@ namespace Validot.Tests.Unit.Specification
         [Fact]
         public void Should_BeEntryPoint()
         {
-            ApiTester.TestOutputPossibilities<IWhenOut<object>>(new[]
+            ApiTester.TestOutputPossibilities<IWithConditionOut<object>>(new[]
             {
                 typeof(ISpecificationOut<object>),
                 typeof(IWithErrorClearedIn<object>),
@@ -39,8 +39,8 @@ namespace Validot.Tests.Unit.Specification
         [Fact]
         public void Should_ThrowException_When_NullExecutionCondition()
         {
-            ApiTester.TextException<object, IWhenIn<object>, IWhenOut<object>>(
-                s => s.When(null),
+            ApiTester.TextException<object, IWithConditionIn<object>, IWithConditionOut<object>>(
+                s => s.WithCondition(null),
                 addingAction =>
                 {
                     addingAction.Should().ThrowExactly<ArgumentNullException>();

@@ -5,7 +5,7 @@ namespace Validot
     using System.Text;
     using System.Text.RegularExpressions;
 
-    internal static class PathsHelper
+    internal static class PathHelper
     {
         private const char UpperLevelPointerChar = '<';
 
@@ -29,37 +29,37 @@ namespace Validot
 
         public static string CollectionIndexPrefixString { get; } = char.ToString(CollectionIndexPrefix);
 
-        public static string ResolveNextLevelPath(string basePath, string newSegment)
+        public static string ResolvePath(string basePath, string relativePath)
         {
             ThrowHelper.NullArgument(basePath, nameof(basePath));
-            ThrowHelper.NullArgument(newSegment, nameof(newSegment));
+            ThrowHelper.NullArgument(relativePath, nameof(relativePath));
 
-            if (newSegment.Length == 0)
+            if (relativePath.Length == 0)
             {
                 return basePath;
             }
 
             if (basePath.Length == 0)
             {
-                if (newSegment[0] != UpperLevelPointer)
+                if (relativePath[0] != UpperLevelPointer)
                 {
-                    return newSegment;
+                    return relativePath;
                 }
             }
 
-            if (newSegment[0] == UpperLevelPointer)
+            if (relativePath[0] == UpperLevelPointer)
             {
                 var up = 0;
 
-                while (++up < newSegment.Length)
+                while (++up < relativePath.Length)
                 {
-                    if (newSegment[up] != UpperLevelPointer)
+                    if (relativePath[up] != UpperLevelPointer)
                     {
                         break;
                     }
                 }
 
-                var newSegmentCore = newSegment.TrimStart(UpperLevelPointer);
+                var newSegmentCore = relativePath.TrimStart(UpperLevelPointer);
 
                 for (var i = basePath.Length - 2; i >= 0; --i)
                 {
@@ -77,7 +77,7 @@ namespace Validot
                 return newSegmentCore;
             }
 
-            return $"{basePath}.{newSegment}";
+            return $"{basePath}.{relativePath}";
         }
 
         public static string GetWithoutIndexes(string path)
@@ -153,22 +153,22 @@ namespace Validot
             return path.Substring(lastDividerIndex + 1);
         }
 
-        public static bool IsValidAsName(string segment)
+        public static bool IsValidAsPath(string path)
         {
-            if (string.IsNullOrEmpty(segment))
+            if (string.IsNullOrEmpty(path))
             {
                 return false;
             }
 
-            segment = segment.TrimStart('<');
+            path = path.TrimStart('<');
 
-            if (segment.StartsWith(".", StringComparison.Ordinal) ||
-                segment.EndsWith(".", StringComparison.Ordinal))
+            if (path.StartsWith(".", StringComparison.Ordinal) ||
+                path.EndsWith(".", StringComparison.Ordinal))
             {
                 return false;
             }
 
-            if (segment.IndexOf("..", StringComparison.Ordinal) != -1)
+            if (path.IndexOf("..", StringComparison.Ordinal) != -1)
             {
                 return false;
             }

@@ -12,9 +12,9 @@ namespace Validot.Validation.Scopes.Builders
 
         private ErrorBuilder _errorsBuilder;
 
-        private string _name;
+        private string _path;
 
-        private Predicate<T> _shouldExecute;
+        private Predicate<T> _executionCondition;
 
         public CommandScopeBuilder(ICommand command, Func<ICommand, IScopeBuilderContext, ICommandScope<T>> coreBuilder)
         {
@@ -50,14 +50,14 @@ namespace Validot.Validation.Scopes.Builders
                 }
             }
 
-            if (_name != null)
+            if (_path != null)
             {
-                core.Name = _name;
+                core.Path = _path;
             }
 
-            if (_shouldExecute != null)
+            if (_executionCondition != null)
             {
-                core.ShouldExecute = _shouldExecute;
+                core.ExecutionCondition = _executionCondition;
             }
 
             return core;
@@ -67,16 +67,16 @@ namespace Validot.Validation.Scopes.Builders
         {
             ThrowHelper.NullArgument(command, nameof(command));
 
-            if (command is WhenCommand<T> whenCommand)
+            if (command is WithConditionCommand<T> withConditionCommand)
             {
-                _shouldExecute = whenCommand.ExecutionCondition;
+                _executionCondition = withConditionCommand.ExecutionCondition;
 
                 return true;
             }
 
-            if (command is WithNameCommand withNameCommand)
+            if (command is WithPathCommand withPathCommand)
             {
-                _name = withNameCommand.Name;
+                _path = withPathCommand.Path;
 
                 return true;
             }

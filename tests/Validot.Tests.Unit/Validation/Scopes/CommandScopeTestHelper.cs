@@ -15,9 +15,9 @@ namespace Validot.Tests.Unit.Validation.Scopes
     {
         public static void ShouldHaveDefaultValues<T>(this ICommandScope<T> commandScope)
         {
-            commandScope.ShouldExecute.Should().BeNull();
+            commandScope.ExecutionCondition.Should().BeNull();
             commandScope.ErrorId.Should().NotHaveValue();
-            commandScope.Name.Should().BeNull();
+            commandScope.Path.Should().BeNull();
             commandScope.ErrorMode.Should().Be(ErrorMode.Append);
         }
 
@@ -75,7 +75,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             Received.InOrder(() =>
             {
-                context.Received().EnterPath(Arg.Is(@this.Name));
+                context.Received().EnterPath(Arg.Is(@this.Path));
 
                 if (!@this.ErrorId.HasValue || @this.ErrorMode == ErrorMode.Append)
                 {
@@ -101,7 +101,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 if (shouldExecute)
                 {
-                    context.Received().EnterPath(Arg.Is(@this.Name));
+                    context.Received().EnterPath(Arg.Is(@this.Path));
 
                     if (@this.ErrorId.HasValue)
                     {

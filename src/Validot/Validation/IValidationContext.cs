@@ -8,7 +8,7 @@ namespace Validot.Validation
 
         void AddError(int errorId, bool skipIfDuplicateInPath = false);
 
-        void EnterPath(string name);
+        void EnterPath(string path);
 
         void LeavePath();
 

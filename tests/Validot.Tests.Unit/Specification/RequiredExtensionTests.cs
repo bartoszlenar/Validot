@@ -34,19 +34,5 @@ namespace Validot.Tests.Unit.Specification
             ApiTester.TestSingleCommand<int?, IRequiredIn<int?>, IRequiredOut<int?>, RequiredCommand>(
                 s => s.Required());
         }
-
-        [Fact]
-        public void Should_NotNull_Add_RequiredCommand()
-        {
-            ApiTester.TestSingleCommand<object, IRequiredIn<object>, IRequiredOut<object>, RequiredCommand>(
-                s => s.NotNull());
-        }
-
-        [Fact]
-        public void Should_NotNull_Add_RequiredCommand_When_Nullable()
-        {
-            ApiTester.TestSingleCommand<int?, IRequiredIn<int?>, IRequiredOut<int?>, RequiredCommand>(
-                s => s.NotNull());
-        }
     }
 }

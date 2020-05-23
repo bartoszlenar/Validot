@@ -28,7 +28,7 @@ namespace Validot.Tests.Unit.Settings.Capacities
             }
 
             [Theory]
-            [MemberData(nameof(PathsTestData.GetIndexesAmount.ResolvedIndexes), MemberType = typeof(PathsTestData.GetIndexesAmount))]
+            [MemberData(nameof(PathTestData.GetIndexesAmount.ResolvedIndexes), MemberType = typeof(PathTestData.GetIndexesAmount))]
             public void Should_ReturnTrue_When_ResolvedIndexes(string path, int amount)
             {
                 _ = amount;
@@ -39,7 +39,7 @@ namespace Validot.Tests.Unit.Settings.Capacities
             }
 
             [Theory]
-            [MemberData(nameof(PathsTestData.GetIndexesAmount.PlaceholdersIndexes), MemberType = typeof(PathsTestData.GetIndexesAmount))]
+            [MemberData(nameof(PathTestData.GetIndexesAmount.PlaceholdersIndexes), MemberType = typeof(PathTestData.GetIndexesAmount))]
             public void Should_ReturnTrue_When_PlaceholdersIndexes(string path, int amount)
             {
                 _ = amount;
@@ -50,7 +50,7 @@ namespace Validot.Tests.Unit.Settings.Capacities
             }
 
             [Theory]
-            [MemberData(nameof(PathsTestData.GetIndexesAmount.WeirdIndexes), MemberType = typeof(PathsTestData.GetIndexesAmount))]
+            [MemberData(nameof(PathTestData.GetIndexesAmount.WeirdIndexes), MemberType = typeof(PathTestData.GetIndexesAmount))]
             public void Should_ReturnTrue_When_WeirdIndexes(string path, int amount)
             {
                 _ = amount;
@@ -61,7 +61,7 @@ namespace Validot.Tests.Unit.Settings.Capacities
             }
 
             [Theory]
-            [MemberData(nameof(PathsTestData.GetIndexesAmount.InvalidIndexes), MemberType = typeof(PathsTestData.GetIndexesAmount))]
+            [MemberData(nameof(PathTestData.GetIndexesAmount.InvalidIndexes), MemberType = typeof(PathTestData.GetIndexesAmount))]
             public void Should_ReturnFalse_When_InvalidIndexes(string path)
             {
                 var containsIndexes = new CapacityInfoHelpers().ContainsIndexes(path);
@@ -70,7 +70,7 @@ namespace Validot.Tests.Unit.Settings.Capacities
             }
 
             [Theory]
-            [MemberData(nameof(PathsTestData.GetIndexesAmount.NoIndexes), MemberType = typeof(PathsTestData.GetIndexesAmount))]
+            [MemberData(nameof(PathTestData.GetIndexesAmount.NoIndexes), MemberType = typeof(PathTestData.GetIndexesAmount))]
             public void Should_ReturnFalse_When_NoIndexes(string path)
             {
                 var containsIndexes = new CapacityInfoHelpers().ContainsIndexes(path);
@@ -80,10 +80,10 @@ namespace Validot.Tests.Unit.Settings.Capacities
         }
 
         [Theory]
-        [MemberData(nameof(PathsTestData.GetWithIndexes.LargeIndexes), MemberType = typeof(PathsTestData.GetWithIndexes))]
-        [MemberData(nameof(PathsTestData.GetWithIndexes.CommonCases), MemberType = typeof(PathsTestData.GetWithIndexes))]
-        [MemberData(nameof(PathsTestData.GetWithIndexes.TrickyCases), MemberType = typeof(PathsTestData.GetWithIndexes))]
-        [MemberData(nameof(PathsTestData.GetWithIndexes.LargeIndexes), MemberType = typeof(PathsTestData.GetWithIndexes))]
+        [MemberData(nameof(PathTestData.GetWithIndexes.LargeIndexes), MemberType = typeof(PathTestData.GetWithIndexes))]
+        [MemberData(nameof(PathTestData.GetWithIndexes.CommonCases), MemberType = typeof(PathTestData.GetWithIndexes))]
+        [MemberData(nameof(PathTestData.GetWithIndexes.TrickyCases), MemberType = typeof(PathTestData.GetWithIndexes))]
+        [MemberData(nameof(PathTestData.GetWithIndexes.LargeIndexes), MemberType = typeof(PathTestData.GetWithIndexes))]
         public void GetWithoutIndexes(string path, IReadOnlyCollection<string> indexesStack, string pathWithIndexes)
         {
             _ = indexesStack;

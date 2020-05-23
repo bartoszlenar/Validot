@@ -28,8 +28,8 @@ namespace Validot
         public interface IRuleOut<T> :
             ISpecificationOut<T>,
             IRuleIn<T>,
-            IWhenIn<T>,
-            IWithNameIn<T>,
+            IWithConditionIn<T>,
+            IWithPathIn<T>,
             IWithErrorClearedIn<T>,
             IWithMessageIn<T>,
             IWithExtraMessageIn<T>,

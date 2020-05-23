@@ -120,7 +120,7 @@ namespace Validot.Errors
 
                     foreach (var errorId in errorMapPair.Value)
                     {
-                        if (!cache.ContainsPathArgs(translationName, errorId) || PathsHelper.ContainsIndexes(path))
+                        if (!cache.ContainsPathArgs(translationName, errorId) || PathHelper.ContainsIndexes(path))
                         {
                             continue;
                         }

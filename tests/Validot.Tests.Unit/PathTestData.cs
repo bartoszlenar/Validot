@@ -5,7 +5,7 @@ namespace Validot.Tests.Unit
     using System.Globalization;
     using System.Linq;
 
-    public class PathsTestData
+    public class PathTestData
     {
         public static IEnumerable<object[]> InvalidPaths()
         {
@@ -36,17 +36,17 @@ namespace Validot.Tests.Unit
             yield return new[] { "\t" };
         }
 
-        public static IEnumerable<object[]> ResolveNextLevelPath_AllCases()
+        public static IEnumerable<object[]> ResolvePath_AllCases()
         {
             var cases = new[]
             {
-                ResolveNextLevelPath.SimpleSegment(),
-                ResolveNextLevelPath.NewSegmentContainsMoreLevelsDown(),
-                ResolveNextLevelPath.UncommonCharacters(),
-                ResolveNextLevelPath.NewSegmentGoesLevelUp(),
-                ResolveNextLevelPath.NewSegmentIsEmpty_And_GoesLevelUp(),
-                ResolveNextLevelPath.NewSegmentGoesLevelUp_And_ExceedsMinimumLevel(),
-                ResolveNextLevelPath.ToSamePath()
+                ResolvePath.SimpleRelativePath(),
+                ResolvePath.RelativePathContainsMoreLevelsDown(),
+                ResolvePath.UncommonCharacters(),
+                ResolvePath.RelativePathGoesLevelUp(),
+                ResolvePath.RelativePathIsEmpty_And_GoesLevelUp(),
+                ResolvePath.RelativePathGoesLevelUp_And_ExceedsMinimumLevel(),
+                ResolvePath.ToSamePath()
             };
 
             foreach (var @case in cases)
@@ -58,7 +58,7 @@ namespace Validot.Tests.Unit
             }
         }
 
-        public class ResolveNextLevelPath
+        public class ResolvePath
         {
             public static IEnumerable<object[]> ToSamePath()
             {
@@ -67,13 +67,13 @@ namespace Validot.Tests.Unit
                 yield return new[] { "", "", "" };
             }
 
-            public static IEnumerable<object[]> SimpleSegment()
+            public static IEnumerable<object[]> SimpleRelativePath()
             {
                 yield return new[] { "base.path", "newSegment", "base.path.newSegment" };
                 yield return new[] { "base", "newSegment", "base.newSegment" };
             }
 
-            public static IEnumerable<object[]> NewSegmentContainsMoreLevelsDown()
+            public static IEnumerable<object[]> RelativePathContainsMoreLevelsDown()
             {
                 yield return new[] { "base.path", "new.segment", "base.path.new.segment" };
                 yield return new[] { "base.path", "new.segment.value", "base.path.new.segment.value" };
@@ -91,7 +91,7 @@ namespace Validot.Tests.Unit
                 yield return new[] { "base.#.item", "<", "base.#" };
             }
 
-            public static IEnumerable<object[]> NewSegmentGoesLevelUp()
+            public static IEnumerable<object[]> RelativePathGoesLevelUp()
             {
                 yield return new[] { "base", "<segment", "segment" };
                 yield return new[] { "base.path", "<segment", "base.segment" };
@@ -100,14 +100,14 @@ namespace Validot.Tests.Unit
                 yield return new[] { "base.path", "<<new.segment", "new.segment" };
             }
 
-            public static IEnumerable<object[]> NewSegmentIsEmpty_And_GoesLevelUp()
+            public static IEnumerable<object[]> RelativePathIsEmpty_And_GoesLevelUp()
             {
                 yield return new[] { "base", "<", "" };
                 yield return new[] { "base.path", "<", "base" };
                 yield return new[] { "base.path", "<<", "" };
             }
 
-            public static IEnumerable<object[]> NewSegmentGoesLevelUp_And_ExceedsMinimumLevel()
+            public static IEnumerable<object[]> RelativePathGoesLevelUp_And_ExceedsMinimumLevel()
             {
                 yield return new[] { "base", "<<<segment", "segment" };
                 yield return new[] { "base.path", "<<<segment", "segment" };

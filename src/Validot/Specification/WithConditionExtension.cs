@@ -19,6 +19,7 @@ namespace Validot
     {
         public interface IWithConditionOut<T> :
             ISpecificationOut<T>,
+            IWithPathIn<T>,
             IWithErrorClearedIn<T>,
             IWithMessageIn<T>,
             IWithExtraMessageIn<T>,

@@ -5,11 +5,11 @@ namespace Validot
 
     public static class WithPathExtension
     {
-        public static IWithPathOut<T> WithPath<T>(this IWithPathIn<T> @this, string name)
+        public static IWithPathOut<T> WithPath<T>(this IWithPathIn<T> @this, string path)
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
 
-            return ((SpecificationApi<T>)@this).AddCommand(new WithPathCommand(name));
+            return ((SpecificationApi<T>)@this).AddCommand(new WithPathCommand(path));
         }
     }
 

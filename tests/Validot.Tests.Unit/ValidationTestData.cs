@@ -135,7 +135,7 @@ namespace Validot.Tests.Unit
             cases.AddRange(PathCases.Select(c => RenamedClone(c, nameof(PathCases))));
             cases.AddRange(OverwritingCases.Select(c => RenamedClone(c, nameof(OverwritingCases))));
             cases.AddRange(FailFastCases.Select(c => RenamedClone(c, nameof(FailFastCases))));
-
+            cases.AddRange(MixedCases.Select(c => RenamedClone(c, nameof(MixedCases))));
             cases.AddRange(ReferecencesLoopCases().Select(c => RenamedClone(c, nameof(ReferecencesLoopCases))));
 
             return cases;
@@ -5169,6 +5169,148 @@ namespace Validot.Tests.Unit
                     new ValidationTestCase()
                     {
                         Model = new TestClass() { Collection = new TestCollection<int>(new[] { 1, 1, 1 }) },
+                        Errors = NoErrors,
+                        FailFastErrorKey = null
+                    },
+                },
+            },
+        };
+
+        public static IReadOnlyList<TestCase> MixedCases { get; } = new[]
+        {
+            new TestCase()
+            {
+                Name = "WithCondition_and_WithPath",
+                Specification = s => s
+                    .Rule(m => m.Hybrid?.Contains("x") == true).WithCondition(m => m.HybridField?.Contains("x") == true).WithPath("XXX").WithMessage("message x")
+                    .Rule(m => m.Hybrid?.Contains("y") == true).WithCondition(m => m.HybridField?.Contains("y") == true).WithPath("YYY").WithMessage("message y")
+                    .Rule(m => m.Hybrid?.Contains("z") == true).WithCondition(m => m.HybridField?.Contains("z") == true).WithPath("ZZZ").WithMessage("message z"),
+                ExpectedErrorMap = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                {
+                    [""] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { MessageKey.Global.Required }
+                        },
+                    },
+                    ["XXX"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { "message x" }
+                        },
+                    },
+                    ["YYY"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { "message y" }
+                        },
+                    },
+                    ["ZZZ"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { "message z" }
+                        },
+                    }
+                },
+                ValidationCases = new[]
+                {
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            HybridField = "xyz"
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["XXX"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["YYY"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message y" }
+                                },
+                            },
+                            ["ZZZ"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message z" }
+                                },
+                            }
+                        },
+                        FailFastErrorKey = "XXX"
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            Hybrid = "y",
+                            HybridField = "xyz"
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["XXX"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["ZZZ"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message z" }
+                                },
+                            }
+                        },
+                        FailFastErrorKey = "XXX"
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            Hybrid = "xz",
+                            HybridField = "y"
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["YYY"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message y" }
+                                },
+                            },
+                        },
+                        FailFastErrorKey = "YYY"
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            Hybrid = "xyz",
+                            HybridField = "xyz"
+                        },
+                        Errors = NoErrors,
+                        FailFastErrorKey = null
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            Hybrid = "xyz"
+                        },
                         Errors = NoErrors,
                         FailFastErrorKey = null
                     },

@@ -92,7 +92,7 @@ namespace Validot.Benchmarks.Comparisons
             {
                 if (_validotValidator.IsValid(_halfErrorsModels[i]))
                 {
-                    t = _validotValidator.Validate(_halfErrorsModels[i]).ToMessagesString(includePaths: false);
+                    t = _validotValidator.Validate(_halfErrorsModels[i]).ToString();
                 }
             }
 
@@ -119,7 +119,7 @@ namespace Validot.Benchmarks.Comparisons
             
             for(var i = 0; i < N; ++i)
             {
-                t = _validotValidator.Validate(_manyErrorsModels[i]).ToMessagesString(includePaths: false);
+                t = _validotValidator.Validate(_manyErrorsModels[i]).ToString();
             }
 
             return t;
@@ -147,7 +147,7 @@ namespace Validot.Benchmarks.Comparisons
             
             for(var i = 0; i < N; ++i)
             {
-                t = _validotValidator.Validate(_manyErrorsModels[i], true).ToMessagesString(includePaths: false);
+                t = _validotValidator.Validate(_manyErrorsModels[i], true).ToString();
             }
 
             return t;

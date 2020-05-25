@@ -16,7 +16,7 @@ namespace Validot.Tests.Unit
         {
             validator.ErrorMap.Should().NotBeNull();
 
-            var rawErrors = validator.ErrorMap.Details.GetRawErrors();
+            var rawErrors = validator.ErrorMap.Details.GetErrorOutput();
 
             rawErrors.ShouldMatchExpectations(rawErrorsExpectations);
         }
@@ -34,7 +34,7 @@ namespace Validot.Tests.Unit
             {
                 action.Should().NotThrow();
 
-                var rawErrors = result.Details.GetRawErrors();
+                var rawErrors = result.Details.GetErrorOutput();
 
                 rawErrors.ShouldMatchExpectations(rawErrorsExpectations);
             }

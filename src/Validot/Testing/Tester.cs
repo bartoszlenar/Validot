@@ -27,7 +27,7 @@ namespace Validot.Testing
                 return TestResult.Failed($"Expected result IsValid: {shouldBeValid}, but AnyErrors: {result.AnyErrors}");
             }
 
-            var errors = result.Details.GetRawErrors();
+            var errors = result.Details.GetErrorOutput();
 
             if (expectedErrors == null)
             {

@@ -6,7 +6,7 @@ namespace Validot.Results
 
     public interface IValidationResultDetails
     {
-        IReadOnlyList<string> RegisteredTranslationsNames { get; }
+        IReadOnlyList<string> TranslationNames { get; }
 
         IReadOnlyCollection<string> Paths { get; }
 

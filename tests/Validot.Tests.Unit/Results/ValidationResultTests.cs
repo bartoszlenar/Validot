@@ -61,7 +61,7 @@ namespace Validot.Tests.Unit.Results
         {
             ValidationResult.NoErrorsResult.AnyErrors.Should().BeFalse();
             ValidationResult.NoErrorsResult.Paths.Should().BeEmpty();
-            ValidationResult.NoErrorsResult.RegisteredTranslationsNames.Should().BeEmpty();
+            ValidationResult.NoErrorsResult.TranslationNames.Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetErrorCodes().Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetErrorMessages().Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetRawErrors().Should().BeEmpty();
@@ -115,7 +115,7 @@ namespace Validot.Tests.Unit.Results
             }
         }
 
-        public class RegisteredTranslationsNames
+        public class TranslationNames
         {
             [Fact]
             public void Should_Return_TranslationNames_FromMessageService()
@@ -132,7 +132,7 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), messagesService);
 
-                validationResult.RegisteredTranslationsNames.Should().BeSameAs(translationNames);
+                validationResult.TranslationNames.Should().BeSameAs(translationNames);
             }
 
             [Fact]
@@ -144,7 +144,7 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
 
-                validationResult.RegisteredTranslationsNames.Should().BeEmpty();
+                validationResult.TranslationNames.Should().BeEmpty();
             }
 
             [Fact]
@@ -152,7 +152,7 @@ namespace Validot.Tests.Unit.Results
             {
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
 
-                validationResult.RegisteredTranslationsNames.Should().BeEmpty();
+                validationResult.TranslationNames.Should().BeEmpty();
             }
         }
 

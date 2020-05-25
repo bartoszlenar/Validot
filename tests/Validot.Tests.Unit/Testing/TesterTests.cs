@@ -1134,7 +1134,7 @@ namespace Validot.Tests.Unit.Testing
             }
 
             [Fact]
-            public void Should_ReturnFailure_When_PathsWithErrors_Amount_DifferentThanExpected()
+            public void Should_ReturnFailure_When_Paths_Amount_DifferentThanExpected()
             {
                 Specification<object> specification = s => s
                     .Rule(m => false).WithPath("member1").WithMessage("error1")

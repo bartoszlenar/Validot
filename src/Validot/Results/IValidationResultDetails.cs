@@ -8,7 +8,7 @@ namespace Validot.Results
     {
         IReadOnlyList<string> RegisteredTranslationsNames { get; }
 
-        IReadOnlyCollection<string> PathsWithErrors { get; }
+        IReadOnlyCollection<string> Paths { get; }
 
         IReadOnlyDictionary<string, string> GetTranslation(string translationName);
 

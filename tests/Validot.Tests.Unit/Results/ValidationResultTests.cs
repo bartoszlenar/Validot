@@ -60,7 +60,7 @@ namespace Validot.Tests.Unit.Results
         public void NoErrorsResult_Should_BeResultWithoutErrors()
         {
             ValidationResult.NoErrorsResult.AnyErrors.Should().BeFalse();
-            ValidationResult.NoErrorsResult.PathsWithErrors.Should().BeEmpty();
+            ValidationResult.NoErrorsResult.Paths.Should().BeEmpty();
             ValidationResult.NoErrorsResult.RegisteredTranslationsNames.Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetErrorCodes().Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetErrorMessages().Should().BeEmpty();
@@ -71,7 +71,7 @@ namespace Validot.Tests.Unit.Results
             ValidationResult.NoErrorsResult.GetErrorMessages("English").Should().BeEmpty();
         }
 
-        public static IEnumerable<object[]> PathWithErrors_Should_ReturnAllPaths_Data()
+        public static IEnumerable<object[]> Paths_Should_ReturnAllPaths_Data()
         {
             yield return new object[]
             {
@@ -101,17 +101,17 @@ namespace Validot.Tests.Unit.Results
         }
 
         [Theory]
-        [MemberData(nameof(PathWithErrors_Should_ReturnAllPaths_Data))]
-        public void PathWithErrors_Should_ReturnAllPaths(Dictionary<string, List<int>> resultsErrors, IReadOnlyList<string> expectedPaths)
+        [MemberData(nameof(Paths_Should_ReturnAllPaths_Data))]
+        public void Paths_Should_ReturnAllPaths(Dictionary<string, List<int>> resultsErrors, IReadOnlyList<string> expectedPaths)
         {
             var validationResult = new ValidationResult(resultsErrors, new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
 
-            validationResult.PathsWithErrors.Should().NotBeNull();
-            validationResult.PathsWithErrors.Should().HaveCount(expectedPaths.Count);
+            validationResult.Paths.Should().NotBeNull();
+            validationResult.Paths.Should().HaveCount(expectedPaths.Count);
 
             foreach (var expectedPath in expectedPaths)
             {
-                validationResult.PathsWithErrors.Should().Contain(expectedPath);
+                validationResult.Paths.Should().Contain(expectedPath);
             }
         }
 
@@ -276,7 +276,7 @@ namespace Validot.Tests.Unit.Results
         public class GetRawErrors
         {
             [Fact]
-            public void Should_ReturnPathsWithRawErrors()
+            public void Should_ReturnRawErrors()
             {
                 var resultsErrors = new Dictionary<string, List<int>>()
                 {
@@ -310,7 +310,7 @@ namespace Validot.Tests.Unit.Results
                 rawErrors["test2"].Should().Contain(x => ReferenceEquals(x, errorRegistry[4]));
             }
 
-            public static IEnumerable<object[]> Should_ReturnPathsWithRawErrors_MoreExamples_Data()
+            public static IEnumerable<object[]> Should_ReturnRawErrors_MoreExamples_Data()
             {
                 var errorRegistry = new Dictionary<int, IError>()
                 {
@@ -399,8 +399,8 @@ namespace Validot.Tests.Unit.Results
             }
 
             [Theory]
-            [MemberData(nameof(Should_ReturnPathsWithRawErrors_MoreExamples_Data))]
-            public void Should_ReturnPathsWithRawErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, IReadOnlyDictionary<string, IReadOnlyList<IError>> expectedErrors)
+            [MemberData(nameof(Should_ReturnRawErrors_MoreExamples_Data))]
+            public void Should_ReturnRawErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, IReadOnlyDictionary<string, IReadOnlyList<IError>> expectedErrors)
             {
                 var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
 

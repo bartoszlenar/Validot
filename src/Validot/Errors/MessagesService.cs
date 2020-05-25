@@ -10,14 +10,14 @@ namespace Validot.Errors
     {
         private readonly MessagesCache _cache;
 
-        private readonly MessagesTranslator _translator;
+        private readonly MessageTranslator _translator;
 
         public MessagesService(
             IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations,
             IReadOnlyDictionary<int, IError> errors,
             IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
         {
-            _translator = new MessagesTranslator(translations);
+            _translator = new MessageTranslator(translations);
 
             _cache = BuildMessagesCache(_translator, errors, errorMap);
         }
@@ -65,7 +65,7 @@ namespace Validot.Errors
                         var cachedMessages = _cache.GetMessages(translationName, errorId);
                         var indexedPathPlaceholders = _cache.GetIndexedPathPlaceholders(translationName, errorId);
 
-                        messages = MessagesTranslator.TranslateErrorMessagesWithPathPlaceholders(path, cachedMessages, indexedPathPlaceholders);
+                        messages = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders(path, cachedMessages, indexedPathPlaceholders);
                     }
 
                     CopyMessages(messages, allErrorMessages, ref index);
@@ -87,7 +87,7 @@ namespace Validot.Errors
             targetIndex += source.Count;
         }
 
-        private MessagesCache BuildMessagesCache(MessagesTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
+        private MessagesCache BuildMessagesCache(MessageTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
         {
             ThrowHelper.NullArgument(errors, nameof(errors));
             ThrowHelper.NullArgument(errorMap, nameof(errorMap));
@@ -128,7 +128,7 @@ namespace Validot.Errors
                         var cachedMessages = cache.GetMessages(translationName, errorId);
                         var indexedPlaceholders = cache.GetIndexedPathPlaceholders(translationName, errorId);
 
-                        var errorMessagesWithSpecials = MessagesTranslator.TranslateErrorMessagesWithPathPlaceholders(path, cachedMessages, indexedPlaceholders);
+                        var errorMessagesWithSpecials = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders(path, cachedMessages, indexedPlaceholders);
 
                         cache.AddMessageWithPathArgs(translationName, path, errorId, errorMessagesWithSpecials);
                     }

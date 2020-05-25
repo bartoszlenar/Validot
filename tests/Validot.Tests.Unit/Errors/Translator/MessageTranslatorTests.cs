@@ -12,7 +12,7 @@ namespace Validot.Tests.Unit.Errors.Translator
 
     using Xunit;
 
-    public class MessagesTranslatorTests
+    public class MessageTranslatorTests
     {
         public class TranslateErrorMessagesWithPathPlaceholders
         {
@@ -47,7 +47,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                Action action = () => MessagesTranslator.TranslateErrorMessagesWithPathPlaceholders(null, errorMessages, indexedPathsPlaceholders);
+                Action action = () => MessageTranslator.TranslateErrorMessagesWithPathPlaceholders(null, errorMessages, indexedPathsPlaceholders);
 
                 action.Should().ThrowExactly<NullReferenceException>();
             }
@@ -63,7 +63,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                Action action = () => MessagesTranslator.TranslateErrorMessagesWithPathPlaceholders("path", null, indexedPathsPlaceholders);
+                Action action = () => MessageTranslator.TranslateErrorMessagesWithPathPlaceholders("path", null, indexedPathsPlaceholders);
 
                 action.Should().ThrowExactly<NullReferenceException>();
             }
@@ -77,7 +77,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     "message2 {_path}"
                 };
 
-                Action action = () => MessagesTranslator.TranslateErrorMessagesWithPathPlaceholders("path", errorMessages, null);
+                Action action = () => MessageTranslator.TranslateErrorMessagesWithPathPlaceholders("path", errorMessages, null);
 
                 action.Should().ThrowExactly<NullReferenceException>();
             }
@@ -111,7 +111,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var results = MessagesTranslator.TranslateErrorMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
+                var results = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
 
                 results.Count.Should().Be(5);
 
@@ -146,7 +146,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var results = MessagesTranslator.TranslateErrorMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
+                var results = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
 
                 results.Count.Should().Be(5);
 
@@ -199,7 +199,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var results = MessagesTranslator.TranslateErrorMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
+                var results = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
 
                 results.Count.Should().Be(5);
 
@@ -228,7 +228,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -258,7 +258,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 Action action = () => translator.TranslateErrorMessages("translation1", null);
 
@@ -280,7 +280,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -311,7 +311,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -346,7 +346,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -383,7 +383,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -424,7 +424,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -467,7 +467,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -504,7 +504,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -539,7 +539,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -572,7 +572,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -605,7 +605,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -670,7 +670,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var translator = new MessagesTranslator(translations);
+                var translator = new MessageTranslator(translations);
 
                 var error = new Error()
                 {
@@ -694,7 +694,7 @@ namespace Validot.Tests.Unit.Errors.Translator
         [Fact]
         public void Should_Initialize()
         {
-            _ = new MessagesTranslator(new Dictionary<string, IReadOnlyDictionary<string, string>>());
+            _ = new MessageTranslator(new Dictionary<string, IReadOnlyDictionary<string, string>>());
         }
 
         [Fact]
@@ -720,7 +720,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                 }
             };
 
-            var translator = new MessagesTranslator(translations);
+            var translator = new MessageTranslator(translations);
 
             translator.TranslationNames.Should().NotBeNull();
             translator.TranslationNames.Count.Should().Be(4);
@@ -748,7 +748,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                 }
             };
 
-            var translator = new MessagesTranslator(translations);
+            var translator = new MessageTranslator(translations);
 
             translator.Translations.Should().BeSameAs(translations);
         }
@@ -770,7 +770,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                 }
             };
 
-            var translator = new MessagesTranslator(translations);
+            var translator = new MessageTranslator(translations);
 
             translator.Translations.Keys.Should().Contain("translation1");
             translator.Translations.Keys.Count().Should().Be(2);
@@ -806,7 +806,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                 },
             };
 
-            var translator = new MessagesTranslator(translations);
+            var translator = new MessageTranslator(translations);
 
             translator.TranslationsArgs.Should().NotBeEmpty();
             translator.TranslationsArgs.Count.Should().Be(2);
@@ -855,7 +855,7 @@ namespace Validot.Tests.Unit.Errors.Translator
         [Fact]
         public void Should_ThrowException_When_Initialize_With_NullEntryInTranslation()
         {
-            Action action = () => new MessagesTranslator(new Dictionary<string, IReadOnlyDictionary<string, string>>
+            Action action = () => new MessageTranslator(new Dictionary<string, IReadOnlyDictionary<string, string>>
             {
                 ["translation1"] = new Dictionary<string, string>
                 {
@@ -875,7 +875,7 @@ namespace Validot.Tests.Unit.Errors.Translator
         [Fact]
         public void Should_ThrowException_When_Initialize_With_NullTranslations()
         {
-            Action action = () => new MessagesTranslator(null);
+            Action action = () => new MessageTranslator(null);
 
             action.Should().ThrowExactly<ArgumentNullException>();
         }
@@ -883,7 +883,7 @@ namespace Validot.Tests.Unit.Errors.Translator
         [Fact]
         public void Should_ThrowException_When_Initialize_With_SingleNullTranslations()
         {
-            Action action = () => new MessagesTranslator(new Dictionary<string, IReadOnlyDictionary<string, string>>
+            Action action = () => new MessageTranslator(new Dictionary<string, IReadOnlyDictionary<string, string>>
             {
                 ["translation1"] = new Dictionary<string, string>
                 {

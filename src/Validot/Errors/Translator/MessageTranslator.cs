@@ -5,7 +5,7 @@ namespace Validot.Errors.Translator
 
     using Validot.Errors.Args;
 
-    internal class MessagesTranslator
+    internal class MessageTranslator
     {
         private const string NameArgName = "_name";
 
@@ -13,7 +13,7 @@ namespace Validot.Errors.Translator
 
         private static readonly IReadOnlyDictionary<int, IReadOnlyList<ArgPlaceholder>> _emptyIndexedPathPlaceholders = new Dictionary<int, IReadOnlyList<ArgPlaceholder>>();
 
-        public MessagesTranslator(IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations)
+        public MessageTranslator(IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations)
         {
             ThrowHelper.NullArgument(translations, nameof(translations));
 

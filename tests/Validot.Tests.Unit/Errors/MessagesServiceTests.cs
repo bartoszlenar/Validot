@@ -260,11 +260,11 @@ namespace Validot.Tests.Unit.Errors
         {
             var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-            messagesService.TranslationsNames.Should().NotBeNull();
-            messagesService.TranslationsNames.Count.Should().Be(2);
+            messagesService.TranslationNames.Should().NotBeNull();
+            messagesService.TranslationNames.Count.Should().Be(2);
 
-            messagesService.TranslationsNames.Should().Contain("translation1");
-            messagesService.TranslationsNames.Should().Contain("translation2");
+            messagesService.TranslationNames.Should().Contain("translation1");
+            messagesService.TranslationNames.Should().Contain("translation2");
         }
 
         public class GetTranslation

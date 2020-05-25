@@ -46,7 +46,7 @@ namespace Validot.Results
 
         public IReadOnlyCollection<string> Paths => _resultErrors.Keys;
 
-        public IReadOnlyList<string> TranslationNames => _messagesService?.TranslationsNames ?? Array.Empty<string>();
+        public IReadOnlyList<string> TranslationNames => _messagesService?.TranslationNames ?? Array.Empty<string>();
 
         public IReadOnlyList<string> GetErrorCodes()
         {

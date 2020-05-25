@@ -128,7 +128,7 @@ namespace Validot.Tests.Unit.Results
                     "translation2"
                 };
 
-                messagesService.TranslationsNames.Returns(translationNames);
+                messagesService.TranslationNames.Returns(translationNames);
 
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), messagesService);
 
@@ -140,7 +140,7 @@ namespace Validot.Tests.Unit.Results
             {
                 var messagesService = Substitute.For<IMessagesService>();
 
-                messagesService.TranslationsNames.Returns(null as IReadOnlyList<string>);
+                messagesService.TranslationNames.Returns(null as IReadOnlyList<string>);
 
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
 

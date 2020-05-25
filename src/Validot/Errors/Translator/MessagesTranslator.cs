@@ -27,12 +27,12 @@ namespace Validot.Errors.Translator
             Translations = translations;
             TranslationsArgs = BuildTranslationArgs(translations);
 
-            TranslationsNames = translations.Keys.ToArray();
+            TranslationNames = translations.Keys.ToArray();
         }
 
         public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; }
 
-        public IReadOnlyList<string> TranslationsNames { get; }
+        public IReadOnlyList<string> TranslationNames { get; }
 
         public IReadOnlyDictionary<string, IArg[]> TranslationsArgs { get; }
 

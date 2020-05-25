@@ -22,7 +22,7 @@ namespace Validot.Errors
             _cache = BuildMessagesCache(_translator, errors, errorMap);
         }
 
-        public IReadOnlyList<string> TranslationsNames => _translator.TranslationsNames;
+        public IReadOnlyList<string> TranslationNames => _translator.TranslationNames;
 
         public IReadOnlyDictionary<string, string> GetTranslation(string translationName)
         {
@@ -97,7 +97,7 @@ namespace Validot.Errors
 
             var cache = new MessagesCache();
 
-            foreach (var translationName in TranslationsNames)
+            foreach (var translationName in TranslationNames)
             {
                 foreach (var errorId in uniqueErrorsIds)
                 {
@@ -112,7 +112,7 @@ namespace Validot.Errors
                 }
             }
 
-            foreach (var translationName in TranslationsNames)
+            foreach (var translationName in TranslationNames)
             {
                 foreach (var errorMapPair in errorMap)
                 {

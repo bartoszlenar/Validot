@@ -722,13 +722,13 @@ namespace Validot.Tests.Unit.Errors.Translator
 
             var translator = new MessagesTranslator(translations);
 
-            translator.TranslationsNames.Should().NotBeNull();
-            translator.TranslationsNames.Count.Should().Be(4);
+            translator.TranslationNames.Should().NotBeNull();
+            translator.TranslationNames.Count.Should().Be(4);
 
-            translator.TranslationsNames.Should().Contain("translation1");
-            translator.TranslationsNames.Should().Contain("translation2");
-            translator.TranslationsNames.Should().Contain("translation3");
-            translator.TranslationsNames.Should().Contain("translation4");
+            translator.TranslationNames.Should().Contain("translation1");
+            translator.TranslationNames.Should().Contain("translation2");
+            translator.TranslationNames.Should().Contain("translation3");
+            translator.TranslationNames.Should().Contain("translation4");
         }
 
         [Fact]

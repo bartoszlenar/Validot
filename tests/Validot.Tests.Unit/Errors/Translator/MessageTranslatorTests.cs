@@ -808,45 +808,45 @@ namespace Validot.Tests.Unit.Errors.Translator
 
             var translator = new MessageTranslator(translations);
 
-            translator.TranslationsArgs.Should().NotBeEmpty();
-            translator.TranslationsArgs.Count.Should().Be(2);
+            translator.TranslationArgs.Should().NotBeEmpty();
+            translator.TranslationArgs.Count.Should().Be(2);
 
-            translator.TranslationsArgs.Keys.Should().Contain("translation1");
+            translator.TranslationArgs.Keys.Should().Contain("translation1");
 
-            translator.TranslationsArgs["translation1"].Length.Should().Be(1);
-            translator.TranslationsArgs["translation1"][0].Should().BeAssignableTo<TranslationArg>();
-            translator.TranslationsArgs["translation1"][0].Name.Should().Be("_translation");
+            translator.TranslationArgs["translation1"].Length.Should().Be(1);
+            translator.TranslationArgs["translation1"][0].Should().BeAssignableTo<TranslationArg>();
+            translator.TranslationArgs["translation1"][0].Name.Should().Be("_translation");
 
-            translator.TranslationsArgs["translation1"][0].ToString(new Dictionary<string, string>()
+            translator.TranslationArgs["translation1"][0].ToString(new Dictionary<string, string>()
             {
                 ["key"] = "key11"
             }).Should().Be("message11");
 
-            translator.TranslationsArgs["translation1"][0].ToString(new Dictionary<string, string>()
+            translator.TranslationArgs["translation1"][0].ToString(new Dictionary<string, string>()
             {
                 ["key"] = "key12"
             }).Should().Be("message12");
 
-            translator.TranslationsArgs["translation1"][0].ToString(new Dictionary<string, string>()
+            translator.TranslationArgs["translation1"][0].ToString(new Dictionary<string, string>()
             {
                 ["key"] = "key21"
             }).Should().Be("key21");
 
-            translator.TranslationsArgs["translation2"].Length.Should().Be(1);
-            translator.TranslationsArgs["translation2"][0].Should().BeAssignableTo<TranslationArg>();
-            translator.TranslationsArgs["translation2"][0].Name.Should().Be("_translation");
+            translator.TranslationArgs["translation2"].Length.Should().Be(1);
+            translator.TranslationArgs["translation2"][0].Should().BeAssignableTo<TranslationArg>();
+            translator.TranslationArgs["translation2"][0].Name.Should().Be("_translation");
 
-            translator.TranslationsArgs["translation2"][0].ToString(new Dictionary<string, string>()
+            translator.TranslationArgs["translation2"][0].ToString(new Dictionary<string, string>()
             {
                 ["key"] = "key11"
             }).Should().Be("key11");
 
-            translator.TranslationsArgs["translation2"][0].ToString(new Dictionary<string, string>()
+            translator.TranslationArgs["translation2"][0].ToString(new Dictionary<string, string>()
             {
                 ["key"] = "key12"
             }).Should().Be("key12");
 
-            translator.TranslationsArgs["translation2"][0].ToString(new Dictionary<string, string>()
+            translator.TranslationArgs["translation2"][0].ToString(new Dictionary<string, string>()
             {
                 ["key"] = "key21"
             }).Should().Be("message21");

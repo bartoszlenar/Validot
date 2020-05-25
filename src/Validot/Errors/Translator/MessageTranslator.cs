@@ -25,7 +25,7 @@ namespace Validot.Errors.Translator
             }
 
             Translations = translations;
-            TranslationsArgs = BuildTranslationArgs(translations);
+            TranslationArgs = BuildTranslationArgs(translations);
 
             TranslationNames = translations.Keys.ToArray();
         }
@@ -34,7 +34,7 @@ namespace Validot.Errors.Translator
 
         public IReadOnlyList<string> TranslationNames { get; }
 
-        public IReadOnlyDictionary<string, IArg[]> TranslationsArgs { get; }
+        public IReadOnlyDictionary<string, IArg[]> TranslationArgs { get; }
 
         public static IReadOnlyList<string> TranslateErrorMessagesWithPathPlaceholders(string path, IReadOnlyList<string> errorMessages, IReadOnlyDictionary<int, IReadOnlyList<ArgPlaceholder>> indexedPathsPlaceholders)
         {
@@ -126,7 +126,7 @@ namespace Validot.Errors.Translator
 
             if (specialPlaceholders.Any())
             {
-                specialArgs = TranslationsArgs[translationName];
+                specialArgs = TranslationArgs[translationName];
 
                 return true;
             }

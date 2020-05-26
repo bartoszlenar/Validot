@@ -60,18 +60,19 @@ namespace Validot.Tests.Unit.Results
         public void NoErrorsResult_Should_BeResultWithoutErrors()
         {
             ValidationResult.NoErrorsResult.AnyErrors.Should().BeFalse();
-            ValidationResult.NoErrorsResult.PathsWithErrors.Should().BeEmpty();
-            ValidationResult.NoErrorsResult.RegisteredTranslationsNames.Should().BeEmpty();
+            ValidationResult.NoErrorsResult.Paths.Should().BeEmpty();
+            ValidationResult.NoErrorsResult.TranslationNames.Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetErrorCodes().Should().BeEmpty();
+            ValidationResult.NoErrorsResult.GetErrorCodeList().Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetErrorMessages().Should().BeEmpty();
-            ValidationResult.NoErrorsResult.GetRawErrors().Should().BeEmpty();
+            ValidationResult.NoErrorsResult.GetErrorOutput().Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetTranslation(null).Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetTranslation("English").Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetErrorMessages().Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetErrorMessages("English").Should().BeEmpty();
         }
 
-        public static IEnumerable<object[]> PathWithErrors_Should_ReturnAllPaths_Data()
+        public static IEnumerable<object[]> Paths_Should_ReturnAllPaths_Data()
         {
             yield return new object[]
             {
@@ -101,21 +102,21 @@ namespace Validot.Tests.Unit.Results
         }
 
         [Theory]
-        [MemberData(nameof(PathWithErrors_Should_ReturnAllPaths_Data))]
-        public void PathWithErrors_Should_ReturnAllPaths(Dictionary<string, List<int>> resultsErrors, IReadOnlyList<string> expectedPaths)
+        [MemberData(nameof(Paths_Should_ReturnAllPaths_Data))]
+        public void Paths_Should_ReturnAllPaths(Dictionary<string, List<int>> resultsErrors, IReadOnlyList<string> expectedPaths)
         {
             var validationResult = new ValidationResult(resultsErrors, new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
 
-            validationResult.PathsWithErrors.Should().NotBeNull();
-            validationResult.PathsWithErrors.Should().HaveCount(expectedPaths.Count);
+            validationResult.Paths.Should().NotBeNull();
+            validationResult.Paths.Should().HaveCount(expectedPaths.Count);
 
             foreach (var expectedPath in expectedPaths)
             {
-                validationResult.PathsWithErrors.Should().Contain(expectedPath);
+                validationResult.Paths.Should().Contain(expectedPath);
             }
         }
 
-        public class RegisteredTranslationsNames
+        public class TranslationNames
         {
             [Fact]
             public void Should_Return_TranslationNames_FromMessageService()
@@ -128,11 +129,11 @@ namespace Validot.Tests.Unit.Results
                     "translation2"
                 };
 
-                messagesService.TranslationsNames.Returns(translationNames);
+                messagesService.TranslationNames.Returns(translationNames);
 
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), messagesService);
 
-                validationResult.RegisteredTranslationsNames.Should().BeSameAs(translationNames);
+                validationResult.TranslationNames.Should().BeSameAs(translationNames);
             }
 
             [Fact]
@@ -140,11 +141,11 @@ namespace Validot.Tests.Unit.Results
             {
                 var messagesService = Substitute.For<IMessagesService>();
 
-                messagesService.TranslationsNames.Returns(null as IReadOnlyList<string>);
+                messagesService.TranslationNames.Returns(null as IReadOnlyList<string>);
 
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
 
-                validationResult.RegisteredTranslationsNames.Should().BeEmpty();
+                validationResult.TranslationNames.Should().BeEmpty();
             }
 
             [Fact]
@@ -152,7 +153,7 @@ namespace Validot.Tests.Unit.Results
             {
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
 
-                validationResult.RegisteredTranslationsNames.Should().BeEmpty();
+                validationResult.TranslationNames.Should().BeEmpty();
             }
         }
 
@@ -237,46 +238,379 @@ namespace Validot.Tests.Unit.Results
             }
         }
 
-        public class GetTranslation
+        public class GetErrorCodes
         {
             [Fact]
-            public void Should_Return_Translation_FromMessageService()
-            {
-                var messagesService = Substitute.For<IMessagesService>();
-
-                var translation = new Dictionary<string, string>()
-                {
-                    ["key1"] = "value1",
-                    ["key2"] = "value2",
-                };
-
-                messagesService.GetTranslation(Arg.Is("translationName1")).Returns(translation);
-
-                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), messagesService);
-
-                var resultTranslation = validationResult.GetTranslation("translationName1");
-
-                messagesService.Received(1).GetTranslation(Arg.Is("translationName1"));
-                messagesService.ReceivedWithAnyArgs(1).GetTranslation(default);
-
-                resultTranslation.Should().BeSameAs(translation);
-            }
-
-            [Fact]
-            public void Should_Return_EmptyTranslation_When_NullMessageService()
+            public void Should_Return_EmptyErrorCodes_When_Valid()
             {
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
 
-                var resultTranslation = validationResult.GetTranslation("translationName1");
+                var resultErrorCodes = validationResult.GetErrorCodes();
 
-                resultTranslation.Should().BeEmpty();
+                resultErrorCodes.Should().NotBeNull();
+                resultErrorCodes.Should().BeEmpty();
+            }
+
+            [Fact]
+            public void Should_Return_AllErrorCodes()
+            {
+                var resultsErrors = new Dictionary<string, List<int>>()
+                {
+                    [""] = new List<int>() { 1 },
+                    ["test1"] = new List<int>() { 1, 2, 3 },
+                    ["test2"] = new List<int>() { 2, 4 },
+                    ["test3"] = new List<int>() { 3 },
+                };
+
+                var errorRegistry = new Dictionary<int, IError>()
+                {
+                    [1] = new Error()
+                    {
+                        Codes = new[] { "Message1", }
+                    },
+                    [2] = new Error()
+                    {
+                        Codes = new[] { "Message2", }
+                    },
+                    [3] = new Error()
+                    {
+                        Codes = new[] { "Message3", }
+                    },
+                    [4] = new Error()
+                    {
+                        Codes = new[] { "Message41", "Message42" }
+                    },
+                };
+
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
+
+                var errorCodes = validationResult.GetErrorCodes();
+
+                errorCodes.Should().NotBeNull();
+
+                errorCodes.Should().HaveCount(4);
+
+                errorCodes.Keys.Should().Contain("");
+                errorCodes[""].Should().HaveCount(1);
+                errorCodes[""].Should().Contain("Message1");
+
+                errorCodes.Keys.Should().Contain("test1");
+                errorCodes["test1"].Should().HaveCount(3);
+                errorCodes["test1"].Should().Contain("Message1", "Message2", "Message3");
+
+                errorCodes.Keys.Should().Contain("test2");
+                errorCodes["test2"].Should().HaveCount(3);
+                errorCodes["test2"].Should().Contain("Message2", "Message41", "Message42");
+
+                errorCodes.Keys.Should().Contain("test3");
+                errorCodes["test3"].Should().HaveCount(1);
+                errorCodes["test3"].Should().Contain("Message3");
+            }
+
+            public static IEnumerable<object[]> Should_Return_AllErrorCodes_MoreExamples_Data()
+            {
+                var errorRegistry = new Dictionary<int, IError>()
+                {
+                    [1] = new Error()
+                    {
+                        Codes = new[] { "CODE1", }
+                    },
+                    [2] = new Error()
+                    {
+                        Codes = new[] { "CODE2", }
+                    },
+                    [3] = new Error()
+                    {
+                        Codes = new[] { "CODE3", }
+                    },
+                    [4] = new Error()
+                    {
+                        Codes = new[] { "CODE41", "CODE42" }
+                    },
+                    [5] = new Error()
+                    {
+                    },
+                    [6] = new Error()
+                    {
+                        Codes = new[] { "CODE61", "CODE62", "CODE63" }
+                    },
+                    [10] = new Error()
+                    {
+                        Codes = new[] { "CODE1", "CODE2" }
+                    },
+                };
+
+                yield return new object[]
+                {
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["test1"] = new List<int>() { 1 },
+                    },
+                    errorRegistry,
+                    new Dictionary<string, IReadOnlyList<string>>()
+                    {
+                        ["test1"] = new[] { "CODE1" }
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["test1"] = new List<int>() { 1 },
+                        ["test2"] = new List<int>() { 2, 4 },
+                        ["test3"] = new List<int>() { 3, 4 },
+                    },
+                    errorRegistry,
+                    new Dictionary<string, IReadOnlyList<string>>()
+                    {
+                        ["test1"] = new[] { "CODE1" },
+                        ["test2"] = new[] { "CODE2", "CODE41", "CODE42" },
+                        ["test3"] = new[] { "CODE3", "CODE41", "CODE42" }
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["test1"] = new List<int>() { 5 },
+                        ["test2"] = new List<int>() { 2, 5 },
+                        ["test3"] = new List<int>() { 3, 5 },
+                        ["test4"] = new List<int>() { 6, 5 },
+                    },
+                    errorRegistry,
+                    new Dictionary<string, IReadOnlyList<string>>()
+                    {
+                        ["test2"] = new[] { "CODE2", },
+                        ["test3"] = new[] { "CODE3", },
+                        ["test4"] = new[] { "CODE61", "CODE62", "CODE63", },
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["test1"] = new List<int>() { 5, 10 },
+                        ["test2"] = new List<int>() { 2, 5 },
+                        ["test3"] = new List<int>() { 3, 6 },
+                        ["test4"] = new List<int>() { 5 },
+                        ["test5"] = new List<int>() { 5 },
+                    },
+                    errorRegistry,
+                    new Dictionary<string, IReadOnlyList<string>>()
+                    {
+                        ["test1"] = new[] { "CODE1", "CODE2" },
+                        ["test2"] = new[] { "CODE2", },
+                        ["test3"] = new[] { "CODE3", "CODE61", "CODE62", "CODE63", },
+                    }
+                };
+            }
+
+            [Theory]
+            [MemberData(nameof(Should_Return_AllErrorCodes_MoreExamples_Data))]
+            public void Should_Return_AllErrorCodes_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, Dictionary<string, IReadOnlyList<string>> expectedCodes)
+            {
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
+
+                var errorCodes = validationResult.GetErrorCodes();
+
+                errorCodes.Should().NotBeNull();
+
+                errorCodes.Should().HaveCount(expectedCodes.Count);
+
+                foreach (var pair in expectedCodes)
+                {
+                    errorCodes.Keys.Should().Contain(pair.Key);
+                    errorCodes[pair.Key].Should().HaveCount(pair.Value.Count);
+                    errorCodes[pair.Key].Should().Contain(pair.Value);
+                }
             }
         }
 
-        public class GetRawErrors
+        public class GetErrorCodeList
         {
             [Fact]
-            public void Should_ReturnPathsWithRawErrors()
+            public void Should_ReturnAllErrorCodesFromErrors()
+            {
+                var resultsErrors = new Dictionary<string, List<int>>()
+                {
+                    ["test1"] = new List<int>() { 1, 2, 3 },
+                    ["test2"] = new List<int>() { 2, 4 },
+                };
+
+                var errorRegistry = new Dictionary<int, IError>()
+                {
+                    [1] = new Error()
+                    {
+                        Codes = new[] { "CODE1", }
+                    },
+                    [2] = new Error()
+                    {
+                        Codes = new[] { "CODE2", }
+                    },
+                    [3] = new Error()
+                    {
+                        Codes = new[] { "CODE3", }
+                    },
+                    [4] = new Error()
+                    {
+                        Codes = new[] { "CODE41", "CODE42" }
+                    },
+                };
+
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
+
+                var errorCodes = validationResult.GetErrorCodeList();
+
+                errorCodes.Should().NotBeNull();
+
+                errorCodes.Should().HaveCount(5);
+
+                errorCodes.Should().Contain("CODE1");
+                errorCodes.Should().Contain("CODE2");
+                errorCodes.Should().Contain("CODE3");
+                errorCodes.Should().Contain("CODE41");
+                errorCodes.Should().Contain("CODE42");
+            }
+
+            public static IEnumerable<object[]> Should_ReturnAllErrorCodesFromErrors_MoreExamples_Data()
+            {
+                var errorRegistry = new Dictionary<int, IError>()
+                {
+                    [1] = new Error()
+                    {
+                        Codes = new[] { "CODE1", }
+                    },
+                    [2] = new Error()
+                    {
+                        Codes = new[] { "CODE2", }
+                    },
+                    [3] = new Error()
+                    {
+                        Codes = new[] { "CODE3", }
+                    },
+                    [4] = new Error()
+                    {
+                        Codes = new[] { "CODE41", "CODE42" }
+                    },
+                    [5] = new Error()
+                    {
+                    },
+                    [6] = new Error()
+                    {
+                        Codes = new[] { "CODE61", "CODE62", "CODE63" }
+                    },
+                    [10] = new Error()
+                    {
+                        Codes = new[] { "CODE1", "CODE2" }
+                    },
+                };
+
+                yield return new object[]
+                {
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["test1"] = new List<int>() { 1 },
+                    },
+                    errorRegistry,
+                    new[] { "CODE1" }
+                };
+
+                yield return new object[]
+                {
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["test1"] = new List<int>() { 1, 1, 1 },
+                    },
+                    errorRegistry,
+                    new[] { "CODE1" }
+                };
+
+                yield return new object[]
+                {
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["test1"] = new List<int>() { 1 },
+                        ["test2"] = new List<int>() { 1 },
+                        ["test3"] = new List<int>() { 1 },
+                    },
+                    errorRegistry,
+                    new[] { "CODE1" }
+                };
+
+                yield return new object[]
+                {
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["test1"] = new List<int>() { 1 },
+                        ["test2"] = new List<int>() { 2, 4 },
+                        ["test3"] = new List<int>() { 3, 4 },
+                    },
+                    errorRegistry,
+                    new[] { "CODE1", "CODE2", "CODE3", "CODE41", "CODE42" }
+                };
+
+                yield return new object[]
+                {
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["test1"] = new List<int>() { 5 },
+                        ["test2"] = new List<int>() { 2, 5 },
+                        ["test3"] = new List<int>() { 3, 5 },
+                        ["test4"] = new List<int>() { 6, 5 },
+                    },
+                    errorRegistry,
+                    new[] { "CODE2", "CODE3", "CODE61", "CODE62", "CODE63" }
+                };
+
+                yield return new object[]
+                {
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["test1"] = new List<int>() { 5, 10 },
+                        ["test2"] = new List<int>() { 2, 5 },
+                        ["test3"] = new List<int>() { 3, 6 },
+                        ["test4"] = new List<int>() { 5 },
+                        ["test5"] = new List<int>() { 5 },
+                    },
+                    errorRegistry,
+                    new[] { "CODE1", "CODE2", "CODE3", "CODE61", "CODE62", "CODE63" }
+                };
+            }
+
+            [Theory]
+            [MemberData(nameof(Should_ReturnAllErrorCodesFromErrors_MoreExamples_Data))]
+            public void Should_ReturnAllErrorCodesFromErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, IReadOnlyList<string> expectedCodes)
+            {
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
+
+                var errorCodes = validationResult.GetErrorCodeList();
+
+                errorCodes.Should().NotBeNull();
+
+                errorCodes.Should().HaveCount(expectedCodes.Count);
+                errorCodes.Should().Contain(expectedCodes);
+                expectedCodes.Should().Contain(errorCodes);
+            }
+
+            [Fact]
+            public void Should_ReturnEmptyList_When_Valid()
+            {
+                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
+
+                var errorCodes = validationResult.GetErrorCodes();
+
+                errorCodes.Should().NotBeNull();
+                errorCodes.Should().BeEmpty();
+            }
+        }
+
+        public class GetErrorOutput
+        {
+            [Fact]
+            public void Should_ReturnErrorOutput()
             {
                 var resultsErrors = new Dictionary<string, List<int>>()
                 {
@@ -294,7 +628,7 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
 
-                var rawErrors = validationResult.GetRawErrors();
+                var rawErrors = validationResult.GetErrorOutput();
 
                 rawErrors.Should().NotBeNull();
 
@@ -310,7 +644,7 @@ namespace Validot.Tests.Unit.Results
                 rawErrors["test2"].Should().Contain(x => ReferenceEquals(x, errorRegistry[4]));
             }
 
-            public static IEnumerable<object[]> Should_ReturnPathsWithRawErrors_MoreExamples_Data()
+            public static IEnumerable<object[]> Should_ReturnErrorOutput_MoreExamples_Data()
             {
                 var errorRegistry = new Dictionary<int, IError>()
                 {
@@ -399,12 +733,12 @@ namespace Validot.Tests.Unit.Results
             }
 
             [Theory]
-            [MemberData(nameof(Should_ReturnPathsWithRawErrors_MoreExamples_Data))]
-            public void Should_ReturnPathsWithRawErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, IReadOnlyDictionary<string, IReadOnlyList<IError>> expectedErrors)
+            [MemberData(nameof(Should_ReturnErrorOutput_MoreExamples_Data))]
+            public void Should_ReturnRawErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, IReadOnlyDictionary<string, IReadOnlyList<IError>> expectedErrors)
             {
                 var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
 
-                var rawErrors = validationResult.GetRawErrors();
+                var rawErrors = validationResult.GetErrorOutput();
 
                 rawErrors.Should().NotBeNull();
 
@@ -427,232 +761,414 @@ namespace Validot.Tests.Unit.Results
             {
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
 
-                var rawErrors = validationResult.GetRawErrors();
+                var rawErrors = validationResult.GetErrorOutput();
 
                 rawErrors.Should().NotBeNull();
                 rawErrors.Should().BeEmpty();
             }
         }
 
-        public class GetErrorCodes
+        public class GetTranslation
         {
             [Fact]
-            public void Should_ReturnAllErrorCodesFromErrors()
+            public void Should_Return_Translation_FromMessageService()
             {
-                var resultsErrors = new Dictionary<string, List<int>>()
+                var messagesService = Substitute.For<IMessagesService>();
+
+                var translation = new Dictionary<string, string>()
                 {
-                    ["test1"] = new List<int>() { 1, 2, 3 },
-                    ["test2"] = new List<int>() { 2, 4 },
+                    ["key1"] = "value1",
+                    ["key2"] = "value2",
                 };
 
-                var errorRegistry = new Dictionary<int, IError>()
-                {
-                    [1] = new Error()
-                    {
-                        Codes = new[] { "CODE1", }
-                    },
-                    [2] = new Error()
-                    {
-                        Codes = new[] { "CODE2", }
-                    },
-                    [3] = new Error()
-                    {
-                        Codes = new[] { "CODE3", }
-                    },
-                    [4] = new Error()
-                    {
-                        Codes = new[] { "CODE41", "CODE42" }
-                    },
-                };
+                messagesService.GetTranslation(Arg.Is("translationName1")).Returns(translation);
 
-                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), messagesService);
 
-                var errorCodes = validationResult.GetErrorCodes();
+                var resultTranslation = validationResult.GetTranslation("translationName1");
 
-                errorCodes.Should().NotBeNull();
+                messagesService.Received(1).GetTranslation(Arg.Is("translationName1"));
+                messagesService.ReceivedWithAnyArgs(1).GetTranslation(default);
 
-                errorCodes.Should().HaveCount(6);
-
-                errorCodes.Should().Contain("CODE1");
-                errorCodes.Should().Contain("CODE2");
-                errorCodes.Should().Contain("CODE3");
-                errorCodes.Should().Contain("CODE41");
-                errorCodes.Should().Contain("CODE42");
-
-                errorCodes.Where(c => c == "CODE2").Should().HaveCount(2);
+                resultTranslation.Should().BeSameAs(translation);
             }
 
-            public static IEnumerable<object[]> Should_ReturnAllErrorCodesFromErrors_MoreExamples_Data()
+            [Fact]
+            public void Should_Return_EmptyTranslation_When_NullMessageService()
             {
+                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
+
+                var resultTranslation = validationResult.GetTranslation("translationName1");
+
+                resultTranslation.Should().BeEmpty();
+            }
+        }
+
+        public class ToStringTests
+        {
+            [Fact]
+            public void Should_Return_NoErrorsString_When_Valid()
+            {
+                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
+
+                var stringified = validationResult.ToString();
+
+                stringified.Should().Be("(no error output)");
+            }
+
+            [Fact]
+            public void Should_Return_ErrorMessages_FromMessageService_WithDefaultTranslation()
+            {
+                var messagesService = Substitute.For<IMessagesService>();
+
+                var errorMessages = new Dictionary<string, IReadOnlyList<string>>
+                {
+                    ["path1"] = new[] { "message11" },
+                    ["path2"] = new[] { "message12", "message22" }
+                };
+
+                var resultErrors = new Dictionary<string, List<int>>()
+                {
+                    ["path1"] = new List<int>() { 1 }
+                };
+
+                var errorsRegistry = new Dictionary<int, IError>()
+                {
+                    [1] = new Error()
+                };
+
+                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+
+                var validationResult = new ValidationResult(resultErrors, errorsRegistry, messagesService);
+
+                ShouldHaveMessagesOnly(validationResult.ToString(), new[]
+                {
+                    "path1: message11",
+                    "path2: message12",
+                    "path2: message22"
+                });
+
+                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+            }
+
+            [Fact]
+            public void Should_Return_ErrorMessages_FromMessageService_WithDefaultTranslation_And_Codes()
+            {
+                var messagesService = Substitute.For<IMessagesService>();
+
+                var errorMessages = new Dictionary<string, IReadOnlyList<string>>
+                {
+                    ["path1"] = new[] { "message11" },
+                    ["path2"] = new[] { "message12", "message22" }
+                };
+
+                var resultErrors = new Dictionary<string, List<int>>()
+                {
+                    ["path1"] = new List<int>() { 1 },
+                    ["path2"] = new List<int>() { 2, 3 },
+                    ["path3"] = new List<int>() { 1, 3 }
+                };
+
                 var errorRegistry = new Dictionary<int, IError>()
                 {
                     [1] = new Error()
-                    {
-                        Codes = new[] { "CODE1", }
-                    },
-                    [2] = new Error()
-                    {
-                        Codes = new[] { "CODE2", }
-                    },
-                    [3] = new Error()
-                    {
-                        Codes = new[] { "CODE3", }
-                    },
-                    [4] = new Error()
-                    {
-                        Codes = new[] { "CODE41", "CODE42" }
-                    },
-                    [5] = new Error()
-                    {
-                    },
-                    [6] = new Error()
-                    {
-                        Codes = new[] { "CODE61", "CODE62", "CODE63" }
-                    },
-                    [10] = new Error()
                     {
                         Codes = new[] { "CODE1", "CODE2" }
                     },
-                };
-
-                yield return new object[]
-                {
-                    new Dictionary<string, List<int>>()
+                    [2] = new Error()
                     {
-                        ["test1"] = new List<int>() { 1 },
+                        Codes = new[] { "CODE2", "CODE3" }
                     },
-                    errorRegistry,
-                    new Dictionary<string, int>()
+                    [3] = new Error()
                     {
-                        ["CODE1"] = 1,
+                        Codes = new[] { "CODE1", "CODE2", "CODE3", "CODE4" }
                     }
                 };
 
-                yield return new object[]
-                {
-                    new Dictionary<string, List<int>>()
+                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+
+                var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
+
+                ShouldHaveCodesAndMessages(
+                    validationResult.ToString(),
+                    new[]
                     {
-                        ["test1"] = new List<int>() { 1, 1, 1 },
+                        "CODE1",
+                        "CODE2",
+                        "CODE3",
+                        "CODE4"
                     },
-                    errorRegistry,
-                    new Dictionary<string, int>()
+                    new[]
                     {
-                        ["CODE1"] = 3,
-                    }
-                };
+                        "path1: message11",
+                        "path2: message12",
+                        "path2: message22"
+                    });
 
-                yield return new object[]
-                {
-                    new Dictionary<string, List<int>>()
-                    {
-                        ["test1"] = new List<int>() { 1 },
-                        ["test2"] = new List<int>() { 1 },
-                        ["test3"] = new List<int>() { 1 },
-                    },
-                    errorRegistry,
-                    new Dictionary<string, int>()
-                    {
-                        ["CODE1"] = 3,
-                    }
-                };
-
-                yield return new object[]
-                {
-                    new Dictionary<string, List<int>>()
-                    {
-                        ["test1"] = new List<int>() { 1 },
-                        ["test2"] = new List<int>() { 2, 4 },
-                        ["test3"] = new List<int>() { 3, 4 },
-                    },
-                    errorRegistry,
-                    new Dictionary<string, int>()
-                    {
-                        ["CODE1"] = 1,
-                        ["CODE2"] = 1,
-                        ["CODE3"] = 1,
-                        ["CODE41"] = 2,
-                        ["CODE42"] = 2,
-                    }
-                };
-
-                yield return new object[]
-                {
-                    new Dictionary<string, List<int>>()
-                    {
-                        ["test1"] = new List<int>() { 5 },
-                        ["test2"] = new List<int>() { 2, 5 },
-                        ["test3"] = new List<int>() { 3, 5 },
-                        ["test4"] = new List<int>() { 6, 5 },
-                    },
-                    errorRegistry,
-                    new Dictionary<string, int>()
-                    {
-                        ["CODE2"] = 1,
-                        ["CODE3"] = 1,
-                        ["CODE61"] = 1,
-                        ["CODE62"] = 1,
-                        ["CODE63"] = 1,
-                    }
-                };
-
-                yield return new object[]
-                {
-                    new Dictionary<string, List<int>>()
-                    {
-                        ["test1"] = new List<int>() { 5, 10 },
-                        ["test2"] = new List<int>() { 2, 5 },
-                        ["test3"] = new List<int>() { 3, 6 },
-                        ["test4"] = new List<int>() { 5 },
-                        ["test5"] = new List<int>() { 5 },
-                    },
-                    errorRegistry,
-                    new Dictionary<string, int>()
-                    {
-                        ["CODE1"] = 1,
-                        ["CODE2"] = 2,
-                        ["CODE3"] = 1,
-                        ["CODE61"] = 1,
-                        ["CODE62"] = 1,
-                        ["CODE63"] = 1,
-                    }
-                };
-            }
-
-            [Theory]
-            [MemberData(nameof(Should_ReturnAllErrorCodesFromErrors_MoreExamples_Data))]
-            public void Should_ReturnAllErrorCodesFromErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, Dictionary<string, int> expectedCodesWithCount)
-            {
-                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
-
-                var errorCodes = validationResult.GetErrorCodes();
-
-                errorCodes.Should().NotBeNull();
-
-                var expectedCount = 0;
-
-                foreach (var expectedPair in expectedCodesWithCount)
-                {
-                    expectedCount += expectedPair.Value;
-                }
-
-                errorCodes.Should().HaveCount(expectedCount);
-
-                foreach (var expectedErrorsPair in expectedCodesWithCount)
-                {
-                    errorCodes.Should().Contain(expectedErrorsPair.Key);
-                    errorCodes.Where(c => c == expectedErrorsPair.Key).Should().HaveCount(expectedErrorsPair.Value, because: $"Invalid amount of code {expectedErrorsPair.Key}");
-                }
+                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
             }
 
             [Fact]
-            public void Should_ReturnEmptyList_When_Valid()
+            public void Should_Return_ErrorMessages_FromMessageService_WithSpecifiedTranslation()
             {
-                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
+                var messagesService = Substitute.For<IMessagesService>();
 
-                var errorCodes = validationResult.GetErrorCodes();
+                var errorMessages1 = new Dictionary<string, IReadOnlyList<string>>
+                {
+                    ["path1"] = new[] { "message11" },
+                    ["path2"] = new[] { "message12", "message22" }
+                };
 
-                errorCodes.Should().NotBeNull();
-                errorCodes.Should().BeEmpty();
+                var errorMessages2 = new Dictionary<string, IReadOnlyList<string>>
+                {
+                    ["path1"] = new[] { "MESSAGE11" },
+                    ["path2"] = new[] { "MESSAGE12", "MESSAGE22" }
+                };
+
+                var resultErrors = new Dictionary<string, List<int>>()
+                {
+                    ["path1"] = new List<int>() { 1 }
+                };
+
+                var errorRegistry = new Dictionary<int, IError>()
+                {
+                    [1] = new Error()
+                };
+
+                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
+                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
+
+                var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
+
+                ShouldHaveMessagesOnly(
+                    validationResult.ToString("translation2"),
+                    new[]
+                    {
+                        "path1: MESSAGE11",
+                        "path2: MESSAGE12",
+                        "path2: MESSAGE22"
+                    });
+
+                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
+                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+            }
+
+            [Fact]
+            public void Should_Return_ErrorMessages_FromMessageService_WithSpecifiedTranslation_And_Codes()
+            {
+                var messagesService = Substitute.For<IMessagesService>();
+
+                var errorMessages1 = new Dictionary<string, IReadOnlyList<string>>
+                {
+                    ["path1"] = new[] { "message11" },
+                    ["path2"] = new[] { "message12", "message22" }
+                };
+
+                var errorMessages2 = new Dictionary<string, IReadOnlyList<string>>
+                {
+                    ["path1"] = new[] { "MESSAGE11" },
+                    ["path2"] = new[] { "MESSAGE12", "MESSAGE22" }
+                };
+
+                var resultErrors = new Dictionary<string, List<int>>()
+                {
+                    ["path1"] = new List<int>() { 1 },
+                    ["path2"] = new List<int>() { 2, 3 },
+                    ["path3"] = new List<int>() { 1, 3 }
+                };
+
+                var errorRegistry = new Dictionary<int, IError>()
+                {
+                    [1] = new Error()
+                    {
+                        Codes = new[] { "CODE1", "CODE2" }
+                    },
+                    [2] = new Error()
+                    {
+                        Codes = new[] { "CODE2", "CODE3" }
+                    },
+                    [3] = new Error()
+                    {
+                        Codes = new[] { "CODE1", "CODE2", "CODE3", "CODE4" }
+                    }
+                };
+
+                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
+                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
+
+                var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
+
+                ShouldHaveCodesAndMessages(
+                    validationResult.ToString("translation2"),
+                    new[]
+                    {
+                        "CODE1",
+                        "CODE2",
+                        "CODE3",
+                        "CODE4"
+                    },
+                    new[]
+                    {
+                        "path1: MESSAGE11",
+                        "path2: MESSAGE12",
+                        "path2: MESSAGE22"
+                    });
+
+                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
+                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+            }
+
+            [Fact]
+            public void Should_Return_Codes()
+            {
+                var messagesService = Substitute.For<IMessagesService>();
+
+                var errorMessages = new Dictionary<string, IReadOnlyList<string>>();
+
+                var resultErrors = new Dictionary<string, List<int>>()
+                {
+                    ["path1"] = new List<int>() { 1 }
+                };
+
+                var errorRegistry = new Dictionary<int, IError>()
+                {
+                    [1] = new Error()
+                    {
+                        Codes = new[] { "CODE1", "CODE2" }
+                    }
+                };
+
+                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+
+                var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
+
+                ShouldHaveCodesOnly(
+                    validationResult.ToString(),
+                    new[]
+                    {
+                        "CODE1",
+                        "CODE2"
+                    });
+
+                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+            }
+
+            [Fact]
+            public void Should_Return_Codes_Distinct()
+            {
+                var messagesService = Substitute.For<IMessagesService>();
+
+                var errorMessages = new Dictionary<string, IReadOnlyList<string>>();
+
+                var resultErrors = new Dictionary<string, List<int>>()
+                {
+                    ["path1"] = new List<int>() { 1 },
+                    ["path2"] = new List<int>() { 2, 3 },
+                    ["path3"] = new List<int>() { 1, 3 }
+                };
+
+                var errorRegistry = new Dictionary<int, IError>()
+                {
+                    [1] = new Error()
+                    {
+                        Codes = new[] { "CODE1", "CODE2" }
+                    },
+                    [2] = new Error()
+                    {
+                        Codes = new[] { "CODE2", "CODE3" }
+                    },
+                    [3] = new Error()
+                    {
+                        Codes = new[] { "CODE1", "CODE2", "CODE3", "CODE4" }
+                    }
+                };
+
+                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+
+                var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
+
+                ShouldHaveCodesOnly(
+                    validationResult.ToString(),
+                    new[]
+                    {
+                        "CODE1",
+                        "CODE2",
+                        "CODE3",
+                        "CODE4"
+                    });
+
+                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+            }
+
+            private static void ShouldHaveMessagesOnly(string validationResult, IReadOnlyList<string> messages) => ShouldHaveCodesAndMessages(validationResult, null, messages);
+
+            private static void ShouldHaveCodesOnly(string validationResult, IReadOnlyList<string> codes) => ShouldHaveCodesAndMessages(validationResult, codes, null);
+
+            private static void ShouldHaveCodesAndMessages(string validationResult, IReadOnlyList<string> codes, IReadOnlyList<string> messages)
+            {
+                validationResult.Should().NotBeNullOrEmpty();
+
+                var anyCodes = codes?.Any() == true;
+                var anyMessages = messages?.Any() == true;
+
+                if (!anyCodes && !anyMessages)
+                {
+                    validationResult.Should().Be("(no error output)");
+
+                    return;
+                }
+
+                if (anyCodes)
+                {
+                    if (anyMessages)
+                    {
+                        validationResult.Should().Contain(Environment.NewLine);
+                    }
+                    else
+                    {
+                        validationResult.Should().NotContain(Environment.NewLine);
+                    }
+
+                    var codesLine = anyMessages
+                        ? validationResult.Substring(0, validationResult.IndexOf(Environment.NewLine, StringComparison.Ordinal))
+                        : validationResult;
+
+                    var extractedCodes = codesLine.Split(new[] { ", " }, StringSplitOptions.None);
+
+                    extractedCodes.Should().HaveCount(codes.Count);
+                    extractedCodes.Should().Contain(codes);
+                    codes.Should().Contain(extractedCodes, because: "(reversed)");
+                }
+
+                if (anyMessages)
+                {
+                    string messagesPart;
+
+                    if (anyCodes)
+                    {
+                        messagesPart = validationResult.Substring(validationResult.IndexOf(Environment.NewLine, StringComparison.Ordinal));
+
+                        messagesPart.Should().StartWith(Environment.NewLine);
+                        messagesPart = messagesPart.Substring(Environment.NewLine.Length);
+
+                        messagesPart.Should().StartWith(Environment.NewLine);
+                        messagesPart = messagesPart.Substring(Environment.NewLine.Length);
+                    }
+                    else
+                    {
+                        messagesPart = validationResult;
+                    }
+
+                    var lines = messagesPart.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+                    lines.Should().Contain(messages);
+                    messages.Should().Contain(lines, because: "(reversed)");
+                    lines.Should().HaveCount(messages.Count);
+                }
             }
         }
     }

@@ -10,19 +10,19 @@ namespace Validot.Errors
     {
         private readonly MessagesCache _cache;
 
-        private readonly MessagesTranslator _translator;
+        private readonly MessageTranslator _translator;
 
         public MessagesService(
             IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations,
             IReadOnlyDictionary<int, IError> errors,
             IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
         {
-            _translator = new MessagesTranslator(translations);
+            _translator = new MessageTranslator(translations);
 
             _cache = BuildMessagesCache(_translator, errors, errorMap);
         }
 
-        public IReadOnlyList<string> TranslationsNames => _translator.TranslationsNames;
+        public IReadOnlyList<string> TranslationNames => _translator.TranslationNames;
 
         public IReadOnlyDictionary<string, string> GetTranslation(string translationName)
         {
@@ -41,6 +41,11 @@ namespace Validot.Errors
                 var errorsIds = pair.Value;
 
                 var capacity = _cache.GetErrorsMessagesAmount(errorsIds);
+
+                if (capacity == 0)
+                {
+                    continue;
+                }
 
                 var allErrorMessages = new string[capacity];
 
@@ -65,7 +70,7 @@ namespace Validot.Errors
                         var cachedMessages = _cache.GetMessages(translationName, errorId);
                         var indexedPathPlaceholders = _cache.GetIndexedPathPlaceholders(translationName, errorId);
 
-                        messages = MessagesTranslator.TranslateErrorMessagesWithPathPlaceholders(path, cachedMessages, indexedPathPlaceholders);
+                        messages = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders(path, cachedMessages, indexedPathPlaceholders);
                     }
 
                     CopyMessages(messages, allErrorMessages, ref index);
@@ -87,7 +92,7 @@ namespace Validot.Errors
             targetIndex += source.Count;
         }
 
-        private MessagesCache BuildMessagesCache(MessagesTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
+        private MessagesCache BuildMessagesCache(MessageTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
         {
             ThrowHelper.NullArgument(errors, nameof(errors));
             ThrowHelper.NullArgument(errorMap, nameof(errorMap));
@@ -97,7 +102,7 @@ namespace Validot.Errors
 
             var cache = new MessagesCache();
 
-            foreach (var translationName in TranslationsNames)
+            foreach (var translationName in TranslationNames)
             {
                 foreach (var errorId in uniqueErrorsIds)
                 {
@@ -112,7 +117,7 @@ namespace Validot.Errors
                 }
             }
 
-            foreach (var translationName in TranslationsNames)
+            foreach (var translationName in TranslationNames)
             {
                 foreach (var errorMapPair in errorMap)
                 {
@@ -128,7 +133,7 @@ namespace Validot.Errors
                         var cachedMessages = cache.GetMessages(translationName, errorId);
                         var indexedPlaceholders = cache.GetIndexedPathPlaceholders(translationName, errorId);
 
-                        var errorMessagesWithSpecials = MessagesTranslator.TranslateErrorMessagesWithPathPlaceholders(path, cachedMessages, indexedPlaceholders);
+                        var errorMessagesWithSpecials = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders(path, cachedMessages, indexedPlaceholders);
 
                         cache.AddMessageWithPathArgs(translationName, path, errorId, errorMessagesWithSpecials);
                     }

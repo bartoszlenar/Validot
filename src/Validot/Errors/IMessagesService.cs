@@ -4,7 +4,7 @@ namespace Validot.Errors
 
     internal interface IMessagesService
     {
-        IReadOnlyList<string> TranslationsNames { get; }
+        IReadOnlyList<string> TranslationNames { get; }
 
         IReadOnlyDictionary<string, string> GetTranslation(string translationName);
 

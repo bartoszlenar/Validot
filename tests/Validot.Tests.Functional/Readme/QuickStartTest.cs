@@ -51,18 +51,19 @@ namespace Validot.Tests.Functional.Readme
 
             var result = validator.Validate(model);
 
-            var messagesString = result.ToMessagesString();
+            var messagesString = result.ToString();
 
             var expectedMessagesString = string.Join(Environment.NewLine, new[]
             {
+                "ERR_EMAIL, ERR_NAME",
+                "",
                 "Email: Must be a valid email address",
-                "Name: Required for underaged user",
-                ""
+                "Name: Required for underaged user"
             });
 
             messagesString.Should().Be(expectedMessagesString);
 
-            var codesList = result.ToCodesList();
+            var codesList = result.Details.GetErrorCodeList();
 
             codesList.Should().ContainInOrder("ERR_EMAIL", "ERR_NAME");
 

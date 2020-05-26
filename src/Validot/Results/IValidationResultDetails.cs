@@ -6,15 +6,17 @@ namespace Validot.Results
 
     public interface IValidationResultDetails
     {
-        IReadOnlyList<string> RegisteredTranslationsNames { get; }
+        IReadOnlyList<string> TranslationNames { get; }
 
-        IReadOnlyCollection<string> PathsWithErrors { get; }
+        IReadOnlyCollection<string> Paths { get; }
 
         IReadOnlyDictionary<string, string> GetTranslation(string translationName);
 
-        IReadOnlyList<string> GetErrorCodes();
+        IReadOnlyCollection<string> GetErrorCodeList();
 
-        IReadOnlyDictionary<string, IReadOnlyList<IError>> GetRawErrors();
+        IReadOnlyDictionary<string, IReadOnlyList<string>> GetErrorCodes();
+
+        IReadOnlyDictionary<string, IReadOnlyList<IError>> GetErrorOutput();
 
         IReadOnlyDictionary<string, IReadOnlyList<string>> GetErrorMessages(string translationName = null);
     }

@@ -53,7 +53,7 @@
                     }
                     else
                     {
-                        File.AppendAllText(GetFile($"{name}.validot.invalid"), Environment.NewLine + $"-{i}-" + Environment.NewLine + validotValidator.Validate(fullModels[i]).ToMessagesString(includePaths:false));
+                        File.AppendAllText(GetFile($"{name}.validot.invalid"), Environment.NewLine + $"-{i}-" + Environment.NewLine + validotValidator.Validate(fullModels[i]));
                     }
                     
                     var fluentValidationResult = fluentValidationValidator.Validate(fullModels[i]);
@@ -64,7 +64,7 @@
                     }
                     else
                     {
-                        File.AppendAllText(GetFile($"{name}.fluent.invalid"), Environment.NewLine + Environment.NewLine + $"-{i}-" + Environment.NewLine + fluentValidationResult.ToString());
+                        File.AppendAllText(GetFile($"{name}.fluent.invalid"), Environment.NewLine + Environment.NewLine + $"-{i}-" + Environment.NewLine + fluentValidationResult);
                     }
                 }
             }

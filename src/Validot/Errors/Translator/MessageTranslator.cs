@@ -5,7 +5,7 @@ namespace Validot.Errors.Translator
 
     using Validot.Errors.Args;
 
-    internal class MessagesTranslator
+    internal class MessageTranslator
     {
         private const string NameArgName = "_name";
 
@@ -13,7 +13,7 @@ namespace Validot.Errors.Translator
 
         private static readonly IReadOnlyDictionary<int, IReadOnlyList<ArgPlaceholder>> _emptyIndexedPathPlaceholders = new Dictionary<int, IReadOnlyList<ArgPlaceholder>>();
 
-        public MessagesTranslator(IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations)
+        public MessageTranslator(IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations)
         {
             ThrowHelper.NullArgument(translations, nameof(translations));
 
@@ -25,16 +25,16 @@ namespace Validot.Errors.Translator
             }
 
             Translations = translations;
-            TranslationsArgs = BuildTranslationArgs(translations);
+            TranslationArgs = BuildTranslationArgs(translations);
 
-            TranslationsNames = translations.Keys.ToArray();
+            TranslationNames = translations.Keys.ToArray();
         }
 
         public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; }
 
-        public IReadOnlyList<string> TranslationsNames { get; }
+        public IReadOnlyList<string> TranslationNames { get; }
 
-        public IReadOnlyDictionary<string, IArg[]> TranslationsArgs { get; }
+        public IReadOnlyDictionary<string, IArg[]> TranslationArgs { get; }
 
         public static IReadOnlyList<string> TranslateErrorMessagesWithPathPlaceholders(string path, IReadOnlyList<string> errorMessages, IReadOnlyDictionary<int, IReadOnlyList<ArgPlaceholder>> indexedPathsPlaceholders)
         {
@@ -126,7 +126,7 @@ namespace Validot.Errors.Translator
 
             if (specialPlaceholders.Any())
             {
-                specialArgs = TranslationsArgs[translationName];
+                specialArgs = TranslationArgs[translationName];
 
                 return true;
             }

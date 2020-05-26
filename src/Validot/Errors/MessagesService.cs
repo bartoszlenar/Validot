@@ -42,6 +42,11 @@ namespace Validot.Errors
 
                 var capacity = _cache.GetErrorsMessagesAmount(errorsIds);
 
+                if (capacity == 0)
+                {
+                    continue;
+                }
+
                 var allErrorMessages = new string[capacity];
 
                 var index = 0;

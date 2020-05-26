@@ -54,6 +54,12 @@ namespace Validot.Tests.Unit.Errors
                     Arg.Number("numberArg", 123),
                     Arg.Text("textArg", "textArgValue")
                 }
+            },
+            [2] = new Error()
+            {
+                Messages = Array.Empty<string>(),
+                Codes = new[] { "NO_MESSAGES_CODE" },
+                Args = Array.Empty<IArg>()
             }
         };
 
@@ -72,12 +78,21 @@ namespace Validot.Tests.Unit.Errors
                 0,
                 1
             },
+            ["codes.only"] = new[]
+            {
+                2
+            },
+            ["codes.mix"] = new[]
+            {
+                0,
+                1,
+                2
+            },
         };
 
         [Fact]
         public void Should_Initialize()
         {
-            // ReSharper disable once AssignmentIsFullyDiscarded
             _ = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
         }
 
@@ -246,7 +261,7 @@ namespace Validot.Tests.Unit.Errors
                 },
                 ["path.name"] = new[]
                 {
-                    2
+                    666
                 }
             };
 
@@ -346,6 +361,73 @@ namespace Validot.Tests.Unit.Errors
                     "translation1");
 
                 action.Should().ThrowExactly<NullReferenceException>();
+            }
+
+            [Theory]
+            [InlineData(null)]
+            [InlineData("translation1")]
+            [InlineData("translation2")]
+            public void Should_Get_EmptyDictionary_When_PathsWithoutMessages(string translationName)
+            {
+                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+
+                var result = messagesService.GetErrorsMessages(
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["codes.only"] = new List<int>()
+                        {
+                            2
+                        }
+                    },
+                    translationName);
+
+                result.Should().BeEmpty();
+            }
+
+            [Theory]
+            [InlineData(null)]
+            [InlineData("translation1")]
+            [InlineData("translation2")]
+            public void Should_Get_EmptyDictionary_When_ErrorsWithoutMessages(string translationName)
+            {
+                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+
+                var result = messagesService.GetErrorsMessages(
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["codes.mix"] = new List<int>()
+                        {
+                            2
+                        }
+                    },
+                    translationName);
+
+                result.Should().BeEmpty();
+            }
+
+            [Theory]
+            [InlineData(null)]
+            [InlineData("translation1")]
+            [InlineData("translation2")]
+            public void Should_Get_EmptyDictionary_When_OutputWithoutMessages(string translationName)
+            {
+                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+
+                var result = messagesService.GetErrorsMessages(
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["codes.only"] = new List<int>()
+                        {
+                            2
+                        },
+                        ["codes.mix"] = new List<int>()
+                        {
+                            2
+                        }
+                    },
+                    translationName);
+
+                result.Should().BeEmpty();
             }
 
             [Fact]
@@ -465,6 +547,115 @@ namespace Validot.Tests.Unit.Errors
             }
 
             [Fact]
+            public void Should_Get_From_ManyPaths_SkippingPathsWithNoMessages()
+            {
+                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+
+                var result = messagesService.GetErrorsMessages(
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["name"] = new List<int>()
+                        {
+                            0
+                        },
+                        ["path.name"] = new List<int>()
+                        {
+                            1
+                        },
+                        ["new.path.name"] = new List<int>()
+                        {
+                            0,
+                            1
+                        },
+                        ["codes.only"] = new List<int>()
+                        {
+                            2
+                        }
+                    },
+                    "translation2");
+
+                result.Count.Should().Be(3);
+
+                result.Keys.Should().Contain("name");
+                result["name"].Count.Should().Be(2);
+                result["name"].ElementAt(0).Should().Be("MESSAGE_11");
+                result["name"].ElementAt(1).Should().Be("MESSAGE_12");
+
+                result.Keys.Should().Contain("path.name");
+                result["path.name"].Count.Should().Be(2);
+                result["path.name"].ElementAt(0).Should().Be("MESSAGE_21 0123 TEXTARGVALUE");
+                result["path.name"].ElementAt(1).Should().Be("MESSAGE_22 textArgValue textArgValue");
+
+                result.Keys.Should().Contain("new.path.name");
+                result["new.path.name"].Count.Should().Be(4);
+                result["new.path.name"].ElementAt(0).Should().Be("MESSAGE_11");
+                result["new.path.name"].ElementAt(1).Should().Be("MESSAGE_12");
+                result["new.path.name"].ElementAt(2).Should().Be("MESSAGE_21 0123 TEXTARGVALUE");
+                result["new.path.name"].ElementAt(3).Should().Be("MESSAGE_22 textArgValue textArgValue");
+            }
+
+            [Fact]
+            public void Should_Get_From_ManyPaths_SkippingErrorsWithNoMessages()
+            {
+                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+
+                var result = messagesService.GetErrorsMessages(
+                    new Dictionary<string, List<int>>()
+                    {
+                        ["name"] = new List<int>()
+                        {
+                            0
+                        },
+                        ["path.name"] = new List<int>()
+                        {
+                            1
+                        },
+                        ["new.path.name"] = new List<int>()
+                        {
+                            0,
+                            1
+                        },
+                        ["codes.only"] = new List<int>()
+                        {
+                            2
+                        },
+                        ["codes.mix"] = new List<int>()
+                        {
+                            0,
+                            1,
+                            2
+                        }
+                    },
+                    "translation2");
+
+                result.Count.Should().Be(4);
+
+                result.Keys.Should().Contain("name");
+                result["name"].Count.Should().Be(2);
+                result["name"].ElementAt(0).Should().Be("MESSAGE_11");
+                result["name"].ElementAt(1).Should().Be("MESSAGE_12");
+
+                result.Keys.Should().Contain("path.name");
+                result["path.name"].Count.Should().Be(2);
+                result["path.name"].ElementAt(0).Should().Be("MESSAGE_21 0123 TEXTARGVALUE");
+                result["path.name"].ElementAt(1).Should().Be("MESSAGE_22 textArgValue textArgValue");
+
+                result.Keys.Should().Contain("new.path.name");
+                result["new.path.name"].Count.Should().Be(4);
+                result["new.path.name"].ElementAt(0).Should().Be("MESSAGE_11");
+                result["new.path.name"].ElementAt(1).Should().Be("MESSAGE_12");
+                result["new.path.name"].ElementAt(2).Should().Be("MESSAGE_21 0123 TEXTARGVALUE");
+                result["new.path.name"].ElementAt(3).Should().Be("MESSAGE_22 textArgValue textArgValue");
+
+                result.Keys.Should().Contain("codes.mix");
+                result["new.path.name"].Count.Should().Be(4);
+                result["new.path.name"].ElementAt(0).Should().Be("MESSAGE_11");
+                result["new.path.name"].ElementAt(1).Should().Be("MESSAGE_12");
+                result["new.path.name"].ElementAt(2).Should().Be("MESSAGE_21 0123 TEXTARGVALUE");
+                result["new.path.name"].ElementAt(3).Should().Be("MESSAGE_22 textArgValue textArgValue");
+            }
+
+            [Fact]
             public void Should_Get_From_ManyPaths_And_DifferentTranslations()
             {
                 var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
@@ -570,7 +761,8 @@ namespace Validot.Tests.Unit.Errors
                         },
                         Args = Array.Empty<IArg>()
                     },
-                    [1] = DefaultErrors[1]
+                    [1] = DefaultErrors[1],
+                    [2] = DefaultErrors[2]
                 };
 
                 var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);
@@ -624,7 +816,8 @@ namespace Validot.Tests.Unit.Errors
                         },
                         Args = Array.Empty<IArg>()
                     },
-                    [1] = DefaultErrors[1]
+                    [1] = DefaultErrors[1],
+                    [2] = DefaultErrors[2]
                 };
 
                 var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);
@@ -678,7 +871,8 @@ namespace Validot.Tests.Unit.Errors
                         },
                         Args = Array.Empty<IArg>()
                     },
-                    [1] = DefaultErrors[1]
+                    [1] = DefaultErrors[1],
+                    [2] = DefaultErrors[2]
                 };
 
                 var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);
@@ -723,7 +917,8 @@ namespace Validot.Tests.Unit.Errors
                             "path22: {_path}"
                         },
                         Args = Array.Empty<IArg>()
-                    }
+                    },
+                    [2] = DefaultErrors[2]
                 };
 
                 var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);
@@ -785,7 +980,8 @@ namespace Validot.Tests.Unit.Errors
                             Arg.Number("numberArg", 123)
                         }
                     },
-                    [1] = DefaultErrors[1]
+                    [1] = DefaultErrors[1],
+                    [2] = DefaultErrors[2]
                 };
 
                 var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);
@@ -1106,7 +1302,8 @@ namespace Validot.Tests.Unit.Errors
                             "path22: {_path}"
                         },
                         Args = Array.Empty<IArg>()
-                    }
+                    },
+                    [2] = DefaultErrors[2]
                 };
 
                 var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);

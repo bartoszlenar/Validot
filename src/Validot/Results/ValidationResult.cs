@@ -17,7 +17,7 @@ namespace Validot.Results
 
         private static readonly IReadOnlyDictionary<string, IReadOnlyList<string>> EmptyDictionary = new Dictionary<string, IReadOnlyList<string>>();
 
-        private readonly IMessagesService _messagesService;
+        private readonly IMessageService _messageService;
 
         private readonly Dictionary<string, List<int>> _resultErrors;
 
@@ -27,13 +27,13 @@ namespace Validot.Results
         private IReadOnlyDictionary<string, IReadOnlyList<string>> _codeMap;
         private IReadOnlyDictionary<string, IReadOnlyList<string>> _messageMap;
 
-        public ValidationResult(Dictionary<string, List<int>> resultErrors, IReadOnlyDictionary<int, IError> errorRegistry, IMessagesService messagesService)
+        public ValidationResult(Dictionary<string, List<int>> resultErrors, IReadOnlyDictionary<int, IError> errorRegistry, IMessageService messageService)
         {
             AnyErrors = resultErrors.Count != 0;
 
             _resultErrors = resultErrors;
             _errorRegistry = errorRegistry;
-            _messagesService = messagesService;
+            _messageService = messageService;
         }
 
         public static ValidationResult NoErrorsResult { get; } = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
@@ -66,12 +66,12 @@ namespace Validot.Results
             }
         }
 
-        public IReadOnlyList<string> TranslationNames => _messagesService?.TranslationNames ?? Array.Empty<string>();
+        public IReadOnlyList<string> TranslationNames => _messageService?.TranslationNames ?? Array.Empty<string>();
 
         public IReadOnlyDictionary<string, IReadOnlyList<string>> GetTranslatedMessageMap(string translationName)
         {
             return AnyErrors
-                ? _messagesService.GetMessages(_resultErrors, translationName)
+                ? _messageService.GetMessages(_resultErrors, translationName)
                 : EmptyDictionary;
         }
 

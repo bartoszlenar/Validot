@@ -6,13 +6,13 @@ namespace Validot.Errors
     using Validot.Errors.Translator;
     using Validot.Translations;
 
-    internal class MessagesService : IMessagesService
+    internal class MessageService : IMessageService
     {
         private readonly MessagesCache _cache;
 
         private readonly MessageTranslator _translator;
 
-        public MessagesService(
+        public MessageService(
             IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations,
             IReadOnlyDictionary<int, IError> errors,
             IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)

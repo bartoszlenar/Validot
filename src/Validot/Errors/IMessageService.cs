@@ -2,7 +2,7 @@ namespace Validot.Errors
 {
     using System.Collections.Generic;
 
-    internal interface IMessagesService
+    internal interface IMessageService
     {
         IReadOnlyList<string> TranslationNames { get; }
 

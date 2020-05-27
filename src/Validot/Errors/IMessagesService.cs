@@ -8,6 +8,6 @@ namespace Validot.Errors
 
         IReadOnlyDictionary<string, string> GetTranslation(string translationName);
 
-        IReadOnlyDictionary<string, IReadOnlyList<string>> GetErrorsMessages(Dictionary<string, List<int>> errors, string translationName = null);
+        IReadOnlyDictionary<string, IReadOnlyList<string>> GetMessages(Dictionary<string, List<int>> errors, string translationName = null);
     }
 }

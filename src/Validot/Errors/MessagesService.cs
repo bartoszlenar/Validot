@@ -29,7 +29,7 @@ namespace Validot.Errors
             return _translator.Translations[translationName];
         }
 
-        public IReadOnlyDictionary<string, IReadOnlyList<string>> GetErrorsMessages(Dictionary<string, List<int>> errors, string translationName = null)
+        public IReadOnlyDictionary<string, IReadOnlyList<string>> GetMessages(Dictionary<string, List<int>> errors, string translationName = null)
         {
             var results = new Dictionary<string, IReadOnlyList<string>>(errors.Count);
 
@@ -40,14 +40,14 @@ namespace Validot.Errors
                 var path = pair.Key;
                 var errorsIds = pair.Value;
 
-                var capacity = _cache.GetErrorsMessagesAmount(errorsIds);
+                var capacity = _cache.GetMessageAmount(errorsIds);
 
                 if (capacity == 0)
                 {
                     continue;
                 }
 
-                var allErrorMessages = new string[capacity];
+                var allMessages = new string[capacity];
 
                 var index = 0;
 
@@ -70,13 +70,13 @@ namespace Validot.Errors
                         var cachedMessages = _cache.GetMessages(translationName, errorId);
                         var indexedPathPlaceholders = _cache.GetIndexedPathPlaceholders(translationName, errorId);
 
-                        messages = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders(path, cachedMessages, indexedPathPlaceholders);
+                        messages = MessageTranslator.TranslateMessagesWithPathPlaceholders(path, cachedMessages, indexedPathPlaceholders);
                     }
 
-                    CopyMessages(messages, allErrorMessages, ref index);
+                    CopyMessages(messages, allMessages, ref index);
                 }
 
-                results.Add(path, allErrorMessages);
+                results.Add(path, allMessages);
             }
 
             return results;
@@ -106,7 +106,7 @@ namespace Validot.Errors
             {
                 foreach (var errorId in uniqueErrorsIds)
                 {
-                    var translationResult = translator.TranslateErrorMessages(translationName, errors[errorId]);
+                    var translationResult = translator.TranslateMessages(translationName, errors[errorId]);
 
                     cache.AddMessage(translationName, errorId, translationResult.Messages);
 
@@ -133,7 +133,7 @@ namespace Validot.Errors
                         var cachedMessages = cache.GetMessages(translationName, errorId);
                         var indexedPlaceholders = cache.GetIndexedPathPlaceholders(translationName, errorId);
 
-                        var errorMessagesWithSpecials = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders(path, cachedMessages, indexedPlaceholders);
+                        var errorMessagesWithSpecials = MessageTranslator.TranslateMessagesWithPathPlaceholders(path, cachedMessages, indexedPlaceholders);
 
                         cache.AddMessageWithPathArgs(translationName, path, errorId, errorMessagesWithSpecials);
                     }

@@ -71,7 +71,7 @@ namespace Validot.Results
         public IReadOnlyDictionary<string, IReadOnlyList<string>> GetTranslatedMessageMap(string translationName)
         {
             return AnyErrors
-                ? _messagesService.GetErrorsMessages(_resultErrors, translationName)
+                ? _messagesService.GetMessages(_resultErrors, translationName)
                 : EmptyDictionary;
         }
 

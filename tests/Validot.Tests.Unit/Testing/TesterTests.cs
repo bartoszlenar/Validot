@@ -207,7 +207,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member2`, index 1) arg is missing: `arg222`");
+                testResult.Message.Should().Be("Expected error (for path `member2`, index 1) arg is missing: `arg222`");
             }
 
             [Fact]
@@ -293,7 +293,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member2`, index 1) arg (name `arg222`) type to be `Validot.Errors.Args.NumberArg<System.Int32>`, but found `Validot.Errors.Args.TextArg`");
+                testResult.Message.Should().Be("Expected error (for path `member2`, index 1) arg (name `arg222`) type to be `Validot.Errors.Args.NumberArg<System.Int32>`, but found `Validot.Errors.Args.TextArg`");
             }
 
             [Fact]
@@ -379,7 +379,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member2`, index 1) arg (name `arg222`) value to be `argValue222`, but found `argValue22x`");
+                testResult.Message.Should().Be("Expected error (for path `member2`, index 1) arg (name `arg222`) value to be `argValue222`, but found `argValue22x`");
             }
 
             [Fact]
@@ -410,7 +410,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member`, index 0) arg (name `arg`) double value to be `123.123456`, but found `123.123457`");
+                testResult.Message.Should().Be("Expected error (for path `member`, index 0) arg (name `arg`) double value to be `123.123456`, but found `123.123457`");
             }
 
             [Fact]
@@ -441,7 +441,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member`, index 0) arg (name `arg`) float value to be `123.1234`, but found `123.1235`");
+                testResult.Message.Should().Be("Expected error (for path `member`, index 0) arg (name `arg`) float value to be `123.1234`, but found `123.1235`");
             }
 
             [Fact]
@@ -528,7 +528,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member2`, index 1) args amount to be 2, but found 1");
+                testResult.Message.Should().Be("Expected error (for path `member2`, index 1) args amount to be 2, but found 1");
             }
 
             [Fact]
@@ -555,7 +555,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member1`, index 0) args amount to be 0, but found 1");
+                testResult.Message.Should().Be("Expected error (for path `member1`, index 0) args amount to be 0, but found 1");
             }
 
             [Fact]
@@ -586,7 +586,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member1`, index 0) args amount to be 1, but found 0");
+                testResult.Message.Should().Be("Expected error (for path `member1`, index 0) args amount to be 1, but found 0");
             }
 
             [Fact]
@@ -666,7 +666,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member2`, index 1) code (index 1) to be `code222`, but found `code22x`");
+                testResult.Message.Should().Be("Expected error (for path `member2`, index 1) code (index 1) to be `code222`, but found `code22x`");
             }
 
             [Fact]
@@ -744,7 +744,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member2`, index 1) codes amount to be 3, but found 1");
+                testResult.Message.Should().Be("Expected error (for path `member2`, index 1) codes amount to be 3, but found 1");
             }
 
             [Fact]
@@ -771,7 +771,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member1`, index 0) codes amount to be 0, but found 2");
+                testResult.Message.Should().Be("Expected error (for path `member1`, index 0) codes amount to be 0, but found 2");
             }
 
             [Fact]
@@ -802,7 +802,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member1`, index 0) codes amount to be 1, but found 0");
+                testResult.Message.Should().Be("Expected error (for path `member1`, index 0) codes amount to be 1, but found 0");
             }
 
             [Fact]
@@ -882,7 +882,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member2`, index 1) message (index 1) to be `error222`, but found `error22x`");
+                testResult.Message.Should().Be("Expected error (for path `member2`, index 1) message (index 1) to be `error222`, but found `error22x`");
             }
 
             [Fact]
@@ -960,7 +960,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member2`, index 1) messages amount to be 3, but found 1");
+                testResult.Message.Should().Be("Expected error (for path `member2`, index 1) messages amount to be 3, but found 1");
             }
 
             [Fact]
@@ -987,7 +987,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member1`, index 0) messages amount to be 0, but found 2");
+                testResult.Message.Should().Be("Expected error (for path `member1`, index 0) messages amount to be 0, but found 2");
             }
 
             [Fact]
@@ -1014,7 +1014,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error (for path `member1`, index 0) messages amount to be 1, but found 0");
+                testResult.Message.Should().Be("Expected error (for path `member1`, index 0) messages amount to be 1, but found 0");
             }
 
             [Fact]
@@ -1025,7 +1025,7 @@ namespace Validot.Tests.Unit.Testing
                     s => s.Rule(m => false));
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected result IsValid: True, but AnyErrors: True");
+                testResult.Message.Should().Be("Expected result IsValid: True, but AnyErrors: True");
             }
 
             [Fact]
@@ -1043,7 +1043,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected result IsValid: False, but AnyErrors: False");
+                testResult.Message.Should().Be("Expected result IsValid: False, but AnyErrors: False");
             }
 
             [Fact]
@@ -1074,7 +1074,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected error path is missing: `member2`");
+                testResult.Message.Should().Be("Expected error path is missing: `member2`");
             }
 
             [Fact]
@@ -1130,7 +1130,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected errors amount (for path `member3`): 2, but found 1");
+                testResult.Message.Should().Be("Expected errors amount (for path `member3`): 2, but found 1");
             }
 
             [Fact]
@@ -1160,7 +1160,7 @@ namespace Validot.Tests.Unit.Testing
                     });
 
                 testResult.Success.Should().BeFalse();
-                testResult.ErrorMessage.Should().Be("Expected amount of paths with errors: 3, but found: 2");
+                testResult.Message.Should().Be("Expected amount of paths with errors: 3, but found: 2");
             }
 
             [Fact]

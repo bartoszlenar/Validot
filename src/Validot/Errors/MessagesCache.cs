@@ -77,7 +77,7 @@ namespace Validot.Errors
             _messagesWithPathArgs[translationName][path].Add(errorId, messages);
         }
 
-        public int GetErrorsMessagesAmount(List<int> errorsIds)
+        public int GetMessageAmount(List<int> errorsIds)
         {
             var amount = 0;
 

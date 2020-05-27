@@ -157,14 +157,14 @@ namespace Validot.Tests.Unit.Results
                     ["path1"] = new List<int>() { 1 }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+                messagesService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
 
                 var validationResult = new ValidationResult(resultErrors, new Dictionary<int, IError>(), messagesService);
 
                 var resultErrorMessages = validationResult.GetTranslatedMessageMap(null);
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messagesService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messagesService.ReceivedWithAnyArgs(1).GetMessages(default);
 
                 resultErrorMessages.Should().BeSameAs(errorMessages);
             }
@@ -191,15 +191,15 @@ namespace Validot.Tests.Unit.Results
                     ["path1"] = new List<int>() { 1 }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
+                messagesService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
+                messagesService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
 
                 var validationResult = new ValidationResult(resultErrors, new Dictionary<int, IError>(), messagesService);
 
                 var resultErrorMessages = validationResult.GetTranslatedMessageMap("translation2");
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messagesService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
+                messagesService.ReceivedWithAnyArgs(1).GetMessages(default);
 
                 resultErrorMessages.Should().BeSameAs(errorMessages2);
             }
@@ -213,7 +213,7 @@ namespace Validot.Tests.Unit.Results
 
                 var resultErrorMessages = validationResult.GetTranslatedMessageMap(null);
 
-                messagesService.DidNotReceiveWithAnyArgs().GetErrorsMessages(default);
+                messagesService.DidNotReceiveWithAnyArgs().GetMessages(default);
 
                 resultErrorMessages.Should().NotBeNull();
                 resultErrorMessages.Should().BeEmpty();
@@ -771,7 +771,7 @@ namespace Validot.Tests.Unit.Results
                     [1] = new Error()
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+                messagesService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
 
                 var validationResult = new ValidationResult(resultErrors, errorsRegistry, messagesService);
 
@@ -782,8 +782,8 @@ namespace Validot.Tests.Unit.Results
                     "path2: message22"
                 });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messagesService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messagesService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             [Fact]
@@ -820,7 +820,7 @@ namespace Validot.Tests.Unit.Results
                     }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+                messagesService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
 
@@ -840,8 +840,8 @@ namespace Validot.Tests.Unit.Results
                         "path2: message22"
                     });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messagesService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messagesService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             [Fact]
@@ -871,8 +871,8 @@ namespace Validot.Tests.Unit.Results
                     [1] = new Error()
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
+                messagesService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
+                messagesService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
 
@@ -885,8 +885,8 @@ namespace Validot.Tests.Unit.Results
                         "path2: MESSAGE22"
                     });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messagesService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
+                messagesService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             [Fact]
@@ -929,8 +929,8 @@ namespace Validot.Tests.Unit.Results
                     }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
+                messagesService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
+                messagesService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
 
@@ -950,8 +950,8 @@ namespace Validot.Tests.Unit.Results
                         "path2: MESSAGE22"
                     });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messagesService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
+                messagesService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             [Fact]
@@ -974,7 +974,7 @@ namespace Validot.Tests.Unit.Results
                     }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+                messagesService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
 
@@ -986,8 +986,8 @@ namespace Validot.Tests.Unit.Results
                         "CODE2"
                     });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messagesService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messagesService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             [Fact]
@@ -1020,7 +1020,7 @@ namespace Validot.Tests.Unit.Results
                     }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+                messagesService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
 
@@ -1034,8 +1034,8 @@ namespace Validot.Tests.Unit.Results
                         "CODE4"
                     });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messagesService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messagesService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             private static void ShouldHaveMessagesOnly(string validationResult, IReadOnlyList<string> messages) => ShouldHaveCodesAndMessages(validationResult, null, messages);

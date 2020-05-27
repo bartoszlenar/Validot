@@ -245,11 +245,11 @@ namespace Validot.Tests.Unit.Errors
             }
         }
 
-        public class GetErrorsMessagesAmount
+        public class GetMessageAmount
         {
-            public static IEnumerable<object[]> Should_GetErrorsMessagesAmount_Data()
+            public static IEnumerable<object[]> Should_GetMessageAmount_Data()
             {
-                var errorsMessages = new Dictionary<int, string[]>
+                var errorMessages = new Dictionary<int, string[]>
                 {
                     [1] = new[]
                     {
@@ -291,7 +291,7 @@ namespace Validot.Tests.Unit.Errors
 
                 yield return new object[]
                 {
-                    errorsMessages,
+                    errorMessages,
                     new List<int>
                     {
                         1,
@@ -303,7 +303,7 @@ namespace Validot.Tests.Unit.Errors
 
                 yield return new object[]
                 {
-                    errorsMessages,
+                    errorMessages,
                     new List<int>
                     {
                         1
@@ -313,7 +313,7 @@ namespace Validot.Tests.Unit.Errors
 
                 yield return new object[]
                 {
-                    errorsMessages,
+                    errorMessages,
                     new List<int>
                     {
                         2,
@@ -324,7 +324,7 @@ namespace Validot.Tests.Unit.Errors
 
                 yield return new object[]
                 {
-                    errorsMessages,
+                    errorMessages,
                     new List<int>
                     {
                         1,
@@ -335,17 +335,17 @@ namespace Validot.Tests.Unit.Errors
             }
 
             [Theory]
-            [MemberData(nameof(Should_GetErrorsMessagesAmount_Data))]
-            public void Should_GetErrorsMessagesAmount(Dictionary<int, string[]> errorMessages, List<int> errorsIdsToCheck, int expectedErrorsAmount)
+            [MemberData(nameof(Should_GetMessageAmount_Data))]
+            public void Should_GetMessageAmount(Dictionary<int, string[]> messages, List<int> errorsIdsToCheck, int expectedErrorsAmount)
             {
                 var messagesCache = new MessagesCache();
 
-                foreach (KeyValuePair<int, string[]> pair in errorMessages)
+                foreach (KeyValuePair<int, string[]> pair in messages)
                 {
                     messagesCache.AddMessage("translation", pair.Key, pair.Value);
                 }
 
-                var amount = messagesCache.GetErrorsMessagesAmount(errorsIdsToCheck);
+                var amount = messagesCache.GetMessageAmount(errorsIdsToCheck);
 
                 amount.Should().Be(expectedErrorsAmount);
             }
@@ -372,7 +372,7 @@ namespace Validot.Tests.Unit.Errors
                     });
                 }
 
-                messagesCache.GetErrorsMessagesAmount(list);
+                messagesCache.GetMessageAmount(list);
 
                 list.Count.Should().Be(5);
 
@@ -390,7 +390,7 @@ namespace Validot.Tests.Unit.Errors
 
                 Action action = () =>
                 {
-                    messageCache.GetErrorsMessagesAmount(null);
+                    messageCache.GetMessageAmount(null);
                 };
 
                 action.Should().ThrowExactly<NullReferenceException>();

@@ -8,7 +8,7 @@ namespace Validot.Errors
 
     internal class MessageService : IMessageService
     {
-        private readonly MessagesCache _cache;
+        private readonly MessageCache _cache;
 
         private readonly MessageTranslator _translator;
 
@@ -19,7 +19,7 @@ namespace Validot.Errors
         {
             _translator = new MessageTranslator(translations);
 
-            _cache = BuildMessagesCache(_translator, errors, errorMap);
+            _cache = BuildMessageCache(_translator, errors, errorMap);
         }
 
         public IReadOnlyList<string> TranslationNames => _translator.TranslationNames;
@@ -92,7 +92,7 @@ namespace Validot.Errors
             targetIndex += source.Count;
         }
 
-        private MessagesCache BuildMessagesCache(MessageTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
+        private MessageCache BuildMessageCache(MessageTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
         {
             ThrowHelper.NullArgument(errors, nameof(errors));
             ThrowHelper.NullArgument(errorMap, nameof(errorMap));
@@ -100,7 +100,7 @@ namespace Validot.Errors
 
             var uniqueErrorsIds = errorMap.SelectMany(b => b.Value).Distinct().ToArray();
 
-            var cache = new MessagesCache();
+            var cache = new MessageCache();
 
             foreach (var translationName in TranslationNames)
             {

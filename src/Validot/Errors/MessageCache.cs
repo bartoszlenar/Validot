@@ -6,7 +6,7 @@ namespace Validot.Errors
 
     using Validot.Errors.Args;
 
-    internal class MessagesCache
+    internal class MessageCache
     {
         private readonly Dictionary<string, Dictionary<int, IReadOnlyList<string>>> _messages = new Dictionary<string, Dictionary<int, IReadOnlyList<string>>>();
 

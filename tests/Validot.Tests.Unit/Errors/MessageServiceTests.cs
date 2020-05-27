@@ -11,7 +11,7 @@ namespace Validot.Tests.Unit.Errors
 
     using Xunit;
 
-    public class MessagesServiceTests
+    public class MessageServiceTests
     {
         public static readonly Dictionary<string, IReadOnlyDictionary<string, string>> DefaultTranslations = new Dictionary<string, IReadOnlyDictionary<string, string>>()
         {
@@ -93,19 +93,19 @@ namespace Validot.Tests.Unit.Errors
         [Fact]
         public void Should_Initialize()
         {
-            _ = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+            _ = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
         }
 
         [Fact]
         public void Should_Initialize_WithEmptyTranslations()
         {
-            _ = new MessagesService(new Dictionary<string, IReadOnlyDictionary<string, string>>(), DefaultErrors, DefaultErrorMap);
+            _ = new MessageService(new Dictionary<string, IReadOnlyDictionary<string, string>>(), DefaultErrors, DefaultErrorMap);
         }
 
         [Fact]
         public void Should_ThrowException_When_Initialize_With_Translations_Null()
         {
-            Action action = () => new MessagesService(null, DefaultErrors, DefaultErrorMap);
+            Action action = () => new MessageService(null, DefaultErrors, DefaultErrorMap);
 
             action.Should().ThrowExactly<ArgumentNullException>();
         }
@@ -128,8 +128,8 @@ namespace Validot.Tests.Unit.Errors
                 }
             };
 
-            Action action1 = () => new MessagesService(translations1, DefaultErrors, DefaultErrorMap);
-            Action action2 = () => new MessagesService(translations2, DefaultErrors, DefaultErrorMap);
+            Action action1 = () => new MessageService(translations1, DefaultErrors, DefaultErrorMap);
+            Action action2 = () => new MessageService(translations2, DefaultErrors, DefaultErrorMap);
 
             action1.Should().ThrowExactly<ArgumentNullException>();
             action2.Should().ThrowExactly<ArgumentNullException>();
@@ -138,7 +138,7 @@ namespace Validot.Tests.Unit.Errors
         [Fact]
         public void Should_ThrowException_When_Initialize_With_Errors_Null()
         {
-            Action action = () => new MessagesService(DefaultTranslations, null, DefaultErrorMap);
+            Action action = () => new MessageService(DefaultTranslations, null, DefaultErrorMap);
 
             action.Should().ThrowExactly<ArgumentNullException>();
         }
@@ -208,11 +208,11 @@ namespace Validot.Tests.Unit.Errors
                 [1] = DefaultErrors[1]
             };
 
-            Action action0 = () => new MessagesService(DefaultTranslations, errors0, DefaultErrorMap);
-            Action action1 = () => new MessagesService(DefaultTranslations, errors1, DefaultErrorMap);
-            Action action2 = () => new MessagesService(DefaultTranslations, errors2, DefaultErrorMap);
-            Action action3 = () => new MessagesService(DefaultTranslations, errors3, DefaultErrorMap);
-            Action action4 = () => new MessagesService(DefaultTranslations, errors4, DefaultErrorMap);
+            Action action0 = () => new MessageService(DefaultTranslations, errors0, DefaultErrorMap);
+            Action action1 = () => new MessageService(DefaultTranslations, errors1, DefaultErrorMap);
+            Action action2 = () => new MessageService(DefaultTranslations, errors2, DefaultErrorMap);
+            Action action3 = () => new MessageService(DefaultTranslations, errors3, DefaultErrorMap);
+            Action action4 = () => new MessageService(DefaultTranslations, errors4, DefaultErrorMap);
 
             action0.Should().ThrowExactly<ArgumentNullException>();
             action1.Should().ThrowExactly<ArgumentNullException>();
@@ -224,7 +224,7 @@ namespace Validot.Tests.Unit.Errors
         [Fact]
         public void Should_ThrowException_When_Initialize_With_ErrorMap_Null()
         {
-            Action action = () => new MessagesService(DefaultTranslations, DefaultErrors, null);
+            Action action = () => new MessageService(DefaultTranslations, DefaultErrors, null);
 
             action.Should().ThrowExactly<ArgumentNullException>();
         }
@@ -245,7 +245,7 @@ namespace Validot.Tests.Unit.Errors
                 ["new.path.name"] = null
             };
 
-            Action action = () => new MessagesService(DefaultTranslations, DefaultErrors, errorMap);
+            Action action = () => new MessageService(DefaultTranslations, DefaultErrors, errorMap);
 
             action.Should().ThrowExactly<ArgumentNullException>();
         }
@@ -265,7 +265,7 @@ namespace Validot.Tests.Unit.Errors
                 }
             };
 
-            Action action = () => new MessagesService(DefaultTranslations, DefaultErrors, errorMap);
+            Action action = () => new MessageService(DefaultTranslations, DefaultErrors, errorMap);
 
             action.Should().ThrowExactly<KeyNotFoundException>();
         }
@@ -273,13 +273,13 @@ namespace Validot.Tests.Unit.Errors
         [Fact]
         public void Should_Load_TranslationNames()
         {
-            var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+            var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-            messagesService.TranslationNames.Should().NotBeNull();
-            messagesService.TranslationNames.Count.Should().Be(2);
+            messageService.TranslationNames.Should().NotBeNull();
+            messageService.TranslationNames.Count.Should().Be(2);
 
-            messagesService.TranslationNames.Should().Contain("translation1");
-            messagesService.TranslationNames.Should().Contain("translation2");
+            messageService.TranslationNames.Should().Contain("translation1");
+            messageService.TranslationNames.Should().Contain("translation2");
         }
 
         public class GetTranslation
@@ -287,9 +287,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_GetTranslation()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var translation1 = messagesService.GetTranslation("translation1");
+                var translation1 = messageService.GetTranslation("translation1");
 
                 translation1.Should().BeSameAs(DefaultTranslations["translation1"]);
 
@@ -298,7 +298,7 @@ namespace Validot.Tests.Unit.Errors
                 translation1["key21"].Should().Be("message21 {numberArg} {textArg}");
                 translation1["key22"].Should().Be("message22 {textArg|case=lower} {textArg|case=upper}");
 
-                var translation2 = messagesService.GetTranslation("translation2");
+                var translation2 = messageService.GetTranslation("translation2");
 
                 translation2.Should().BeSameAs(DefaultTranslations["translation2"]);
 
@@ -311,11 +311,11 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_InvalidTranslationName()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                Action action1 = () => messagesService.GetTranslation("translationX");
+                Action action1 = () => messageService.GetTranslation("translationX");
 
-                Action action2 = () => messagesService.GetTranslation("TRANSLATION1");
+                Action action2 = () => messageService.GetTranslation("TRANSLATION1");
 
                 action1.Should().ThrowExactly<KeyNotFoundException>();
                 action2.Should().ThrowExactly<KeyNotFoundException>();
@@ -324,22 +324,22 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullTranslationName()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                Action action = () => messagesService.GetTranslation(null);
+                Action action = () => messageService.GetTranslation(null);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
         }
 
-        public class GetErrorsMessages
+        public class GetMessages
         {
             [Fact]
             public void Should_ThrowException_When_Errors()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                Action action = () => messagesService.GetErrorsMessages(null);
+                Action action = () => messageService.GetMessages(null);
 
                 action.Should().ThrowExactly<NullReferenceException>();
             }
@@ -347,9 +347,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_Errors_WithNullErrorsIds()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                Action action = () => messagesService.GetErrorsMessages(
+                Action action = () => messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["name"] = new List<int>()
@@ -369,9 +369,9 @@ namespace Validot.Tests.Unit.Errors
             [InlineData("translation2")]
             public void Should_Get_EmptyDictionary_When_PathsWithoutMessages(string translationName)
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["codes.only"] = new List<int>()
@@ -390,9 +390,9 @@ namespace Validot.Tests.Unit.Errors
             [InlineData("translation2")]
             public void Should_Get_EmptyDictionary_When_ErrorsWithoutMessages(string translationName)
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["codes.mix"] = new List<int>()
@@ -411,9 +411,9 @@ namespace Validot.Tests.Unit.Errors
             [InlineData("translation2")]
             public void Should_Get_EmptyDictionary_When_OutputWithoutMessages(string translationName)
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["codes.only"] = new List<int>()
@@ -433,9 +433,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_Get_From_SinglePath_When_SingleError()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["path.name"] = new List<int>()
@@ -456,9 +456,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_Get_From_SinglePath_When_ManyErrors()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["new.path.name"] = new List<int>()
@@ -482,9 +482,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_Get_From_SinglePathWithManyErrors_But_SingleError()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["new.path.name"] = new List<int>()
@@ -505,9 +505,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_Get_From_ManyPaths()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["name"] = new List<int>()
@@ -549,9 +549,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_Get_From_ManyPaths_SkippingPathsWithNoMessages()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["name"] = new List<int>()
@@ -597,9 +597,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_Get_From_ManyPaths_SkippingErrorsWithNoMessages()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["name"] = new List<int>()
@@ -658,9 +658,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_Get_From_ManyPaths_And_DifferentTranslations()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var result1 = messagesService.GetErrorsMessages(
+                var result1 = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["name"] = new List<int>()
@@ -686,7 +686,7 @@ namespace Validot.Tests.Unit.Errors
                 result1["new.path.name"].ElementAt(0).Should().Be("message21 123 textArgValue");
                 result1["new.path.name"].ElementAt(1).Should().Be("message22 textargvalue TEXTARGVALUE");
 
-                var result2 = messagesService.GetErrorsMessages(
+                var result2 = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["name"] = new List<int>()
@@ -729,9 +729,9 @@ namespace Validot.Tests.Unit.Errors
                     ["translation2"] = DefaultTranslations["translation2"]
                 };
 
-                var messagesService = new MessagesService(translations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(translations, DefaultErrors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(new Dictionary<string, List<int>>()
+                var result = messageService.GetMessages(new Dictionary<string, List<int>>()
                 {
                     ["path.name"] = new List<int>()
                     {
@@ -765,9 +765,9 @@ namespace Validot.Tests.Unit.Errors
                     [2] = DefaultErrors[2]
                 };
 
-                var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, errors, DefaultErrorMap);
 
-                var result1 = messagesService.GetErrorsMessages(
+                var result1 = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["new.path.name"] = new List<int>()
@@ -784,7 +784,7 @@ namespace Validot.Tests.Unit.Errors
                 result1["new.path.name"].ElementAt(0).Should().Be("customMessage");
                 result1["new.path.name"].ElementAt(1).Should().Be("message12");
 
-                var result2 = messagesService.GetErrorsMessages(
+                var result2 = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["new.path.name"] = new List<int>()
@@ -820,9 +820,9 @@ namespace Validot.Tests.Unit.Errors
                     [2] = DefaultErrors[2]
                 };
 
-                var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, errors, DefaultErrorMap);
 
-                var result1 = messagesService.GetErrorsMessages(
+                var result1 = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["new.path.name"] = new List<int>()
@@ -839,7 +839,7 @@ namespace Validot.Tests.Unit.Errors
                 result1["new.path.name"].ElementAt(0).Should().Be("translation message12");
                 result1["new.path.name"].ElementAt(1).Should().Be("message12");
 
-                var result2 = messagesService.GetErrorsMessages(
+                var result2 = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["new.path.name"] = new List<int>()
@@ -875,9 +875,9 @@ namespace Validot.Tests.Unit.Errors
                     [2] = DefaultErrors[2]
                 };
 
-                var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, errors, DefaultErrorMap);
 
-                var result1 = messagesService.GetErrorsMessages(
+                var result1 = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["new.path.name"] = new List<int>()
@@ -921,9 +921,9 @@ namespace Validot.Tests.Unit.Errors
                     [2] = DefaultErrors[2]
                 };
 
-                var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, errors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["name"] = new List<int>()
@@ -984,9 +984,9 @@ namespace Validot.Tests.Unit.Errors
                     [2] = DefaultErrors[2]
                 };
 
-                var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, errors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["name"] = new List<int>()
@@ -1033,9 +1033,9 @@ namespace Validot.Tests.Unit.Errors
                     },
                 };
 
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, errorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, errorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["#1"] = new List<int>()
@@ -1088,9 +1088,9 @@ namespace Validot.Tests.Unit.Errors
                     },
                 };
 
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, errorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, errorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["#1"] = new List<int>()
@@ -1186,9 +1186,9 @@ namespace Validot.Tests.Unit.Errors
                     },
                 };
 
-                var messagesService = new MessagesService(DefaultTranslations, errors, errorMap);
+                var messageService = new MessageService(DefaultTranslations, errors, errorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["#1"] = new List<int>()
@@ -1248,9 +1248,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_Get_With_NotRegisteredPaths()
             {
-                var messagesService = new MessagesService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, DefaultErrors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["some.not.registered.path"] = new List<int>()
@@ -1306,9 +1306,9 @@ namespace Validot.Tests.Unit.Errors
                     [2] = DefaultErrors[2]
                 };
 
-                var messagesService = new MessagesService(DefaultTranslations, errors, DefaultErrorMap);
+                var messageService = new MessageService(DefaultTranslations, errors, DefaultErrorMap);
 
-                var result = messagesService.GetErrorsMessages(
+                var result = messageService.GetMessages(
                     new Dictionary<string, List<int>>()
                     {
                         ["some.not.registered.path"] = new List<int>()

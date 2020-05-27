@@ -36,7 +36,7 @@ namespace Validot.Errors.Translator
 
         public IReadOnlyDictionary<string, IArg[]> TranslationArgs { get; }
 
-        public static IReadOnlyList<string> TranslateErrorMessagesWithPathPlaceholders(string path, IReadOnlyList<string> errorMessages, IReadOnlyDictionary<int, IReadOnlyList<ArgPlaceholder>> indexedPathsPlaceholders)
+        public static IReadOnlyList<string> TranslateMessagesWithPathPlaceholders(string path, IReadOnlyList<string> errorMessages, IReadOnlyDictionary<int, IReadOnlyList<ArgPlaceholder>> indexedPathsPlaceholders)
         {
             var pathArgs = CreatePathArgsForPath(path);
 
@@ -57,7 +57,7 @@ namespace Validot.Errors.Translator
             return result;
         }
 
-        public ErrorTranslationResult TranslateErrorMessages(string translationName, IError error)
+        public ErrorTranslationResult TranslateMessages(string translationName, IError error)
         {
             ThrowHelper.NullArgument(error, nameof(error));
             ThrowHelper.NullInCollection(error.Messages, $"{nameof(error)}.{nameof(error.Messages)}");

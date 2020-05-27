@@ -4,30 +4,30 @@ namespace Validot.Testing
     {
         private static readonly TestResult SuccessResult = new TestResult(null);
 
-        private TestResult(string errorMessage)
+        private TestResult(string message)
         {
-            ErrorMessage = errorMessage;
+            Message = message;
         }
 
-        public bool Success => ErrorMessage == null;
+        public bool Success => Message == null;
 
-        public string ErrorMessage { get; }
+        public string Message { get; }
 
         public static TestResult Passed()
         {
             return SuccessResult;
         }
 
-        public static TestResult Failed(string errorMessage)
+        public static TestResult Failed(string message)
         {
-            return new TestResult(errorMessage);
+            return new TestResult(message);
         }
 
         public void ThrowExceptionIfFailed()
         {
             if (!Success)
             {
-                throw new TestFailedException(ErrorMessage);
+                throw new TestFailedException(Message);
             }
         }
     }

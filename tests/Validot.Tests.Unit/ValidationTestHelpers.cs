@@ -12,13 +12,13 @@ namespace Validot.Tests.Unit
 
     public static class ValidationTestHelpers
     {
-        public static void ShouldHaveErrorMap<T>(this IValidator<T> validator, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations)
+        public static void ShouldHaveErrorMap<T>(this IValidator<T> validator, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> outputExpectations)
         {
             validator.ErrorMap.Should().NotBeNull();
 
-            var rawErrors = validator.ErrorMap.Details.GetErrorOutput();
+            var errorOutput = ((ValidationResult)validator.ErrorMap).GetErrorOutput();
 
-            rawErrors.ShouldMatchExpectations(rawErrorsExpectations);
+            errorOutput.ShouldMatchExpectations(outputExpectations);
         }
 
         public static void ShouldValidateAndHaveResult<T>(this IValidator<T> validator, T model, bool failFast, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> rawErrorsExpectations, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
@@ -34,9 +34,9 @@ namespace Validot.Tests.Unit
             {
                 action.Should().NotThrow();
 
-                var rawErrors = result.Details.GetErrorOutput();
+                var errorOutput = ((ValidationResult)result).GetErrorOutput();
 
-                rawErrors.ShouldMatchExpectations(rawErrorsExpectations);
+                errorOutput.ShouldMatchExpectations(rawErrorsExpectations);
             }
             else
             {

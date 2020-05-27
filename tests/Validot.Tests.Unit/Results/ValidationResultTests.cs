@@ -18,29 +18,13 @@ namespace Validot.Tests.Unit.Results
         [Fact]
         public void Should_Initialize()
         {
-            _ = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
-        }
-
-        [Fact]
-        public void Details_Should_NotBeNull()
-        {
-            var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
-
-            validationResult.Details.Should().NotBeNull();
-        }
-
-        [Fact]
-        public void Details_Should_BeSelf()
-        {
-            var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
-
-            validationResult.Details.Should().BeSameAs(validationResult);
+            _ = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessageService>());
         }
 
         [Fact]
         public void AnyErrors_Should_BeFalse_When_NoErrors()
         {
-            var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
+            var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessageService>());
 
             validationResult.AnyErrors.Should().BeFalse();
         }
@@ -51,7 +35,7 @@ namespace Validot.Tests.Unit.Results
             var resultErrors = new Dictionary<string, List<int>>();
             resultErrors.Add("path", new List<int>() { 1 });
 
-            var validationResult = new ValidationResult(resultErrors, new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
+            var validationResult = new ValidationResult(resultErrors, new Dictionary<int, IError>(), Substitute.For<IMessageService>());
 
             validationResult.AnyErrors.Should().BeTrue();
         }
@@ -62,14 +46,12 @@ namespace Validot.Tests.Unit.Results
             ValidationResult.NoErrorsResult.AnyErrors.Should().BeFalse();
             ValidationResult.NoErrorsResult.Paths.Should().BeEmpty();
             ValidationResult.NoErrorsResult.TranslationNames.Should().BeEmpty();
-            ValidationResult.NoErrorsResult.GetErrorCodes().Should().BeEmpty();
-            ValidationResult.NoErrorsResult.GetErrorCodeList().Should().BeEmpty();
-            ValidationResult.NoErrorsResult.GetErrorMessages().Should().BeEmpty();
+            ValidationResult.NoErrorsResult.Codes.Should().BeEmpty();
+            ValidationResult.NoErrorsResult.CodeMap.Should().BeEmpty();
+            ValidationResult.NoErrorsResult.MessageMap.Should().BeEmpty();
             ValidationResult.NoErrorsResult.GetErrorOutput().Should().BeEmpty();
-            ValidationResult.NoErrorsResult.GetTranslation(null).Should().BeEmpty();
-            ValidationResult.NoErrorsResult.GetTranslation("English").Should().BeEmpty();
-            ValidationResult.NoErrorsResult.GetErrorMessages().Should().BeEmpty();
-            ValidationResult.NoErrorsResult.GetErrorMessages("English").Should().BeEmpty();
+            ValidationResult.NoErrorsResult.GetTranslatedMessageMap(null).Should().BeEmpty();
+            ValidationResult.NoErrorsResult.GetTranslatedMessageMap("English").Should().BeEmpty();
         }
 
         public static IEnumerable<object[]> Paths_Should_ReturnAllPaths_Data()
@@ -105,7 +87,7 @@ namespace Validot.Tests.Unit.Results
         [MemberData(nameof(Paths_Should_ReturnAllPaths_Data))]
         public void Paths_Should_ReturnAllPaths(Dictionary<string, List<int>> resultsErrors, IReadOnlyList<string> expectedPaths)
         {
-            var validationResult = new ValidationResult(resultsErrors, new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
+            var validationResult = new ValidationResult(resultsErrors, new Dictionary<int, IError>(), Substitute.For<IMessageService>());
 
             validationResult.Paths.Should().NotBeNull();
             validationResult.Paths.Should().HaveCount(expectedPaths.Count);
@@ -121,7 +103,7 @@ namespace Validot.Tests.Unit.Results
             [Fact]
             public void Should_Return_TranslationNames_FromMessageService()
             {
-                var messagesService = Substitute.For<IMessagesService>();
+                var messageService = Substitute.For<IMessageService>();
 
                 var translationNames = new[]
                 {
@@ -129,9 +111,9 @@ namespace Validot.Tests.Unit.Results
                     "translation2"
                 };
 
-                messagesService.TranslationNames.Returns(translationNames);
+                messageService.TranslationNames.Returns(translationNames);
 
-                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), messagesService);
+                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), messageService);
 
                 validationResult.TranslationNames.Should().BeSameAs(translationNames);
             }
@@ -139,9 +121,9 @@ namespace Validot.Tests.Unit.Results
             [Fact]
             public void Should_Return_EmptyTranslationNames_When_NullTranslationName_InMessageService()
             {
-                var messagesService = Substitute.For<IMessagesService>();
+                var messageService = Substitute.For<IMessageService>();
 
-                messagesService.TranslationNames.Returns(null as IReadOnlyList<string>);
+                messageService.TranslationNames.Returns(null as IReadOnlyList<string>);
 
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
 
@@ -157,12 +139,12 @@ namespace Validot.Tests.Unit.Results
             }
         }
 
-        public class GetErrorMessages
+        public class GetTranslatedMessageMap
         {
             [Fact]
-            public void Should_Return_ErrorMessages_FromMessageService_WithDefaultTranslation()
+            public void Should_Return_Messages_FromMessageService_WithDefaultTranslation_WhenNullTranslationName()
             {
-                var messagesService = Substitute.For<IMessagesService>();
+                var messageService = Substitute.For<IMessageService>();
 
                 var errorMessages = new Dictionary<string, IReadOnlyList<string>>
                 {
@@ -175,22 +157,22 @@ namespace Validot.Tests.Unit.Results
                     ["path1"] = new List<int>() { 1 }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+                messageService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
 
-                var validationResult = new ValidationResult(resultErrors, new Dictionary<int, IError>(), messagesService);
+                var validationResult = new ValidationResult(resultErrors, new Dictionary<int, IError>(), messageService);
 
-                var resultErrorMessages = validationResult.GetErrorMessages();
+                var resultErrorMessages = validationResult.GetTranslatedMessageMap(null);
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messageService.ReceivedWithAnyArgs(1).GetMessages(default);
 
                 resultErrorMessages.Should().BeSameAs(errorMessages);
             }
 
             [Fact]
-            public void Should_Return_ErrorMessages_FromMessageService_WithSpecifiedTranslation()
+            public void Should_Return_Messages_FromMessageService_WithSpecifiedTranslation()
             {
-                var messagesService = Substitute.For<IMessagesService>();
+                var messageService = Substitute.For<IMessageService>();
 
                 var errorMessages1 = new Dictionary<string, IReadOnlyList<string>>
                 {
@@ -209,50 +191,48 @@ namespace Validot.Tests.Unit.Results
                     ["path1"] = new List<int>() { 1 }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
+                messageService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
+                messageService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
 
-                var validationResult = new ValidationResult(resultErrors, new Dictionary<int, IError>(), messagesService);
+                var validationResult = new ValidationResult(resultErrors, new Dictionary<int, IError>(), messageService);
 
-                var resultErrorMessages = validationResult.GetErrorMessages("translation2");
+                var resultErrorMessages = validationResult.GetTranslatedMessageMap("translation2");
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
+                messageService.ReceivedWithAnyArgs(1).GetMessages(default);
 
                 resultErrorMessages.Should().BeSameAs(errorMessages2);
             }
 
             [Fact]
-            public void Should_Return_EmptyErrorMessages_When_Valid()
+            public void Should_Return_EmptyMessageMap_When_Valid()
             {
-                var messagesService = Substitute.For<IMessagesService>();
+                var messageService = Substitute.For<IMessageService>();
 
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
 
-                var resultErrorMessages = validationResult.GetErrorMessages();
+                var resultErrorMessages = validationResult.GetTranslatedMessageMap(null);
 
-                messagesService.DidNotReceiveWithAnyArgs().GetErrorsMessages(default);
+                messageService.DidNotReceiveWithAnyArgs().GetMessages(default);
 
                 resultErrorMessages.Should().NotBeNull();
                 resultErrorMessages.Should().BeEmpty();
             }
         }
 
-        public class GetErrorCodes
+        public class CodeMap
         {
             [Fact]
-            public void Should_Return_EmptyErrorCodes_When_Valid()
+            public void Should_Return_EmptyCodeMap_When_Valid()
             {
                 var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
 
-                var resultErrorCodes = validationResult.GetErrorCodes();
-
-                resultErrorCodes.Should().NotBeNull();
-                resultErrorCodes.Should().BeEmpty();
+                validationResult.CodeMap.Should().NotBeNull();
+                validationResult.CodeMap.Should().BeEmpty();
             }
 
             [Fact]
-            public void Should_Return_AllErrorCodes()
+            public void Should_Return_AllCodes()
             {
                 var resultsErrors = new Dictionary<string, List<int>>()
                 {
@@ -282,32 +262,30 @@ namespace Validot.Tests.Unit.Results
                     },
                 };
 
-                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessageService>());
 
-                var errorCodes = validationResult.GetErrorCodes();
+                validationResult.CodeMap.Should().NotBeNull();
 
-                errorCodes.Should().NotBeNull();
+                validationResult.CodeMap.Should().HaveCount(4);
 
-                errorCodes.Should().HaveCount(4);
+                validationResult.CodeMap.Keys.Should().Contain("");
+                validationResult.CodeMap[""].Should().HaveCount(1);
+                validationResult.CodeMap[""].Should().Contain("Message1");
 
-                errorCodes.Keys.Should().Contain("");
-                errorCodes[""].Should().HaveCount(1);
-                errorCodes[""].Should().Contain("Message1");
+                validationResult.CodeMap.Keys.Should().Contain("test1");
+                validationResult.CodeMap["test1"].Should().HaveCount(3);
+                validationResult.CodeMap["test1"].Should().Contain("Message1", "Message2", "Message3");
 
-                errorCodes.Keys.Should().Contain("test1");
-                errorCodes["test1"].Should().HaveCount(3);
-                errorCodes["test1"].Should().Contain("Message1", "Message2", "Message3");
+                validationResult.CodeMap.Keys.Should().Contain("test2");
+                validationResult.CodeMap["test2"].Should().HaveCount(3);
+                validationResult.CodeMap["test2"].Should().Contain("Message2", "Message41", "Message42");
 
-                errorCodes.Keys.Should().Contain("test2");
-                errorCodes["test2"].Should().HaveCount(3);
-                errorCodes["test2"].Should().Contain("Message2", "Message41", "Message42");
-
-                errorCodes.Keys.Should().Contain("test3");
-                errorCodes["test3"].Should().HaveCount(1);
-                errorCodes["test3"].Should().Contain("Message3");
+                validationResult.CodeMap.Keys.Should().Contain("test3");
+                validationResult.CodeMap["test3"].Should().HaveCount(1);
+                validationResult.CodeMap["test3"].Should().Contain("Message3");
             }
 
-            public static IEnumerable<object[]> Should_Return_AllErrorCodes_MoreExamples_Data()
+            public static IEnumerable<object[]> Should_Return_AllCodes_MoreExamples_Data()
             {
                 var errorRegistry = new Dictionary<int, IError>()
                 {
@@ -409,30 +387,28 @@ namespace Validot.Tests.Unit.Results
             }
 
             [Theory]
-            [MemberData(nameof(Should_Return_AllErrorCodes_MoreExamples_Data))]
-            public void Should_Return_AllErrorCodes_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, Dictionary<string, IReadOnlyList<string>> expectedCodes)
+            [MemberData(nameof(Should_Return_AllCodes_MoreExamples_Data))]
+            public void Should_Return_AllCodes_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, Dictionary<string, IReadOnlyList<string>> expectedCodes)
             {
-                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessageService>());
 
-                var errorCodes = validationResult.GetErrorCodes();
+                validationResult.CodeMap.Should().NotBeNull();
 
-                errorCodes.Should().NotBeNull();
-
-                errorCodes.Should().HaveCount(expectedCodes.Count);
+                validationResult.CodeMap.Should().HaveCount(expectedCodes.Count);
 
                 foreach (var pair in expectedCodes)
                 {
-                    errorCodes.Keys.Should().Contain(pair.Key);
-                    errorCodes[pair.Key].Should().HaveCount(pair.Value.Count);
-                    errorCodes[pair.Key].Should().Contain(pair.Value);
+                    validationResult.CodeMap.Keys.Should().Contain(pair.Key);
+                    validationResult.CodeMap[pair.Key].Should().HaveCount(pair.Value.Count);
+                    validationResult.CodeMap[pair.Key].Should().Contain(pair.Value);
                 }
             }
         }
 
-        public class GetErrorCodeList
+        public class Codes
         {
             [Fact]
-            public void Should_ReturnAllErrorCodesFromErrors()
+            public void Should_ReturnAllCodesFromErrors_WithoutDuplicates()
             {
                 var resultsErrors = new Dictionary<string, List<int>>()
                 {
@@ -460,22 +436,20 @@ namespace Validot.Tests.Unit.Results
                     },
                 };
 
-                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessageService>());
 
-                var errorCodes = validationResult.GetErrorCodeList();
+                validationResult.Codes.Should().NotBeNull();
 
-                errorCodes.Should().NotBeNull();
+                validationResult.Codes.Should().HaveCount(5);
 
-                errorCodes.Should().HaveCount(5);
-
-                errorCodes.Should().Contain("CODE1");
-                errorCodes.Should().Contain("CODE2");
-                errorCodes.Should().Contain("CODE3");
-                errorCodes.Should().Contain("CODE41");
-                errorCodes.Should().Contain("CODE42");
+                validationResult.Codes.Should().Contain("CODE1");
+                validationResult.Codes.Should().Contain("CODE2");
+                validationResult.Codes.Should().Contain("CODE3");
+                validationResult.Codes.Should().Contain("CODE41");
+                validationResult.Codes.Should().Contain("CODE42");
             }
 
-            public static IEnumerable<object[]> Should_ReturnAllErrorCodesFromErrors_MoreExamples_Data()
+            public static IEnumerable<object[]> Should_ReturnAllCodesFromErrors_WithoutDuplicates_MoreExamples_Data()
             {
                 var errorRegistry = new Dictionary<int, IError>()
                 {
@@ -581,29 +555,25 @@ namespace Validot.Tests.Unit.Results
             }
 
             [Theory]
-            [MemberData(nameof(Should_ReturnAllErrorCodesFromErrors_MoreExamples_Data))]
-            public void Should_ReturnAllErrorCodesFromErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, IReadOnlyList<string> expectedCodes)
+            [MemberData(nameof(Should_ReturnAllCodesFromErrors_WithoutDuplicates_MoreExamples_Data))]
+            public void Should_ReturnAllCodesFromErrors_WithoutDuplicates_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, IReadOnlyList<string> expectedCodes)
             {
-                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessageService>());
 
-                var errorCodes = validationResult.GetErrorCodeList();
+                validationResult.Codes.Should().NotBeNull();
 
-                errorCodes.Should().NotBeNull();
-
-                errorCodes.Should().HaveCount(expectedCodes.Count);
-                errorCodes.Should().Contain(expectedCodes);
-                expectedCodes.Should().Contain(errorCodes);
+                validationResult.Codes.Should().HaveCount(expectedCodes.Count);
+                validationResult.Codes.Should().Contain(expectedCodes);
+                expectedCodes.Should().Contain(validationResult.Codes);
             }
 
             [Fact]
             public void Should_ReturnEmptyList_When_Valid()
             {
-                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessageService>());
 
-                var errorCodes = validationResult.GetErrorCodes();
-
-                errorCodes.Should().NotBeNull();
-                errorCodes.Should().BeEmpty();
+                validationResult.Codes.Should().NotBeNull();
+                validationResult.Codes.Should().BeEmpty();
             }
         }
 
@@ -626,7 +596,7 @@ namespace Validot.Tests.Unit.Results
                     [4] = new Error(),
                 };
 
-                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessageService>());
 
                 var rawErrors = validationResult.GetErrorOutput();
 
@@ -734,9 +704,9 @@ namespace Validot.Tests.Unit.Results
 
             [Theory]
             [MemberData(nameof(Should_ReturnErrorOutput_MoreExamples_Data))]
-            public void Should_ReturnRawErrors_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, IReadOnlyDictionary<string, IReadOnlyList<IError>> expectedErrors)
+            public void Should_ReturnErrorOutput_MoreExamples(Dictionary<string, List<int>> resultsErrors, Dictionary<int, IError> errorRegistry, IReadOnlyDictionary<string, IReadOnlyList<IError>> expectedErrors)
             {
-                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(resultsErrors, errorRegistry, Substitute.For<IMessageService>());
 
                 var rawErrors = validationResult.GetErrorOutput();
 
@@ -759,48 +729,12 @@ namespace Validot.Tests.Unit.Results
             [Fact]
             public void Should_ReturnEmptyDictionary_When_Valid()
             {
-                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessagesService>());
+                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), Substitute.For<IMessageService>());
 
                 var rawErrors = validationResult.GetErrorOutput();
 
                 rawErrors.Should().NotBeNull();
                 rawErrors.Should().BeEmpty();
-            }
-        }
-
-        public class GetTranslation
-        {
-            [Fact]
-            public void Should_Return_Translation_FromMessageService()
-            {
-                var messagesService = Substitute.For<IMessagesService>();
-
-                var translation = new Dictionary<string, string>()
-                {
-                    ["key1"] = "value1",
-                    ["key2"] = "value2",
-                };
-
-                messagesService.GetTranslation(Arg.Is("translationName1")).Returns(translation);
-
-                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), messagesService);
-
-                var resultTranslation = validationResult.GetTranslation("translationName1");
-
-                messagesService.Received(1).GetTranslation(Arg.Is("translationName1"));
-                messagesService.ReceivedWithAnyArgs(1).GetTranslation(default);
-
-                resultTranslation.Should().BeSameAs(translation);
-            }
-
-            [Fact]
-            public void Should_Return_EmptyTranslation_When_NullMessageService()
-            {
-                var validationResult = new ValidationResult(new Dictionary<string, List<int>>(), new Dictionary<int, IError>(), null);
-
-                var resultTranslation = validationResult.GetTranslation("translationName1");
-
-                resultTranslation.Should().BeEmpty();
             }
         }
 
@@ -817,9 +751,9 @@ namespace Validot.Tests.Unit.Results
             }
 
             [Fact]
-            public void Should_Return_ErrorMessages_FromMessageService_WithDefaultTranslation()
+            public void Should_Return_Messages_FromMessageService_WithDefaultTranslation()
             {
-                var messagesService = Substitute.For<IMessagesService>();
+                var messageService = Substitute.For<IMessageService>();
 
                 var errorMessages = new Dictionary<string, IReadOnlyList<string>>
                 {
@@ -837,9 +771,9 @@ namespace Validot.Tests.Unit.Results
                     [1] = new Error()
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+                messageService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
 
-                var validationResult = new ValidationResult(resultErrors, errorsRegistry, messagesService);
+                var validationResult = new ValidationResult(resultErrors, errorsRegistry, messageService);
 
                 ShouldHaveMessagesOnly(validationResult.ToString(), new[]
                 {
@@ -848,14 +782,14 @@ namespace Validot.Tests.Unit.Results
                     "path2: message22"
                 });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messageService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             [Fact]
-            public void Should_Return_ErrorMessages_FromMessageService_WithDefaultTranslation_And_Codes()
+            public void Should_Return_Messages_FromMessageService_WithDefaultTranslation_And_Codes()
             {
-                var messagesService = Substitute.For<IMessagesService>();
+                var messageService = Substitute.For<IMessageService>();
 
                 var errorMessages = new Dictionary<string, IReadOnlyList<string>>
                 {
@@ -886,9 +820,9 @@ namespace Validot.Tests.Unit.Results
                     }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+                messageService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
 
-                var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
+                var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
                 ShouldHaveCodesAndMessages(
                     validationResult.ToString(),
@@ -906,14 +840,14 @@ namespace Validot.Tests.Unit.Results
                         "path2: message22"
                     });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messageService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             [Fact]
-            public void Should_Return_ErrorMessages_FromMessageService_WithSpecifiedTranslation()
+            public void Should_Return_Messages_FromMessageService_WithSpecifiedTranslation()
             {
-                var messagesService = Substitute.For<IMessagesService>();
+                var messageService = Substitute.For<IMessageService>();
 
                 var errorMessages1 = new Dictionary<string, IReadOnlyList<string>>
                 {
@@ -937,10 +871,10 @@ namespace Validot.Tests.Unit.Results
                     [1] = new Error()
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
+                messageService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
+                messageService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
 
-                var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
+                var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
                 ShouldHaveMessagesOnly(
                     validationResult.ToString("translation2"),
@@ -951,14 +885,14 @@ namespace Validot.Tests.Unit.Results
                         "path2: MESSAGE22"
                     });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
+                messageService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             [Fact]
-            public void Should_Return_ErrorMessages_FromMessageService_WithSpecifiedTranslation_And_Codes()
+            public void Should_Return_Messages_FromMessageService_WithSpecifiedTranslation_And_Codes()
             {
-                var messagesService = Substitute.For<IMessagesService>();
+                var messageService = Substitute.For<IMessageService>();
 
                 var errorMessages1 = new Dictionary<string, IReadOnlyList<string>>
                 {
@@ -995,10 +929,10 @@ namespace Validot.Tests.Unit.Results
                     }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
+                messageService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation1")).Returns(errorMessages1);
+                messageService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2")).Returns(errorMessages2);
 
-                var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
+                var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
                 ShouldHaveCodesAndMessages(
                     validationResult.ToString("translation2"),
@@ -1016,14 +950,14 @@ namespace Validot.Tests.Unit.Results
                         "path2: MESSAGE22"
                     });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
+                messageService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             [Fact]
             public void Should_Return_Codes()
             {
-                var messagesService = Substitute.For<IMessagesService>();
+                var messageService = Substitute.For<IMessageService>();
 
                 var errorMessages = new Dictionary<string, IReadOnlyList<string>>();
 
@@ -1040,9 +974,9 @@ namespace Validot.Tests.Unit.Results
                     }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+                messageService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
 
-                var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
+                var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
                 ShouldHaveCodesOnly(
                     validationResult.ToString(),
@@ -1052,14 +986,14 @@ namespace Validot.Tests.Unit.Results
                         "CODE2"
                     });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messageService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             [Fact]
-            public void Should_Return_Codes_Distinct()
+            public void Should_Return_Codes_WithoutDuplicates()
             {
-                var messagesService = Substitute.For<IMessagesService>();
+                var messageService = Substitute.For<IMessageService>();
 
                 var errorMessages = new Dictionary<string, IReadOnlyList<string>>();
 
@@ -1086,9 +1020,9 @@ namespace Validot.Tests.Unit.Results
                     }
                 };
 
-                messagesService.GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
+                messageService.GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string)).Returns(errorMessages);
 
-                var validationResult = new ValidationResult(resultErrors, errorRegistry, messagesService);
+                var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
                 ShouldHaveCodesOnly(
                     validationResult.ToString(),
@@ -1100,8 +1034,8 @@ namespace Validot.Tests.Unit.Results
                         "CODE4"
                     });
 
-                messagesService.Received(1).GetErrorsMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
-                messagesService.ReceivedWithAnyArgs(1).GetErrorsMessages(default);
+                messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
+                messageService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
             private static void ShouldHaveMessagesOnly(string validationResult, IReadOnlyList<string> messages) => ShouldHaveCodesAndMessages(validationResult, null, messages);

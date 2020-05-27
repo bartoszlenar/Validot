@@ -6,6 +6,7 @@ namespace Validot.Testing
 
     using Validot.Errors;
     using Validot.Errors.Args;
+    using Validot.Results;
 
     public static class Tester
     {
@@ -13,7 +14,7 @@ namespace Validot.Testing
         {
             var validator = Validator.Factory.Create(specification);
 
-            var result = validator.Validate(value);
+            var result = (ValidationResult)validator.Validate(value);
 
             var shouldBeValid = expectedErrors == null;
 
@@ -27,7 +28,7 @@ namespace Validot.Testing
                 return TestResult.Failed($"Expected result IsValid: {shouldBeValid}, but AnyErrors: {result.AnyErrors}");
             }
 
-            var errors = result.Details.GetErrorOutput();
+            var errors = result.GetErrorOutput();
 
             if (expectedErrors == null)
             {

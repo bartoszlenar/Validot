@@ -14,7 +14,7 @@ namespace Validot.Tests.Unit.Errors.Translator
 
     public class MessageTranslatorTests
     {
-        public class TranslateErrorMessagesWithPathPlaceholders
+        public class TranslateMessagesWithPathPlaceholders
         {
             private static readonly ArgPlaceholder ParameterlessNamePlaceholders = new ArgPlaceholder()
             {
@@ -47,7 +47,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                Action action = () => MessageTranslator.TranslateErrorMessagesWithPathPlaceholders(null, errorMessages, indexedPathsPlaceholders);
+                Action action = () => MessageTranslator.TranslateMessagesWithPathPlaceholders(null, errorMessages, indexedPathsPlaceholders);
 
                 action.Should().ThrowExactly<NullReferenceException>();
             }
@@ -63,7 +63,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                Action action = () => MessageTranslator.TranslateErrorMessagesWithPathPlaceholders("path", null, indexedPathsPlaceholders);
+                Action action = () => MessageTranslator.TranslateMessagesWithPathPlaceholders("path", null, indexedPathsPlaceholders);
 
                 action.Should().ThrowExactly<NullReferenceException>();
             }
@@ -77,7 +77,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     "message2 {_path}"
                 };
 
-                Action action = () => MessageTranslator.TranslateErrorMessagesWithPathPlaceholders("path", errorMessages, null);
+                Action action = () => MessageTranslator.TranslateMessagesWithPathPlaceholders("path", errorMessages, null);
 
                 action.Should().ThrowExactly<NullReferenceException>();
             }
@@ -111,7 +111,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var results = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
+                var results = MessageTranslator.TranslateMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
 
                 results.Count.Should().Be(5);
 
@@ -146,7 +146,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var results = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
+                var results = MessageTranslator.TranslateMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
 
                 results.Count.Should().Be(5);
 
@@ -199,7 +199,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var results = MessageTranslator.TranslateErrorMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
+                var results = MessageTranslator.TranslateMessagesWithPathPlaceholders("some.path", errorMessages, indexedPathsPlaceholders);
 
                 results.Count.Should().Be(5);
 
@@ -211,7 +211,7 @@ namespace Validot.Tests.Unit.Errors.Translator
             }
         }
 
-        public class TranslateErrorMessages
+        public class TranslateMessages
         {
             [Fact]
             public void Should_ThrowException_When_NullTranslationName()
@@ -238,7 +238,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                Action action = () => translator.TranslateErrorMessages(null, error);
+                Action action = () => translator.TranslateMessages(null, error);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
@@ -260,7 +260,7 @@ namespace Validot.Tests.Unit.Errors.Translator
 
                 var translator = new MessageTranslator(translations);
 
-                Action action = () => translator.TranslateErrorMessages("translation1", null);
+                Action action = () => translator.TranslateMessages("translation1", null);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
@@ -291,7 +291,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     Args = new IArg[] { }
                 };
 
-                Action action = () => translator.TranslateErrorMessages("translation3", error);
+                Action action = () => translator.TranslateMessages("translation3", error);
 
                 action.Should().ThrowExactly<KeyNotFoundException>();
             }
@@ -326,7 +326,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                Action action = () => translator.TranslateErrorMessages("translation1", error);
+                Action action = () => translator.TranslateMessages("translation1", error);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
@@ -359,7 +359,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var result = translator.TranslateErrorMessages("translation2", error);
+                var result = translator.TranslateMessages("translation2", error);
 
                 result.Messages.Count.Should().Be(1);
                 result.Messages.Should().Contain("message2");
@@ -396,7 +396,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var result = translator.TranslateErrorMessages("translation2", error);
+                var result = translator.TranslateMessages("translation2", error);
 
                 result.Messages.Count.Should().Be(1);
                 result.Messages.Should().Contain("key123");
@@ -439,7 +439,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var result = translator.TranslateErrorMessages("translation2", error);
+                var result = translator.TranslateMessages("translation2", error);
 
                 result.Messages.Count.Should().Be(3);
                 result.Messages.Should().Contain("message11");
@@ -483,7 +483,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var result = translator.TranslateErrorMessages("translation2", error);
+                var result = translator.TranslateMessages("translation2", error);
 
                 result.Messages.Count.Should().Be(2);
                 result.Messages.Should().Contain("message11 arg1Value");
@@ -518,7 +518,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var result = translator.TranslateErrorMessages("translation1", error);
+                var result = translator.TranslateMessages("translation1", error);
 
                 result.Messages.Count.Should().Be(1);
                 result.Messages.Should().Contain("message1 ARG1VALUE arg1value");
@@ -552,7 +552,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var result = translator.TranslateErrorMessages("translation1", error);
+                var result = translator.TranslateMessages("translation1", error);
 
                 result.Messages.Count.Should().Be(1);
                 result.Messages.Should().Contain("message1 message2");
@@ -585,7 +585,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var result = translator.TranslateErrorMessages("translation1", error);
+                var result = translator.TranslateMessages("translation1", error);
 
                 result.Messages.Count.Should().Be(1);
                 result.Messages.Should().Contain("message1 message1 {_translation|key=key1}");
@@ -621,7 +621,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                var result = translator.TranslateErrorMessages("translation1", error);
+                var result = translator.TranslateMessages("translation1", error);
 
                 result.Messages.Count.Should().Be(4);
                 result.Messages.ElementAt(0).Should().Be("message1");
@@ -685,7 +685,7 @@ namespace Validot.Tests.Unit.Errors.Translator
                     }
                 };
 
-                Action action = () => translator.TranslateErrorMessages("translation1", error);
+                Action action = () => translator.TranslateMessages("translation1", error);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }

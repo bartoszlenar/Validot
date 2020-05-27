@@ -11,16 +11,16 @@ namespace Validot.Tests.Unit.Errors
 
     using Xunit;
 
-    public class MessagesCacheTests
+    public class MessageCacheTests
     {
         public class AddMessage
         {
             [Fact]
             public void Should_AddMessage()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage(
+                messageCache.AddMessage(
                     "trans1",
                     1,
                     new[]
@@ -29,7 +29,7 @@ namespace Validot.Tests.Unit.Errors
                         "message2"
                     });
 
-                var cachedMessages = messagesCache.GetMessages("trans1", 1);
+                var cachedMessages = messageCache.GetMessages("trans1", 1);
 
                 cachedMessages.Count.Should().Be(2);
                 cachedMessages.Should().Contain("message1");
@@ -39,9 +39,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_AddMessage_MultipleTimes_ToDifferentDictionaries()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage(
+                messageCache.AddMessage(
                     "trans1",
                     1,
                     new[]
@@ -49,7 +49,7 @@ namespace Validot.Tests.Unit.Errors
                         "message1"
                     });
 
-                messagesCache.AddMessage(
+                messageCache.AddMessage(
                     "trans2",
                     2,
                     new[]
@@ -57,11 +57,11 @@ namespace Validot.Tests.Unit.Errors
                         "message2"
                     });
 
-                var cachedMessages1 = messagesCache.GetMessages("trans1", 1);
+                var cachedMessages1 = messageCache.GetMessages("trans1", 1);
                 cachedMessages1.Count.Should().Be(1);
                 cachedMessages1.Should().Contain("message1");
 
-                var cachedMessages2 = messagesCache.GetMessages("trans2", 2);
+                var cachedMessages2 = messageCache.GetMessages("trans2", 2);
                 cachedMessages2.Count.Should().Be(1);
                 cachedMessages2.Should().Contain("message2");
             }
@@ -69,9 +69,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_AddMessage_MultipleTimes_ToDifferentDictionaries_SameErrorId()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage(
+                messageCache.AddMessage(
                     "trans1",
                     1,
                     new[]
@@ -79,7 +79,7 @@ namespace Validot.Tests.Unit.Errors
                         "message1"
                     });
 
-                messagesCache.AddMessage(
+                messageCache.AddMessage(
                     "trans2",
                     1,
                     new[]
@@ -87,11 +87,11 @@ namespace Validot.Tests.Unit.Errors
                         "message2"
                     });
 
-                var cachedMessages1 = messagesCache.GetMessages("trans1", 1);
+                var cachedMessages1 = messageCache.GetMessages("trans1", 1);
                 cachedMessages1.Count.Should().Be(1);
                 cachedMessages1.Should().Contain("message1");
 
-                var cachedMessages2 = messagesCache.GetMessages("trans2", 1);
+                var cachedMessages2 = messageCache.GetMessages("trans2", 1);
                 cachedMessages2.Count.Should().Be(1);
                 cachedMessages2.Should().Contain("message2");
             }
@@ -99,9 +99,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_AddingMultipleTimes_ToSameDictionary_And_ToSameError()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage(
+                messageCache.AddMessage(
                     "trans1",
                     1,
                     new[]
@@ -109,7 +109,7 @@ namespace Validot.Tests.Unit.Errors
                         "message1"
                     });
 
-                Action action = () => messagesCache.AddMessage(
+                Action action = () => messageCache.AddMessage(
                     "trans1",
                     1,
                     new[]
@@ -123,9 +123,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_MessagesCollectionContainsNull()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                Action action = () => messagesCache.AddMessage(
+                Action action = () => messageCache.AddMessage(
                     "trans1",
                     1,
                     new[]
@@ -140,9 +140,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullMessagesCollection()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                Action action = () => messagesCache.AddMessage(
+                Action action = () => messageCache.AddMessage(
                     "trans1",
                     1,
                     null);
@@ -153,9 +153,9 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullTranslationName()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                Action action = () => messagesCache.AddMessage(
+                Action action = () => messageCache.AddMessage(
                     null,
                     1,
                     new[]
@@ -172,7 +172,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_GetMessages()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 var messages = new[]
                 {
@@ -181,12 +181,12 @@ namespace Validot.Tests.Unit.Errors
                     "message3"
                 };
 
-                messagesCache.AddMessage(
+                messageCache.AddMessage(
                     "trans1",
                     1,
                     messages);
 
-                var cachedMessages1 = messagesCache.GetMessages("trans1", 1);
+                var cachedMessages1 = messageCache.GetMessages("trans1", 1);
 
                 cachedMessages1.Should().BeSameAs(messages);
                 cachedMessages1.Count.Should().Be(3);
@@ -198,7 +198,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_InvalidErrorId()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessage("translation", 1, new[]
                 {
@@ -216,7 +216,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_InvalidTranslationName()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessage("translation", 1, new[]
                 {
@@ -234,7 +234,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullTranslationName()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 Action action = () =>
                 {
@@ -245,11 +245,11 @@ namespace Validot.Tests.Unit.Errors
             }
         }
 
-        public class GetErrorsMessagesAmount
+        public class GetMessageAmount
         {
-            public static IEnumerable<object[]> Should_GetErrorsMessagesAmount_Data()
+            public static IEnumerable<object[]> Should_GetMessageAmount_Data()
             {
-                var errorsMessages = new Dictionary<int, string[]>
+                var errorMessages = new Dictionary<int, string[]>
                 {
                     [1] = new[]
                     {
@@ -291,7 +291,7 @@ namespace Validot.Tests.Unit.Errors
 
                 yield return new object[]
                 {
-                    errorsMessages,
+                    errorMessages,
                     new List<int>
                     {
                         1,
@@ -303,7 +303,7 @@ namespace Validot.Tests.Unit.Errors
 
                 yield return new object[]
                 {
-                    errorsMessages,
+                    errorMessages,
                     new List<int>
                     {
                         1
@@ -313,7 +313,7 @@ namespace Validot.Tests.Unit.Errors
 
                 yield return new object[]
                 {
-                    errorsMessages,
+                    errorMessages,
                     new List<int>
                     {
                         2,
@@ -324,7 +324,7 @@ namespace Validot.Tests.Unit.Errors
 
                 yield return new object[]
                 {
-                    errorsMessages,
+                    errorMessages,
                     new List<int>
                     {
                         1,
@@ -335,17 +335,17 @@ namespace Validot.Tests.Unit.Errors
             }
 
             [Theory]
-            [MemberData(nameof(Should_GetErrorsMessagesAmount_Data))]
-            public void Should_GetErrorsMessagesAmount(Dictionary<int, string[]> errorMessages, List<int> errorsIdsToCheck, int expectedErrorsAmount)
+            [MemberData(nameof(Should_GetMessageAmount_Data))]
+            public void Should_GetMessageAmount(Dictionary<int, string[]> messages, List<int> errorsIdsToCheck, int expectedErrorsAmount)
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                foreach (KeyValuePair<int, string[]> pair in errorMessages)
+                foreach (KeyValuePair<int, string[]> pair in messages)
                 {
-                    messagesCache.AddMessage("translation", pair.Key, pair.Value);
+                    messageCache.AddMessage("translation", pair.Key, pair.Value);
                 }
 
-                var amount = messagesCache.GetErrorsMessagesAmount(errorsIdsToCheck);
+                var amount = messageCache.GetMessageAmount(errorsIdsToCheck);
 
                 amount.Should().Be(expectedErrorsAmount);
             }
@@ -353,7 +353,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_NotModifyList()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 var list = new List<int>
                 {
@@ -366,13 +366,13 @@ namespace Validot.Tests.Unit.Errors
 
                 foreach (var id in list)
                 {
-                    messagesCache.AddMessage("translation", id, new[]
+                    messageCache.AddMessage("translation", id, new[]
                     {
                         "message "
                     });
                 }
 
-                messagesCache.GetErrorsMessagesAmount(list);
+                messageCache.GetMessageAmount(list);
 
                 list.Count.Should().Be(5);
 
@@ -386,11 +386,11 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullIdsList()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 Action action = () =>
                 {
-                    messageCache.GetErrorsMessagesAmount(null);
+                    messageCache.GetMessageAmount(null);
                 };
 
                 action.Should().ThrowExactly<NullReferenceException>();
@@ -402,7 +402,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_AddMessageWithPathArgs_MultipleErrors()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -428,7 +428,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_AddMessageWithPathArgs_MultiplePaths()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path1", 1, new[]
                 {
@@ -461,7 +461,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_AddMessageWithPathArgs_MultipleTranslations()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation1", "path1", 1, new[]
                 {
@@ -503,7 +503,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_AddMessageWithPathArgs_SingleError()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -519,7 +519,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_AddMultipleTimesToSameError()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -540,7 +540,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullMessages()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 Action action = () =>
                 {
@@ -553,7 +553,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_MessagesWithNull()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 Action action = () =>
                 {
@@ -570,7 +570,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullPath()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 Action action = () =>
                 {
@@ -586,7 +586,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullTranslationName()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 Action action = () =>
                 {
@@ -605,7 +605,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_GetMessagesWithPathArgs()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 var messages = new[]
                 {
@@ -627,7 +627,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullPath()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -642,7 +642,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullTranslation()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -657,7 +657,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_InvalidErrorId()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -672,7 +672,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_InvalidPath()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -687,7 +687,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_InvalidTranslation()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -705,7 +705,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullPath()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -720,7 +720,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullTranslation()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -735,7 +735,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ReturnTrue_When_MessageIsCached()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -762,7 +762,7 @@ namespace Validot.Tests.Unit.Errors
             [InlineData("invalidTranslationName", "path", 1)]
             public void Should_ReturnFalse_When_MessageIsNotCached(string translationName, string path, int errorId)
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddMessageWithPathArgs("translation", "path", 1, new[]
                 {
@@ -780,7 +780,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_AddIndexedPathPlaceholders()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddIndexedPathPlaceholders("translationName", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -815,7 +815,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_AddIndexedPathPlaceholders_Multiple()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddIndexedPathPlaceholders("translationName1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -907,7 +907,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_AddingMultiple_ToSameTranslationAndError()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 messageCache.AddIndexedPathPlaceholders("translationName1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -947,7 +947,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullTranslation()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 Action action = () => messageCache.AddIndexedPathPlaceholders(null, 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -971,7 +971,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullIndexedPlaceholders()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 Action action = () => messageCache.AddIndexedPathPlaceholders("translation", 1, null);
 
@@ -981,7 +981,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_IndexedPlaceholders_WithNullPlaceholdersArray()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 Action action = () => messageCache.AddIndexedPathPlaceholders("translation", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -1006,7 +1006,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_IndexedPlaceholders_WithNullPlaceholderInArray()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 Action action = () => messageCache.AddIndexedPathPlaceholders("translation", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -1089,7 +1089,7 @@ namespace Validot.Tests.Unit.Errors
             [MemberData(nameof(Should_ThrowException_When_IndexedPlaceholders_WithPlaceholder_WithNullValue_Data))]
             public void Should_ThrowException_When_IndexedPlaceholders_WithPlaceholder_WithNullValue(ArgPlaceholder argPlaceholder)
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 Action action = () => messageCache.AddIndexedPathPlaceholders("translation", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -1108,7 +1108,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_GetIndexedPathPlaceholders()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 var indexedPlaceholders = new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -1136,7 +1136,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_GetIndexedPathPlaceholders_DifferentTranslationNameAndError()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 var indexedPlaceholders1 = new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -1203,7 +1203,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_InvalidErrorId()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 var indexedPlaceholders = new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -1231,7 +1231,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_InvalidTranslationName()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 var indexedPlaceholders = new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -1259,7 +1259,7 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_NullTranslationName()
             {
-                var messageCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
                 var indexedPlaceholders = new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
@@ -1290,82 +1290,82 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_BeValid_When_EmptyCache()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.VerifyIntegrity();
+                messageCache.VerifyIntegrity();
             }
 
             [Fact]
             public void Should_BeValid_When_SingleError()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message1",
                     "message2"
                 });
 
-                messagesCache.VerifyIntegrity();
+                messageCache.VerifyIntegrity();
             }
 
             [Fact]
             public void Should_BeValid_When_MultipleErrors()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation1", 2, new[]
+                messageCache.AddMessage("translation1", 2, new[]
                 {
                     "message21",
                     "message22"
                 });
 
-                messagesCache.AddMessage("translation1", 3, new[]
+                messageCache.AddMessage("translation1", 3, new[]
                 {
                     "message31",
                     "message32"
                 });
 
-                messagesCache.VerifyIntegrity();
+                messageCache.VerifyIntegrity();
             }
 
             [Fact]
             public void Should_ThrowException_When_MultipleErrors_DifferentAmountOfMessages()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation1", 2, new[]
+                messageCache.AddMessage("translation1", 2, new[]
                 {
                     "message21",
                     "message22"
                 });
 
-                messagesCache.AddMessage("translation2", 1, new[]
+                messageCache.AddMessage("translation2", 1, new[]
                 {
                     "message31",
                     "message32"
                 });
 
-                messagesCache.AddMessage("translation2", 2, new[]
+                messageCache.AddMessage("translation2", 2, new[]
                 {
                     "message41",
                     "message42",
                     "message43"
                 });
 
-                Action action = () => messagesCache.VerifyIntegrity();
+                Action action = () => messageCache.VerifyIntegrity();
 
                 action.Should().ThrowExactly<CacheIntegrityException>().WithMessage($"ErrorId 2, messages amount is expected to be 2 but found 3 in translation `translation2`");
             }
@@ -1373,27 +1373,27 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_ErrorIdNotInAllTranslations()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation2", 1, new[]
+                messageCache.AddMessage("translation2", 1, new[]
                 {
                     "message21",
                     "message22"
                 });
 
-                messagesCache.AddMessage("translation2", 2, new[]
+                messageCache.AddMessage("translation2", 2, new[]
                 {
                     "message31",
                     "message32"
                 });
 
-                Action action = () => messagesCache.VerifyIntegrity();
+                Action action = () => messageCache.VerifyIntegrity();
 
                 action.Should().ThrowExactly<CacheIntegrityException>().WithMessage($"ErrorId 2 is not present in all translations");
             }
@@ -1401,61 +1401,61 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_BeValid_When_PathPlaceholders()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation2", 1, new[]
+                messageCache.AddMessage("translation2", 1, new[]
                 {
                     "message21",
                     "message22"
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [0] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation2", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation2", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [1] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                messagesCache.VerifyIntegrity();
+                messageCache.VerifyIntegrity();
             }
 
             [Fact]
             public void Should_ThrowException_When_PathPlaceholders_WithInvalidTranslation()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation2", 1, new[]
+                messageCache.AddMessage("translation2", 1, new[]
                 {
                     "message21",
                     "message22"
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [0] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation3", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation3", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [1] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                Action action = () => messagesCache.VerifyIntegrity();
+                Action action = () => messageCache.VerifyIntegrity();
 
                 action.Should().ThrowExactly<CacheIntegrityException>().WithMessage($"Translation `translation3` is not expected in path placeholders");
             }
@@ -1463,31 +1463,31 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_PathPlaceholders_WithInvalidErrorId()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation2", 1, new[]
+                messageCache.AddMessage("translation2", 1, new[]
                 {
                     "message21",
                     "message22"
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [0] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation2", 2, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation2", 2, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [1] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                Action action = () => messagesCache.VerifyIntegrity();
+                Action action = () => messageCache.VerifyIntegrity();
 
                 action.Should().ThrowExactly<CacheIntegrityException>().WithMessage($"ErrorId 2 is not expected in path placeholders (translation `translation2`)");
             }
@@ -1495,33 +1495,33 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_PathPlaceholders_IndexExceedsMessagesAmount()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation1", 2, new[]
+                messageCache.AddMessage("translation1", 2, new[]
                 {
                     "message21",
                     "message22"
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [0] = Array.Empty<ArgPlaceholder>(),
                     [1] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation1", 2, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation1", 2, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [0] = Array.Empty<ArgPlaceholder>(),
                     [3] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                Action action = () => messagesCache.VerifyIntegrity();
+                Action action = () => messageCache.VerifyIntegrity();
 
                 action.Should().ThrowExactly<CacheIntegrityException>().WithMessage($"ErrorId 2 max index for path placeholder is 1, but found 3 (translation `translation1`)");
             }
@@ -1529,33 +1529,33 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_MessageWithPathArgs_WithInvalidTranslation()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation1", 2, new[]
+                messageCache.AddMessage("translation1", 2, new[]
                 {
                     "message21",
                     "message22"
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation1", "path", 1, new[]
+                messageCache.AddMessageWithPathArgs("translation1", "path", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation2", "path", 1, new[]
+                messageCache.AddMessageWithPathArgs("translation2", "path", 1, new[]
                 {
                     "message11",
                     "message22"
                 });
 
-                Action action = () => messagesCache.VerifyIntegrity();
+                Action action = () => messageCache.VerifyIntegrity();
 
                 action.Should().ThrowExactly<CacheIntegrityException>().WithMessage($"Translation `translation2` is not expected in messages with path args");
             }
@@ -1563,33 +1563,33 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_MessageWithPathArgs_WithInvalidErrorId()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation1", 2, new[]
+                messageCache.AddMessage("translation1", 2, new[]
                 {
                     "message21",
                     "message22"
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation1", "path", 1, new[]
+                messageCache.AddMessageWithPathArgs("translation1", "path", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation1", "path", 3, new[]
+                messageCache.AddMessageWithPathArgs("translation1", "path", 3, new[]
                 {
                     "message11",
                     "message22"
                 });
 
-                Action action = () => messagesCache.VerifyIntegrity();
+                Action action = () => messageCache.VerifyIntegrity();
 
                 action.Should().ThrowExactly<CacheIntegrityException>().WithMessage($"Error ID 3 in translation `translation1` is not expected in messages with path args");
             }
@@ -1597,34 +1597,34 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_ThrowException_When_MessageWithPathArgs_MaxMessagesAmountExceeded()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation1", 2, new[]
+                messageCache.AddMessage("translation1", 2, new[]
                 {
                     "message21",
                     "message22"
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation1", "path1", 1, new[]
+                messageCache.AddMessageWithPathArgs("translation1", "path1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation1", "path2", 2, new[]
+                messageCache.AddMessageWithPathArgs("translation1", "path2", 2, new[]
                 {
                     "message21",
                     "message22",
                     "message23"
                 });
 
-                Action action = () => messagesCache.VerifyIntegrity();
+                Action action = () => messageCache.VerifyIntegrity();
 
                 action.Should().ThrowExactly<CacheIntegrityException>().WithMessage($"Error ID 2 is expected to have max 2 messages, but found 3 in messages with path args (for translation `translation1` and path `path2`)");
             }
@@ -1632,124 +1632,124 @@ namespace Validot.Tests.Unit.Errors
             [Fact]
             public void Should_BeValid_When_MessageWithPathArgs()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation1", 2, new[]
+                messageCache.AddMessage("translation1", 2, new[]
                 {
                     "message21",
                     "message22",
                     "message22"
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation1", "path1", 1, new[]
+                messageCache.AddMessageWithPathArgs("translation1", "path1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation1", "path2", 2, new[]
+                messageCache.AddMessageWithPathArgs("translation1", "path2", 2, new[]
                 {
                     "message21",
                     "message22",
                     "message23"
                 });
 
-                messagesCache.VerifyIntegrity();
+                messageCache.VerifyIntegrity();
             }
 
             [Fact]
             public void Should_BeValid_When_Placeholders_And_MessageWithPathArgs()
             {
-                var messagesCache = new MessagesCache();
+                var messageCache = new MessageCache();
 
-                messagesCache.AddMessage("translation1", 1, new[]
+                messageCache.AddMessage("translation1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation1", 2, new[]
+                messageCache.AddMessage("translation1", 2, new[]
                 {
                     "message21",
                     "message22",
                     "message22"
                 });
 
-                messagesCache.AddMessage("translation2", 1, new[]
+                messageCache.AddMessage("translation2", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessage("translation2", 2, new[]
+                messageCache.AddMessage("translation2", 2, new[]
                 {
                     "message21",
                     "message22",
                     "message22"
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation1", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [0] = Array.Empty<ArgPlaceholder>(),
                     [1] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation1", 2, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation1", 2, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [0] = Array.Empty<ArgPlaceholder>(),
                     [1] = Array.Empty<ArgPlaceholder>(),
                     [2] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation2", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation2", 1, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [1] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                messagesCache.AddIndexedPathPlaceholders("translation2", 2, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                messageCache.AddIndexedPathPlaceholders("translation2", 2, new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
                 {
                     [0] = Array.Empty<ArgPlaceholder>(),
                     [2] = Array.Empty<ArgPlaceholder>(),
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation1", "path1", 1, new[]
+                messageCache.AddMessageWithPathArgs("translation1", "path1", 1, new[]
                 {
                     "message11",
                     "message12"
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation1", "path2", 2, new[]
+                messageCache.AddMessageWithPathArgs("translation1", "path2", 2, new[]
                 {
                     "message21",
                     "message22",
                     "message23"
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation2", "path1", 1, new[]
+                messageCache.AddMessageWithPathArgs("translation2", "path1", 1, new[]
                 {
                     "message12"
                 });
 
-                messagesCache.AddMessageWithPathArgs("translation2", "path2", 2, new[]
+                messageCache.AddMessageWithPathArgs("translation2", "path2", 2, new[]
                 {
                     "message21",
                     "message23"
                 });
 
-                messagesCache.VerifyIntegrity();
+                messageCache.VerifyIntegrity();
             }
         }
 
         [Fact]
         public void Should_Initialize()
         {
-            _ = new MessagesCache();
+            _ = new MessageCache();
         }
     }
 }

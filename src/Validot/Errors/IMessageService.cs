@@ -2,12 +2,12 @@ namespace Validot.Errors
 {
     using System.Collections.Generic;
 
-    internal interface IMessagesService
+    internal interface IMessageService
     {
         IReadOnlyList<string> TranslationNames { get; }
 
         IReadOnlyDictionary<string, string> GetTranslation(string translationName);
 
-        IReadOnlyDictionary<string, IReadOnlyList<string>> GetErrorsMessages(Dictionary<string, List<int>> errors, string translationName = null);
+        IReadOnlyDictionary<string, IReadOnlyList<string>> GetMessages(Dictionary<string, List<int>> errors, string translationName = null);
     }
 }

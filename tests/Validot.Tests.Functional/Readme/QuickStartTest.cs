@@ -63,9 +63,7 @@ namespace Validot.Tests.Functional.Readme
 
             messagesString.Should().Be(expectedMessagesString);
 
-            var codesList = result.Details.GetErrorCodeList();
-
-            codesList.Should().ContainInOrder("ERR_EMAIL", "ERR_NAME");
+            result.Codes.Should().ContainInOrder("ERR_EMAIL", "ERR_NAME");
 
             result.AnyErrors.Should().BeTrue();
         }

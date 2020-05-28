@@ -1,6 +1,6 @@
 namespace Validot.Validation.Scopes.Builders
 {
-    public enum ErrorMode
+    internal enum ErrorMode
     {
         Append = 0,
 

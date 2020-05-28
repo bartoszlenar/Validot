@@ -42,7 +42,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(Should_Discover_Data))]
-        public void Should_Discover(bool? shouldExecuteInfo, int errorId, ErrorMode errorMode, string path)
+        public void Should_Discover(bool? shouldExecuteInfo, int errorId, object errorModeBoxed, string path)
         {
             var commandScope = new RuleCommandScope<TestClass>();
 
@@ -55,7 +55,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorId = errorId;
 
-            commandScope.ErrorMode = errorMode;
+            commandScope.ErrorMode = (ErrorMode)errorModeBoxed;
 
             commandScope.Path = path;
 
@@ -107,7 +107,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(Should_Validate_Data))]
-        public void Should_Validate_ReferenceType(bool? shouldExecuteInfo, int errorId, ErrorMode errorMode, string path, bool isValid)
+        public void Should_Validate_ReferenceType(bool? shouldExecuteInfo, int errorId, object errorModeBoxed, string path, bool isValid)
         {
             var commandScope = new RuleCommandScope<TestClass>();
 
@@ -127,7 +127,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorId = errorId;
 
-            commandScope.ErrorMode = errorMode;
+            commandScope.ErrorMode = (ErrorMode)errorModeBoxed;
 
             commandScope.Path = path;
 
@@ -180,7 +180,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         [Theory]
         [MemberData(nameof(Should_Validate_Data))]
-        public void Should_Validate_ValueType(bool? shouldExecuteInfo, int errorId, ErrorMode errorMode, string path, bool isValid)
+        public void Should_Validate_ValueType(bool? shouldExecuteInfo, int errorId, object errorModeBoxed, string path, bool isValid)
         {
             var commandScope = new RuleCommandScope<decimal>();
 
@@ -200,7 +200,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             commandScope.ErrorId = errorId;
 
-            commandScope.ErrorMode = errorMode;
+            commandScope.ErrorMode = (ErrorMode)errorModeBoxed;
 
             commandScope.Path = path;
 

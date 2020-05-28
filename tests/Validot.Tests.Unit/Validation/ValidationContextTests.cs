@@ -1741,13 +1741,13 @@ namespace Validot.Tests.Unit.Validation
             [InlineData(true, ErrorMode.Override)]
             [InlineData(false, ErrorMode.Append)]
             [InlineData(false, ErrorMode.Override)]
-            public void Should_BeFalse_When_ErrorModeEnabled(bool failFast, ErrorMode errorMode)
+            public void Should_BeFalse_When_ErrorModeEnabled(bool failFast, object errorModeBoxed)
             {
                 var modelScheme = Substitute.For<IModelScheme>();
 
                 var validationContext = new ValidationContext(modelScheme, failFast, default);
 
-                validationContext.EnableErrorDetectionMode(errorMode, 123);
+                validationContext.EnableErrorDetectionMode((ErrorMode)errorModeBoxed, 123);
 
                 validationContext.ShouldFallBack.Should().BeFalse();
             }

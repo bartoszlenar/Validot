@@ -2,7 +2,7 @@ namespace Validot.Validation.Stacks
 {
     using System;
 
-    public class ReferenceLoopException : ValidotException
+    public sealed class ReferenceLoopException : ValidotException
     {
         internal ReferenceLoopException(string path, string nestedPath, int scopeId, Type type)
             : base(GetMessage(path, nestedPath, type))

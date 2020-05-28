@@ -13,11 +13,11 @@ namespace Validot.Tests.Unit
     {
         public class ExpectedErrorContent
         {
-            public ErrorMode Mode { get; set; } = ErrorMode.Append;
-
             public IReadOnlyList<string> Messages { get; set; } = Array.Empty<string>();
 
             public IReadOnlyList<string> Codes { get; set; } = Array.Empty<string>();
+
+            internal ErrorMode Mode { get; set; } = ErrorMode.Append;
 
             public bool ShouldBeEmpty(int initialMessagesAmount = 1, int initialCodesAmount = 0)
             {

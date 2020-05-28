@@ -2,7 +2,7 @@ namespace Validot.Settings.Capacities
 {
     using System;
 
-    public class DisabledCapacityInfo : ICapacityInfo
+    public sealed class DisabledCapacityInfo : ICapacityInfo
     {
         public bool ShouldRead => false;
 

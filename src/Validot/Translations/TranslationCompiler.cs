@@ -3,7 +3,7 @@ namespace Validot.Translations
     using System.Collections.Generic;
     using System.Linq;
 
-    internal class TranslationsCompiler : ITranslationsCompiler
+    internal class TranslationCompiler : ITranslationCompiler
     {
         private readonly Dictionary<string, Dictionary<string, string>> _translations = new Dictionary<string, Dictionary<string, string>>();
 

@@ -5,7 +5,7 @@ namespace Validot
 
     public interface IValidator<T>
     {
-        IValidatorSettings Settings { get; }
+        ValidatorSettings Settings { get; }
 
         IValidationResult ErrorMap { get; }
 

@@ -4,7 +4,7 @@ namespace Validot.Factory
 
     using Validot.Settings;
 
-    internal class ValidatorFactory : IValidatorFactory
+    public sealed class ValidatorFactory
     {
         public IValidator<T> Create<T>(Specification<T> specification, Func<ValidatorSettings, ValidatorSettings> settings = null)
         {
@@ -22,9 +22,9 @@ namespace Validot.Factory
         {
             var initSettings = ValidatorSettings.GetDefault();
 
-            if (specificationHolder is ITranslationsHolder translationsHolder)
+            if (specificationHolder is ITranslationHolder translationHolder)
             {
-                initSettings.WithTranslation(translationsHolder);
+                initSettings.WithTranslation(translationHolder);
             }
 
             if (settings != null)

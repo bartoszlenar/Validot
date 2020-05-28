@@ -1,6 +1,6 @@
 namespace Validot.Validation.Stacks
 {
-    public class ReferenceLoopProtectionSettings
+    internal class ReferenceLoopProtectionSettings
     {
         public ReferenceLoopProtectionSettings(object rootModelReference = null)
         {

@@ -1,6 +1,6 @@
 namespace Validot.Testing
 {
-    public class TestResult
+    public sealed class TestResult
     {
         private static readonly TestResult SuccessResult = new TestResult(null);
 

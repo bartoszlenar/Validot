@@ -3,7 +3,7 @@
     using System.Collections.Generic;
     using System.Globalization;
 
-    public class TextArg : IArg<string>
+    public sealed class TextArg : IArg<string>
     {
         private const string CaseParameter = "case";
 

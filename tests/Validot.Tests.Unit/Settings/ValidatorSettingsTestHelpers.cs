@@ -8,7 +8,7 @@ namespace Validot.Tests.Unit.Settings
 
     public static class ValidatorSettingsTestHelpers
     {
-        public static void ShouldBeLikeDefault(this IValidatorSettings @this)
+        public static void ShouldBeLikeDefault(this ValidatorSettings @this)
         {
             @this.Should().NotBeNull();
             @this.CapacityInfo.Should().NotBeNull();

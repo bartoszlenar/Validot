@@ -5,7 +5,7 @@ namespace Validot.Errors.Args
     using System.Text;
     using System.Text.RegularExpressions;
 
-    internal static class ArgsHelper
+    internal static class ArgHelper
     {
         private static readonly Regex CurlyBracketsRegex = new Regex(@"(?<=\{)[^}]*(?=\})", RegexOptions.Compiled);
 

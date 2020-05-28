@@ -57,7 +57,7 @@ namespace Validot.Errors.Translator
             return result;
         }
 
-        public ErrorTranslationResult TranslateMessages(string translationName, IError error)
+        public TranslationResult TranslateMessages(string translationName, IError error)
         {
             ThrowHelper.NullArgument(error, nameof(error));
             ThrowHelper.NullInCollection(error.Messages, $"{nameof(error)}.{nameof(error.Messages)}");
@@ -95,7 +95,7 @@ namespace Validot.Errors.Translator
                 }
             }
 
-            return new ErrorTranslationResult
+            return new TranslationResult
             {
                 Messages = messages,
                 IndexedPathPlaceholders = indexedPathPlaceholders ?? _emptyIndexedPathPlaceholders

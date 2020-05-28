@@ -514,8 +514,8 @@ namespace Validot.Tests.Unit.Validation
 
                 Received.InOrder(() =>
                 {
-                    modelScheme.Received().GetSpecificationScope<TestClass>(Arg.Is(1234));
-                    specificationScope.Received().Validate(Arg.Is(model), Arg.Is(context));
+                    modelScheme.GetSpecificationScope<TestClass>(Arg.Is(1234));
+                    specificationScope.Validate(Arg.Is(model), Arg.Is(context));
                 });
 
                 specificationScope.DidNotReceive().Discover(Arg.Any<IDiscoveryContext>());
@@ -540,11 +540,11 @@ namespace Validot.Tests.Unit.Validation
 
                 Received.InOrder(() =>
                 {
-                    modelScheme.Received().GetSpecificationScope<TestClass>(Arg.Is(1234));
-                    specificationScope.Received().Validate(Arg.Is(model), Arg.Is(context));
+                    modelScheme.GetSpecificationScope<TestClass>(Arg.Is(1234));
+                    specificationScope.Validate(Arg.Is(model), Arg.Is(context));
 
-                    modelScheme.Received().GetSpecificationScope<TestClass>(Arg.Is(1234));
-                    specificationScope.Received().Validate(Arg.Is(model), Arg.Is(context));
+                    modelScheme.GetSpecificationScope<TestClass>(Arg.Is(1234));
+                    specificationScope.Validate(Arg.Is(model), Arg.Is(context));
                 });
 
                 specificationScope.DidNotReceive().Discover(Arg.Any<IDiscoveryContext>());
@@ -582,17 +582,17 @@ namespace Validot.Tests.Unit.Validation
 
                 Received.InOrder(() =>
                 {
-                    modelScheme.Received().GetSpecificationScope<TestClass>(Arg.Is(1));
-                    specificationScope1.Received().Validate(Arg.Is(model1), Arg.Is(context));
+                    modelScheme.GetSpecificationScope<TestClass>(Arg.Is(1));
+                    specificationScope1.Validate(Arg.Is(model1), Arg.Is(context));
 
-                    modelScheme.Received().GetSpecificationScope<TestClass>(Arg.Is(2));
-                    specificationScope2.Received().Validate(Arg.Is(model2), Arg.Is(context));
+                    modelScheme.GetSpecificationScope<TestClass>(Arg.Is(2));
+                    specificationScope2.Validate(Arg.Is(model2), Arg.Is(context));
 
-                    modelScheme.Received().GetSpecificationScope<DateTimeOffset?>(Arg.Is(3));
-                    specificationScope3.Received().Validate(Arg.Is(model3), Arg.Is(context));
+                    modelScheme.GetSpecificationScope<DateTimeOffset?>(Arg.Is(3));
+                    specificationScope3.Validate(Arg.Is(model3), Arg.Is(context));
 
-                    modelScheme.Received().GetSpecificationScope<decimal>(Arg.Is(4));
-                    specificationScope4.Received().Validate(Arg.Is(model4), Arg.Is(context));
+                    modelScheme.GetSpecificationScope<decimal>(Arg.Is(4));
+                    specificationScope4.Validate(Arg.Is(model4), Arg.Is(context));
                 });
 
                 modelScheme.Received(1).GetSpecificationScope<TestClass>(Arg.Is(1));

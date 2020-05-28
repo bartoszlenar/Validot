@@ -65,9 +65,9 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             Received.InOrder(() =>
             {
-                discoveryContext.Received().EnterPath(path);
-                discoveryContext.Received().AddError(errorId);
-                discoveryContext.Received().LeavePath();
+                discoveryContext.EnterPath(path);
+                discoveryContext.AddError(errorId);
+                discoveryContext.LeavePath();
             });
 
             discoveryContext.DidNotReceiveWithAnyArgs().EnterScope<TestClass>(default);
@@ -152,14 +152,14 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 Received.InOrder(() =>
                 {
-                    validationContext.Received().EnterPath(path);
+                    validationContext.EnterPath(path);
 
                     if (!isValid)
                     {
-                        validationContext.Received().AddError(errorId);
+                        validationContext.AddError(errorId);
                     }
 
-                    validationContext.Received().LeavePath();
+                    validationContext.LeavePath();
 
                     isValidCount.Should().Be(1);
                 });
@@ -225,14 +225,14 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 Received.InOrder(() =>
                 {
-                    validationContext.Received().EnterPath(path);
+                    validationContext.EnterPath(path);
 
                     if (!isValid)
                     {
-                        validationContext.Received().AddError(errorId);
+                        validationContext.AddError(errorId);
                     }
 
-                    validationContext.Received().LeavePath();
+                    validationContext.LeavePath();
 
                     isValidCount.Should().Be(1);
                 });

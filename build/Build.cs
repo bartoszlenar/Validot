@@ -212,7 +212,7 @@ class Build : NukeBuild
                 .AddProperty("CoverletOutputFormat", "opencover")
             );
 
-            Logger.Info("CodeCoverage opencover format file location: " + reportFile);
+            Logger.Info($"CodeCoverage opencover format file location: {reportFile} ({new FileInfo(reportFile).Length} bytes)");
         });
 
     Target CodeCoverageReport => _ => _

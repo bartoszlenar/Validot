@@ -2,7 +2,7 @@ namespace Validot.Errors.Args
 {
     using System.Collections.Generic;
 
-    public class TranslationArg : IArg
+    public sealed class TranslationArg : IArg
     {
         private const string KeyParameter = "key";
 

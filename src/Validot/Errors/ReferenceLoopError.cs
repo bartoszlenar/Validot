@@ -6,7 +6,7 @@ namespace Validot.Errors
     using Validot.Errors.Args;
     using Validot.Translations;
 
-    internal sealed class ReferenceLoopError : IError
+    internal class ReferenceLoopError : IError
     {
         public ReferenceLoopError(Type type)
         {

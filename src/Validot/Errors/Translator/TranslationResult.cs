@@ -4,7 +4,7 @@ namespace Validot.Errors.Translator
 
     using Validot.Errors.Args;
 
-    public class ErrorTranslationResult
+    internal class MessageTranslationResult
     {
         public IReadOnlyList<string> Messages { get; set; }
 

@@ -4,7 +4,7 @@ namespace Validot.Settings.Capacities
 
     using Validot.Validation;
 
-    public class MaxCapacityInfo : IFeedableCapacityInfo, ICapacityInfoHelpersConsumer
+    public sealed class MaxCapacityInfo : IFeedableCapacityInfo, ICapacityInfoHelpersConsumer
     {
         private IReadOnlyDictionary<string, int> _maxCapacities;
 

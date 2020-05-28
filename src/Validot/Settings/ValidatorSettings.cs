@@ -5,7 +5,7 @@ namespace Validot.Settings
     using Validot.Settings.Capacities;
     using Validot.Translations;
 
-    public class ValidatorSettings
+    public sealed class ValidatorSettings
     {
         private static readonly DisabledCapacityInfo _disabledCapacityInfo = new DisabledCapacityInfo();
 

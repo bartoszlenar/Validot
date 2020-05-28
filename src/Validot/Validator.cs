@@ -16,7 +16,7 @@ namespace Validot
         public static ValidatorFactory Factory { get; } = new ValidatorFactory();
     }
 
-    public class Validator<T> : Validator, IValidator<T>
+    public sealed class Validator<T> : Validator, IValidator<T>
     {
         private readonly IMessageService _messageService;
 

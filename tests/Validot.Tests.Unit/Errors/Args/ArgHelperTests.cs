@@ -10,21 +10,21 @@ namespace Validot.Tests.Unit.Errors.Args
 
     using Xunit;
 
-    public class ArgsServiceTests
+    public class ArgHelperTests
     {
         public class FormatMessage
         {
             [Fact]
             public void Should_ReturnEmptyString_When_MessageIsNull()
             {
-                var formattedMessage = ArgsHelper.FormatMessage(null, Array.Empty<ArgPlaceholder>(), Array.Empty<IArg>());
+                var formattedMessage = ArgHelper.FormatMessage(null, Array.Empty<ArgPlaceholder>(), Array.Empty<IArg>());
                 formattedMessage.Should().Be(string.Empty);
             }
 
             [Fact]
             public void Should_ReturnMessage_When_NullPlaceholders()
             {
-                var formattedMessage = ArgsHelper.FormatMessage("test {test}", null, new[] { Arg.Text("test", "XXX") });
+                var formattedMessage = ArgHelper.FormatMessage("test {test}", null, new[] { Arg.Text("test", "XXX") });
 
                 formattedMessage.Should().Be("test {test}");
             }
@@ -32,7 +32,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_ReturnMessage_When_NoPlaceholders()
             {
-                var formattedMessage = ArgsHelper.FormatMessage("test {test}", Array.Empty<ArgPlaceholder>(), new[] { Arg.Text("test", "XXX") });
+                var formattedMessage = ArgHelper.FormatMessage("test {test}", Array.Empty<ArgPlaceholder>(), new[] { Arg.Text("test", "XXX") });
 
                 formattedMessage.Should().Be("test {test}");
             }
@@ -40,7 +40,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_ReturnMessage_When_NoArgs()
             {
-                var formattedMessage = ArgsHelper.FormatMessage("test {test}", new[] { new ArgPlaceholder() { Name = "test", Placeholder = "{test}" } }, Array.Empty<IArg>());
+                var formattedMessage = ArgHelper.FormatMessage("test {test}", new[] { new ArgPlaceholder() { Name = "test", Placeholder = "{test}" } }, Array.Empty<IArg>());
 
                 formattedMessage.Should().Be("test {test}");
             }
@@ -48,7 +48,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_ReturnMessage_When_NullArgs()
             {
-                var formattedMessage = ArgsHelper.FormatMessage("test {test}", new[] { new ArgPlaceholder() { Name = "test", Placeholder = "{test}" } }, null);
+                var formattedMessage = ArgHelper.FormatMessage("test {test}", new[] { new ArgPlaceholder() { Name = "test", Placeholder = "{test}" } }, null);
 
                 formattedMessage.Should().Be("test {test}");
             }
@@ -69,7 +69,7 @@ namespace Validot.Tests.Unit.Errors.Args
                 testArg.Name = "test";
                 testArg.Value = "testValue";
 
-                var formattedMessage = ArgsHelper.FormatMessage(
+                var formattedMessage = ArgHelper.FormatMessage(
                     "test {test}",
                     new[]
                     {
@@ -106,7 +106,7 @@ namespace Validot.Tests.Unit.Errors.Args
                 testArg.Name = "test";
                 testArg.Value = "testValue";
 
-                var formattedMessage = ArgsHelper.FormatMessage(
+                var formattedMessage = ArgHelper.FormatMessage(
                     "test {test} {test} {test}",
                     new[]
                     {
@@ -159,7 +159,7 @@ namespace Validot.Tests.Unit.Errors.Args
                     Value = "testValue1",
                 };
 
-                var formattedMessage = ArgsHelper.FormatMessage(
+                var formattedMessage = ArgHelper.FormatMessage(
                     "test {test1|p1=v1} {test1|p2=v2} {test1|p3=v3}",
                     new[]
                     {
@@ -221,7 +221,7 @@ namespace Validot.Tests.Unit.Errors.Args
                     Value = "testValue2",
                 };
 
-                var formattedMessage = ArgsHelper.FormatMessage(
+                var formattedMessage = ArgHelper.FormatMessage(
                     "test {test1} {test2} {test1}",
                     new[]
                     {
@@ -289,7 +289,7 @@ namespace Validot.Tests.Unit.Errors.Args
                     Value = "testValue2",
                 };
 
-                var formattedMessage = ArgsHelper.FormatMessage(
+                var formattedMessage = ArgHelper.FormatMessage(
                     "test {test1|p1=v1} {test2|p2=v2} {test1|p1=v1}",
                     new[]
                     {
@@ -339,7 +339,7 @@ namespace Validot.Tests.Unit.Errors.Args
                     Value = "testValue1",
                 };
 
-                var formattedMessage = ArgsHelper.FormatMessage(
+                var formattedMessage = ArgHelper.FormatMessage(
                     "test1 {test1|param1=paramValue1}",
                     new[]
                     {
@@ -382,7 +382,7 @@ namespace Validot.Tests.Unit.Errors.Args
                     Value = "testValue1",
                 };
 
-                var formattedMessage = ArgsHelper.FormatMessage(
+                var formattedMessage = ArgHelper.FormatMessage(
                     "test1 {test1|param1=paramValue1|param2=paramValue2} {test1|param1=paramValue1|param2=paramValue2|invalidParameter=someValue}",
                     new[]
                     {
@@ -448,7 +448,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [InlineData("")]
             public void Should_ReturnEmptyCollection_When_NoVariable(string message)
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders(message);
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders(message);
 
                 placeholders.Should().BeEmpty();
             }
@@ -460,7 +460,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [InlineData("abc  {invalid||} def")]
             public void Should_ReturnEmptyCollection_When_InvalidParameters(string message)
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders(message);
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders(message);
 
                 placeholders.Should().BeEmpty();
             }
@@ -470,7 +470,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [InlineData("abc  {  |param1=value1} def")]
             public void Should_ReturnEmptyCollection_When_EmptyName(string message)
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders(message);
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders(message);
 
                 placeholders.Should().BeEmpty();
             }
@@ -478,7 +478,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_Extract_And_SquashDuplicates()
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders("abc {single|param1=value1}  def {single|param1=value1}");
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders("abc {single|param1=value1}  def {single|param1=value1}");
 
                 placeholders.Should().ContainSingle();
 
@@ -492,7 +492,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_Parse_When_ManySameVariables_With_DifferentParameters()
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders("abc {first|p1=v1} {first|p21=v21|p22=v22} def {first}");
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders("abc {first|p1=v1} {first|p21=v21|p22=v22} def {first}");
 
                 placeholders.Count.Should().Be(3);
 
@@ -518,7 +518,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_Parse_When_ManyVariables()
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders("abc {first} {second} def {third}");
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders("abc {first} {second} def {third}");
 
                 placeholders.Count.Should().Be(3);
 
@@ -538,7 +538,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_Parse_When_ManyVariables_With_Parameters()
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders("abc {first|p1=v1} {second|p21=v21|p22=v22} def {third|p31=v31|p32=v32|p33=v33}");
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders("abc {first|p1=v1} {second|p21=v21|p22=v22} def {third|p31=v31|p32=v32|p33=v33}");
 
                 placeholders.Count.Should().Be(3);
 
@@ -570,7 +570,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_Parse_When_SingleVariable()
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders("abc {single} def");
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders("abc {single} def");
 
                 placeholders.Count.Should().Be(1);
 
@@ -582,7 +582,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_Parse_When_SingleVariable_With_ManyParameters()
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders("abc {single|param1=value1|param2=value2|param3=value3} def");
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders("abc {single|param1=value1|param2=value2|param3=value3} def");
 
                 placeholders.Count.Should().Be(1);
 
@@ -600,7 +600,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_Parse_When_SingleVariable_With_SingleParameter()
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders("abc {single|param1=value1} def");
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders("abc {single|param1=value1} def");
 
                 placeholders.Count.Should().Be(1);
 
@@ -614,7 +614,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_ParseOnlyValidOnes()
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders("{valid} abc {invalid|param1=value1|param1=value2} {valid2|param=value} def {invalid|param1=value1param1=value2} xyz {invalid2|param1value1param1value2}");
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders("{valid} abc {invalid|param1=value1|param1=value2} {valid2|param=value} def {invalid|param1=value1param1=value2} xyz {invalid2|param1value1param1value2}");
 
                 placeholders.Count.Should().Be(2);
 
@@ -632,7 +632,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_ReturnEmptyCollection_When_DuplicateParameter()
             {
-                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgsHelper.ExtractPlaceholders("abc  {invalid|param1=value1|param1=value2} def");
+                IReadOnlyCollection<ArgPlaceholder> placeholders = ArgHelper.ExtractPlaceholders("abc  {invalid|param1=value1|param1=value2} def");
 
                 placeholders.Should().BeEmpty();
             }
@@ -640,7 +640,7 @@ namespace Validot.Tests.Unit.Errors.Args
             [Fact]
             public void Should_ThrowException_When_NullMessage()
             {
-                Action action = () => ArgsHelper.ExtractPlaceholders(null);
+                Action action = () => ArgHelper.ExtractPlaceholders(null);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }
@@ -649,13 +649,13 @@ namespace Validot.Tests.Unit.Errors.Args
         [Fact]
         public void Assignment_Should_BeEqualitySign()
         {
-            ArgsHelper.Assignment.Should().Be('=');
+            ArgHelper.Assignment.Should().Be('=');
         }
 
         [Fact]
         public void Divider_Should_BeVerticalBar()
         {
-            ArgsHelper.Divider.Should().Be('|');
+            ArgHelper.Divider.Should().Be('|');
         }
     }
 }

@@ -46,7 +46,7 @@ namespace Validot.Errors.Translator
             {
                 if (indexedPathsPlaceholders.ContainsKey(i))
                 {
-                    result[i] = ArgsHelper.FormatMessage(errorMessages[i], indexedPathsPlaceholders[i], pathArgs);
+                    result[i] = ArgHelper.FormatMessage(errorMessages[i], indexedPathsPlaceholders[i], pathArgs);
                 }
                 else
                 {
@@ -75,13 +75,13 @@ namespace Validot.Errors.Translator
 
                 var message = translation.ContainsKey(key) ? translation[key] : key;
 
-                var placeholders = ArgsHelper.ExtractPlaceholders(message);
+                var placeholders = ArgHelper.ExtractPlaceholders(message);
 
-                messages[i] = ArgsHelper.FormatMessage(message, placeholders, error.Args);
+                messages[i] = ArgHelper.FormatMessage(message, placeholders, error.Args);
 
                 if (TryExtractSpecialArgs(translationName, messages[i], out var specialPlaceholders, out var specialArgs))
                 {
-                    messages[i] = ArgsHelper.FormatMessage(messages[i], specialPlaceholders, specialArgs);
+                    messages[i] = ArgHelper.FormatMessage(messages[i], specialPlaceholders, specialArgs);
                 }
 
                 if (TryExtractPathPlaceholders(messages[i], out var pathPlaceholders))
@@ -115,14 +115,14 @@ namespace Validot.Errors.Translator
 
         private static bool TryExtractPathPlaceholders(string message, out ArgPlaceholder[] placeholders)
         {
-            placeholders = ArgsHelper.ExtractPlaceholders(message).Where(p => p.Name == NameArgName || p.Name == PathArgName).ToArray();
+            placeholders = ArgHelper.ExtractPlaceholders(message).Where(p => p.Name == NameArgName || p.Name == PathArgName).ToArray();
 
             return placeholders.Any();
         }
 
         private bool TryExtractSpecialArgs(string translationName, string message, out IReadOnlyList<ArgPlaceholder> specialPlaceholders, out IReadOnlyList<IArg> specialArgs)
         {
-            specialPlaceholders = ArgsHelper.ExtractPlaceholders(message).Where(p => p.Name == TranslationArg.Name).ToArray();
+            specialPlaceholders = ArgHelper.ExtractPlaceholders(message).Where(p => p.Name == TranslationArg.Name).ToArray();
 
             if (specialPlaceholders.Any())
             {

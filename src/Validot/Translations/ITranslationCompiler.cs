@@ -2,7 +2,7 @@ namespace Validot.Translations
 {
     using System.Collections.Generic;
 
-    public interface ITranslationsCompiler
+    public interface ITranslationCompiler
     {
         IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; }
 

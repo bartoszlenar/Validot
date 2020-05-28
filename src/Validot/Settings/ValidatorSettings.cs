@@ -10,11 +10,11 @@ namespace Validot.Settings
     {
         private static readonly DisabledCapacityInfo _disabledCapacityInfo = new DisabledCapacityInfo();
 
-        private readonly TranslationsCompiler _translationsCompiler = new TranslationsCompiler();
+        private readonly TranslationCompiler _translationCompiler = new TranslationCompiler();
 
         public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations
         {
-            get => _translationsCompiler.Translations;
+            get => _translationCompiler.Translations;
         }
 
         public bool? ReferenceLoopProtection { get; private set; }
@@ -44,7 +44,7 @@ namespace Validot.Settings
 
         public ValidatorSettings WithTranslation(string name, string messageKey, string translation)
         {
-            _translationsCompiler.Add(name, messageKey, translation);
+            _translationCompiler.Add(name, messageKey, translation);
 
             return this;
         }
@@ -56,7 +56,7 @@ namespace Validot.Settings
 
             foreach (var entry in translation)
             {
-                _translationsCompiler.Add(name, entry.Key, entry.Value);
+                _translationCompiler.Add(name, entry.Key, entry.Value);
             }
 
             return this;
@@ -68,7 +68,7 @@ namespace Validot.Settings
 
             foreach (var translation in translations)
             {
-                _translationsCompiler.Add(translation.Key, translation.Value);
+                _translationCompiler.Add(translation.Key, translation.Value);
             }
 
             return this;
@@ -78,7 +78,7 @@ namespace Validot.Settings
         {
             ThrowHelper.NullArgument(translationsHolder, nameof(translationsHolder));
 
-            _translationsCompiler.Add(translationsHolder.Translations);
+            _translationCompiler.Add(translationsHolder.Translations);
 
             return this;
         }

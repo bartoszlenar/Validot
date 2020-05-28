@@ -13,7 +13,7 @@ namespace Validot.Tests.Unit.Translations
         [Fact]
         public void Should_Add_PassAllEntriesFromDictionary_ToSelectedTranslation()
         {
-            var translationsCompiler = Substitute.For<ITranslationsCompiler>();
+            var translationCompiler = Substitute.For<ITranslationCompiler>();
 
             var dictionary = new Dictionary<string, string>()
             {
@@ -23,20 +23,20 @@ namespace Validot.Tests.Unit.Translations
                 ["k4"] = "v4",
             };
 
-            translationsCompiler.Add("name", dictionary);
+            translationCompiler.Add("name", dictionary);
 
-            translationsCompiler.ReceivedWithAnyArgs(4).Add(default, default, default);
+            translationCompiler.ReceivedWithAnyArgs(4).Add(default, default, default);
 
-            translationsCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k1"), Arg.Is("v1"));
-            translationsCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k2"), Arg.Is("v2"));
-            translationsCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k3"), Arg.Is("v3"));
-            translationsCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k4"), Arg.Is("v4"));
+            translationCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k1"), Arg.Is("v1"));
+            translationCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k2"), Arg.Is("v2"));
+            translationCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k3"), Arg.Is("v3"));
+            translationCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k4"), Arg.Is("v4"));
         }
 
         [Fact]
         public void Should_Add_PassAllEntriesFromDictionary_ToSelectedTranslation_MultipleTimes()
         {
-            var translationsCompiler = Substitute.For<ITranslationsCompiler>();
+            var translationCompiler = Substitute.For<ITranslationCompiler>();
 
             var dictionary1 = new Dictionary<string, string>()
             {
@@ -54,26 +54,26 @@ namespace Validot.Tests.Unit.Translations
                 ["k24"] = "v24",
             };
 
-            translationsCompiler.Add("name1", dictionary1);
-            translationsCompiler.Add("name2", dictionary2);
+            translationCompiler.Add("name1", dictionary1);
+            translationCompiler.Add("name2", dictionary2);
 
-            translationsCompiler.ReceivedWithAnyArgs(8).Add(default, default, default);
+            translationCompiler.ReceivedWithAnyArgs(8).Add(default, default, default);
 
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k11"), Arg.Is("v11"));
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k12"), Arg.Is("v12"));
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k13"), Arg.Is("v13"));
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k14"), Arg.Is("v14"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k11"), Arg.Is("v11"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k12"), Arg.Is("v12"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k13"), Arg.Is("v13"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k14"), Arg.Is("v14"));
 
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k21"), Arg.Is("v21"));
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k22"), Arg.Is("v22"));
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k23"), Arg.Is("v23"));
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k24"), Arg.Is("v24"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k21"), Arg.Is("v21"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k22"), Arg.Is("v22"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k23"), Arg.Is("v23"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k24"), Arg.Is("v24"));
         }
 
         [Fact]
         public void Should_Add_PassAllTranslationDictionaryEntries()
         {
-            var translationsCompiler = Substitute.For<ITranslationsCompiler>();
+            var translationCompiler = Substitute.For<ITranslationCompiler>();
 
             var dictionary = new Dictionary<string, IReadOnlyDictionary<string, string>>()
             {
@@ -86,20 +86,20 @@ namespace Validot.Tests.Unit.Translations
                 }
             };
 
-            translationsCompiler.Add(dictionary);
+            translationCompiler.Add(dictionary);
 
-            translationsCompiler.ReceivedWithAnyArgs(4).Add(default, default, default);
+            translationCompiler.ReceivedWithAnyArgs(4).Add(default, default, default);
 
-            translationsCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k1"), Arg.Is("v1"));
-            translationsCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k2"), Arg.Is("v2"));
-            translationsCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k3"), Arg.Is("v3"));
-            translationsCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k4"), Arg.Is("v4"));
+            translationCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k1"), Arg.Is("v1"));
+            translationCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k2"), Arg.Is("v2"));
+            translationCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k3"), Arg.Is("v3"));
+            translationCompiler.Received(1).Add(Arg.Is("name"), Arg.Is("k4"), Arg.Is("v4"));
         }
 
         [Fact]
         public void Should_Add_PassAllTranslationDictionaryEntries_When_MoreThanOneTranslationDefined()
         {
-            var translationsCompiler = Substitute.For<ITranslationsCompiler>();
+            var translationCompiler = Substitute.For<ITranslationCompiler>();
 
             var dictionary = new Dictionary<string, IReadOnlyDictionary<string, string>>()
             {
@@ -119,25 +119,25 @@ namespace Validot.Tests.Unit.Translations
                 }
             };
 
-            translationsCompiler.Add(dictionary);
+            translationCompiler.Add(dictionary);
 
-            translationsCompiler.ReceivedWithAnyArgs(8).Add(default, default, default);
+            translationCompiler.ReceivedWithAnyArgs(8).Add(default, default, default);
 
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k11"), Arg.Is("v11"));
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k12"), Arg.Is("v12"));
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k13"), Arg.Is("v13"));
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k14"), Arg.Is("v14"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k11"), Arg.Is("v11"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k12"), Arg.Is("v12"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k13"), Arg.Is("v13"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k14"), Arg.Is("v14"));
 
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k21"), Arg.Is("v21"));
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k22"), Arg.Is("v22"));
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k23"), Arg.Is("v23"));
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k24"), Arg.Is("v24"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k21"), Arg.Is("v21"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k22"), Arg.Is("v22"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k23"), Arg.Is("v23"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k24"), Arg.Is("v24"));
         }
 
         [Fact]
         public void Should_Add_PassAllTranslationDictionaryEntries_MultipleTimes()
         {
-            var translationsCompiler = Substitute.For<ITranslationsCompiler>();
+            var translationCompiler = Substitute.For<ITranslationCompiler>();
 
             var dictionary1 = new Dictionary<string, IReadOnlyDictionary<string, string>>()
             {
@@ -161,20 +161,20 @@ namespace Validot.Tests.Unit.Translations
                 }
             };
 
-            translationsCompiler.Add(dictionary1);
-            translationsCompiler.Add(dictionary2);
+            translationCompiler.Add(dictionary1);
+            translationCompiler.Add(dictionary2);
 
-            translationsCompiler.ReceivedWithAnyArgs(8).Add(default, default, default);
+            translationCompiler.ReceivedWithAnyArgs(8).Add(default, default, default);
 
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k11"), Arg.Is("v11"));
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k12"), Arg.Is("v12"));
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k13"), Arg.Is("v13"));
-            translationsCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k14"), Arg.Is("v14"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k11"), Arg.Is("v11"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k12"), Arg.Is("v12"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k13"), Arg.Is("v13"));
+            translationCompiler.Received(1).Add(Arg.Is("name1"), Arg.Is("k14"), Arg.Is("v14"));
 
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k21"), Arg.Is("v21"));
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k22"), Arg.Is("v22"));
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k23"), Arg.Is("v23"));
-            translationsCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k24"), Arg.Is("v24"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k21"), Arg.Is("v21"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k22"), Arg.Is("v22"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k23"), Arg.Is("v23"));
+            translationCompiler.Received(1).Add(Arg.Is("name2"), Arg.Is("k24"), Arg.Is("v24"));
         }
     }
 }

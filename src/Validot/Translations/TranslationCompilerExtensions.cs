@@ -4,7 +4,7 @@ namespace Validot.Translations
 
     public static class TranslationCompilerExtensions
     {
-        public static void Add(this ITranslationsCompiler @this, string name, IReadOnlyDictionary<string, string> translation)
+        public static void Add(this ITranslationCompiler @this, string name, IReadOnlyDictionary<string, string> translation)
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
             ThrowHelper.NullArgument(translation, nameof(translation));
@@ -15,7 +15,7 @@ namespace Validot.Translations
             }
         }
 
-        public static void Add(this ITranslationsCompiler @this, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations)
+        public static void Add(this ITranslationCompiler @this, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations)
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
             ThrowHelper.NullArgument(translations, nameof(translations));

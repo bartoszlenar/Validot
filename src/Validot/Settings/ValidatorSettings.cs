@@ -2,7 +2,6 @@ namespace Validot.Settings
 {
     using System.Collections.Generic;
 
-    using Validot.Factory;
     using Validot.Settings.Capacities;
     using Validot.Translations;
 
@@ -45,40 +44,6 @@ namespace Validot.Settings
         public ValidatorSettings WithTranslation(string name, string messageKey, string translation)
         {
             _translationCompiler.Add(name, messageKey, translation);
-
-            return this;
-        }
-
-        public ValidatorSettings WithTranslation(string name, IReadOnlyDictionary<string, string> translation)
-        {
-            ThrowHelper.NullArgument(name, nameof(name));
-            ThrowHelper.NullArgument(translation, nameof(translation));
-
-            foreach (var entry in translation)
-            {
-                _translationCompiler.Add(name, entry.Key, entry.Value);
-            }
-
-            return this;
-        }
-
-        public ValidatorSettings WithTranslation(IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations)
-        {
-            ThrowHelper.NullArgument(translations, nameof(translations));
-
-            foreach (var translation in translations)
-            {
-                _translationCompiler.Add(translation.Key, translation.Value);
-            }
-
-            return this;
-        }
-
-        public ValidatorSettings WithTranslation(ITranslationsHolder translationsHolder)
-        {
-            ThrowHelper.NullArgument(translationsHolder, nameof(translationsHolder));
-
-            _translationCompiler.Add(translationsHolder.Translations);
 
             return this;
         }

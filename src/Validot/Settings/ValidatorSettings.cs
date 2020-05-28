@@ -35,7 +35,7 @@ namespace Validot.Settings
             return this;
         }
 
-        public ValidatorSettings WithoutReferenceLoopProtection()
+        public ValidatorSettings WithReferenceLoopProtectionDisabled()
         {
             ReferenceLoopProtection = false;
 

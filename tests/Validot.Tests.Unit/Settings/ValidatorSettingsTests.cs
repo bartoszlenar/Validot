@@ -60,21 +60,21 @@ namespace Validot.Tests.Unit.Settings
             }
 
             [Fact]
-            public void Should_WithoutReferenceLoopProtection_ReturnSelf()
+            public void Should_WithReferenceLoopProtectionDisabled_ReturnSelf()
             {
                 var validatorSettings = new ValidatorSettings();
 
-                var result = validatorSettings.WithoutReferenceLoopProtection();
+                var result = validatorSettings.WithReferenceLoopProtectionDisabled();
 
                 result.Should().BeSameAs(validatorSettings);
             }
 
             [Fact]
-            public void Should_WithoutReferenceLoopProtection_Set_ReferenceLoopProtection_To_False()
+            public void Should_WithReferenceLoopProtectionDisabled_Set_ReferenceLoopProtection_To_False()
             {
                 var validatorSettings = new ValidatorSettings();
 
-                validatorSettings.WithoutReferenceLoopProtection();
+                validatorSettings.WithReferenceLoopProtectionDisabled();
 
                 validatorSettings.ReferenceLoopProtection.Should().BeFalse();
             }

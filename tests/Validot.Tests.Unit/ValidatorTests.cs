@@ -10,7 +10,6 @@ namespace Validot.Tests.Unit
 
     using Validot.Settings;
     using Validot.Settings.Capacities;
-    using Validot.Tests.Unit.Settings;
     using Validot.Translations;
     using Validot.Validation;
 
@@ -39,7 +38,7 @@ namespace Validot.Tests.Unit
             {
                 var settings = new ValidatorSettings();
 
-                settings.WithoutReferenceLoopProtection();
+                settings.WithReferenceLoopProtectionDisabled();
 
                 settings.WithTranslation(new Dictionary<string, IReadOnlyDictionary<string, string>>()
                 {
@@ -153,7 +152,7 @@ namespace Validot.Tests.Unit
             }
             else
             {
-                settings.WithoutReferenceLoopProtection();
+                settings.WithReferenceLoopProtectionDisabled();
             }
 
             var validator = new Validator<ValidationTestData.TestClass>(specification, settings);

@@ -72,18 +72,18 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 if (presence == Presence.Forbidden)
                 {
-                    discoveryContext.Received().AddError(321, true);
+                    discoveryContext.AddError(321, true);
                 }
                 else
                 {
                     if (presence == Presence.Required)
                     {
-                        discoveryContext.Received().AddError(123, true);
+                        discoveryContext.AddError(123, true);
                     }
 
                     for (var i = 0; i < commandScopesCount; ++i)
                     {
-                        commandScopes[i].Received().Discover(Arg.Is(discoveryContext));
+                        commandScopes[i].Discover(Arg.Is(discoveryContext));
                     }
                 }
             });
@@ -99,6 +99,10 @@ namespace Validot.Tests.Unit.Validation.Scopes
                 {
                     commandScopes[i].DidNotReceiveWithAnyArgs().Discover(default);
                 }
+            }
+            else if (presence == Presence.Required)
+            {
+                discoveryContext.Received(1).AddError(123, true);
             }
 
             discoveryContext.DidNotReceiveWithAnyArgs().LeavePath();
@@ -133,7 +137,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 for (var i = 0; i < commandScopesCount; ++i)
                 {
-                    commandScopes[i].Received().Discover(Arg.Is(discoveryContext));
+                    commandScopes[i].Discover(Arg.Is(discoveryContext));
                 }
             });
 
@@ -196,20 +200,20 @@ namespace Validot.Tests.Unit.Validation.Scopes
                 {
                     if (presence == Presence.Required)
                     {
-                        validationContext.Received().AddError(Arg.Is(123), true);
+                        validationContext.AddError(Arg.Is(123), true);
                     }
                 }
                 else
                 {
                     if (presence == Presence.Forbidden)
                     {
-                        validationContext.Received().AddError(Arg.Is(321), true);
+                        validationContext.AddError(Arg.Is(321), true);
                     }
                     else
                     {
                         for (var i = 0; i < commandScopesCount; ++i)
                         {
-                            commandScopes[i].Received().Validate(Arg.Is(model), Arg.Is(validationContext));
+                            commandScopes[i].Validate(Arg.Is(model), Arg.Is(validationContext));
                         }
                     }
                 }
@@ -262,7 +266,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 for (var i = 0; i < commandScopesCount; ++i)
                 {
-                    commandScopes[i].Received().Validate(Arg.Is(model), Arg.Is(validationContext));
+                    commandScopes[i].Validate(Arg.Is(model), Arg.Is(validationContext));
                 }
             });
 
@@ -315,7 +319,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
                 for (var i = 0; i < limit; ++i)
                 {
-                    commandScopes[i].Received().Validate(Arg.Is(model), Arg.Is(validationContext));
+                    commandScopes[i].Validate(Arg.Is(model), Arg.Is(validationContext));
                 }
             });
 

@@ -253,8 +253,8 @@ namespace Validot.Tests.Unit
 
                 Received.InOrder(() =>
                 {
-                    capacityInfo.Received().Feed(NSubstitute.Arg.Any<DiscoveryContext>());
-                    capacityInfo.Received().Feed(NSubstitute.Arg.Any<ValidationContext>());
+                    capacityInfo.Feed(NSubstitute.Arg.Any<DiscoveryContext>());
+                    capacityInfo.Feed(NSubstitute.Arg.Any<ValidationContext>());
                 });
             }
 

@@ -75,7 +75,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
             Received.InOrder(() =>
             {
-                context.Received().EnterPath(Arg.Is(@this.Path));
+                context.EnterPath(Arg.Is(@this.Path));
 
                 if (!@this.ErrorId.HasValue || @this.ErrorMode == ErrorMode.Append)
                 {
@@ -84,10 +84,10 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
                 if (@this.ErrorId.HasValue)
                 {
-                    context.Received().AddError(Arg.Is(@this.ErrorId.Value));
+                    context.AddError(Arg.Is(@this.ErrorId.Value));
                 }
 
-                context.Received().LeavePath();
+                context.LeavePath();
             });
         }
 
@@ -101,16 +101,16 @@ namespace Validot.Tests.Unit.Validation.Scopes
             {
                 if (shouldExecute)
                 {
-                    context.Received().EnterPath(Arg.Is(@this.Path));
+                    context.EnterPath(Arg.Is(@this.Path));
 
                     if (@this.ErrorId.HasValue)
                     {
-                        context.Received().EnableErrorDetectionMode(Arg.Is(@this.ErrorMode), Arg.Is(@this.ErrorId.Value));
+                        context.EnableErrorDetectionMode(Arg.Is(@this.ErrorMode), Arg.Is(@this.ErrorId.Value));
                     }
 
                     callsAssertions(context);
 
-                    context.Received().LeavePath();
+                    context.LeavePath();
                 }
             });
 

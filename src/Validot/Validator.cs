@@ -24,9 +24,9 @@ namespace Validot
 
         private readonly bool _referenceLoopProtectionEnabled;
 
-        public Validator(Specification<T> specification, IValidatorSettings settings = null)
+        public Validator(Specification<T> specification, ValidatorSettings settings = null)
         {
-            Settings = (settings ?? ValidatorSettings.GetDefault()).GetVerified();
+            Settings = settings ?? ValidatorSettings.GetDefault();
 
             _modelScheme = ModelSchemeFactory.Create(specification, Settings.CapacityInfo);
             _messageService = new MessageService(Settings.Translations, _modelScheme.ErrorRegistry, _modelScheme.ErrorMap);
@@ -50,7 +50,7 @@ namespace Validot
             }
         }
 
-        public IValidatorSettings Settings { get; }
+        public ValidatorSettings Settings { get; }
 
         public IValidationResult ErrorMap { get; }
 
@@ -65,7 +65,7 @@ namespace Validot
 
         public IValidationResult Validate(T model, bool failFast = false)
         {
-            var validationContext = new ValidationContext(_modelScheme, failFast,  _referenceLoopProtectionEnabled ? new ReferenceLoopProtectionSettings(model) : null);
+            var validationContext = new ValidationContext(_modelScheme, failFast, _referenceLoopProtectionEnabled ? new ReferenceLoopProtectionSettings(model) : null);
 
             _modelScheme.RootSpecificationScope.Validate(model, validationContext);
 

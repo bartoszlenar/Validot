@@ -1,39 +1,29 @@
 namespace Validot.Settings
 {
     using System.Collections.Generic;
-    using System.Linq;
 
     using Validot.Factory;
     using Validot.Settings.Capacities;
     using Validot.Translations;
 
-    public class ValidatorSettings : IValidatorSettings
+    public class ValidatorSettings
     {
-        private TranslationsCompiler _translationsCompiler = new TranslationsCompiler();
+        private static readonly DisabledCapacityInfo _disabledCapacityInfo = new DisabledCapacityInfo();
+
+        private readonly TranslationsCompiler _translationsCompiler = new TranslationsCompiler();
 
         public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations
         {
             get => _translationsCompiler.Translations;
-            set
-            {
-                if (_translationsCompiler.Translations.Any())
-                {
-                    _translationsCompiler = new TranslationsCompiler();
-                }
-
-                _translationsCompiler.Add(value);
-            }
         }
 
-        public ICapacityInfo CapacityInfo { get; set; }
+        public bool? ReferenceLoopProtection { get; private set; }
 
-        public bool? ReferenceLoopProtection { get; set; }
+        internal ICapacityInfo CapacityInfo { get; private set; } = _disabledCapacityInfo;
 
         public static ValidatorSettings GetDefault()
         {
             var settings = new ValidatorSettings().WithEnglishTranslation();
-
-            settings.CapacityInfo = new DisabledCapacityInfo();
 
             return settings;
         }
@@ -89,6 +79,15 @@ namespace Validot.Settings
             ThrowHelper.NullArgument(translationsHolder, nameof(translationsHolder));
 
             _translationsCompiler.Add(translationsHolder.Translations);
+
+            return this;
+        }
+
+        public ValidatorSettings WithCapacityInfo(ICapacityInfo capacityInfo)
+        {
+            ThrowHelper.NullArgument(capacityInfo, nameof(capacityInfo));
+
+            CapacityInfo = capacityInfo;
 
             return this;
         }

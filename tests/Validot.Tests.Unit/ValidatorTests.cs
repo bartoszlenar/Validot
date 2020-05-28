@@ -34,34 +34,14 @@ namespace Validot.Tests.Unit
 
         public class Settings
         {
-            public static IEnumerable<object[]> Should_ThrowException_When_InvalidSettings_Data()
-            {
-                yield return new object[] { ValidatorSettingsTestData.InvalidBecause_TranslationDictionaryIsNull() };
-                yield return new object[] { ValidatorSettingsTestData.InvalidBecause_TranslationValueIsNull() };
-                yield return new object[] { ValidatorSettingsTestData.InvalidBecause_CapacityInfoIsNull() };
-            }
-
-            [Theory]
-            [MemberData(nameof(Should_ThrowException_When_InvalidSettings_Data))]
-            public void Should_ThrowException_When_InvalidSettings(IValidatorSettings invalidSettings)
-            {
-                Action action = () => _ = new Validator<object>(_ => _, invalidSettings);
-
-                action.Should().Throw<Exception>();
-            }
-
             [Fact]
             public void Should_SetSettings_IfProvided()
             {
-                var settings = Substitute.For<IValidatorSettings>();
+                var settings = new ValidatorSettings();
 
-                var capacityInfo = Substitute.For<ICapacityInfo>();
+                settings.WithoutReferenceLoopProtection();
 
-                settings.CapacityInfo.Returns(capacityInfo);
-
-                settings.ReferenceLoopProtection.Returns(false);
-
-                settings.Translations.Returns(new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                settings.WithTranslation(new Dictionary<string, IReadOnlyDictionary<string, string>>()
                 {
                     ["test1"] = new Dictionary<string, string>()
                     {
@@ -165,9 +145,16 @@ namespace Validot.Tests.Unit
         {
             _ = name;
 
-            var settings = Substitute.For<IValidatorSettings>();
+            var settings = new ValidatorSettings();
 
-            settings.ReferenceLoopProtection.Returns(referenceLoopProtectionEnabled);
+            if (referenceLoopProtectionEnabled)
+            {
+                settings.WithReferenceLoopProtection();
+            }
+            else
+            {
+                settings.WithoutReferenceLoopProtection();
+            }
 
             var validator = new Validator<ValidationTestData.TestClass>(specification, settings);
 
@@ -189,10 +176,7 @@ namespace Validot.Tests.Unit
 
                 capacityInfo.ShouldFeed.Returns(true);
 
-                var settings = new ValidatorSettings()
-                {
-                    CapacityInfo = capacityInfo
-                };
+                var settings = new ValidatorSettings().WithCapacityInfo(capacityInfo);
 
                 _ = new Validator<ValidationTestData.TestClass>(s => s, settings);
 
@@ -208,10 +192,7 @@ namespace Validot.Tests.Unit
 
                 capacityInfo.ShouldFeed.Returns(false);
 
-                var settings = new ValidatorSettings()
-                {
-                    CapacityInfo = capacityInfo
-                };
+                var settings = new ValidatorSettings().WithCapacityInfo(capacityInfo);
 
                 _ = new Validator<ValidationTestData.TestClass>(s => s, settings);
 
@@ -241,10 +222,7 @@ namespace Validot.Tests.Unit
                         counter++;
                     });
 
-                var settings = new ValidatorSettings()
-                {
-                    CapacityInfo = capacityInfo
-                };
+                var settings = new ValidatorSettings().WithCapacityInfo(capacityInfo);
 
                 _ = new Validator<ValidationTestData.TestClass>(specification, settings);
 
@@ -262,10 +240,7 @@ namespace Validot.Tests.Unit
 
                 capacityInfo.ShouldFeed.Returns(true);
 
-                var settings = new ValidatorSettings()
-                {
-                    CapacityInfo = capacityInfo
-                };
+                var settings = new ValidatorSettings().WithCapacityInfo(capacityInfo);
 
                 var validator = new Validator<ValidationTestData.TestClass>(s => s.Rule(m => false), settings);
 
@@ -291,10 +266,7 @@ namespace Validot.Tests.Unit
 
                 capacityInfo.ShouldFeed.Returns(true);
 
-                var settings = new ValidatorSettings()
-                {
-                    CapacityInfo = capacityInfo
-                };
+                var settings = new ValidatorSettings().WithCapacityInfo(capacityInfo);
 
                 var validator = new Validator<ValidationTestData.TestClass>(s => s.Rule(m => true), settings);
 
@@ -314,10 +286,7 @@ namespace Validot.Tests.Unit
 
                 capacityInfo.ShouldFeed.Returns(true);
 
-                var settings = new ValidatorSettings()
-                {
-                    CapacityInfo = capacityInfo
-                };
+                var settings = new ValidatorSettings().WithCapacityInfo(capacityInfo);
 
                 var validator = new Validator<ValidationTestData.TestClass>(s => s.Rule(m => false), settings);
 
@@ -340,10 +309,7 @@ namespace Validot.Tests.Unit
 
                 capacityInfo.ShouldFeed.Returns(true);
 
-                var settings = new ValidatorSettings()
-                {
-                    CapacityInfo = capacityInfo
-                };
+                var settings = new ValidatorSettings().WithCapacityInfo(capacityInfo);
 
                 var validator = new Validator<ValidationTestData.TestClass>(s => s.Rule(m => false), settings);
 
@@ -398,10 +364,7 @@ namespace Validot.Tests.Unit
                         validationCounter++;
                     });
 
-                var settings = new ValidatorSettings()
-                {
-                    CapacityInfo = capacityInfo
-                };
+                var settings = new ValidatorSettings().WithCapacityInfo(capacityInfo);
 
                 var validator = new Validator<ValidationTestData.TestClass>(specification, settings);
 
@@ -462,10 +425,7 @@ namespace Validot.Tests.Unit
                          validationCounter++;
                      });
 
-                 var settings = new ValidatorSettings()
-                 {
-                     CapacityInfo = capacityInfo
-                 };
+                 var settings = new ValidatorSettings().WithCapacityInfo(capacityInfo);
 
                  var validator = new Validator<ValidationTestData.TestClass>(specification, settings);
 

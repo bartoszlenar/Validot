@@ -34,12 +34,12 @@ namespace Validot
             return @this;
         }
 
-        public static ValidatorSettings WithTranslation(this ValidatorSettings @this, ITranslationsHolder translationsHolder)
+        public static ValidatorSettings WithTranslation(this ValidatorSettings @this, ITranslationHolder translationHolder)
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
-            ThrowHelper.NullArgument(translationsHolder, nameof(translationsHolder));
+            ThrowHelper.NullArgument(translationHolder, nameof(translationHolder));
 
-            return @this.WithTranslation(translationsHolder.Translations);
+            return @this.WithTranslation(translationHolder.Translations);
         }
     }
 }

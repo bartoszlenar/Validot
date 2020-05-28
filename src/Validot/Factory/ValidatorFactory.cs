@@ -22,9 +22,9 @@ namespace Validot.Factory
         {
             var initSettings = ValidatorSettings.GetDefault();
 
-            if (specificationHolder is ITranslationsHolder translationsHolder)
+            if (specificationHolder is ITranslationHolder translationHolder)
             {
-                initSettings.WithTranslation(translationsHolder);
+                initSettings.WithTranslation(translationHolder);
             }
 
             if (settings != null)

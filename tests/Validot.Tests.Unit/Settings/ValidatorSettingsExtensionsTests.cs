@@ -353,7 +353,7 @@ namespace Validot.Tests.Unit.Settings
             {
                 var validatorSettings = new ValidatorSettings();
 
-                Action action = () => validatorSettings.WithTranslation(null as ITranslationsHolder);
+                Action action = () => validatorSettings.WithTranslation(null as ITranslationHolder);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
             }

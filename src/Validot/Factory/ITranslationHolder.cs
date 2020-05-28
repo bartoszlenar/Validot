@@ -2,7 +2,7 @@ namespace Validot.Factory
 {
     using System.Collections.Generic;
 
-    public interface ITranslationsHolder
+    public interface ITranslationHolder
     {
         IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; }
     }

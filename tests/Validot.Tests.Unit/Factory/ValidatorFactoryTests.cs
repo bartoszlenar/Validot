@@ -435,7 +435,7 @@ namespace Validot.Tests.Unit.Factory
                     });
             }
 
-            public class TestClassSpecificationAndTranslationHolder : ISpecificationHolder<ValidationTestData.TestClass>, ITranslationsHolder
+            public class TestClassSpecificationAndTranslationHolder : ISpecificationHolder<ValidationTestData.TestClass>, ITranslationHolder
             {
                 public Specification<ValidationTestData.TestClass> Specification { get; set; }
 

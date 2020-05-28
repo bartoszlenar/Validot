@@ -80,7 +80,7 @@ jobs:
   code_coverage:
       needs: [ tests, tests_netframework ]
       if: github.event_name == 'release' || github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
-      runs-on: ubuntu-latest
+      runs-on: macos-latest
       name: Code coverage
       steps:
         - name: Check out code

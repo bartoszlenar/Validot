@@ -10,9 +10,12 @@ namespace Validot.Errors.Args
 
         public TimeArg(string name, T value, Func<T, string, CultureInfo, string> stringify)
         {
-            Name = name ?? throw new ArgumentNullException(nameof(name));
+            ThrowHelper.NullArgument(name, nameof(name));
+            ThrowHelper.NullArgument(stringify, nameof(stringify));
+
+            Name = name;
             Value = value;
-            _stringify = stringify ?? throw new ArgumentNullException(nameof(stringify));
+            _stringify = stringify;
         }
 
         public T Value { get; }

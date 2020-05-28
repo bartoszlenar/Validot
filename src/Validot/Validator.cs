@@ -13,7 +13,7 @@ namespace Validot
 
     public abstract class Validator
     {
-        public static IValidatorFactory Factory { get; } = new ValidatorFactory();
+        public static ValidatorFactory Factory { get; } = new ValidatorFactory();
     }
 
     public class Validator<T> : Validator, IValidator<T>

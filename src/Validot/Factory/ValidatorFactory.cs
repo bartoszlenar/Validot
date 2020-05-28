@@ -4,7 +4,7 @@ namespace Validot.Factory
 
     using Validot.Settings;
 
-    internal class ValidatorFactory : IValidatorFactory
+    public class ValidatorFactory
     {
         public IValidator<T> Create<T>(Specification<T> specification, Func<ValidatorSettings, ValidatorSettings> settings = null)
         {

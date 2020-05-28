@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        dotnet: [2.1.804, 3.1.102]
+        dotnet: [2.1.806, 3.1.300]
     runs-on: ${{ matrix.os }}
     name: Test on ${{ matrix.os }} using dotnet ${{ matrix.dotnet }}
     steps:
@@ -24,21 +24,21 @@ jobs:
       - name: Setup dotnet 2.1 LTS
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 2.1.804
+          dotnet-version: 2.1.806
       - name: Setup dotnet 3.1 LTS
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.102
+          dotnet-version: 3.1.300
       - name: Setup side by side .NET SDKs on Windows
         if: matrix.os == 'windows-latest'
         run: |
-          SET DOTNET_21_ROOT=%DOTNET_ROOT:3.1.102=2.1.804%
+          SET DOTNET_21_ROOT=%DOTNET_ROOT:3.1.300=2.1.806%
           xcopy /s /y /d %DOTNET_31_ROOT% %DOTNET_ROOT%
         shell: cmd
       - name: Setup side by side .NET SDKs on *nix
         if: matrix.os != 'windows-latest'
         run: |
-          rsync -a ${DOTNET_ROOT/3.1.102/2.1.804}/* $DOTNET_ROOT/
+          rsync -a ${DOTNET_ROOT/3.1.300/2.1.806}/* $DOTNET_ROOT/
       - name: Init workflow variables
         run: pwsh .github/workflows/Init-WorkflowVariables.ps1
       - name: Compile
@@ -64,7 +64,7 @@ jobs:
       - name: Setup dotnet 3.1 LTS
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.102
+          dotnet-version: 3.1.300
       - name: Init workflow variables
         run: pwsh .github/workflows/Init-WorkflowVariables.ps1
       - name: Compile
@@ -88,11 +88,11 @@ jobs:
         - name: Setup dotnet 3.1 LTS
           uses: actions/setup-dotnet@v1
           with:
-            dotnet-version: 3.1.102
+            dotnet-version: 3.1.300
         - name: Init workflow variables
           run: pwsh .github/workflows/Init-WorkflowVariables.ps1
         - name: Analyze code coverage
-          run: pwsh build.ps1 --target codecoveragereport --dotnet 3.1.102 --configuration debug --version ${{ env.VALIDOT_VERSION }}
+          run: pwsh build.ps1 --target codecoveragereport --dotnet 3.1.300 --configuration debug --version ${{ env.VALIDOT_VERSION }}
         - name: Upload artifact; code coverage data
           uses: actions/upload-artifact@v1
           with:
@@ -110,7 +110,7 @@ jobs:
             name: Validot.${{ env.VALIDOT_VERSION }}.coverage_report
             path: artifacts/coverage_reports/Validot.${{ env.VALIDOT_VERSION }}.coverage_report
         - name: Publish code coverage
-          run: pwsh build.ps1 --target publishcodecoverage --skip --dotnet 3.1.102 --configuration debug --version ${{ env.VALIDOT_VERSION }} --commitsha ${{ github.sha }} --codecovapikey ${{ secrets.CODECOV_API_KEY }} --required
+          run: pwsh build.ps1 --target publishcodecoverage --skip --dotnet 3.1.300 --configuration debug --version ${{ env.VALIDOT_VERSION }} --commitsha ${{ github.sha }} --codecovapikey ${{ secrets.CODECOV_API_KEY }} --required
   nuget_package:
       needs: [ tests, tests_netframework ]
       if: github.event_name == 'release'
@@ -122,11 +122,11 @@ jobs:
         - name: Setup dotnet 3.1 LTS
           uses: actions/setup-dotnet@v1
           with:
-            dotnet-version: 3.1.102
+            dotnet-version: 3.1.300
         - name: Init workflow variables
           run: pwsh .github/workflows/Init-WorkflowVariables.ps1
         - name: Create package
-          run: pwsh build.ps1 --target nugetpackage --dotnet 3.1.102 --configuration release --commitsha ${{ github.sha }}  --version ${{ env.VALIDOT_VERSION }}
+          run: pwsh build.ps1 --target nugetpackage --dotnet 3.1.300 --configuration release --commitsha ${{ github.sha }}  --version ${{ env.VALIDOT_VERSION }}
         - name: Upload artifact; nuget package
           uses: actions/upload-artifact@v1
           with:
@@ -138,7 +138,7 @@ jobs:
             name: Validot.${{ env.VALIDOT_VERSION }}.snupkg
             path: artifacts/nuget/${{ env.VALIDOT_VERSION }}/Validot.${{ env.VALIDOT_VERSION }}.snupkg
         - name: Publish nuget package
-          run: pwsh build.ps1 --target publishnugetpackage --skip --dotnet 3.1.102 --configuration release --version ${{ env.VALIDOT_VERSION }} --commitsha ${{ github.sha }} --nugetapikey ${{ secrets.NUGET_API_KEY }}
+          run: pwsh build.ps1 --target publishnugetpackage --skip --dotnet 3.1.300 --configuration release --version ${{ env.VALIDOT_VERSION }} --commitsha ${{ github.sha }} --nugetapikey ${{ secrets.NUGET_API_KEY }}
   release_assets:
       needs: [ code_coverage, nuget_package ]
       if: github.event_name == 'release'

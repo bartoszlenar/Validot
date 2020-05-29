@@ -166,7 +166,9 @@ class Build : NukeBuild
                     .SetTreatWarningsAsErrors(!AllowWarnings)
                     .SetProjectFile(testProject)
                     .SetConfiguration(Configuration)
-                    .SetFramework(DotNet));
+                    .SetFramework(DotNet)
+                    .AddProperty("DisableSourceLink", "1")
+                );
             }
         });
 
@@ -174,7 +176,7 @@ class Build : NukeBuild
         .DependsOn(CompileProject, CompileTests);
 
     Target Tests => _ => _
-        .DependsOn(Compile)
+        .DependsOn(CompileTests)
         .ProceedAfterFailure()
         .Executes(() =>
         {
@@ -196,7 +198,7 @@ class Build : NukeBuild
         });
 
     Target CodeCoverage => _ => _
-        .DependsOn(Compile)
+        .DependsOn(CompileTests)
         .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
         .Executes(() =>
         {
@@ -210,6 +212,7 @@ class Build : NukeBuild
                 .AddProperty("CollectCoverage", "true")
                 .AddProperty("CoverletOutput", reportFile)
                 .AddProperty("CoverletOutputFormat", "opencover")
+                .AddProperty("DisableSourceLink", "1")
             );
 
             Logger.Info($"CodeCoverage opencover format file location: {reportFile} ({new FileInfo(reportFile).Length} bytes)");

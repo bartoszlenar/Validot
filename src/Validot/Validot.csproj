@@ -25,7 +25,7 @@
     <None Include="../../assets/logo/validot-icon.png" Pack="true" PackagePath="assets/logo" />
   </ItemGroup>
 
-  <PropertyGroup>
+  <PropertyGroup Condition="'$(CompileConfig)' != 'DEBUG'">
     <Deterministic>true</Deterministic>
     <ContinuousIntegrationBuild Condition="'$(VALIDOT_CI)' == 'true'">true</ContinuousIntegrationBuild>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -33,7 +33,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(CompileConfig)' != 'DEBUG'">
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 

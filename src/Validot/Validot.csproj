@@ -25,18 +25,6 @@
     <None Include="../../assets/logo/validot-icon.png" Pack="true" PackagePath="assets/logo" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(CompileConfig)' != 'DEBUG'">
-    <Deterministic>true</Deterministic>
-    <ContinuousIntegrationBuild Condition="'$(VALIDOT_CI)' == 'true'">true</ContinuousIntegrationBuild>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-  </PropertyGroup>
-
-  <ItemGroup Condition="'$(CompileConfig)' != 'DEBUG'">
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

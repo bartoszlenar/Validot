@@ -9,6 +9,8 @@ namespace Validot.Tests.Functional.Readme
 
     using FluentAssertions;
 
+    using Validot.Testing;
+
     public class QuickStartTest
     {
         public class UserModel
@@ -53,17 +55,14 @@ namespace Validot.Tests.Functional.Readme
 
             var messagesString = result.ToString();
 
-            var expectedMessagesString = string.Join(Environment.NewLine, new[]
-            {
+            var expectedMessagesString = messagesString.ShouldBeStringResult(
+                ExpectedStringContent.MessagesAndCodes,
                 "ERR_EMAIL, ERR_NAME",
                 "",
                 "Email: Must be a valid email address",
-                "Name: Required for underaged user"
-            });
+                "Name: Required for underaged user");
 
-            messagesString.Should().Be(expectedMessagesString);
-
-            result.Codes.Should().ContainInOrder("ERR_EMAIL", "ERR_NAME");
+            result.Codes.Should().Contain("ERR_EMAIL", "ERR_NAME");
 
             result.AnyErrors.Should().BeTrue();
         }

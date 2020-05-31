@@ -220,5 +220,103 @@ namespace Validot.Testing
 
             throw new TestFailedException($"Exception of type {expectedException.FullName} was expected, but no exception has been thrown.");
         }
+
+        public static TestResult ShouldBeStringResult(this string @this, ExpectedStringContent expectedStringContent, params string[] expectedLines)
+        {
+            ThrowHelper.NullArgument(@this, nameof(@this));
+            ThrowHelper.NullArgument(expectedLines, nameof(expectedLines));
+
+            if (expectedLines.Length == 0)
+            {
+                throw new ArgumentException("Empty list of expected lines", nameof(expectedLines));
+            }
+
+            if (expectedStringContent == ExpectedStringContent.Codes)
+            {
+                if (expectedLines.Length != 1)
+                {
+                    throw new ArgumentException($"Expected codes only (all in the single line), but found lines: {expectedLines.Length}", nameof(expectedLines));
+                }
+            }
+
+            if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+            {
+                if (expectedLines.Length < 3)
+                {
+                    throw new ArgumentException($"Expected codes and messages (so at least 3 lines), but found lines: {expectedLines.Length}", nameof(expectedLines));
+                }
+
+                if (!string.IsNullOrEmpty(expectedLines[1]))
+                {
+                    throw new ArgumentException($"Expected codes and messages (divided by a single empty line), but found in second line: {expectedLines[1]}", nameof(expectedLines));
+                }
+
+                if (expectedLines.Skip(2).Any(string.IsNullOrEmpty))
+                {
+                    throw new ArgumentException($"Expected codes and messages (divided by a single empty line), also another empty line", nameof(expectedLines));
+                }
+            }
+
+            if (expectedStringContent == ExpectedStringContent.Messages)
+            {
+                if (expectedLines.Any(string.IsNullOrEmpty))
+                {
+                    throw new ArgumentException($"Expected messages only, but found empty line", nameof(expectedLines));
+                }
+            }
+
+            var hasCodes = expectedStringContent == ExpectedStringContent.Codes || expectedStringContent == ExpectedStringContent.MessagesAndCodes;
+
+            var lines = @this.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+
+            if (lines.Length != expectedLines.Length)
+            {
+                return TestResult.Failed($"Expected amount of lines: {expectedLines.Length}, but found: {lines.Length}");
+            }
+
+            if (hasCodes)
+            {
+                var codes = lines[0].Split(new[] { ", " }, StringSplitOptions.None);
+
+                var expectedCodes = expectedLines[0].Split(new[] { ", " }, StringSplitOptions.None);
+
+                var missingCodes = expectedCodes.Where(expectedCode => codes.All(c => !string.Equals(c, expectedCode, StringComparison.Ordinal))).OrderBy(a => a).ToArray();
+
+                if (missingCodes.Any())
+                {
+                    return TestResult.Failed($"Expected codes that are missing: {string.Join(", ", missingCodes)}");
+                }
+
+                if (codes.Length != expectedCodes.Length)
+                {
+                    return TestResult.Failed($"Expected amount of codes: {expectedCodes.Length}, but found: {codes.Length}");
+                }
+            }
+
+            if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+            {
+                if (!string.IsNullOrEmpty(lines[1]))
+                {
+                    return TestResult.Failed($"Expected codes and messages (divided by a single line), but found in second line: {lines[1]}");
+                }
+            }
+
+            var messageLines = expectedStringContent == ExpectedStringContent.Messages
+                ? lines
+                : lines.Skip(2).ToArray();
+
+            var expectedMessageLines = expectedStringContent == ExpectedStringContent.Messages
+                ? expectedLines
+                : expectedLines.Skip(2).ToArray();
+
+            var missingMessages = expectedMessageLines.Where(expectedMessageLine => messageLines.All(c => !string.Equals(c, expectedMessageLine, StringComparison.Ordinal))).ToArray();
+
+            if (missingMessages.Any())
+            {
+                return TestResult.Failed($"Expected messages that are missing: {string.Join(", ", missingMessages.OrderBy(s => s).Select(s => $"`{s}`"))}");
+            }
+
+            return TestResult.Passed();
+        }
     }
 }

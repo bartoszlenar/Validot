@@ -2,6 +2,7 @@ namespace Validot.Tests.Unit.Testing
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     using FluentAssertions;
     using FluentAssertions.Common;
@@ -1432,6 +1433,448 @@ namespace Validot.Tests.Unit.Testing
                 Action action = () => Tester.TestSingleRule(new object(), specification, false, "message", Arg.Text("arg1", "argValue1"), Arg.Text("arg2", "argValue2"));
 
                 action.Should().ThrowExactly<TestFailedException>().WithMessage("Expected error (for path ``, index 0) arg (name `arg2`) value to be `argValue2`, but found `argValue2X`");
+            }
+        }
+
+        public class ShouldBeStringResult
+        {
+            [Fact]
+            public void Should_ThrowException_When_NullString()
+            {
+                Action action = () =>
+                {
+                    (null as string).ShouldBeStringResult(ExpectedStringContent.Messages, "asd");
+                };
+
+                action.Should().ThrowExactly<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_NullExpectedLines()
+            {
+                Action action = () =>
+                {
+                    "abc".ShouldBeStringResult(ExpectedStringContent.Messages, null as string[]);
+                };
+
+                action.Should().ThrowExactly<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_EmptyExpectedLines()
+            {
+                Action action = () =>
+                {
+                    "abc".ShouldBeStringResult(ExpectedStringContent.Messages, new string[] { });
+                };
+
+                action.Should().ThrowExactly<ArgumentException>().And.Message.Should().StartWith("Empty list of expected lines");
+            }
+
+            [Theory]
+            [InlineData(2)]
+            [InlineData(3)]
+            [InlineData(10)]
+            public void Should_ThrowException_When_CodesExpected_And_MoreThanOneLine(int lines)
+            {
+                Action action = () =>
+                {
+                    "abc".ShouldBeStringResult(
+                        ExpectedStringContent.Codes,
+                        Enumerable.Range(0, lines).Select(i => $"{i}").ToArray()
+                    );
+                };
+
+                action.Should().ThrowExactly<ArgumentException>().And.Message.Should().StartWith($"Expected codes only (all in the single line), but found lines: {lines}");
+            }
+
+            [Theory]
+            [InlineData(1)]
+            [InlineData(2)]
+            public void Should_ThrowException_When_MessagesAndCodesExpected_And_LessThanThreeLines(int lines)
+            {
+                Action action = () =>
+                {
+                    "abc".ShouldBeStringResult(
+                        ExpectedStringContent.MessagesAndCodes,
+                        Enumerable.Range(0, lines).Select(i => $"{i}").ToArray()
+                    );
+                };
+
+                action.Should().ThrowExactly<ArgumentException>().And.Message.Should().StartWith($"Expected codes and messages (so at least 3 lines), but found lines: {lines}");
+            }
+
+            [Theory]
+            [InlineData(3)]
+            [InlineData(5)]
+            [InlineData(10)]
+            public void Should_ThrowException_When_MessagesAndCodesExpected_And_SecondLineNotEmpty(int lines)
+            {
+                var expectedLines = Enumerable.Range(0, lines).Select(i => $"{i}").ToArray();
+
+                Action action = () =>
+                {
+                    "abc".ShouldBeStringResult(
+                        ExpectedStringContent.MessagesAndCodes,
+                        expectedLines
+                    );
+                };
+
+                action.Should().ThrowExactly<ArgumentException>().And.Message.Should().StartWith($"Expected codes and messages (divided by a single empty line), but found in second line: {expectedLines[1]}");
+            }
+
+            [Theory]
+            [InlineData(3)]
+            [InlineData(5)]
+            [InlineData(10)]
+            public void Should_ThrowException_When_MessagesAndCodesExpected_And_ExtraEmptyLine(int lines)
+            {
+                var expectedLines = Enumerable.Range(0, lines).Select(i => $"{i}").ToArray();
+                expectedLines[1] = "";
+                expectedLines[lines - 1] = "";
+
+                Action action = () =>
+                {
+                    "abc".ShouldBeStringResult(ExpectedStringContent.MessagesAndCodes, expectedLines);
+                };
+
+                action.Should().ThrowExactly<ArgumentException>().And.Message.Should().StartWith("Expected codes and messages (divided by a single empty line), also another empty line");
+            }
+
+            [Theory]
+            [InlineData(1)]
+            [InlineData(3)]
+            [InlineData(5)]
+            [InlineData(10)]
+            public void Should_ThrowException_When_MessagesExpected_And_EmptyLine(int lines)
+            {
+                var expectedLines = Enumerable.Range(0, lines).Select(i => $"{i}").ToArray();
+                expectedLines[lines - 1] = "";
+
+                Action action = () =>
+                {
+                    "abc".ShouldBeStringResult(ExpectedStringContent.Messages, expectedLines);
+                };
+
+                action.Should().ThrowExactly<ArgumentException>().And.Message.Should().StartWith($"Expected messages only, but found empty line");
+            }
+
+            [Theory]
+            [InlineData(1, 3, ExpectedStringContent.Messages)]
+            [InlineData(5, 1, ExpectedStringContent.Messages)]
+            [InlineData(5, 3, ExpectedStringContent.MessagesAndCodes)]
+            [InlineData(8, 9, ExpectedStringContent.MessagesAndCodes)]
+            public void Should_Fail_When_DifferentLineAmount(int linesCount, int expectedLinesCount, ExpectedStringContent expectedStringContent)
+            {
+                var lines = Enumerable.Range(0, linesCount).Select(i => $"{i}").ToArray();
+                var expectedLines = Enumerable.Range(0, expectedLinesCount).Select(i => $"{i}").ToArray();
+
+                if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+                {
+                    expectedLines[1] = "";
+                    lines[1] = "";
+                }
+
+                var input = string.Join(Environment.NewLine, lines);
+
+                var result = input.ShouldBeStringResult(expectedStringContent, expectedLines);
+
+                result.Success.Should().BeFalse();
+                result.Message.Should().Be($"Expected amount of lines: {expectedLinesCount}, but found: {lines.Length}");
+            }
+
+            public static IEnumerable<object[]> Should_Fail_When_MissingCodes_Data()
+            {
+                foreach (var expectedStringContent in new[] { ExpectedStringContent.Codes, ExpectedStringContent.MessagesAndCodes })
+                {
+                    yield return new object[]
+                    {
+                        "a, b, c, d",
+                        "a, b, c, d, e, f, g",
+                        "e, f, g",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        "a, b, c, d, e",
+                        "a, b, c, d, e, f, g",
+                        "f, g",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        "a, b, c, d, e, f",
+                        "a, b, c, d, e, f, g",
+                        "g",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        "a, c, e, f",
+                        "a, b, c, d, e, f, g",
+                        "b, d, g",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        "f",
+                        "a, b, c, d, e, f, g",
+                        "a, b, c, d, e, g",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        "e, c, a",
+                        "a, b, c, d, e, f, g",
+                        "b, d, f, g",
+                        expectedStringContent
+                    };
+                }
+            }
+
+            [Theory]
+            [MemberData(nameof(Should_Fail_When_MissingCodes_Data))]
+            public void Should_Fail_When_MissingCodes(string codesString, string expectedCodesString, string missingCodesString, ExpectedStringContent expectedStringContent)
+            {
+                if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+                {
+                    codesString += string.Join(Environment.NewLine, new[] { Environment.NewLine, "m1", "m2", "m3" });
+                    expectedCodesString += string.Join(Environment.NewLine, new[] { Environment.NewLine, "m1", "m2", "m3" });
+                }
+
+                var result = codesString.ShouldBeStringResult(expectedStringContent, expectedCodesString.Split(new[] { Environment.NewLine }, StringSplitOptions.None));
+
+                result.Success.Should().BeFalse();
+                result.Message.Should().Be($"Expected codes that are missing: {missingCodesString}");
+            }
+
+            public static IEnumerable<object[]> Should_Fail_When_InvalidAmountOfCodes_Data()
+            {
+                foreach (var expectedStringContent in new[] { ExpectedStringContent.Codes, ExpectedStringContent.MessagesAndCodes })
+                {
+                    yield return new object[]
+                    {
+                        "a, b, c, d, e, f, g, A, B",
+                        "a, b, c, d, e, f, g",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        "a, b, c, d, e, f, g",
+                        "a, b, c, d, e, f",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        "a, b, c, d, e, f, g",
+                        "a, c, e, f",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        "a, b, c, d, e, f, g",
+                        "a, b, c, d, e, g",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        "a, b, c, d, e, f, g, g, a",
+                        "a, b, c, d, e, f, g",
+                        expectedStringContent
+                    };
+                }
+            }
+
+            [Theory]
+            [MemberData(nameof(Should_Fail_When_InvalidAmountOfCodes_Data))]
+            public void Should_Fail_When_InvalidAmountOfCodes(string codesString, string expectedCodesString, ExpectedStringContent expectedStringContent)
+            {
+                var codeAmount = codesString.Split(new[] { ", " }, StringSplitOptions.None).Length;
+                var expectedCodeAmount = expectedCodesString.Split(new[] { ", " }, StringSplitOptions.None).Length;
+
+                if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+                {
+                    codesString += string.Join(Environment.NewLine, new[] { Environment.NewLine, "m1", "m2", "m3" });
+                    expectedCodesString += string.Join(Environment.NewLine, new[] { Environment.NewLine, "m1", "m2", "m3" });
+                }
+
+                var result = codesString.ShouldBeStringResult(expectedStringContent, expectedCodesString.Split(new[] { Environment.NewLine }, StringSplitOptions.None));
+
+                result.Success.Should().BeFalse();
+                result.Message.Should().Be($"Expected amount of codes: {expectedCodeAmount}, but found: {codeAmount}");
+            }
+
+            [Theory]
+            [InlineData(1)]
+            [InlineData(5)]
+            [InlineData(10)]
+            public void Should_Fail_When_ExpectingMessagesAndCodes_And_SecondLineIsNotEmpty(int linesCount)
+            {
+                var lines = Enumerable.Range(0, linesCount + 2).Select(i => $"{i}").ToArray();
+                lines[0] = "a, b, c";
+                lines[1] = "_not_empty_";
+
+                var expectedLines = Enumerable.Range(0, linesCount + 2).Select(i => $"{i}").ToArray();
+                expectedLines[0] = "a, b, c";
+                expectedLines[1] = string.Empty;
+
+                var input = string.Join(Environment.NewLine, lines);
+
+                var result = input.ShouldBeStringResult(ExpectedStringContent.MessagesAndCodes, expectedLines);
+
+                result.Success.Should().BeFalse();
+                result.Message.Should().Be($"Expected codes and messages (divided by a single line), but found in second line: _not_empty_");
+            }
+
+            public static IEnumerable<object[]> Should_Fail_When_MissingMessages_Data()
+            {
+                foreach (var expectedStringContent in new[] { ExpectedStringContent.Messages, ExpectedStringContent.MessagesAndCodes })
+                {
+                    yield return new object[]
+                    {
+                        new[] { "a", "b", "c", "X" },
+                        new[] { "a", "b", "c", "e" },
+                        "`e`",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        new[] { "c", "a", "X", "b" },
+                        new[] { "a", "b", "c", "e" },
+                        "`e`",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        new[] { "c", "X", "a", "b", },
+                        new[] { "a", "b", "c", "e" },
+                        "`e`",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        new[] { "a", "b", "c", "X", "Y" },
+                        new[] { "a", "b", "c", "e", "f" },
+                        "`e`, `f`",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        new[] { "X", "c", "a", "Y", "b" },
+                        new[] { "a", "b", "c", "e", "f" },
+                        "`e`, `f`",
+                        expectedStringContent
+                    };
+
+                    yield return new object[]
+                    {
+                        new[] { "a", "X", "Y", "X", "Y" },
+                        new[] { "a", "b", "c", "e", "f" },
+                        "`b`, `c`, `e`, `f`",
+                        expectedStringContent
+                    };
+                }
+            }
+
+            [Theory]
+            [MemberData(nameof(Should_Fail_When_MissingMessages_Data))]
+            public void Should_Fail_When_MissingMessages(string[] messages, string[] expectedMessages, string missingMessages, ExpectedStringContent expectedStringContent)
+            {
+                if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+                {
+                    var codesLines = new[]
+                    {
+                        "a, b, c",
+                        ""
+                    };
+
+                    messages = codesLines.Concat(messages).ToArray();
+                    expectedMessages = codesLines.Concat(expectedMessages).ToArray();
+                }
+
+                var input = string.Join(Environment.NewLine, messages);
+
+                var result = input.ShouldBeStringResult(expectedStringContent, expectedMessages);
+
+                result.Success.Should().BeFalse();
+                result.Message.Should().Be($"Expected messages that are missing: {missingMessages}");
+            }
+
+            public static IEnumerable<object[]> Should_Succeed_Data()
+            {
+                yield return new object[]
+                {
+                    new[] { "a, b, c, d, e", "", "M1", "M2", "M3" },
+                    new[] { "a, b, c, d, e", "", "M1", "M2", "M3" },
+                    ExpectedStringContent.MessagesAndCodes
+                };
+
+                yield return new object[]
+                {
+                    new[] { "e, d, c, b, a", "", "M3", "M2", "M1" },
+                    new[] { "a, b, c, d, e", "", "M1", "M2", "M3" },
+                    ExpectedStringContent.MessagesAndCodes
+                };
+
+                yield return new object[]
+                {
+                    new[] { "c, d, e, a, b", "", "M1" },
+                    new[] { "a, b, c, d, e", "", "M1" },
+                    ExpectedStringContent.MessagesAndCodes
+                };
+
+                yield return new object[]
+                {
+                    new[] { "M1", "M2", "M3" },
+                    new[] { "M1", "M2", "M3" },
+                    ExpectedStringContent.Messages
+                };
+
+                yield return new object[]
+                {
+                    new[] { "M3", "M2", "M1" },
+                    new[] { "M1", "M2", "M3" },
+                    ExpectedStringContent.Messages
+                };
+
+                yield return new object[]
+                {
+                    new[] { "c, d, e, a, b", },
+                    new[] { "a, b, c, d, e" },
+                    ExpectedStringContent.Codes
+                };
+
+                yield return new object[]
+                {
+                    new[] { "a, b, c, d, e" },
+                    new[] { "a, b, c, d, e" },
+                    ExpectedStringContent.Codes
+                };
+            }
+
+            [Theory]
+            [MemberData(nameof(Should_Succeed_Data))]
+            public void Should_Succeed(string[] messages, string[] expectedMessages, ExpectedStringContent expectedStringContent)
+            {
+                var input = string.Join(Environment.NewLine, messages);
+
+                var result = input.ShouldBeStringResult(expectedStringContent, expectedMessages);
+
+                result.Success.Should().BeTrue();
+                result.Message.Should().BeNullOrEmpty();
             }
         }
     }

@@ -10,6 +10,7 @@ namespace Validot.Tests.Unit.Results
 
     using Validot.Errors;
     using Validot.Results;
+    using Validot.Testing;
 
     using Xunit;
 
@@ -775,12 +776,11 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorsRegistry, messageService);
 
-                ShouldHaveMessagesOnly(validationResult.ToString(), new[]
-                {
+                validationResult.ToString().ShouldBeStringResult(
+                    ExpectedStringContent.Messages,
                     "path1: message11",
                     "path2: message12",
-                    "path2: message22"
-                });
+                    "path2: message22");
 
                 messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
                 messageService.ReceivedWithAnyArgs(1).GetMessages(default);
@@ -824,21 +824,13 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
-                ShouldHaveCodesAndMessages(
-                    validationResult.ToString(),
-                    new[]
-                    {
-                        "CODE1",
-                        "CODE2",
-                        "CODE3",
-                        "CODE4"
-                    },
-                    new[]
-                    {
-                        "path1: message11",
-                        "path2: message12",
-                        "path2: message22"
-                    });
+                validationResult.ToString().ShouldBeStringResult(
+                    ExpectedStringContent.MessagesAndCodes,
+                    "CODE1, CODE2, CODE3, CODE4",
+                    "",
+                    "path1: message11",
+                    "path2: message12",
+                    "path2: message22");
 
                 messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
                 messageService.ReceivedWithAnyArgs(1).GetMessages(default);
@@ -876,14 +868,11 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
-                ShouldHaveMessagesOnly(
-                    validationResult.ToString("translation2"),
-                    new[]
-                    {
-                        "path1: MESSAGE11",
-                        "path2: MESSAGE12",
-                        "path2: MESSAGE22"
-                    });
+                validationResult.ToString("translation2").ShouldBeStringResult(
+                    ExpectedStringContent.Messages,
+                    "path1: MESSAGE11",
+                    "path2: MESSAGE12",
+                    "path2: MESSAGE22");
 
                 messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
                 messageService.ReceivedWithAnyArgs(1).GetMessages(default);
@@ -934,21 +923,13 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
-                ShouldHaveCodesAndMessages(
-                    validationResult.ToString("translation2"),
-                    new[]
-                    {
-                        "CODE1",
-                        "CODE2",
-                        "CODE3",
-                        "CODE4"
-                    },
-                    new[]
-                    {
-                        "path1: MESSAGE11",
-                        "path2: MESSAGE12",
-                        "path2: MESSAGE22"
-                    });
+                validationResult.ToString("translation2").ShouldBeStringResult(
+                    ExpectedStringContent.MessagesAndCodes,
+                    "CODE1, CODE2, CODE3, CODE4",
+                    "",
+                    "path1: MESSAGE11",
+                    "path2: MESSAGE12",
+                    "path2: MESSAGE22");
 
                 messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>("translation2"));
                 messageService.ReceivedWithAnyArgs(1).GetMessages(default);
@@ -978,13 +959,9 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
-                ShouldHaveCodesOnly(
-                    validationResult.ToString(),
-                    new[]
-                    {
-                        "CODE1",
-                        "CODE2"
-                    });
+                validationResult.ToString().ShouldBeStringResult(
+                    ExpectedStringContent.Codes,
+                    "CODE1, CODE2");
 
                 messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
                 messageService.ReceivedWithAnyArgs(1).GetMessages(default);
@@ -1024,86 +1001,80 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
-                ShouldHaveCodesOnly(
-                    validationResult.ToString(),
-                    new[]
-                    {
-                        "CODE1",
-                        "CODE2",
-                        "CODE3",
-                        "CODE4"
-                    });
+                validationResult.ToString().ShouldBeStringResult(
+                    ExpectedStringContent.Codes,
+                    "CODE1, CODE2, CODE3, CODE4");
 
                 messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
                 messageService.ReceivedWithAnyArgs(1).GetMessages(default);
             }
 
-            private static void ShouldHaveMessagesOnly(string validationResult, IReadOnlyList<string> messages) => ShouldHaveCodesAndMessages(validationResult, null, messages);
-
-            private static void ShouldHaveCodesOnly(string validationResult, IReadOnlyList<string> codes) => ShouldHaveCodesAndMessages(validationResult, codes, null);
-
-            private static void ShouldHaveCodesAndMessages(string validationResult, IReadOnlyList<string> codes, IReadOnlyList<string> messages)
-            {
-                validationResult.Should().NotBeNullOrEmpty();
-
-                var anyCodes = codes?.Any() == true;
-                var anyMessages = messages?.Any() == true;
-
-                if (!anyCodes && !anyMessages)
-                {
-                    validationResult.Should().Be("(no error output)");
-
-                    return;
-                }
-
-                if (anyCodes)
-                {
-                    if (anyMessages)
-                    {
-                        validationResult.Should().Contain(Environment.NewLine);
-                    }
-                    else
-                    {
-                        validationResult.Should().NotContain(Environment.NewLine);
-                    }
-
-                    var codesLine = anyMessages
-                        ? validationResult.Substring(0, validationResult.IndexOf(Environment.NewLine, StringComparison.Ordinal))
-                        : validationResult;
-
-                    var extractedCodes = codesLine.Split(new[] { ", " }, StringSplitOptions.None);
-
-                    extractedCodes.Should().HaveCount(codes.Count);
-                    extractedCodes.Should().Contain(codes);
-                    codes.Should().Contain(extractedCodes, because: "(reversed)");
-                }
-
-                if (anyMessages)
-                {
-                    string messagesPart;
-
-                    if (anyCodes)
-                    {
-                        messagesPart = validationResult.Substring(validationResult.IndexOf(Environment.NewLine, StringComparison.Ordinal));
-
-                        messagesPart.Should().StartWith(Environment.NewLine);
-                        messagesPart = messagesPart.Substring(Environment.NewLine.Length);
-
-                        messagesPart.Should().StartWith(Environment.NewLine);
-                        messagesPart = messagesPart.Substring(Environment.NewLine.Length);
-                    }
-                    else
-                    {
-                        messagesPart = validationResult;
-                    }
-
-                    var lines = messagesPart.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-
-                    lines.Should().Contain(messages);
-                    messages.Should().Contain(lines, because: "(reversed)");
-                    lines.Should().HaveCount(messages.Count);
-                }
-            }
+            // private static void ShouldHaveMessagesOnly(string validationResult, IReadOnlyList<string> messages) => ShouldHaveCodesAndMessages(validationResult, null, messages);
+            //
+            // private static void ShouldHaveCodesOnly(string validationResult, IReadOnlyList<string> codes) => ShouldHaveCodesAndMessages(validationResult, codes, null);
+            //
+            // private static void ShouldHaveCodesAndMessages(string validationResult, IReadOnlyList<string> codes, IReadOnlyList<string> messages)
+            // {
+            //     validationResult.Should().NotBeNullOrEmpty();
+            //
+            //     var anyCodes = codes?.Any() == true;
+            //     var anyMessages = messages?.Any() == true;
+            //
+            //     if (!anyCodes && !anyMessages)
+            //     {
+            //         validationResult.Should().Be("(no error output)");
+            //
+            //         return;
+            //     }
+            //
+            //     if (anyCodes)
+            //     {
+            //         if (anyMessages)
+            //         {
+            //             validationResult.Should().Contain(Environment.NewLine);
+            //         }
+            //         else
+            //         {
+            //             validationResult.Should().NotContain(Environment.NewLine);
+            //         }
+            //
+            //         var codesLine = anyMessages
+            //             ? validationResult.Substring(0, validationResult.IndexOf(Environment.NewLine, StringComparison.Ordinal))
+            //             : validationResult;
+            //
+            //         var extractedCodes = codesLine.Split(new[] { ", " }, StringSplitOptions.None);
+            //
+            //         extractedCodes.Should().HaveCount(codes.Count);
+            //         extractedCodes.Should().Contain(codes);
+            //         codes.Should().Contain(extractedCodes, because: "(reversed)");
+            //     }
+            //
+            //     if (anyMessages)
+            //     {
+            //         string messagesPart;
+            //
+            //         if (anyCodes)
+            //         {
+            //             messagesPart = validationResult.Substring(validationResult.IndexOf(Environment.NewLine, StringComparison.Ordinal));
+            //
+            //             messagesPart.Should().StartWith(Environment.NewLine);
+            //             messagesPart = messagesPart.Substring(Environment.NewLine.Length);
+            //
+            //             messagesPart.Should().StartWith(Environment.NewLine);
+            //             messagesPart = messagesPart.Substring(Environment.NewLine.Length);
+            //         }
+            //         else
+            //         {
+            //             messagesPart = validationResult;
+            //         }
+            //
+            //         var lines = messagesPart.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            //
+            //         lines.Should().Contain(messages);
+            //         messages.Should().Contain(lines, because: "(reversed)");
+            //         lines.Should().HaveCount(messages.Count);
+            //     }
+            // }
         }
     }
 }

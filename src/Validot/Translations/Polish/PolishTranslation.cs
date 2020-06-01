@@ -11,12 +11,22 @@ namespace Validot.Translations
             [MessageKey.Global.Forbidden] = "Zakazane",
             [MessageKey.Global.ReferenceLoop] = "(pętla referencji)",
 
+            [MessageKey.BoolType.True] = "Musi być prawdą",
+            [MessageKey.BoolType.False] = "Musi byc fałszem",
+
+            [MessageKey.CharType.EqualToIgnoreCase] = "Musi być równe {value} (ignorując wielkość liter)",
+            [MessageKey.CharType.NotEqualToIgnoreCase] = "Musi nie być równe {value} (ignorując wielkość liter)",
+
             [MessageKey.GuidType.EqualTo] = "Musi być równe {value}",
             [MessageKey.GuidType.NotEqualTo] = "Musi nie być równe {value}",
             [MessageKey.GuidType.NotEmpty] = "Musi nie być samymi zerami",
 
-            [MessageKey.BoolType.True] = "Musi być prawdą",
-            [MessageKey.BoolType.False] = "Musi byc fałszem",
+            [MessageKey.Collections.EmptyCollection] = "Musi być puste",
+            [MessageKey.Collections.NotEmptyCollection] = "Musi nie być puste",
+            [MessageKey.Collections.ExactCollectionSize] = "Musi zawierać dokładnie {size} elementów",
+            [MessageKey.Collections.MaxCollectionSize] = "Musi zawierać maksymalnie {size} elementów",
+            [MessageKey.Collections.MinCollectionSize] = "Musi zawierać minimalnie {size} elementów",
+            [MessageKey.Collections.CollectionSizeBetween] = "Musi zawierać pomiędzy {min} a {max} elementów",
 
             [MessageKey.Numbers.EqualTo] = "Musi być równe {value}",
             [MessageKey.Numbers.NotEqualTo] = "Musi nie być równe {value}",
@@ -48,9 +58,6 @@ namespace Validot.Translations
             [MessageKey.Texts.Matches] = "Musi spełniać wzorzec RegEx {pattern}",
             [MessageKey.Texts.StartsWith] = "Musi zaczynać się od {value}",
             [MessageKey.Texts.EndsWith] = "Musi kończyć się od {value}",
-
-            [MessageKey.CharType.EqualToIgnoreCase] = "Musi być równe {value} (ignorując wielkość liter)",
-            [MessageKey.CharType.NotEqualToIgnoreCase] = "Musi nie być równe {value} (ignorując wielkość liter)",
 
             [MessageKey.Times.EqualTo] = "Musi być równe {value}",
             [MessageKey.Times.NotEqualTo] = "Musi nie być równe {value}",

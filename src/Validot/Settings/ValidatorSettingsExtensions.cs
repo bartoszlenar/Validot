@@ -2,7 +2,6 @@ namespace Validot
 {
     using System.Collections.Generic;
 
-    using Validot.Factory;
     using Validot.Settings;
 
     public static class ValidatorSettingsExtensions

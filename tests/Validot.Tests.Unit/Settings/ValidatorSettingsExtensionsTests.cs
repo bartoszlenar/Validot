@@ -5,7 +5,6 @@ namespace Validot.Tests.Unit.Settings
 
     using FluentAssertions;
 
-    using Validot.Factory;
     using Validot.Settings;
     using Validot.Tests.Unit.Translations;
 

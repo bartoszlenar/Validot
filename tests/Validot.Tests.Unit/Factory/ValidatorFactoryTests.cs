@@ -2,7 +2,6 @@ namespace Validot.Tests.Unit.Factory
 {
     using System.Collections.Generic;
 
-    using Validot.Factory;
     using Validot.Tests.Unit.Settings;
     using Validot.Tests.Unit.Translations;
     using Validot.Translations;

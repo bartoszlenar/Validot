@@ -29,12 +29,7 @@
     <img src="https://img.shields.io/github/release-date-pre/bartoszlenar/Validot?include_prereleases&style=flat-square&label=last%20release">
   </a>
   <a href="https://github.com/bartoszlenar/Validot/releases">
-    <img src="https://img.shields.io/github/v/release/bartoszlenar/Validot?include_prereleases&style=flat-square&label=last%20release">
-  </a>
-  <a>
-  </a>
-  <a href="https://github.com/bartoszlenar/Validot/milestone/1">
-    <img alt="GitHub milestone" src="https://img.shields.io/github/milestones/progress/bartoszlenar/Validot/1?label=milestone%20v1.0&style=flat-square">
+    <img src="https://img.shields.io/github/v/release/bartoszlenar/Validot?include_prereleases&style=flat-square&label=last%20release%20version">
   </a>
 </p>
 
@@ -52,7 +47,7 @@
       Validot vs FluentValidation
     </a>
     |
-    <a href="#tech-info">
+    <a href="#project-info">
       Project info
     </a>
     |
@@ -68,13 +63,13 @@
 
 ## Quickstart
 
-Add the the Validot nuget package to your project using dotnet CLI:
+Add the Validot nuget package to your project using dotnet CLI:
 
 ```
 dotnet add package Validot
 ```
 
-All features are accessible after referencing single namespace:
+All the features are accessible after referencing single namespace:
 
 
 ``` csharp
@@ -95,7 +90,7 @@ Specification<UserModel> specification = _ => _
         .Rule(name => name.All(char.IsLetterOrDigit)).WithMessage("Must contain only letter or digits")
     )
     .Rule(m => m.Age >= 18 || m.Name != null)
-        .WithName("Name")
+        .WithPath("Name")
         .WithMessage("Required for underaged user")
         .WithExtraCode("ERR_NAME");
 ```
@@ -114,18 +109,23 @@ var model = new UserModel(email: "inv@lidv@lue", age: 14);
 var result = validator.Validate(model);
 ```
 
-The result contains all errors information. Without retriggering the validation process you can extract the desired form of an output.
+The result object contains all information about the errors. Without retriggering the validation process you can extract the desired form of an output.
 
 ``` csharp
-result.ToMessagesString();
-// Email: Must be a valid email address
-// Name: Required for underaged user
+result.AnyErrors; // bool flag:
+// true
 
-result.ToCodesList();
+result.MessageMap["Email"] // collection of messages for "Email":
+// [ "Must be a valid email address" ]
+
+result.Codes; // collection of all the codes from the model:
 // [ "ERR_EMAIL", "ERR_NAME" ]
 
-result.AnyErrors;
-// true
+result.ToString(); // compact printing of codes and messages:
+// ERR_EMAIL, ERR_NAME
+//
+// Email: Must be a valid email address
+// Name: Required for underaged user
 ```
 
 * [See this example's real code](../tests/Validot.Tests.Functional/Readme/QuickStartTest.cs)
@@ -134,22 +134,20 @@ result.AnyErrors;
 
 ### Advanced fluent API, inline
 
-No more obligatory if-ology around input models or separate classes wrapping just validation logic. Write specifications inline with simple, human-readable fluent API. Native support for properties and fields, structs and classes, nullables, collections, nested members... and all of the possible combinations!
+No more obligatory if-ology around input models or separate classes wrapping just validation logic. Write specifications inline with simple, human-readable fluent API. Native support for properties and fields, structs and classes, nullables, collections, nested members and all of the possible combinations.
 
 ``` csharp
-Specification<string> nameSpecification = _ => _
+Specification<string> nameSpecification = s => s
     .LengthBetween(5, 50)
     .SingleLine()
     .Rule(name => name.All(char.IsLetterOrDigit));
 
-
-Specification<string> emailSpecification = _ => _
+Specification<string> emailSpecification = s => s
     .Email()
-    .Rule(email => email.All(char.IsLowerCase)).WithMessage("Must contain only lower case characters");
+    .Rule(email => email.All(char.IsLower)).WithMessage("Must contain only lower case characters");
 
-
-Specification<UserModel> userSpecification = _ => _
-    .Member(m => Name, nameSpecification).WithMessage("Must comply with name rules")
+Specification<UserModel> userSpecification = s => s
+    .Member(m => m.Name, nameSpecification).WithMessage("Must comply with name rules")
     .Member(m => m.PrimaryEmail, emailSpecification)
     .Member(m => m.AlternativeEmails, m => m
         .Optional()
@@ -158,7 +156,7 @@ Specification<UserModel> userSpecification = _ => _
     )
     .Rule(user => {
 
-      return user.PrimaryEmail == null || user.AlternativeEmails?.Contains(user.PrimaryEmail) == false;
+        return user.PrimaryEmail == null || user.AlternativeEmails?.Contains(user.PrimaryEmail) == false;
 
     }).WithMessage("Alternative emails must not contain the primary email address");
 ```
@@ -171,23 +169,31 @@ Specification<UserModel> userSpecification = _ => _
 Compact, highly optimized and thread-safe objects to handle the validation.
 
 ``` csharp
+Specification<BookModel> bookSpecification = s => s
+    .Optional()
+    .Member(m => m.AuthorEmail, m => m.Optional().Email())
+    .Member(m => m.Title, m => m.NotEmpty().LengthBetween(1, 100))
+    .Member(m => m.Price, m => m.NonNegative());
+
 var bookValidator =  Validator.Factory.Create(bookSpecification);
 
 services.AddSingleton<IValidator<BookModel>>(bookValidator);
 ```
 
 ``` csharp
+var bookModel = new BookModel() { AuthorEmail = "inv@lid_em@il", Price = 10 };
+
 bookValidator.IsValid(bookModel);
 // false
 
-bookValidator.Validate(bookModel).ToMessagesString();
+bookValidator.Validate(bookModel).ToString();
 // AuthorEmail: Must be a valid email address
 // Title: Required
 
-bookValidator.Validate(bookModel, failFast: true).ToMessagesString();
+bookValidator.Validate(bookModel, failFast: true).ToString();
 // AuthorEmail: Must be a valid email address
 
-bookValidator.ErrorMap.ToMessagesString(); // ErrorMap contains all of the possible errors
+bookValidator.Template.ToString(); // Template contains all of the possible errors:
 // AuthorEmail: Must be a valid email address
 // Title: Required
 // Title: Must not be empty
@@ -196,8 +202,7 @@ bookValidator.ErrorMap.ToMessagesString(); // ErrorMap contains all of the possi
 ```
 
 * [What Validator is and how it works](../docs/DOCUMENTATION.md#validator)
-* [More about error map and how to use it](../docs/DOCUMENTATION.md#error-map)
-
+* [More about template and how to use it](../docs/DOCUMENTATION.md#template)
 
 ### Results
 
@@ -209,13 +214,21 @@ var validationResult = validator.Validate(signUpModel);
 
 if (validationResult.AnyErrors)
 {
-    _logger.LogError("Errors in incoming SignUpModel: {errors}", validationResult.ToMessagesString());
+    // check if a specific code has been recorded for Email property:
+    if (validationResult.CodeMap["Email"].Contains("DOMAIN_BANNED"))
+    {
+        _actions.RecordBannedDomainRegistrationAttempt(signUpModel.Email);
+    }
 
-    return new SignUpFailureResult
+    // save all messages and codes printing into the logs
+    _logger.LogError("Errors in incoming SignUpModel: {errors}", validationResult.ToString());
+
+    // return all error codes to the frontend
+    return new SignUpActionResult
     {
         Success = false,
-        ErrorCodes = validationResult.ToCodesList(),
-    }
+        ErrorCodes = validationResult.Codes,
+    };
 }
 ```
 
@@ -224,7 +237,7 @@ if (validationResult.AnyErrors)
 
 ### Rules
 
-Tons of rules available out of the box. Plus an easy way to define your own with full support of Validot internal features like parametrized messages.
+Tons of rules available out of the box. Plus an easy way to define your own with full support of Validot internal features like formattable message arguments.
 
 ``` csharp
 public static IRuleOut<string> ExactLinesCount(this IRuleIn<string> @this, int count)
@@ -244,8 +257,8 @@ public static IRuleOut<string> ExactLinesCount(this IRuleIn<string> @this, int c
 .ExactLinesCount(4).WithMessage("Required lines count: {count}")
 // Required lines count: 4
 
-.ExactLinesCount(4).WithMessage("Required lines count: {count|format=000}")
-// Required lines count: 004
+.ExactLinesCount(4).WithMessage("Required lines count: {count|format=000.00|culture=pl-PL}")
+// Required lines count: 004,00
 ```
 
 * [List of built-in rules](../docs/DOCUMENTATION.md#rule-list)
@@ -257,15 +270,21 @@ public static IRuleOut<string> ExactLinesCount(this IRuleIn<string> @this, int c
 Pass errors directly to the end users in the language of your application.
 
 ``` csharp
+Specification<UserModel> specification = s => s
+    .Member(m => m.PrimaryEmail, m => m.Email())
+    .Member(m => m.Name, m => m.LengthBetween(3, 50));
+
 var validator =  Validator.Factory.Create(specification, settings => settings.WithPolishTranslation());
+
+var model = new UserModel() { PrimaryEmail = "in@lid_em@il", Name = "X" };
 
 var result = validator.Validate(model);
 
-result.ToMessagesString();
+result.ToString();
 // Email: Must be a valid email address
 // Name: Must be between 3 and 50 characters in length
 
-result.ToMessagesString(translation: "Polish");
+result.ToString(translationName: "Polish");
 // Email: Musi być poprawnym adresem email
 // Name: Musi być długości pomiędzy 3 a 50 znaków
 ```
@@ -276,22 +295,33 @@ result.ToMessagesString(translation: "Polish");
 
 ## Validot vs FluentValidation
 
-A short statement to start with - [@JeremySkinner](https://twitter.com/JeremySkinner)'s [FluentValidation](https://fluentvalidation.net/) is a great piece of work and has been a huge inspiration for this project. Naturally, Validot is a direct competitor on many fields, but it differs in some fundamental decisions and lot of attention has been focused on completely different aspects. If after reading this section you think you can bear another approach, api and [limitations](#fluentValidations-features-that-validot-is-missing) (some of them have workarounds... some of them not) - at least give Validot a try. You might be positivly surprised. Otherwise, FluentValidation is a good, safe choice, as Validot is certainly less hackable and achieving some very specific goals might be either difficult or impossible.
+A short statement to start with - [@JeremySkinner](https://twitter.com/JeremySkinner)'s [FluentValidation](https://fluentvalidation.net/) is a great piece of work and has been a huge inspiration for this project. True, you can call Validot a direct competitor, but it differs in some fundamental decisions and lot of attention has been focused on completely different aspects. If after reading this section you think you can bear another approach, api and [limitations](#fluentValidations-features-that-validot-is-missing), at least give Validot a try. You might be positivly surprised. Otherwise, FluentValidation is a good, safe choice, as Validot is certainly less hackable and achieving some very specific goals might be either difficult or impossible.
 
 ### Validot is faster and consumes less memory
 
-Of course, it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over flexibility and extra features. For instance, Validot relies heavingly on caching and output size predictions, and because of that you can't define messages content or amount dynamically during the process. It doesn't mean the messages are poorly configurable (there is a support for overwriting, inline arguments with formatting or even translations), but ultimately the content needs to be deterministic. Shortly speaking; you need to specify all texts upfront, they can't be dependent on the state or the validated object's value. Fine with that kind of trade-off? Good, because in validation and gathering detailed error messages from thousands of objects Validot might be ~2.5x faster while consuming ~3.5x less memory.
+Of course, it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over flexibility and extra features. For instance, Validot relies heavingly on caching and output size predictions. You'll never receive validation context to dynamically create the message during the validation process. Messages are very customizable, but ultimately the content needs to be deterministic (_the workaround for including validated value in the message is technically possible, but will be released later_). Fine with that kind of trade-off? Good, because in validation and gathering detailed error messages from thousands of objects Validot might be ~2.5x faster while consuming ~3.5x less memory:
 
-_Short disclaimer at the beginning. The input data set of 100000 objects is the same for both libraries, so are the error messages and validation rules reflect each other as much as technically possible. Of course, the below tables show terribly oversimplified results of BenchmarkDotNet execution, but the intention is to present the general trend only. All benchmarks live in the [separate project](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Benchmarks) that you can [run yourself](../docs/DOCUMENTATION.md#benchmarks), which is highly recommended if you want to have truly reliable numbers._
+<details>
+  <summary>Click here to expand important comment about the benchmarks.</summary>
 
-_Of course, any help with making these benchmarks more accurate and covering more use cases would be very very welcomed - especially errors in the code, usage or methodology, as well as counterexamples proving that Validot struggles with some particular scenarios (please make a pull request and/or [rise an issue](https://github.com/bartoszlenar/Validot/issues/new))._
+The input data set of 100000 objects is the same for both libraries, so are the error messages and the rules reflect each other as much as technically possible. Of course, the below tables show terribly oversimplified results of BenchmarkDotNet execution, but the intention is to present the general trend only. All benchmarks live in the [separate project](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Benchmarks) that you can [run yourself](../docs/DOCUMENTATION.md#benchmarks), which is highly recommended if you want to have truly reliable numbers.
+
+Of course, any help with making these benchmarks more accurate and covering more use cases would be very very welcomed - especially errors in the code, usage or methodology, as well as counterexamples proving that Validot struggles with some particular scenarios (please make a pull request and/or [rise an issue](https://github.com/bartoszlenar/Validot/issues/new)).
+
+* [ErrorMessages benchmark](../tests/Validot.Benchmarks/Comparisons/ErrorMessagesBenchmark.cs) - objects with all possible member types, simple logic and custom error messages
+* [NoErrors benchmark](../tests/Validot.Benchmarks/Comparisons/NoErrorsBenchmark.cs) - similar to Messages benchmark, but all objects are valid
+* [NoLogic benchmark](../tests/Validot.Benchmarks/Comparisons/NoLogicBenchmark.cs) - very simple model, validating multiple members, but no validation logic (testing core engines only)
+* [Initialization benchmark](../tests/Validot.Benchmarks/Comparisons/InitializationBenchmark.cs) - creating validators only
+
+</details>
+
 
 | Test name | Library | Environment | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
 | ErrorMessages, FullReport | FluentValidation | .NET Core 3.1, i7-9750H, X64 RyuJIT | `7513.665` | `7201.38` |
 | ErrorMessages, FullReport | Validot | .NET Core 3.1, i7-9750H, X64 RyuJIT | `3699.273` | `2502.20` |
 
-FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors. Validot has `AnyErrors` that acts the same way, and `IsValid` is a dedicated special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude.
+FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors or not. Validot has `AnyErrors` that acts the same way, but `IsValid` is a dedicated special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude:
 
 | Test name | Library | Environment | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
@@ -300,13 +330,12 @@ FluentValidation's `IsValid` is a property that wraps a simple check whether the
 | NoErrors, IsValid | FluentValidation | .NET Core 3.1, i7-9750H, X64 RyuJIT | `6253.320` | `6689.79` |
 | NoErrors, IsValid | Validot | .NET Core 3.1, i7-9750H, X64 RyuJIT | `2404.450` | `788.60` |
 
-
-In fact, combining these two methods in most cases could be quite beneficial. At first `IsValid` quickly verifies the object and if it contains errors - only then `Validate` is executed to report the details. Of course in some extreme cases (megabyte-size data? milions of items in the collection? dozens of nested levels with loops in reference graphs?) traversing through the object twice could neglate the profit, but for the regular web api input validation it will certainly serve its purpose.
+In fact, combining these two methods in most cases could be quite beneficial. At first `IsValid` quickly verifies the object and if it contains errors - only then `Validate` is executed to report the details. Of course in some extreme cases (megabyte-size data? milions of items in the collection? dozens of nested levels with loops in reference graphs?) traversing through the object twice could neglate the profit, but for the regular web api input validation it will certainly serve its purpose:
 
 ``` csharp
 if (validator.IsValid(model))
 {
-    errorMessages = validator.Validate(model).ToMessagesString();
+    errorMessages = validator.Validate(model).ToString();
 }
 ```
 
@@ -315,22 +344,15 @@ if (validator.IsValid(model))
 | ErrorMessages, IsValidAndValidate | FluentValidation | .NET Core 3.1, i7-9750H, X64 RyuJIT | `6446.736` | `6863.09` |
 | ErrorMessages, IsValidAndValidate | Validot | .NET Core 3.1, i7-9750H, X64 RyuJIT | `2805.867` | `964.45` |
 
-
-* [ErrorMessages benchmark](../tests/Validot.Benchmarks/Comparisons/ErrorMessagesBenchmark.cs) - objects with all possible member types, simple logic and custom error messages
-* [NoErrors benchmark](../tests/Validot.Benchmarks/Comparisons/NoErrorsBenchmark.cs) - similar to Messages benchmark, but all objects are valid
-* [NoLogic benchmark](../tests/Validot.Benchmarks/Comparisons/NoLogicBenchmark.cs) - very simple model, validating multiple members, but no validation logic (testing core engines only)
-* [Initialization benchmark](../tests/Validot.Benchmarks/Comparisons/InitializationBenchmark.cs) - creating validators only
-
-
 ### Validot handles nulls by default
 
 In Validot, null is a special case handled by the core engine. You don't need to secure the validation logic from null as your predicate will never receive it.
 
 ``` csharp
-Member(_ => _.LastName, _ => _
+Member(m => m.LastName, m => m
     .Rule(lastName => lastName.Length < 50) // 'lastName' is never null
     .Rule(lastName => lastName.All(char.IsLetter)) // 'lastName' is never null
-  )
+)
 ```
 
 Unless explicitly commanded, the model is marked as required by default. In the above example, if `LastName` member were null, the validation process would exit `LastName` scope immediately only with this single error message (content can be changed):
@@ -342,11 +364,11 @@ LastName: Required
 If null should be allowed, place `Optional` command at the beginning:
 
 ``` csharp
-Member(_ => _.LastName, _ => _
+Member(m => m.LastName, m => m
     .Optional()
     .Rule(lastName => lastName.Length < 50) // 'lastName' is never null
     .Rule(lastName => lastName.All(char.IsLetter)) // 'lastName' is never null
-  )
+)
 ```
 
 Again, no rule predicate is triggered. Also null `LastName` member doesn't result with errors.
@@ -372,6 +394,8 @@ Features that might be in the scope and are technically possible to implement in
 * transforming values
 * severities
 * failing fast only in a single scope
+* validated value in the error message
+* "smart paths" in the error message (`RootUserCollection` member becomes `Root User Collection`)
 
 Features that are very unlikely to be in the scope as they contradict with the project's principles, and/or would have very negative impact on performance, and/or are impossible to implement:
 
@@ -386,9 +410,6 @@ Features that are very unlikely to be in the scope as they contradict with the p
   * also, the problem of root being null doesn't exist in Validot (it's a regular case, covered entirely with fluent api)
 * rule sets
   * workaround; multiple validators for different sets of properties
-* "smart paths" (`ModelCollection` member becomes `Model Collection` in the error message)
-  * messages are mostly for backend and/or logs, for the frontend please use the error codes or specify the desired content explicitly using `WithMessage`
-
 
 ## Project info
 
@@ -402,7 +423,9 @@ Please check the [official Microsoft document](https://github.com/dotnet/standar
 
 Unit tests coverage hits 100% very close, it can be detaily verified on [codecov.io](https://codecov.io/gh/bartoszlenar/Validot/branch/master).
 
-Functional tests are in [the separate project](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Tests.Functional), which stands also as a base of usage examples and helps with following [semantic versioning](https://semver.org/).
+Functional tests are in [the separate project](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Tests.Functional), which also stands as a base of usage examples, contains all code snippets from the [documentation](#../docs/DOCUMENTATION.md) and helps with following [semver](https://semver.org/) rules.
+
+[Semantic versioning](https://semver.org/) is being used very strictly. Major version is updated only when there is a breaking change, no matter how small it might be (e.g. adding extra function to the public interface). On the other hand, huge pack of new features will bump the minor version only.
 
 Before publishing, each release is tested on the [latest versions](https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners#supported-runners-and-hardware-resources) of operating systems:
 
@@ -410,7 +433,7 @@ Before publishing, each release is tested on the [latest versions](https://help.
 * Ubuntu
 * Windows Server
 
-using the [LTS versions](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) of the underlying framework:
+using the [LTS versions](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) of the underlying frameworks:
 
 * .NET Core 3.1
 * .NET Core 2.1
@@ -423,7 +446,7 @@ Benchmarks exist in the form of  [a console app project](https://github.com/bart
 
 The entire project (source code, issue tracker, documentation and CI workflows) is hosted here on github.com.
 
-Any contribution is more than welcome. If you'd like to help, don't forget to check out [CONTRIBUTING](docs/CONTRIBUTING.md) file.
+Any contribution is more than welcome. If you'd like to help, don't forget to check out [CONTRIBUTING](docs/CONTRIBUTING.md) file and [issues](https://github.com/bartoszlenar/Validot/issues).
 
 ### Licencing
 

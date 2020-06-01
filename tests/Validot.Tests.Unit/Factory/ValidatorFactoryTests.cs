@@ -2,7 +2,6 @@ namespace Validot.Tests.Unit.Factory
 {
     using System.Collections.Generic;
 
-    using Validot.Factory;
     using Validot.Tests.Unit.Settings;
     using Validot.Tests.Unit.Translations;
     using Validot.Translations;
@@ -14,14 +13,14 @@ namespace Validot.Tests.Unit.Factory
         public class ValidationWhenFromSpecification
         {
             [Theory]
-            [MemberData(nameof(ValidationTestData.CasesForErrorMap_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
+            [MemberData(nameof(ValidationTestData.CasesForTemplate_Data), MemberType = typeof(ValidationTestData))]
+            public void Should_HaveTemplate(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
             {
                 _ = name;
 
                 var validator = Validator.Factory.Create(specification);
 
-                validator.ShouldHaveErrorMap(errorCases);
+                validator.ShouldHaveTemplate(errorCases);
             }
 
             [Theory]
@@ -66,8 +65,8 @@ namespace Validot.Tests.Unit.Factory
             }
 
             [Theory]
-            [MemberData(nameof(ValidationTestData.CasesForErrorMap_Data), MemberType = typeof(ValidationTestData))]
-            public void Should_HaveErrorMap(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
+            [MemberData(nameof(ValidationTestData.CasesForTemplate_Data), MemberType = typeof(ValidationTestData))]
+            public void Should_HaveTemplate(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
             {
                 _ = name;
 
@@ -78,7 +77,7 @@ namespace Validot.Tests.Unit.Factory
 
                 var validator = Validator.Factory.Create(holder);
 
-                validator.ShouldHaveErrorMap(errorCases);
+                validator.ShouldHaveTemplate(errorCases);
             }
 
             [Theory]

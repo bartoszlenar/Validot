@@ -17,9 +17,9 @@ namespace Validot.Tests.Unit.Specification.Commands
         [Fact]
         public void Should_Get_RuleBlockBuilder()
         {
-            Predicate<object> validCondition = x => true;
+            Predicate<object> predicate = x => true;
 
-            var command = new RuleCommand<object>(validCondition);
+            var command = new RuleCommand<object>(predicate);
 
             var blockBuilder = command.GetScopeBuilder();
 
@@ -30,9 +30,9 @@ namespace Validot.Tests.Unit.Specification.Commands
         [Fact]
         public void Should_GetRuleBlock_With_Predicate()
         {
-            Predicate<object> validCondition = x => true;
+            Predicate<object> predicate = x => true;
 
-            var command = new RuleCommand<object>(validCondition);
+            var command = new RuleCommand<object>(predicate);
 
             var blockBuilder = command.GetScopeBuilder();
 
@@ -44,7 +44,7 @@ namespace Validot.Tests.Unit.Specification.Commands
 
             var ruleBlock = (RuleCommandScope<object>)block;
 
-            ruleBlock.IsValid.Should().BeSameAs(validCondition);
+            ruleBlock.IsValid.Should().BeSameAs(predicate);
         }
     }
 }

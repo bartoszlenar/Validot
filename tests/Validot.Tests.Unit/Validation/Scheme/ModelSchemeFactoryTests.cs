@@ -66,9 +66,9 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
             error.Should().HaveCount(1);
 
-            modelScheme.ErrorMap.Keys.Should().HaveCount(1);
-            modelScheme.ErrorMap.Keys.Should().Contain("");
-            modelScheme.ErrorMap[""].Should().Contain(error.Single().Key);
+            modelScheme.Template.Keys.Should().HaveCount(1);
+            modelScheme.Template.Keys.Should().Contain("");
+            modelScheme.Template[""].Should().Contain(error.Single().Key);
         }
 
         [Fact]
@@ -106,11 +106,11 @@ namespace Validot.Tests.Unit.Validation.Scheme
             error3.Value.Messages.Should().BeEmpty();
             error3.Value.Args.Should().BeEmpty();
 
-            modelScheme.ErrorMap.Keys.Should().HaveCount(1);
-            modelScheme.ErrorMap.Keys.Should().Contain("");
-            modelScheme.ErrorMap[""].Should().Contain(error1.Key);
-            modelScheme.ErrorMap[""].Should().Contain(error2.Key);
-            modelScheme.ErrorMap[""].Should().Contain(error3.Key);
+            modelScheme.Template.Keys.Should().HaveCount(1);
+            modelScheme.Template.Keys.Should().Contain("");
+            modelScheme.Template[""].Should().Contain(error1.Key);
+            modelScheme.Template[""].Should().Contain(error2.Key);
+            modelScheme.Template[""].Should().Contain(error3.Key);
         }
 
         [Theory]
@@ -250,13 +250,13 @@ namespace Validot.Tests.Unit.Validation.Scheme
             (errorNestedArg as NumberArg<decimal>).Name.Should().Be("nestedArg");
             (errorNestedArg as NumberArg<decimal>).Value.Should().Be(100);
 
-            modelScheme.ErrorMap.Keys.Should().HaveCount(2);
-            modelScheme.ErrorMap.Keys.Should().Contain("");
-            modelScheme.ErrorMap[""].Should().Contain(error2.Key);
-            modelScheme.ErrorMap[""].Should().Contain(error2.Key);
-            modelScheme.ErrorMap[""].Should().Contain(error3.Key);
-            modelScheme.ErrorMap.Keys.Should().Contain("Member");
-            modelScheme.ErrorMap["Member"].Should().Contain(errorNested.Key);
+            modelScheme.Template.Keys.Should().HaveCount(2);
+            modelScheme.Template.Keys.Should().Contain("");
+            modelScheme.Template[""].Should().Contain(error2.Key);
+            modelScheme.Template[""].Should().Contain(error2.Key);
+            modelScheme.Template[""].Should().Contain(error3.Key);
+            modelScheme.Template.Keys.Should().Contain("Member");
+            modelScheme.Template["Member"].Should().Contain(errorNested.Key);
 
             feedableCapacityInfo.ReceivedWithAnyArgs(1).Feed(default);
 
@@ -290,13 +290,13 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
             var baseError = modelScheme.ErrorRegistry.Single(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Base error");
 
-            modelScheme.ErrorMap.Keys.Should().HaveCount(2);
-            modelScheme.ErrorMap.Keys.Should().Contain("");
-            modelScheme.ErrorMap[""].Should().NotContain(memberError.Key);
-            modelScheme.ErrorMap[""].Should().NotContain(baseError.Key);
-            modelScheme.ErrorMap.Keys.Should().Contain("TestNested");
-            modelScheme.ErrorMap["TestNested"].Should().Contain(memberError.Key);
-            modelScheme.ErrorMap["TestNested"].Should().Contain(baseError.Key);
+            modelScheme.Template.Keys.Should().HaveCount(2);
+            modelScheme.Template.Keys.Should().Contain("");
+            modelScheme.Template[""].Should().NotContain(memberError.Key);
+            modelScheme.Template[""].Should().NotContain(baseError.Key);
+            modelScheme.Template.Keys.Should().Contain("TestNested");
+            modelScheme.Template["TestNested"].Should().Contain(memberError.Key);
+            modelScheme.Template["TestNested"].Should().Contain(baseError.Key);
         }
 
         public class ReferenceLoopDetected

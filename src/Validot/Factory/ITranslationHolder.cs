@@ -1,4 +1,4 @@
-namespace Validot.Factory
+namespace Validot
 {
     using System.Collections.Generic;
 

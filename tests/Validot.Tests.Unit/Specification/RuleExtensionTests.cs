@@ -39,7 +39,7 @@ namespace Validot.Tests.Unit.Specification
                 {
                     command.Args.Should().BeNull();
                     command.Message.Should().BeNull();
-                    command.ValidCondition.Should().BeSameAs(predicate);
+                    command.Predicate.Should().BeSameAs(predicate);
                 });
         }
 
@@ -76,7 +76,7 @@ namespace Validot.Tests.Unit.Specification
 
                     command.Message.Should().Be("messageKey");
 
-                    command.ValidCondition.Should().BeSameAs(predicate);
+                    command.Predicate.Should().BeSameAs(predicate);
                 });
         }
 
@@ -93,7 +93,7 @@ namespace Validot.Tests.Unit.Specification
 
                     command.Message.Should().Be("messageKey");
 
-                    command.ValidCondition.Should().BeSameAs(predicate);
+                    command.Predicate.Should().BeSameAs(predicate);
                 });
         }
 

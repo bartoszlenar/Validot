@@ -12,11 +12,11 @@ namespace Validot.Tests.Unit
 
     public static class ValidationTestHelpers
     {
-        public static void ShouldHaveErrorMap<T>(this IValidator<T> validator, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> outputExpectations)
+        public static void ShouldHaveTemplate<T>(this IValidator<T> validator, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> outputExpectations)
         {
-            validator.ErrorMap.Should().NotBeNull();
+            validator.Template.Should().NotBeNull();
 
-            var errorOutput = ((ValidationResult)validator.ErrorMap).GetErrorOutput();
+            var errorOutput = ((ValidationResult)validator.Template).GetErrorOutput();
 
             errorOutput.ShouldMatchExpectations(outputExpectations);
         }

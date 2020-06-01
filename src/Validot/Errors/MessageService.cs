@@ -15,11 +15,11 @@ namespace Validot.Errors
         public MessageService(
             IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations,
             IReadOnlyDictionary<int, IError> errors,
-            IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
+            IReadOnlyDictionary<string, IReadOnlyList<int>> template)
         {
             _translator = new MessageTranslator(translations);
 
-            _cache = BuildMessageCache(_translator, errors, errorMap);
+            _cache = BuildMessageCache(_translator, errors, template);
         }
 
         public IReadOnlyList<string> TranslationNames => _translator.TranslationNames;
@@ -92,13 +92,13 @@ namespace Validot.Errors
             targetIndex += source.Count;
         }
 
-        private MessageCache BuildMessageCache(MessageTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> errorMap)
+        private MessageCache BuildMessageCache(MessageTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> template)
         {
             ThrowHelper.NullArgument(errors, nameof(errors));
-            ThrowHelper.NullArgument(errorMap, nameof(errorMap));
-            ThrowHelper.NullInCollection(errorMap.Values.ToArray(), $"{nameof(errorMap)}.{nameof(errorMap.Values)}");
+            ThrowHelper.NullArgument(template, nameof(template));
+            ThrowHelper.NullInCollection(template.Values.ToArray(), $"{nameof(template)}.{nameof(template.Values)}");
 
-            var uniqueErrorsIds = errorMap.SelectMany(b => b.Value).Distinct().ToArray();
+            var uniqueErrorsIds = template.SelectMany(b => b.Value).Distinct().ToArray();
 
             var cache = new MessageCache();
 
@@ -119,11 +119,11 @@ namespace Validot.Errors
 
             foreach (var translationName in TranslationNames)
             {
-                foreach (var errorMapPair in errorMap)
+                foreach (var templatePair in template)
                 {
-                    var path = errorMapPair.Key;
+                    var path = templatePair.Key;
 
-                    foreach (var errorId in errorMapPair.Value)
+                    foreach (var errorId in templatePair.Value)
                     {
                         if (!cache.ContainsPathArgs(translationName, errorId) || PathHelper.ContainsIndexes(path))
                         {

@@ -13,11 +13,11 @@ namespace Validot.Specification.Commands
 
     internal class RuleCommand<T> : RuleCommand
     {
-        public RuleCommand(Predicate<T> validCondition)
+        public RuleCommand(Predicate<T> predicate)
         {
-            ThrowHelper.NullArgument(validCondition, nameof(validCondition));
+            ThrowHelper.NullArgument(predicate, nameof(predicate));
 
-            ValidCondition = validCondition;
+            Predicate = predicate;
         }
 
         public RuleCommand(Predicate<T> predicate, string message, IReadOnlyList<IArg> args = null)
@@ -35,7 +35,7 @@ namespace Validot.Specification.Commands
             Args = args;
         }
 
-        public Predicate<T> ValidCondition { get; }
+        public Predicate<T> Predicate { get; }
 
         public string Message { get; }
 

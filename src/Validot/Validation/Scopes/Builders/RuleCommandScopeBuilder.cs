@@ -32,7 +32,7 @@ namespace Validot.Validation.Scopes.Builders
 
             var ruleCommandScope = new RuleCommandScope<T>
             {
-                IsValid = _ruleCommand.ValidCondition
+                IsValid = _ruleCommand.Predicate
             };
 
             ruleCommandScope.Path = _path;

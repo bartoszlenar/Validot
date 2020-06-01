@@ -8,18 +8,18 @@ namespace Validot
 
     public static class RuleExtension
     {
-        public static IRuleOut<T> Rule<T>(this IRuleIn<T> @this, Predicate<T> validCondition)
+        public static IRuleOut<T> Rule<T>(this IRuleIn<T> @this, Predicate<T> predicate)
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
 
-            return ((SpecificationApi<T>)@this).AddCommand(new RuleCommand<T>(validCondition));
+            return ((SpecificationApi<T>)@this).AddCommand(new RuleCommand<T>(predicate));
         }
 
-        public static IRuleOut<T> RuleTemplate<T>(this IRuleIn<T> @this, Predicate<T> validCondition, string key, params IArg[] args)
+        public static IRuleOut<T> RuleTemplate<T>(this IRuleIn<T> @this, Predicate<T> predicate, string key, params IArg[] args)
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
 
-            return ((SpecificationApi<T>)@this).AddCommand(new RuleCommand<T>(validCondition, key, args));
+            return ((SpecificationApi<T>)@this).AddCommand(new RuleCommand<T>(predicate, key, args));
         }
     }
 

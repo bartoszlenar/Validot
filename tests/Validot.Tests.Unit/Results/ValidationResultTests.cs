@@ -776,8 +776,8 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorsRegistry, messageService);
 
-                validationResult.ToString().ShouldBeStringResult(
-                    ExpectedStringContent.Messages,
+                validationResult.ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
                     "path1: message11",
                     "path2: message12",
                     "path2: message22");
@@ -824,8 +824,8 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
-                validationResult.ToString().ShouldBeStringResult(
-                    ExpectedStringContent.MessagesAndCodes,
+                validationResult.ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.MessagesAndCodes,
                     "CODE1, CODE2, CODE3, CODE4",
                     "",
                     "path1: message11",
@@ -868,8 +868,8 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
-                validationResult.ToString("translation2").ShouldBeStringResult(
-                    ExpectedStringContent.Messages,
+                validationResult.ToString("translation2").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
                     "path1: MESSAGE11",
                     "path2: MESSAGE12",
                     "path2: MESSAGE22");
@@ -923,8 +923,8 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
-                validationResult.ToString("translation2").ShouldBeStringResult(
-                    ExpectedStringContent.MessagesAndCodes,
+                validationResult.ToString("translation2").ShouldResultToStringHaveLines(
+                    ToStringContentType.MessagesAndCodes,
                     "CODE1, CODE2, CODE3, CODE4",
                     "",
                     "path1: MESSAGE11",
@@ -959,8 +959,8 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
-                validationResult.ToString().ShouldBeStringResult(
-                    ExpectedStringContent.Codes,
+                validationResult.ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Codes,
                     "CODE1, CODE2");
 
                 messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));
@@ -1001,8 +1001,8 @@ namespace Validot.Tests.Unit.Results
 
                 var validationResult = new ValidationResult(resultErrors, errorRegistry, messageService);
 
-                validationResult.ToString().ShouldBeStringResult(
-                    ExpectedStringContent.Codes,
+                validationResult.ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Codes,
                     "CODE1, CODE2, CODE3, CODE4");
 
                 messageService.Received(1).GetMessages(Arg.Is<Dictionary<string, List<int>>>(a => ReferenceEquals(a, resultErrors)), Arg.Is<string>(null as string));

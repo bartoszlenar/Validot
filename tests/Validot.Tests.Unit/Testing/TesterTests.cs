@@ -1436,14 +1436,14 @@ namespace Validot.Tests.Unit.Testing
             }
         }
 
-        public class ShouldBeStringResult
+        public class TestResultToString
         {
             [Fact]
             public void Should_ThrowException_When_NullString()
             {
                 Action action = () =>
                 {
-                    (null as string).ShouldBeStringResult(ExpectedStringContent.Messages, "asd");
+                    Tester.TestResultToString(null, ToStringContentType.Messages, "asd");
                 };
 
                 action.Should().ThrowExactly<ArgumentNullException>();
@@ -1454,7 +1454,7 @@ namespace Validot.Tests.Unit.Testing
             {
                 Action action = () =>
                 {
-                    "abc".ShouldBeStringResult(ExpectedStringContent.Messages, null as string[]);
+                    Tester.TestResultToString("abc", ToStringContentType.Messages, null);
                 };
 
                 action.Should().ThrowExactly<ArgumentNullException>();
@@ -1465,7 +1465,7 @@ namespace Validot.Tests.Unit.Testing
             {
                 Action action = () =>
                 {
-                    "abc".ShouldBeStringResult(ExpectedStringContent.Messages, new string[] { });
+                    Tester.TestResultToString("abc", ToStringContentType.Messages, new string[] { });
                 };
 
                 action.Should().ThrowExactly<ArgumentException>().And.Message.Should().StartWith("Empty list of expected lines");
@@ -1479,8 +1479,9 @@ namespace Validot.Tests.Unit.Testing
             {
                 Action action = () =>
                 {
-                    "abc".ShouldBeStringResult(
-                        ExpectedStringContent.Codes,
+                    Tester.TestResultToString(
+                        "abc",
+                        ToStringContentType.Codes,
                         Enumerable.Range(0, lines).Select(i => $"{i}").ToArray()
                     );
                 };
@@ -1495,8 +1496,9 @@ namespace Validot.Tests.Unit.Testing
             {
                 Action action = () =>
                 {
-                    "abc".ShouldBeStringResult(
-                        ExpectedStringContent.MessagesAndCodes,
+                    Tester.TestResultToString(
+                        "abc",
+                        ToStringContentType.MessagesAndCodes,
                         Enumerable.Range(0, lines).Select(i => $"{i}").ToArray()
                     );
                 };
@@ -1514,8 +1516,9 @@ namespace Validot.Tests.Unit.Testing
 
                 Action action = () =>
                 {
-                    "abc".ShouldBeStringResult(
-                        ExpectedStringContent.MessagesAndCodes,
+                    Tester.TestResultToString(
+                        "abc",
+                        ToStringContentType.MessagesAndCodes,
                         expectedLines
                     );
                 };
@@ -1535,7 +1538,10 @@ namespace Validot.Tests.Unit.Testing
 
                 Action action = () =>
                 {
-                    "abc".ShouldBeStringResult(ExpectedStringContent.MessagesAndCodes, expectedLines);
+                    Tester.TestResultToString(
+                        "abc",
+                        ToStringContentType.MessagesAndCodes,
+                        expectedLines);
                 };
 
                 action.Should().ThrowExactly<ArgumentException>().And.Message.Should().StartWith("Expected codes and messages (divided by a single empty line), also another empty line");
@@ -1553,23 +1559,26 @@ namespace Validot.Tests.Unit.Testing
 
                 Action action = () =>
                 {
-                    "abc".ShouldBeStringResult(ExpectedStringContent.Messages, expectedLines);
+                    Tester.TestResultToString(
+                        "abc",
+                        ToStringContentType.Messages,
+                        expectedLines);
                 };
 
                 action.Should().ThrowExactly<ArgumentException>().And.Message.Should().StartWith($"Expected messages only, but found empty line");
             }
 
             [Theory]
-            [InlineData(1, 3, ExpectedStringContent.Messages)]
-            [InlineData(5, 1, ExpectedStringContent.Messages)]
-            [InlineData(5, 3, ExpectedStringContent.MessagesAndCodes)]
-            [InlineData(8, 9, ExpectedStringContent.MessagesAndCodes)]
-            public void Should_Fail_When_DifferentLineAmount(int linesCount, int expectedLinesCount, ExpectedStringContent expectedStringContent)
+            [InlineData(1, 3, ToStringContentType.Messages)]
+            [InlineData(5, 1, ToStringContentType.Messages)]
+            [InlineData(5, 3, ToStringContentType.MessagesAndCodes)]
+            [InlineData(8, 9, ToStringContentType.MessagesAndCodes)]
+            public void Should_Fail_When_DifferentLineAmount(int linesCount, int expectedLinesCount, ToStringContentType toStringContentType)
             {
                 var lines = Enumerable.Range(0, linesCount).Select(i => $"{i}").ToArray();
                 var expectedLines = Enumerable.Range(0, expectedLinesCount).Select(i => $"{i}").ToArray();
 
-                if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+                if (toStringContentType == ToStringContentType.MessagesAndCodes)
                 {
                     expectedLines[1] = "";
                     lines[1] = "";
@@ -1577,7 +1586,7 @@ namespace Validot.Tests.Unit.Testing
 
                 var input = string.Join(Environment.NewLine, lines);
 
-                var result = input.ShouldBeStringResult(expectedStringContent, expectedLines);
+                var result = Tester.TestResultToString(input, toStringContentType, expectedLines);
 
                 result.Success.Should().BeFalse();
                 result.Message.Should().Be($"Expected amount of lines: {expectedLinesCount}, but found: {lines.Length}");
@@ -1585,7 +1594,7 @@ namespace Validot.Tests.Unit.Testing
 
             public static IEnumerable<object[]> Should_Fail_When_MissingCodes_Data()
             {
-                foreach (var expectedStringContent in new[] { ExpectedStringContent.Codes, ExpectedStringContent.MessagesAndCodes })
+                foreach (var expectedStringContent in new[] { ToStringContentType.Codes, ToStringContentType.MessagesAndCodes })
                 {
                     yield return new object[]
                     {
@@ -1639,15 +1648,15 @@ namespace Validot.Tests.Unit.Testing
 
             [Theory]
             [MemberData(nameof(Should_Fail_When_MissingCodes_Data))]
-            public void Should_Fail_When_MissingCodes(string codesString, string expectedCodesString, string missingCodesString, ExpectedStringContent expectedStringContent)
+            public void Should_Fail_When_MissingCodes(string codesString, string expectedCodesString, string missingCodesString, ToStringContentType toStringContentType)
             {
-                if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+                if (toStringContentType == ToStringContentType.MessagesAndCodes)
                 {
                     codesString += string.Join(Environment.NewLine, new[] { Environment.NewLine, "m1", "m2", "m3" });
                     expectedCodesString += string.Join(Environment.NewLine, new[] { Environment.NewLine, "m1", "m2", "m3" });
                 }
 
-                var result = codesString.ShouldBeStringResult(expectedStringContent, expectedCodesString.Split(new[] { Environment.NewLine }, StringSplitOptions.None));
+                var result = Tester.TestResultToString(codesString, toStringContentType, expectedCodesString.Split(new[] { Environment.NewLine }, StringSplitOptions.None));
 
                 result.Success.Should().BeFalse();
                 result.Message.Should().Be($"Expected codes that are missing: {missingCodesString}");
@@ -1655,7 +1664,7 @@ namespace Validot.Tests.Unit.Testing
 
             public static IEnumerable<object[]> Should_Fail_When_InvalidAmountOfCodes_Data()
             {
-                foreach (var expectedStringContent in new[] { ExpectedStringContent.Codes, ExpectedStringContent.MessagesAndCodes })
+                foreach (var expectedStringContent in new[] { ToStringContentType.Codes, ToStringContentType.MessagesAndCodes })
                 {
                     yield return new object[]
                     {
@@ -1696,18 +1705,18 @@ namespace Validot.Tests.Unit.Testing
 
             [Theory]
             [MemberData(nameof(Should_Fail_When_InvalidAmountOfCodes_Data))]
-            public void Should_Fail_When_InvalidAmountOfCodes(string codesString, string expectedCodesString, ExpectedStringContent expectedStringContent)
+            public void Should_Fail_When_InvalidAmountOfCodes(string codesString, string expectedCodesString, ToStringContentType toStringContentType)
             {
                 var codeAmount = codesString.Split(new[] { ", " }, StringSplitOptions.None).Length;
                 var expectedCodeAmount = expectedCodesString.Split(new[] { ", " }, StringSplitOptions.None).Length;
 
-                if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+                if (toStringContentType == ToStringContentType.MessagesAndCodes)
                 {
                     codesString += string.Join(Environment.NewLine, new[] { Environment.NewLine, "m1", "m2", "m3" });
                     expectedCodesString += string.Join(Environment.NewLine, new[] { Environment.NewLine, "m1", "m2", "m3" });
                 }
 
-                var result = codesString.ShouldBeStringResult(expectedStringContent, expectedCodesString.Split(new[] { Environment.NewLine }, StringSplitOptions.None));
+                var result = Tester.TestResultToString(codesString, toStringContentType, expectedCodesString.Split(new[] { Environment.NewLine }, StringSplitOptions.None));
 
                 result.Success.Should().BeFalse();
                 result.Message.Should().Be($"Expected amount of codes: {expectedCodeAmount}, but found: {codeAmount}");
@@ -1729,7 +1738,7 @@ namespace Validot.Tests.Unit.Testing
 
                 var input = string.Join(Environment.NewLine, lines);
 
-                var result = input.ShouldBeStringResult(ExpectedStringContent.MessagesAndCodes, expectedLines);
+                var result = Tester.TestResultToString(input, ToStringContentType.MessagesAndCodes, expectedLines);
 
                 result.Success.Should().BeFalse();
                 result.Message.Should().Be($"Expected codes and messages (divided by a single line), but found in second line: _not_empty_");
@@ -1737,7 +1746,7 @@ namespace Validot.Tests.Unit.Testing
 
             public static IEnumerable<object[]> Should_Fail_When_MissingMessages_Data()
             {
-                foreach (var expectedStringContent in new[] { ExpectedStringContent.Messages, ExpectedStringContent.MessagesAndCodes })
+                foreach (var expectedStringContent in new[] { ToStringContentType.Messages, ToStringContentType.MessagesAndCodes })
                 {
                     yield return new object[]
                     {
@@ -1791,9 +1800,9 @@ namespace Validot.Tests.Unit.Testing
 
             [Theory]
             [MemberData(nameof(Should_Fail_When_MissingMessages_Data))]
-            public void Should_Fail_When_MissingMessages(string[] messages, string[] expectedMessages, string missingMessages, ExpectedStringContent expectedStringContent)
+            public void Should_Fail_When_MissingMessages(string[] messages, string[] expectedMessages, string missingMessages, ToStringContentType toStringContentType)
             {
-                if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+                if (toStringContentType == ToStringContentType.MessagesAndCodes)
                 {
                     var codesLines = new[]
                     {
@@ -1807,7 +1816,7 @@ namespace Validot.Tests.Unit.Testing
 
                 var input = string.Join(Environment.NewLine, messages);
 
-                var result = input.ShouldBeStringResult(expectedStringContent, expectedMessages);
+                var result = Tester.TestResultToString(input, toStringContentType, expectedMessages);
 
                 result.Success.Should().BeFalse();
                 result.Message.Should().Be($"Expected messages that are missing: {missingMessages}");
@@ -1819,62 +1828,191 @@ namespace Validot.Tests.Unit.Testing
                 {
                     new[] { "a, b, c, d, e", "", "M1", "M2", "M3" },
                     new[] { "a, b, c, d, e", "", "M1", "M2", "M3" },
-                    ExpectedStringContent.MessagesAndCodes
+                    ToStringContentType.MessagesAndCodes
                 };
 
                 yield return new object[]
                 {
                     new[] { "e, d, c, b, a", "", "M3", "M2", "M1" },
                     new[] { "a, b, c, d, e", "", "M1", "M2", "M3" },
-                    ExpectedStringContent.MessagesAndCodes
+                    ToStringContentType.MessagesAndCodes
                 };
 
                 yield return new object[]
                 {
                     new[] { "c, d, e, a, b", "", "M1" },
                     new[] { "a, b, c, d, e", "", "M1" },
-                    ExpectedStringContent.MessagesAndCodes
+                    ToStringContentType.MessagesAndCodes
                 };
 
                 yield return new object[]
                 {
                     new[] { "M1", "M2", "M3" },
                     new[] { "M1", "M2", "M3" },
-                    ExpectedStringContent.Messages
+                    ToStringContentType.Messages
                 };
 
                 yield return new object[]
                 {
                     new[] { "M3", "M2", "M1" },
                     new[] { "M1", "M2", "M3" },
-                    ExpectedStringContent.Messages
+                    ToStringContentType.Messages
                 };
 
                 yield return new object[]
                 {
                     new[] { "c, d, e, a, b", },
                     new[] { "a, b, c, d, e" },
-                    ExpectedStringContent.Codes
+                    ToStringContentType.Codes
                 };
 
                 yield return new object[]
                 {
                     new[] { "a, b, c, d, e" },
                     new[] { "a, b, c, d, e" },
-                    ExpectedStringContent.Codes
+                    ToStringContentType.Codes
                 };
             }
 
             [Theory]
             [MemberData(nameof(Should_Succeed_Data))]
-            public void Should_Succeed(string[] messages, string[] expectedMessages, ExpectedStringContent expectedStringContent)
+            public void Should_Succeed(string[] messages, string[] expectedMessages, ToStringContentType toStringContentType)
             {
                 var input = string.Join(Environment.NewLine, messages);
 
-                var result = input.ShouldBeStringResult(expectedStringContent, expectedMessages);
+                var result = Tester.TestResultToString(input, toStringContentType, expectedMessages);
 
                 result.Success.Should().BeTrue();
                 result.Message.Should().BeNullOrEmpty();
+            }
+        }
+
+        public class ShouldResultToStringHaveLines
+        {
+            [Fact]
+            public void Should_ThrowException_When_InvalidCodes()
+            {
+                Action action = () =>
+                {
+                    "a, b, c, d".ShouldResultToStringHaveLines(
+                        ToStringContentType.Codes,
+                        "b, c, a, d, e"
+                        );
+                };
+
+                action.Should().ThrowExactly<TestFailedException>().And.Message.Should().Be("Expected codes that are missing: e");
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_InvalidCodes_WithMessages()
+            {
+                var messages = new[]
+                {
+                    "a, b, c, d",
+                    "",
+                    "A",
+                    "B",
+                    "C",
+                    "D"
+                };
+
+                Action action = () =>
+                {
+                    string.Join(Environment.NewLine, messages).ShouldResultToStringHaveLines(
+                        ToStringContentType.MessagesAndCodes,
+                        "a, d, b, c, e",
+                        "",
+                        "C",
+                        "B",
+                        "A",
+                        "D"
+                    );
+                };
+
+                action.Should().ThrowExactly<TestFailedException>().And.Message.Should().Be("Expected codes that are missing: e");
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_InvalidMessages()
+            {
+                var messages = new[]
+                {
+                    "A",
+                    "B",
+                    "C",
+                    "X"
+                };
+
+                Action action = () =>
+                {
+                    string.Join(Environment.NewLine, messages).ShouldResultToStringHaveLines(
+                        ToStringContentType.Messages,
+                        "C",
+                        "B",
+                        "A",
+                        "D"
+                    );
+                };
+
+                action.Should().ThrowExactly<TestFailedException>().And.Message.Should().Be("Expected messages that are missing: `D`");
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_InvalidMessages_WithCodes()
+            {
+                var messages = new[]
+                {
+                    "a, b, c, d, e",
+                    "",
+                    "A",
+                    "B",
+                    "C",
+                    "X"
+                };
+
+                Action action = () =>
+                {
+                    string.Join(Environment.NewLine, messages).ShouldResultToStringHaveLines(
+                        ToStringContentType.MessagesAndCodes,
+                        "a, b, c, d, e",
+                        "",
+                        "C",
+                        "B",
+                        "A",
+                        "D"
+                    );
+                };
+
+                action.Should().ThrowExactly<TestFailedException>().And.Message.Should().Be("Expected messages that are missing: `D`");
+            }
+
+            [Fact]
+            public void Should_NotThrowException_When_AllGood()
+            {
+                var messages = new[]
+                {
+                    "a, b, c, d, e",
+                    "",
+                    "A",
+                    "B",
+                    "C",
+                    "D"
+                };
+
+                Action action = () =>
+                {
+                    string.Join(Environment.NewLine, messages).ShouldResultToStringHaveLines(
+                        ToStringContentType.MessagesAndCodes,
+                        "a, b, c, d, e",
+                        "",
+                        "A",
+                        "B",
+                        "C",
+                        "D"
+                    );
+                };
+
+                action.Should().NotThrow();
             }
         }
     }

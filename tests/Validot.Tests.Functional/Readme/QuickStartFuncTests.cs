@@ -52,19 +52,21 @@ namespace Validot.Tests.Functional.Readme
             var model = new UserModel(email: "inv@lidv@lue", age: 14);
 
             var result = validator.Validate(model);
+            
+            result.AnyErrors.Should().BeTrue();
+
+            result.MessageMap["Email"].Single().Should().Be("Must be a valid email address");
+            
+            result.Codes.Should().Contain("ERR_EMAIL", "ERR_NAME");
 
             var messagesString = result.ToString();
 
-            var expectedMessagesString = messagesString.ShouldBeStringResult(
-                ExpectedStringContent.MessagesAndCodes,
+            messagesString.ShouldResultToStringHaveLines(
+                ToStringContentType.MessagesAndCodes,
                 "ERR_EMAIL, ERR_NAME",
                 "",
                 "Email: Must be a valid email address",
                 "Name: Required for underaged user");
-
-            result.Codes.Should().Contain("ERR_EMAIL", "ERR_NAME");
-
-            result.AnyErrors.Should().BeTrue();
         }
     }
 }

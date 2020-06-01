@@ -25,7 +25,7 @@ namespace Validot.Validation.Scopes.Builders
             {
                 Messages = new[]
                 {
-                    MessageKey.Global.Default
+                    MessageKey.Global.Error
                 },
                 Codes = Array.Empty<string>(),
                 Args = Array.Empty<IArg>()

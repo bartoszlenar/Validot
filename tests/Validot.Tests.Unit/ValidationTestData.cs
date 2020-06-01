@@ -1832,7 +1832,7 @@ namespace Validot.Tests.Unit
                         },
                         new ErrorTestCase()
                         {
-                            Messages = new[] { MessageKey.Global.Default }
+                            Messages = new[] { MessageKey.Global.Error }
                         }
                     }
                 },
@@ -1853,7 +1853,7 @@ namespace Validot.Tests.Unit
                             {
                                 new ErrorTestCase()
                                 {
-                                    Messages = new[] { MessageKey.Global.Default }
+                                    Messages = new[] { MessageKey.Global.Error }
                                 }
                             }
                         },

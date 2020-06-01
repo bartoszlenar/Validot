@@ -6,7 +6,7 @@ namespace Validot.Translations
     {
         public static IReadOnlyDictionary<string, string> Polish { get; } = new Dictionary<string, string>
         {
-            [MessageKey.Global.Default] = "Błąd",
+            [MessageKey.Global.Error] = "Błąd",
             [MessageKey.Global.Required] = "Wymagane",
             [MessageKey.Global.Forbidden] = "Zakazane",
             [MessageKey.Global.ReferenceLoop] = "(pętla referencji)",

@@ -40,7 +40,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             {
                 Messages = new[]
                 {
-                    "Global.Default"
+                    "Global.Error"
                 },
                 Codes = Array.Empty<string>(),
                 Args = Array.Empty<IArg>(),

@@ -17,5 +17,7 @@ namespace Validot.Results
         IReadOnlyList<string> TranslationNames { get; }
 
         IReadOnlyDictionary<string, IReadOnlyList<string>> GetTranslatedMessageMap(string translationName);
+
+        string ToString(string translationName);
     }
 }

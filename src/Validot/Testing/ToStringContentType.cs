@@ -1,6 +1,6 @@
 namespace Validot.Testing
 {
-    public enum ExpectedStringContent
+    public enum ToStringContentType
     {
         Messages = 0,
         Codes = 1,

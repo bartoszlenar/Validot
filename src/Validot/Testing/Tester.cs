@@ -221,9 +221,9 @@ namespace Validot.Testing
             throw new TestFailedException($"Exception of type {expectedException.FullName} was expected, but no exception has been thrown.");
         }
 
-        public static TestResult ShouldBeStringResult(this string @this, ExpectedStringContent expectedStringContent, params string[] expectedLines)
+        public static TestResult TestResultToString(string toStringOutput, ToStringContentType toStringContentType, params string[] expectedLines)
         {
-            ThrowHelper.NullArgument(@this, nameof(@this));
+            ThrowHelper.NullArgument(toStringOutput, nameof(toStringOutput));
             ThrowHelper.NullArgument(expectedLines, nameof(expectedLines));
 
             if (expectedLines.Length == 0)
@@ -231,7 +231,7 @@ namespace Validot.Testing
                 throw new ArgumentException("Empty list of expected lines", nameof(expectedLines));
             }
 
-            if (expectedStringContent == ExpectedStringContent.Codes)
+            if (toStringContentType == ToStringContentType.Codes)
             {
                 if (expectedLines.Length != 1)
                 {
@@ -239,7 +239,7 @@ namespace Validot.Testing
                 }
             }
 
-            if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+            if (toStringContentType == ToStringContentType.MessagesAndCodes)
             {
                 if (expectedLines.Length < 3)
                 {
@@ -257,7 +257,7 @@ namespace Validot.Testing
                 }
             }
 
-            if (expectedStringContent == ExpectedStringContent.Messages)
+            if (toStringContentType == ToStringContentType.Messages)
             {
                 if (expectedLines.Any(string.IsNullOrEmpty))
                 {
@@ -265,9 +265,9 @@ namespace Validot.Testing
                 }
             }
 
-            var hasCodes = expectedStringContent == ExpectedStringContent.Codes || expectedStringContent == ExpectedStringContent.MessagesAndCodes;
+            var hasCodes = toStringContentType == ToStringContentType.Codes || toStringContentType == ToStringContentType.MessagesAndCodes;
 
-            var lines = @this.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            var lines = toStringOutput.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
 
             if (lines.Length != expectedLines.Length)
             {
@@ -293,7 +293,7 @@ namespace Validot.Testing
                 }
             }
 
-            if (expectedStringContent == ExpectedStringContent.MessagesAndCodes)
+            if (toStringContentType == ToStringContentType.MessagesAndCodes)
             {
                 if (!string.IsNullOrEmpty(lines[1]))
                 {
@@ -301,11 +301,11 @@ namespace Validot.Testing
                 }
             }
 
-            var messageLines = expectedStringContent == ExpectedStringContent.Messages
+            var messageLines = toStringContentType == ToStringContentType.Messages
                 ? lines
                 : lines.Skip(2).ToArray();
 
-            var expectedMessageLines = expectedStringContent == ExpectedStringContent.Messages
+            var expectedMessageLines = toStringContentType == ToStringContentType.Messages
                 ? expectedLines
                 : expectedLines.Skip(2).ToArray();
 
@@ -318,5 +318,7 @@ namespace Validot.Testing
 
             return TestResult.Passed();
         }
+
+        public static void ShouldResultToStringHaveLines(this string @this, ToStringContentType toStringContentType, params string[] expectedLines) => TestResultToString(@this, toStringContentType, expectedLines).ThrowExceptionIfFailed();
     }
 }

@@ -6,17 +6,27 @@ namespace Validot.Translations
     {
         public static IReadOnlyDictionary<string, string> English { get; } = new Dictionary<string, string>
         {
-            [MessageKey.Global.Default] = "Invalid",
+            [MessageKey.Global.Error] = "Error",
             [MessageKey.Global.Required] = "Required",
             [MessageKey.Global.Forbidden] = "Forbidden",
             [MessageKey.Global.ReferenceLoop] = "(reference loop)",
+
+            [MessageKey.BoolType.True] = "Must be true",
+            [MessageKey.BoolType.False] = "Must be false",
+
+            [MessageKey.CharType.EqualToIgnoreCase] = "Must be equal to {value} (ignoring case)",
+            [MessageKey.CharType.NotEqualToIgnoreCase] = "Must not be equal to {value} (ignoring case)",
 
             [MessageKey.GuidType.EqualTo] = "Must be equal to {value}",
             [MessageKey.GuidType.NotEqualTo] = "Must not be equal to {value}",
             [MessageKey.GuidType.NotEmpty] = "Must not be all zeros",
 
-            [MessageKey.BoolType.True] = "Must be true",
-            [MessageKey.BoolType.False] = "Must be false",
+            [MessageKey.Collections.EmptyCollection] = "Must be empty",
+            [MessageKey.Collections.NotEmptyCollection] = "Must not be empty",
+            [MessageKey.Collections.ExactCollectionSize] = "Must contain exactly {size} items",
+            [MessageKey.Collections.MaxCollectionSize] = "Must contain at most {size} items",
+            [MessageKey.Collections.MinCollectionSize] = "Must contain at least {size} items",
+            [MessageKey.Collections.CollectionSizeBetween] = "Must contain between {min} and {max} items",
 
             [MessageKey.Numbers.EqualTo] = "Must be equal to {value}",
             [MessageKey.Numbers.NotEqualTo] = "Must not be equal to {value}",
@@ -48,9 +58,6 @@ namespace Validot.Translations
             [MessageKey.Texts.Matches] = "Must match RegEx pattern {pattern}",
             [MessageKey.Texts.StartsWith] = "Must start with {value}",
             [MessageKey.Texts.EndsWith] = "Must end with {value}",
-
-            [MessageKey.CharType.EqualToIgnoreCase] = "Must be equal to {value} (ignoring case)",
-            [MessageKey.CharType.NotEqualToIgnoreCase] = "Must not be equal to {value} (ignoring case)",
 
             [MessageKey.Times.EqualTo] = "Must be equal to {value}",
             [MessageKey.Times.NotEqualTo] = "Must not be equal to {value}",

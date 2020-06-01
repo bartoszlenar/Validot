@@ -236,7 +236,7 @@ namespace Validot.Translations
 
             public static string Required { get; private set; }
 
-            public static string Default { get; private set; }
+            public static string Error { get; private set; }
 
             public static string ReferenceLoop { get; private set; }
         }

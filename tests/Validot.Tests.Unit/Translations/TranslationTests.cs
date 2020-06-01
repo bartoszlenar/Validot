@@ -32,9 +32,15 @@ namespace Validot.Tests.Unit.Translations
         public class Polish
         {
             [Fact]
-            public void Polish_Should_HaveValues()
+            public void Polish_Should_HaveValues_NonNull()
             {
                 Translation.Polish.Values.Should().NotContainNulls();
+            }
+
+            [Fact]
+            public void Polish_Should_HaveValues_ForKeysOnly()
+            {
+                MessageKey.All.Should().Contain(Translation.Polish.Keys, because: "(reversed)");
             }
 
             [Fact]
@@ -49,9 +55,17 @@ namespace Validot.Tests.Unit.Translations
         public class English
         {
             [Fact]
-            public void English_Should_HaveValues()
+            public void English_Should_HaveValues_NonNull()
             {
                 Translation.English.Values.Should().NotContainNulls();
+            }
+
+            [Fact]
+            public void English_Should_HaveValues_ForAllKeys()
+            {
+                Translation.English.Keys.Should().Contain(MessageKey.All);
+                MessageKey.All.Should().Contain(Translation.English.Keys, because: "(reversed)");
+                Translation.English.Keys.Should().HaveCount(MessageKey.All.Count);
             }
 
             [Fact]

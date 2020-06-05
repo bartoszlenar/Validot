@@ -74,5 +74,29 @@ namespace Validot.Tests.Unit.Specification
                     addingAction.Should().ThrowExactly<ArgumentNullException>();
                 });
         }
+
+        [Theory]
+        [MemberData(nameof(CodeHelperTests.Codes_Valid), MemberType = typeof(CodeHelperTests))]
+        public void Should_Accept_ValidCodes(string code)
+        {
+            ApiTester.TestSingleCommand<object, IWithExtraCodeIn<object>, IWithExtraCodeOut<object>, WithExtraCodeCommand>(
+                s => s.WithExtraCode(code),
+                command =>
+                {
+                    command.Code.Should().Be(code);
+                });
+        }
+
+        [Theory]
+        [MemberData(nameof(CodeHelperTests.Codes_Invalid), MemberType = typeof(CodeHelperTests))]
+        public void Should_ThrowException_When_InvalidCodes(string code)
+        {
+            ApiTester.TextException<object, IWithExtraCodeIn<object>, IWithExtraCodeOut<object>>(
+                s => s.WithExtraCode(code),
+                addingAction =>
+                {
+                    addingAction.Should().ThrowExactly<ArgumentException>().WithMessage("Invalid code*");
+                });
+        }
     }
 }

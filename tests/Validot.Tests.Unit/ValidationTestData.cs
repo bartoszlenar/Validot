@@ -323,14 +323,14 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "required_custom_code",
-                Specification = s => s.Required().WithCode("Code 1"),
+                Specification = s => s.Required().WithCode("Code1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
                     {
                         new ErrorTestCase()
                         {
-                            Codes = new[] { "Code 1" }
+                            Codes = new[] { "Code1" }
                         }
                     }
                 },
@@ -345,7 +345,7 @@ namespace Validot.Tests.Unit
                             {
                                 new ErrorTestCase()
                                 {
-                                    Codes = new[] { "Code 1" }
+                                    Codes = new[] { "Code1" }
                                 }
                             }
                         },
@@ -362,7 +362,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "required_extra_custom_code",
-                Specification = s => s.Required().WithExtraCode("Extra Custom Code"),
+                Specification = s => s.Required().WithExtraCode("Extra_Custom_Code"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -370,7 +370,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { MessageKey.Global.Required, },
-                            Codes = new[] { "Extra Custom Code" }
+                            Codes = new[] { "Extra_Custom_Code" }
                         }
                     }
                 },
@@ -386,7 +386,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { MessageKey.Global.Required, },
-                                    Codes = new[] { "Extra Custom Code" }
+                                    Codes = new[] { "Extra_Custom_Code" }
                                 }
                             }
                         },
@@ -403,7 +403,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "required_mix",
-                Specification = s => s.Required().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code 1").WithExtraCode("Code 2"),
+                Specification = s => s.Required().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code1").WithExtraCode("Code2"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -411,7 +411,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "Message 1", "Message 2" },
-                            Codes = new[] { "Code 1", "Code 2" }
+                            Codes = new[] { "Code1", "Code2" }
                         }
                     }
                 },
@@ -427,7 +427,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "Message 1", "Message 2" },
-                                    Codes = new[] { "Code 1", "Code 2" }
+                                    Codes = new[] { "Code1", "Code2" }
                                 }
                             }
                         },
@@ -445,9 +445,9 @@ namespace Validot.Tests.Unit
             {
                 Name = "required_mix_with_more_commands_after",
                 Specification = s => s
-                    .Required().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code 1").WithExtraCode("Code 2")
+                    .Required().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code1").WithExtraCode("Code2")
                     .Rule(m => true).WithMessage("rule message 1")
-                    .Rule(m => true).WithCode("rule code 1"),
+                    .Rule(m => true).WithCode("rule_code_1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -455,7 +455,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "Message 1", "Message 2" },
-                            Codes = new[] { "Code 1", "Code 2" }
+                            Codes = new[] { "Code1", "Code2" }
                         },
                         new ErrorTestCase()
                         {
@@ -463,7 +463,7 @@ namespace Validot.Tests.Unit
                         },
                         new ErrorTestCase()
                         {
-                            Codes = new[] { "rule code 1" },
+                            Codes = new[] { "rule_code_1" },
                         },
                     }
                 },
@@ -479,7 +479,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "Message 1", "Message 2" },
-                                    Codes = new[] { "Code 1", "Code 2" }
+                                    Codes = new[] { "Code1", "Code2" }
                                 },
                             }
                         },
@@ -613,14 +613,14 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "forbidden_custom_code",
-                Specification = s => s.Forbidden().WithCode("Code 1"),
+                Specification = s => s.Forbidden().WithCode("Code1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
                     {
                         new ErrorTestCase()
                         {
-                            Codes = new[] { "Code 1" }
+                            Codes = new[] { "Code1" }
                         }
                     }
                 },
@@ -641,7 +641,7 @@ namespace Validot.Tests.Unit
                             {
                                 new ErrorTestCase()
                                 {
-                                    Codes = new[] { "Code 1" }
+                                    Codes = new[] { "Code1" }
                                 }
                             }
                         },
@@ -652,7 +652,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "forbidden_extra_custom_code",
-                Specification = s => s.Forbidden().WithExtraCode("Code 1"),
+                Specification = s => s.Forbidden().WithExtraCode("Code1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -660,7 +660,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { MessageKey.Global.Forbidden },
-                            Codes = new[] { "Code 1" }
+                            Codes = new[] { "Code1" }
                         }
                     }
                 },
@@ -682,7 +682,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { MessageKey.Global.Forbidden },
-                                    Codes = new[] { "Code 1" }
+                                    Codes = new[] { "Code1" }
                                 }
                             }
                         },
@@ -693,7 +693,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "forbidden_mix",
-                Specification = s => s.Forbidden().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code 1").WithExtraCode("Code 2"),
+                Specification = s => s.Forbidden().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code1").WithExtraCode("Code2"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -701,7 +701,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "Message 1", "Message 2" },
-                            Codes = new[] { "Code 1", "Code 2" }
+                            Codes = new[] { "Code1", "Code2" }
                         }
                     }
                 },
@@ -723,7 +723,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "Message 1", "Message 2" },
-                                    Codes = new[] { "Code 1", "Code 2" }
+                                    Codes = new[] { "Code1", "Code2" }
                                 }
                             }
                         },
@@ -958,7 +958,7 @@ namespace Validot.Tests.Unit
             {
                 Name = "required_custom_code",
                 Specification = s => s
-                    .Member(m => m.Member, m => m.Required().WithCode("Code 1")),
+                    .Member(m => m.Member, m => m.Required().WithCode("Code1")),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -972,7 +972,7 @@ namespace Validot.Tests.Unit
                     {
                         new ErrorTestCase()
                         {
-                            Codes = new[] { "Code 1" }
+                            Codes = new[] { "Code1" }
                         }
                     }
                 },
@@ -987,7 +987,7 @@ namespace Validot.Tests.Unit
                             {
                                 new ErrorTestCase()
                                 {
-                                    Codes = new[] { "Code 1" }
+                                    Codes = new[] { "Code1" }
                                 }
                             }
                         },
@@ -1005,7 +1005,7 @@ namespace Validot.Tests.Unit
             {
                 Name = "required_extra_custom_code",
                 Specification = s => s
-                    .Member(m => m.Member, m => m.Required().WithExtraCode("Extra Custom Code")),
+                    .Member(m => m.Member, m => m.Required().WithExtraCode("Extra_Custom_Code")),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -1020,7 +1020,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { MessageKey.Global.Required, },
-                            Codes = new[] { "Extra Custom Code" }
+                            Codes = new[] { "Extra_Custom_Code" }
                         }
                     }
                 },
@@ -1036,7 +1036,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { MessageKey.Global.Required, },
-                                    Codes = new[] { "Extra Custom Code" }
+                                    Codes = new[] { "Extra_Custom_Code" }
                                 }
                             }
                         },
@@ -1054,7 +1054,7 @@ namespace Validot.Tests.Unit
             {
                 Name = "required_mix",
                 Specification = s => s
-                    .Member(m => m.Member, m => m.Required().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code 1").WithExtraCode("Code 2")),
+                    .Member(m => m.Member, m => m.Required().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code1").WithExtraCode("Code2")),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -1069,7 +1069,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "Message 1", "Message 2" },
-                            Codes = new[] { "Code 1", "Code 2" }
+                            Codes = new[] { "Code1", "Code2" }
                         }
                     }
                 },
@@ -1085,7 +1085,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "Message 1", "Message 2" },
-                                    Codes = new[] { "Code 1", "Code 2" }
+                                    Codes = new[] { "Code1", "Code2" }
                                 }
                             }
                         },
@@ -1104,9 +1104,9 @@ namespace Validot.Tests.Unit
                 Name = "required_mix_with_more_commands_after",
                 Specification = s => s
                     .Member(m => m.Member, m => m
-                        .Required().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code 1").WithExtraCode("Code 2")
+                        .Required().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code1").WithExtraCode("Code2")
                         .Rule(m1 => true).WithMessage("rule message 1")
-                        .Rule(m1 => true).WithCode("rule code 1")),
+                        .Rule(m1 => true).WithCode("rule_code_1")),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -1121,7 +1121,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "Message 1", "Message 2" },
-                            Codes = new[] { "Code 1", "Code 2" }
+                            Codes = new[] { "Code1", "Code2" }
                         },
                         new ErrorTestCase()
                         {
@@ -1129,7 +1129,7 @@ namespace Validot.Tests.Unit
                         },
                         new ErrorTestCase()
                         {
-                            Codes = new[] { "rule code 1" },
+                            Codes = new[] { "rule_code_1" },
                         },
                     }
                 },
@@ -1145,7 +1145,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "Message 1", "Message 2" },
-                                    Codes = new[] { "Code 1", "Code 2" }
+                                    Codes = new[] { "Code1", "Code2" }
                                 },
                             }
                         },
@@ -1304,7 +1304,7 @@ namespace Validot.Tests.Unit
             {
                 Name = "forbidden_custom_code",
                 Specification = s => s
-                    .Member(m => m.Member, m => m.Forbidden().WithCode("Code 1")),
+                    .Member(m => m.Member, m => m.Forbidden().WithCode("Code1")),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -1318,7 +1318,7 @@ namespace Validot.Tests.Unit
                     {
                         new ErrorTestCase()
                         {
-                            Codes = new[] { "Code 1" }
+                            Codes = new[] { "Code1" }
                         }
                     }
                 },
@@ -1339,7 +1339,7 @@ namespace Validot.Tests.Unit
                             {
                                 new ErrorTestCase()
                                 {
-                                    Codes = new[] { "Code 1" }
+                                    Codes = new[] { "Code1" }
                                 }
                             }
                         },
@@ -1351,7 +1351,7 @@ namespace Validot.Tests.Unit
             {
                 Name = "forbidden_extra_custom_code",
                 Specification = s => s
-                    .Member(m => m.Member, m => m.Forbidden().WithExtraCode("Code 1")),
+                    .Member(m => m.Member, m => m.Forbidden().WithExtraCode("Code1")),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -1366,7 +1366,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { MessageKey.Global.Forbidden },
-                            Codes = new[] { "Code 1" }
+                            Codes = new[] { "Code1" }
                         }
                     }
                 },
@@ -1388,7 +1388,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { MessageKey.Global.Forbidden },
-                                    Codes = new[] { "Code 1" }
+                                    Codes = new[] { "Code1" }
                                 }
                             }
                         },
@@ -1400,7 +1400,7 @@ namespace Validot.Tests.Unit
             {
                 Name = "forbidden_mix",
                 Specification = s => s
-                    .Member(m => m.Member, m => m.Forbidden().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code 1").WithExtraCode("Code 2")),
+                    .Member(m => m.Member, m => m.Forbidden().WithMessage("Message 1").WithExtraMessage("Message 2").WithExtraCode("Code1").WithExtraCode("Code2")),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -1415,7 +1415,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "Message 1", "Message 2" },
-                            Codes = new[] { "Code 1", "Code 2" }
+                            Codes = new[] { "Code1", "Code2" }
                         }
                     }
                 },
@@ -1437,7 +1437,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "Message 1", "Message 2" },
-                                    Codes = new[] { "Code 1", "Code 2" }
+                                    Codes = new[] { "Code1", "Code2" }
                                 }
                             }
                         },
@@ -1950,7 +1950,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "rule_with_code",
-                Specification = s => s.Rule(m => m.Value == 0).WithCode("code 1"),
+                Specification = s => s.Rule(m => m.Value == 0).WithCode("code_1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -1961,7 +1961,7 @@ namespace Validot.Tests.Unit
                         },
                         new ErrorTestCase()
                         {
-                            Codes = new[] { "code 1" }
+                            Codes = new[] { "code_1" }
                         }
                     }
                 },
@@ -1982,7 +1982,7 @@ namespace Validot.Tests.Unit
                             {
                                 new ErrorTestCase()
                                 {
-                                    Codes = new[] { "code 1" }
+                                    Codes = new[] { "code_1" }
                                 }
                             }
                         },
@@ -1993,7 +1993,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "rule_with_extra_code",
-                Specification = s => s.Rule(m => m.Value == 0).WithExtraCode("code 1"),
+                Specification = s => s.Rule(m => m.Value == 0).WithExtraCode("code_1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2004,7 +2004,7 @@ namespace Validot.Tests.Unit
                         },
                         new ErrorTestCase()
                         {
-                            Codes = new[] { "code 1" }
+                            Codes = new[] { "code_1" }
                         }
                     }
                 },
@@ -2025,7 +2025,7 @@ namespace Validot.Tests.Unit
                             {
                                 new ErrorTestCase()
                                 {
-                                    Codes = new[] { "code 1" }
+                                    Codes = new[] { "code_1" }
                                 }
                             }
                         },
@@ -2036,7 +2036,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "rule_with_messages_and_codes",
-                Specification = s => s.Rule(m => m.Value == 0).WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code 1"),
+                Specification = s => s.Rule(m => m.Value == 0).WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code_1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2048,7 +2048,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "message 1", "message 2" },
-                            Codes = new[] { "code 1" }
+                            Codes = new[] { "code_1" }
                         }
                     }
                 },
@@ -2070,7 +2070,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 1", "message 2" },
-                                    Codes = new[] { "code 1" }
+                                    Codes = new[] { "code_1" }
                                 }
                             }
                         },
@@ -2081,7 +2081,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "rule_with_different_path",
-                Specification = s => s.Rule(m => m.Value == 0).WithPath("extra").WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code 1"),
+                Specification = s => s.Rule(m => m.Value == 0).WithPath("extra").WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code_1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2096,7 +2096,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "message 1", "message 2" },
-                            Codes = new[] { "code 1" }
+                            Codes = new[] { "code_1" }
                         }
                     }
                 },
@@ -2118,7 +2118,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 1", "message 2" },
-                                    Codes = new[] { "code 1" }
+                                    Codes = new[] { "code_1" }
                                 }
                             }
                         },
@@ -2368,7 +2368,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "rule_with_code",
-                Specification = s => s.RuleTemplate(m => m.Value == 0, "message key").WithCode("code 1"),
+                Specification = s => s.RuleTemplate(m => m.Value == 0, "message key").WithCode("code_1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2379,7 +2379,7 @@ namespace Validot.Tests.Unit
                         },
                         new ErrorTestCase()
                         {
-                            Codes = new[] { "code 1" }
+                            Codes = new[] { "code_1" }
                         }
                     }
                 },
@@ -2400,7 +2400,7 @@ namespace Validot.Tests.Unit
                             {
                                 new ErrorTestCase()
                                 {
-                                    Codes = new[] { "code 1" }
+                                    Codes = new[] { "code_1" }
                                 }
                             }
                         },
@@ -2411,7 +2411,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "rule_with_extra_code",
-                Specification = s => s.RuleTemplate(m => m.Value == 0, "message key").WithExtraCode("code 1"),
+                Specification = s => s.RuleTemplate(m => m.Value == 0, "message key").WithExtraCode("code_1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2423,7 +2423,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "message key" },
-                            Codes = new[] { "code 1" }
+                            Codes = new[] { "code_1" }
                         }
                     }
                 },
@@ -2445,7 +2445,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message key" },
-                                    Codes = new[] { "code 1" }
+                                    Codes = new[] { "code_1" }
                                 }
                             }
                         },
@@ -2456,7 +2456,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "rule_with_messages_and_codes",
-                Specification = s => s.RuleTemplate(m => m.Value == 0, "message key").WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code 1"),
+                Specification = s => s.RuleTemplate(m => m.Value == 0, "message key").WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code_1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2468,7 +2468,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "message 1", "message 2" },
-                            Codes = new[] { "code 1" }
+                            Codes = new[] { "code_1" }
                         }
                     }
                 },
@@ -2490,7 +2490,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 1", "message 2" },
-                                    Codes = new[] { "code 1" }
+                                    Codes = new[] { "code_1" }
                                 }
                             }
                         },
@@ -2501,7 +2501,7 @@ namespace Validot.Tests.Unit
             new TestCase()
             {
                 Name = "rule_with_different_path",
-                Specification = s => s.RuleTemplate(m => m.Value == 0, "message key").WithPath("extra").WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code 1"),
+                Specification = s => s.RuleTemplate(m => m.Value == 0, "message key").WithPath("extra").WithMessage("message 1").WithExtraMessage("message 2").WithExtraCode("code_1"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2516,7 +2516,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "message 1", "message 2" },
-                            Codes = new[] { "code 1" }
+                            Codes = new[] { "code_1" }
                         }
                     }
                 },
@@ -2538,7 +2538,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 1", "message 2" },
-                                    Codes = new[] { "code 1" }
+                                    Codes = new[] { "code_1" }
                                 }
                             }
                         },
@@ -2693,7 +2693,7 @@ namespace Validot.Tests.Unit
                 Specification = s => s
                     .Rule(m => m.Value == 0).WithMessage("message 1")
                     .Rule(m => m.Nullable == false).WithMessage("message 21").WithExtraMessage("message 22")
-                    .Rule(m => m.Reference == null).WithMessage("message 3").WithExtraCode("code 3"),
+                    .Rule(m => m.Reference == null).WithMessage("message 3").WithExtraCode("code_3"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2713,7 +2713,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "message 3" },
-                            Codes = new[] { "code 3" }
+                            Codes = new[] { "code_3" }
                         }
                     }
                 },
@@ -2743,7 +2743,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 3" },
-                                    Codes = new[] { "code 3" }
+                                    Codes = new[] { "code_3" }
                                 }
                             }
                         },
@@ -2778,7 +2778,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 3" },
-                                    Codes = new[] { "code 3" }
+                                    Codes = new[] { "code_3" }
                                 }
                             }
                         },
@@ -2792,7 +2792,7 @@ namespace Validot.Tests.Unit
                 Specification = s => s
                     .Rule(m => m.Value == 0).WithPath("Name1").WithMessage("message 1")
                     .Rule(m => m.Nullable == false).WithPath("Name2").WithMessage("message 21").WithExtraMessage("message 22")
-                    .Rule(m => m.Reference == null).WithPath("Name31.Name32").WithMessage("message 3").WithExtraCode("code 3"),
+                    .Rule(m => m.Reference == null).WithPath("Name31.Name32").WithMessage("message 3").WithExtraCode("code_3"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2821,7 +2821,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "message 3" },
-                            Codes = new[] { "code 3" }
+                            Codes = new[] { "code_3" }
                         }
                     }
                 },
@@ -2857,7 +2857,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 3" },
-                                    Codes = new[] { "code 3" }
+                                    Codes = new[] { "code_3" }
                                 }
                             }
                         },
@@ -2895,7 +2895,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 3" },
-                                    Codes = new[] { "code 3" }
+                                    Codes = new[] { "code_3" }
                                 }
                             }
                         },
@@ -2909,7 +2909,7 @@ namespace Validot.Tests.Unit
                 Specification = s => s
                     .Rule(m => m.Value == 0).WithPath("Name1").WithMessage("message 1")
                     .Rule(m => m.Nullable == false).WithPath("Name2").WithMessage("message 21").WithExtraMessage("message 22")
-                    .Rule(m => m.Reference == null).WithPath("Name1").WithMessage("message 3").WithExtraCode("code 3"),
+                    .Rule(m => m.Reference == null).WithPath("Name1").WithMessage("message 3").WithExtraCode("code_3"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -2928,7 +2928,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "message 3" },
-                            Codes = new[] { "code 3" }
+                            Codes = new[] { "code_3" }
                         }
                     },
                     ["Name2"] = new[]
@@ -2961,7 +2961,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 3" },
-                                    Codes = new[] { "code 3" }
+                                    Codes = new[] { "code_3" }
                                 }
                             },
                             ["Name2"] = new[]
@@ -3003,7 +3003,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 3" },
-                                    Codes = new[] { "code 3" }
+                                    Codes = new[] { "code_3" }
                                 }
                             }
                         },
@@ -3017,7 +3017,7 @@ namespace Validot.Tests.Unit
                 Specification = s => s
                     .Rule(m => m.Value == 0).WithCondition(t => false).WithMessage("message 1")
                     .Rule(m => m.Nullable == false).WithCondition(t => true).WithMessage("message 21").WithExtraMessage("message 22")
-                    .Rule(m => m.Reference == null).WithCondition(t => true).WithMessage("message 3").WithExtraCode("code 3"),
+                    .Rule(m => m.Reference == null).WithCondition(t => true).WithMessage("message 3").WithExtraCode("code_3"),
                 ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
                 {
                     [""] = new[]
@@ -3037,7 +3037,7 @@ namespace Validot.Tests.Unit
                         new ErrorTestCase()
                         {
                             Messages = new[] { "message 3" },
-                            Codes = new[] { "code 3" }
+                            Codes = new[] { "code_3" }
                         }
                     }
                 },
@@ -3063,7 +3063,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 3" },
-                                    Codes = new[] { "code 3" }
+                                    Codes = new[] { "code_3" }
                                 }
                             }
                         },
@@ -3094,7 +3094,7 @@ namespace Validot.Tests.Unit
                                 new ErrorTestCase()
                                 {
                                     Messages = new[] { "message 3" },
-                                    Codes = new[] { "code 3" }
+                                    Codes = new[] { "code_3" }
                                 }
                             }
                         },

@@ -48,7 +48,7 @@ namespace Validot.Settings
             return this;
         }
 
-        public ValidatorSettings WithCapacityInfo(ICapacityInfo capacityInfo)
+        internal ValidatorSettings WithCapacityInfo(ICapacityInfo capacityInfo)
         {
             ThrowHelper.NullArgument(capacityInfo, nameof(capacityInfo));
 

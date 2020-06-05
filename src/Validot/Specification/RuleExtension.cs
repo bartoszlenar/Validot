@@ -30,7 +30,6 @@ namespace Validot
             IRuleIn<T>,
             IWithConditionIn<T>,
             IWithPathIn<T>,
-            IWithErrorClearedIn<T>,
             IWithMessageIn<T>,
             IWithExtraMessageIn<T>,
             IWithCodeIn<T>,

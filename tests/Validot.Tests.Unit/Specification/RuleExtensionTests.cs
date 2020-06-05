@@ -20,7 +20,6 @@ namespace Validot.Tests.Unit.Specification
                 typeof(IRuleIn<object>),
                 typeof(IWithConditionIn<object>),
                 typeof(IWithPathIn<object>),
-                typeof(IWithErrorClearedIn<object>),
                 typeof(IWithMessageIn<object>),
                 typeof(IWithExtraMessageIn<object>),
                 typeof(IWithCodeIn<object>),

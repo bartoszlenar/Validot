@@ -18,7 +18,6 @@ namespace Validot
         public interface IWithPathOut<T> :
             ISpecificationOut<T>,
             IRuleIn<T>,
-            IWithErrorClearedIn<T>,
             IWithMessageIn<T>,
             IWithExtraMessageIn<T>,
             IWithCodeIn<T>,

@@ -131,12 +131,12 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             [MemberData(nameof(ErrorBuilderTestData.Messages.SingleMessage_When_SingleExtraMessageCommand), MemberType = typeof(ErrorBuilderTestData.Messages))]
             [MemberData(nameof(ErrorBuilderTestData.Messages.SingleMessage_FromLatestCommand_When_WithMessageCommandIsTheLastOne), MemberType = typeof(ErrorBuilderTestData.Messages))]
             [MemberData(nameof(ErrorBuilderTestData.Messages.ManyMessages_When_WithMessageCommand_IsFollowedBy_WithExtraMessageCommands), MemberType = typeof(ErrorBuilderTestData.Messages))]
-            [MemberData(nameof(ErrorBuilderTestData.Messages.WithManyMessages_When_ClearErrorCommand_IsFollowedBy_MessageCommands), MemberType = typeof(ErrorBuilderTestData.Messages))]
             [MemberData(nameof(ErrorBuilderTestData.Codes.SingleCode_When_SingleWithCodeCommand), MemberType = typeof(ErrorBuilderTestData.Codes))]
             [MemberData(nameof(ErrorBuilderTestData.Codes.SingleCode_When_SingleExtraCodeCommand), MemberType = typeof(ErrorBuilderTestData.Codes))]
             [MemberData(nameof(ErrorBuilderTestData.Codes.SingleCode_FromLatestCommand_When_WithCodeCommandIsTheLastOne), MemberType = typeof(ErrorBuilderTestData.Codes))]
             [MemberData(nameof(ErrorBuilderTestData.Codes.ManyCodes_When_WithCodeCommand_IsFollowedBy_WithExtraCodeCommands), MemberType = typeof(ErrorBuilderTestData.Codes))]
-            [MemberData(nameof(ErrorBuilderTestData.Codes.WithManyCodes_When_ClearErrorCommand_IsFollowedBy_CodeCommands), MemberType = typeof(ErrorBuilderTestData.Codes))]
+            [MemberData(nameof(ErrorBuilderTestData.MessagesAndCodes.SingleMessage_With_SingleCode), MemberType = typeof(ErrorBuilderTestData.MessagesAndCodes))]
+            [MemberData(nameof(ErrorBuilderTestData.MessagesAndCodes.ManyMessages_With_ManyCodes), MemberType = typeof(ErrorBuilderTestData.MessagesAndCodes))]
             public void Should_ConstructErrorCodeAndMessages_And_RegisterItInContext_And_SetItsId(object cmds, IError error)
             {
                 var registrationsCount = 0;
@@ -169,31 +169,6 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             }
 
             [Theory]
-            [MemberData(nameof(ErrorBuilderTestData.Messages.NoMessages_When_ClearErrorCommand_IsTheLastOne), MemberType = typeof(ErrorBuilderTestData.Messages))]
-            [MemberData(nameof(ErrorBuilderTestData.Codes.NoCodes_When_ClearErrorCommand_IsTheLastOne), MemberType = typeof(ErrorBuilderTestData.Codes))]
-            public void Should_ConstructErrorCodeAndMessages_And_RegisterItInContext_And_SetDefaultErrorId_When_ErrorCleared(object cmds, IError error)
-            {
-                _ = error;
-
-                var context = Substitute.For<IScopeBuilderContext>();
-                context.DefaultErrorId.Returns(321);
-                context.RegisterError(Arg.Any<IError>()).Returns(info => 666);
-
-                var builder = new RuleCommandScopeBuilder<TestClass>(new RuleCommand<TestClass>(x => true));
-
-                var commands = (ICommand[])cmds;
-
-                foreach (var command in commands)
-                {
-                    builder.TryAdd(command);
-                }
-
-                var builtScope = (ICommandScope<TestClass>)builder.Build(context);
-
-                builtScope.ErrorId.Should().Be(321);
-            }
-
-            [Theory]
             [MemberData(nameof(ErrorBuilderTestData.Messages.SingleMessage_When_SingleExtraMessageCommand), MemberType = typeof(ErrorBuilderTestData.Messages))]
             [MemberData(nameof(ErrorBuilderTestData.Codes.SingleCode_When_SingleExtraCodeCommand), MemberType = typeof(ErrorBuilderTestData.Codes))]
             public void Should_SetAppendMode(object cmds, IError error)
@@ -221,13 +196,11 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             [MemberData(nameof(ErrorBuilderTestData.Messages.SingleMessage_When_SingleWithMessageCommand), MemberType = typeof(ErrorBuilderTestData.Messages))]
             [MemberData(nameof(ErrorBuilderTestData.Messages.SingleMessage_FromLatestCommand_When_WithMessageCommandIsTheLastOne), MemberType = typeof(ErrorBuilderTestData.Messages))]
             [MemberData(nameof(ErrorBuilderTestData.Messages.ManyMessages_When_WithMessageCommand_IsFollowedBy_WithExtraMessageCommands), MemberType = typeof(ErrorBuilderTestData.Messages))]
-            [MemberData(nameof(ErrorBuilderTestData.Messages.NoMessages_When_ClearErrorCommand_IsTheLastOne), MemberType = typeof(ErrorBuilderTestData.Messages))]
-            [MemberData(nameof(ErrorBuilderTestData.Messages.WithManyMessages_When_ClearErrorCommand_IsFollowedBy_MessageCommands), MemberType = typeof(ErrorBuilderTestData.Messages))]
             [MemberData(nameof(ErrorBuilderTestData.Codes.SingleCode_When_SingleWithCodeCommand), MemberType = typeof(ErrorBuilderTestData.Codes))]
             [MemberData(nameof(ErrorBuilderTestData.Codes.SingleCode_FromLatestCommand_When_WithCodeCommandIsTheLastOne), MemberType = typeof(ErrorBuilderTestData.Codes))]
             [MemberData(nameof(ErrorBuilderTestData.Codes.ManyCodes_When_WithCodeCommand_IsFollowedBy_WithExtraCodeCommands), MemberType = typeof(ErrorBuilderTestData.Codes))]
-            [MemberData(nameof(ErrorBuilderTestData.Codes.NoCodes_When_ClearErrorCommand_IsTheLastOne), MemberType = typeof(ErrorBuilderTestData.Codes))]
-            [MemberData(nameof(ErrorBuilderTestData.Codes.WithManyCodes_When_ClearErrorCommand_IsFollowedBy_CodeCommands), MemberType = typeof(ErrorBuilderTestData.Codes))]
+            [MemberData(nameof(ErrorBuilderTestData.MessagesAndCodes.SingleMessage_With_SingleCode), MemberType = typeof(ErrorBuilderTestData.MessagesAndCodes))]
+            [MemberData(nameof(ErrorBuilderTestData.MessagesAndCodes.ManyMessages_With_ManyCodes), MemberType = typeof(ErrorBuilderTestData.MessagesAndCodes))]
             public void Should_SetOverrideMode(object cmds, IError error)
             {
                 _ = error;

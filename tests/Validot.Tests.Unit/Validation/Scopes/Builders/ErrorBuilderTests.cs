@@ -270,36 +270,6 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
 
                 builder.Build().ShouldBeEqualTo(error);
             }
-
-            [Theory]
-            [MemberData(nameof(ErrorBuilderTestData.Messages.NoMessages_When_ClearErrorCommand_IsTheLastOne), MemberType = typeof(ErrorBuilderTestData.Messages))]
-            public void Should_TryAdd_Build_NoMessages_When_ClearErrorCommand_IsTheLastOne(object cmd, IError error)
-            {
-                var commands = (ICommand[])cmd;
-                var builder = new ErrorBuilder();
-
-                foreach (var command in commands)
-                {
-                    builder.TryAdd(command);
-                }
-
-                builder.Build().ShouldBeEqualTo(error);
-            }
-
-            [Theory]
-            [MemberData(nameof(ErrorBuilderTestData.Messages.WithManyMessages_When_ClearErrorCommand_IsFollowedBy_MessageCommands), MemberType = typeof(ErrorBuilderTestData.Messages))]
-            public void Should_TryAdd_Build_WithManyMessages_When_ClearErrorCommand_IsFollowedBy_MessageCommands(object cmd, IError error)
-            {
-                var commands = (ICommand[])cmd;
-                var builder = new ErrorBuilder();
-
-                foreach (var command in commands)
-                {
-                    builder.TryAdd(command);
-                }
-
-                builder.Build().ShouldBeEqualTo(error);
-            }
         }
 
         public class TryAddCodes
@@ -352,36 +322,6 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             [Theory]
             [MemberData(nameof(ErrorBuilderTestData.Codes.ManyCodes_When_WithCodeCommand_IsFollowedBy_WithExtraCodeCommands), MemberType = typeof(ErrorBuilderTestData.Codes))]
             public void Should_TryAdd_Build_ManyCodes_When_WithCodeCommand_IsFollowedBy_WithExtraCodeCommands(object cmd, IError error)
-            {
-                var commands = (ICommand[])cmd;
-                var builder = new ErrorBuilder();
-
-                foreach (var command in commands)
-                {
-                    builder.TryAdd(command);
-                }
-
-                builder.Build().ShouldBeEqualTo(error);
-            }
-
-            [Theory]
-            [MemberData(nameof(ErrorBuilderTestData.Codes.NoCodes_When_ClearErrorCommand_IsTheLastOne), MemberType = typeof(ErrorBuilderTestData.Codes))]
-            public void Should_TryAdd_Build_NoCodes_When_ClearErrorCommand_IsTheLastOne(object cmd, IError error)
-            {
-                var commands = (ICommand[])cmd;
-                var builder = new ErrorBuilder();
-
-                foreach (var command in commands)
-                {
-                    builder.TryAdd(command);
-                }
-
-                builder.Build().ShouldBeEqualTo(error);
-            }
-
-            [Theory]
-            [MemberData(nameof(ErrorBuilderTestData.Codes.WithManyCodes_When_ClearErrorCommand_IsFollowedBy_CodeCommands), MemberType = typeof(ErrorBuilderTestData.Codes))]
-            public void Should_TryAdd_Build_WithManyCodes_When_ClearErrorCommand_IsFollowedBy_CodeCommands(object cmd, IError error)
             {
                 var commands = (ICommand[])cmd;
                 var builder = new ErrorBuilder();

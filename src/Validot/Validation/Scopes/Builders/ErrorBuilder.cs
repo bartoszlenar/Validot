@@ -54,10 +54,6 @@ namespace Validot.Validation.Scopes.Builders
             {
                 _codes.Add(withExtraCodeCommand.Code);
             }
-            else if (command is WithErrorClearedCommand)
-            {
-                ClearError();
-            }
             else
             {
                 return false;

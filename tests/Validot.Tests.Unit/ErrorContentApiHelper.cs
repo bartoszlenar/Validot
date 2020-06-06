@@ -258,90 +258,6 @@ namespace Validot.Tests.Unit
                     }
                 }
             };
-
-            yield return new object[]
-            {
-                "M8",
-                new Func<dynamic, ISpecificationOut<T>>(target =>
-                {
-                    target = WithErrorCleared<T>(target);
-
-                    return target;
-                }),
-                new ExpectedErrorContent()
-                {
-                    Mode = ErrorMode.Override,
-                    Messages = Array.Empty<string>()
-                }
-            };
-
-            yield return new object[]
-            {
-                "M9",
-                new Func<dynamic, ISpecificationOut<T>>(target =>
-                {
-                    target = WithErrorCleared<T>(target);
-                    target = WithMessage<T>(target, "123");
-
-                    return target;
-                }),
-                new ExpectedErrorContent()
-                {
-                    Mode = ErrorMode.Override,
-                    Messages = new[]
-                    {
-                        "123"
-                    }
-                }
-            };
-
-            yield return new object[]
-            {
-                "M9",
-                new Func<dynamic, ISpecificationOut<T>>(target =>
-                {
-                    target = WithErrorCleared<T>(target);
-                    target = WithMessage<T>(target, "123");
-                    target = WithExtraMessage<T>(target, "456");
-                    target = WithExtraMessage<T>(target, "789");
-
-                    return target;
-                }),
-                new ExpectedErrorContent()
-                {
-                    Mode = ErrorMode.Override,
-                    Messages = new[]
-                    {
-                        "123",
-                        "456",
-                        "789",
-                    }
-                }
-            };
-
-            yield return new object[]
-            {
-                "M11",
-                new Func<dynamic, ISpecificationOut<T>>(target =>
-                {
-                    target = WithErrorCleared<T>(target);
-                    target = WithMessage<T>(target, "123");
-                    target = WithExtraMessage<T>(target, "123");
-                    target = WithExtraMessage<T>(target, "456");
-
-                    return target;
-                }),
-                new ExpectedErrorContent()
-                {
-                    Mode = ErrorMode.Override,
-                    Messages = new[]
-                    {
-                        "123",
-                        "123",
-                        "456",
-                    }
-                }
-            };
         }
 
         public static IEnumerable<object[]> SettingsOnlyCodes<T>()
@@ -522,90 +438,6 @@ namespace Validot.Tests.Unit
                     }
                 }
             };
-
-            yield return new object[]
-            {
-                "C8",
-                new Func<dynamic, ISpecificationOut<T>>(target =>
-                {
-                    target = WithErrorCleared<T>(target);
-
-                    return target;
-                }),
-                new ExpectedErrorContent()
-                {
-                    Mode = ErrorMode.Override,
-                    Codes = Array.Empty<string>()
-                }
-            };
-
-            yield return new object[]
-            {
-                "C9",
-                new Func<dynamic, ISpecificationOut<T>>(target =>
-                {
-                    target = WithErrorCleared<T>(target);
-                    target = WithCode<T>(target, "123");
-
-                    return target;
-                }),
-                new ExpectedErrorContent()
-                {
-                    Mode = ErrorMode.Override,
-                    Codes = new[]
-                    {
-                        "123"
-                    }
-                }
-            };
-
-            yield return new object[]
-            {
-                "C9",
-                new Func<dynamic, ISpecificationOut<T>>(target =>
-                {
-                    target = WithErrorCleared<T>(target);
-                    target = WithCode<T>(target, "123");
-                    target = WithExtraCode<T>(target, "456");
-                    target = WithExtraCode<T>(target, "789");
-
-                    return target;
-                }),
-                new ExpectedErrorContent()
-                {
-                    Mode = ErrorMode.Override,
-                    Codes = new[]
-                    {
-                        "123",
-                        "456",
-                        "789",
-                    }
-                }
-            };
-
-            yield return new object[]
-            {
-                "C11",
-                new Func<dynamic, ISpecificationOut<T>>(target =>
-                {
-                    target = WithErrorCleared<T>(target);
-                    target = WithCode<T>(target, "123");
-                    target = WithExtraCode<T>(target, "123");
-                    target = WithExtraCode<T>(target, "456");
-
-                    return target;
-                }),
-                new ExpectedErrorContent()
-                {
-                    Mode = ErrorMode.Override,
-                    Codes = new[]
-                    {
-                        "123",
-                        "123",
-                        "456",
-                    }
-                }
-            };
         }
 
         public static IEnumerable<object[]> SettingMessagesAndCodes<T>()
@@ -688,34 +520,6 @@ namespace Validot.Tests.Unit
                     },
                 }
             };
-
-            yield return new object[]
-            {
-                "MC6",
-                new Func<dynamic, ISpecificationOut<T>>(target =>
-                {
-                    target = WithErrorCleared<T>(target);
-
-                    target = WithMessage<T>(target, "m123");
-
-                    target = WithExtraCode<T>(target, "c123");
-
-                    return target;
-                }),
-
-                new ExpectedErrorContent()
-                {
-                    Mode = ErrorMode.Override,
-                    Messages = new[]
-                    {
-                        "m123",
-                    },
-                    Codes = new[]
-                    {
-                        "c123",
-                    },
-                }
-            };
         }
 
         private static dynamic WithMessage<T>(dynamic api, string message)
@@ -773,21 +577,6 @@ namespace Validot.Tests.Unit
             if (api is IWithExtraCodeForbiddenIn<T> withExtraCodeForbiddenIn)
             {
                 return WithExtraCodeExtension.WithExtraCode<T>(withExtraCodeForbiddenIn, code);
-            }
-
-            throw new InvalidOperationException("Dynamic api tests failed");
-        }
-
-        private static dynamic WithErrorCleared<T>(dynamic api)
-        {
-            if (api is IWithErrorClearedIn<T> withoutMessageIn)
-            {
-                return WithErrorClearedExtension.WithErrorCleared<T>(withoutMessageIn);
-            }
-
-            if (api is IWithErrorClearedForbiddenIn<T> withCodeForbidden)
-            {
-                return WithErrorClearedExtension.WithErrorCleared<T>(withCodeForbidden);
             }
 
             throw new InvalidOperationException("Dynamic api tests failed");

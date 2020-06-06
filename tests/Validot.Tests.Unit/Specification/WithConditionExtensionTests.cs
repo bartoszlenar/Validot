@@ -28,8 +28,8 @@ namespace Validot.Tests.Unit.Specification
             ApiTester.TestOutputPossibilities<IWithConditionOut<object>>(new[]
             {
                 typeof(ISpecificationOut<object>),
+                typeof(IRuleIn<object>),
                 typeof(IWithPathIn<object>),
-                typeof(IWithErrorClearedIn<object>),
                 typeof(IWithMessageIn<object>),
                 typeof(IWithExtraMessageIn<object>),
                 typeof(IWithCodeIn<object>),

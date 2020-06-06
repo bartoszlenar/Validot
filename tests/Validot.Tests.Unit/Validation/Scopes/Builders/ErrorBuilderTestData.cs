@@ -21,8 +21,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                 new WithMessageCommand("a"),
                 new WithExtraMessageCommand("a"),
                 new WithCodeCommand("a"),
-                new WithExtraCodeCommand("a"),
-                new WithErrorClearedCommand(),
+                new WithExtraCodeCommand("a")
             };
 
             var disabled = new ICommand[]
@@ -100,11 +99,6 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             {
                 new ICommand[]
                 {
-                    new WithMessageCommand("abc"),
-                    new OptionalCommand(),
-                    new RuleCommand<object>(a => false),
-                    new WithExtraMessageCommand("cde"),
-                    new WithErrorClearedCommand(),
                     new OptionalCommand(),
                     new WithExtraMessageCommand("hij"),
                     new OptionalCommand(),
@@ -140,18 +134,6 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
             {
                 new ICommand[]
                 {
-                    new ForbiddenCommand(),
-                    new ForbiddenCommand(),
-                    new RuleCommand<object>(a => false),
-                    new WithMessageCommand("abc"),
-                    new WithCodeCommand("123"),
-                    new MemberCommand<TestModel, string>(m => m.TestMember, m => m),
-                    new WithExtraMessageCommand("cde"),
-                    new WithExtraCodeCommand("456"),
-                    new ForbiddenCommand(),
-                    new RuleCommand<object>(a => false),
-                    new ForbiddenCommand(),
-                    new WithErrorClearedCommand(),
                     new WithCodeCommand("123"),
                     new RuleCommand<object>(a => false),
                     new WithExtraMessageCommand("hij"),
@@ -375,105 +357,6 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                     }
                 };
             }
-
-            public static IEnumerable<object[]> NoMessages_When_ClearErrorCommand_IsTheLastOne()
-            {
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithMessageCommand("abc"),
-                        new WithErrorClearedCommand(),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Codes = Array.Empty<string>(),
-                        Messages = Array.Empty<string>(),
-                    }
-                };
-
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithMessageCommand("abc"),
-                        new WithMessageCommand("cde"),
-                        new WithMessageCommand("efg"),
-                        new WithErrorClearedCommand(),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Codes = Array.Empty<string>(),
-                        Messages = Array.Empty<string>(),
-                    }
-                };
-
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithMessageCommand("abc"),
-                        new WithExtraMessageCommand("cde"),
-                        new WithMessageCommand("efg"),
-                        new WithExtraMessageCommand("hij"),
-                        new WithMessageCommand("klm"),
-                        new WithErrorClearedCommand(),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Codes = Array.Empty<string>(),
-                        Messages = Array.Empty<string>(),
-                    }
-                };
-            }
-
-            public static IEnumerable<object[]> WithManyMessages_When_ClearErrorCommand_IsFollowedBy_MessageCommands()
-            {
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithErrorClearedCommand(),
-                        new WithMessageCommand("abc"),
-                        new WithExtraMessageCommand("cde"),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Codes = Array.Empty<string>(),
-                        Messages = new[]
-                        {
-                            "abc",
-                            "cde"
-                        }
-                    }
-                };
-
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithMessageCommand("abc"),
-                        new WithExtraMessageCommand("cde"),
-                        new WithErrorClearedCommand(),
-                        new WithExtraMessageCommand("hij"),
-                        new WithExtraMessageCommand("klm"),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Codes = Array.Empty<string>(),
-                        Messages = new[]
-                        {
-                            "hij",
-                            "klm"
-                        }
-                    }
-                };
-            }
         }
 
         public static class Codes
@@ -669,105 +552,6 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                     }
                 };
             }
-
-            public static IEnumerable<object[]> NoCodes_When_ClearErrorCommand_IsTheLastOne()
-            {
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithCodeCommand("abc"),
-                        new WithErrorClearedCommand(),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Messages = Array.Empty<string>(),
-                        Codes = Array.Empty<string>(),
-                    }
-                };
-
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithCodeCommand("abc"),
-                        new WithCodeCommand("cde"),
-                        new WithCodeCommand("efg"),
-                        new WithErrorClearedCommand(),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Messages = Array.Empty<string>(),
-                        Codes = Array.Empty<string>(),
-                    }
-                };
-
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithCodeCommand("abc"),
-                        new WithExtraCodeCommand("cde"),
-                        new WithCodeCommand("efg"),
-                        new WithExtraCodeCommand("hij"),
-                        new WithCodeCommand("klm"),
-                        new WithErrorClearedCommand(),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Messages = Array.Empty<string>(),
-                        Codes = Array.Empty<string>(),
-                    }
-                };
-            }
-
-            public static IEnumerable<object[]> WithManyCodes_When_ClearErrorCommand_IsFollowedBy_CodeCommands()
-            {
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithErrorClearedCommand(),
-                        new WithCodeCommand("abc"),
-                        new WithExtraCodeCommand("cde"),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Messages = Array.Empty<string>(),
-                        Codes = new[]
-                        {
-                            "abc",
-                            "cde"
-                        }
-                    }
-                };
-
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithCodeCommand("abc"),
-                        new WithExtraCodeCommand("cde"),
-                        new WithErrorClearedCommand(),
-                        new WithExtraCodeCommand("hij"),
-                        new WithExtraCodeCommand("klm"),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Messages = Array.Empty<string>(),
-                        Codes = new[]
-                        {
-                            "hij",
-                            "klm"
-                        }
-                    }
-                };
-            }
         }
 
         public static class MessagesAndCodes
@@ -779,7 +563,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                     new ICommand[]
                     {
                         new WithMessageCommand("abc"),
-                        new WithCodeCommand("123"),
+                        new WithExtraCodeCommand("123"),
                     },
                     new Error
                     {
@@ -805,7 +589,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                         new WithMessageCommand("m1"),
                         new WithExtraMessageCommand("m2"),
                         new WithExtraMessageCommand("m3"),
-                        new WithCodeCommand("c1"),
+                        new WithExtraCodeCommand("c1"),
                         new WithExtraCodeCommand("c2"),
                         new WithExtraCodeCommand("c3"),
                     },
@@ -823,59 +607,6 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
                             "m1",
                             "m2",
                             "m3",
-                        }
-                    }
-                };
-            }
-
-            public static IEnumerable<object[]> Messages_And_Codes_ClearedWith_ClearErrorCommand()
-            {
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithMessageCommand("m1"),
-                        new WithExtraMessageCommand("m2"),
-                        new WithExtraMessageCommand("m3"),
-                        new WithCodeCommand("c1"),
-                        new WithExtraCodeCommand("c2"),
-                        new WithExtraCodeCommand("c3"),
-                        new WithErrorClearedCommand(),
-                        new WithMessageCommand("m4"),
-                        new WithCodeCommand("c4"),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Codes = new[]
-                        {
-                            "c4"
-                        },
-                        Messages = new[]
-                        {
-                            "m4"
-                        }
-                    }
-                };
-
-                yield return new object[]
-                {
-                    new ICommand[]
-                    {
-                        new WithErrorClearedCommand(),
-                        new WithMessageCommand("m4"),
-                        new WithCodeCommand("c4"),
-                    },
-                    new Error
-                    {
-                        Args = Array.Empty<IArg>(),
-                        Codes = new[]
-                        {
-                            "c4"
-                        },
-                        Messages = new[]
-                        {
-                            "m4"
                         }
                     }
                 };

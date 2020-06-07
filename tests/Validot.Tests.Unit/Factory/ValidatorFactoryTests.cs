@@ -2,6 +2,9 @@ namespace Validot.Tests.Unit.Factory
 {
     using System.Collections.Generic;
 
+    using FluentAssertions;
+
+    using Validot.Settings;
     using Validot.Tests.Unit.Settings;
     using Validot.Tests.Unit.Translations;
     using Validot.Translations;
@@ -135,6 +138,34 @@ namespace Validot.Tests.Unit.Factory
             var validator = Validator.Factory.Create<object>(s => s);
 
             validator.Settings.ShouldBeLikeDefault();
+        }
+
+        [Fact]
+        public void Should_HaveDefaultSettingsLocked()
+        {
+            var validator = Validator.Factory.Create<object>(s => s);
+
+            validator.Settings.IsLocked.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Should_LockSettingsAfterPassingToFactory()
+        {
+            var validator = Validator.Factory.Create<object>(s => s, s => s);
+
+            validator.Settings.IsLocked.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Should_LockSettingsAfterPassingToFactory_ExternalSettings()
+        {
+            var settings = new ValidatorSettings();
+
+            settings.IsLocked.Should().BeFalse();
+
+            _ = Validator.Factory.Create<object>(s => s, s => settings);
+
+            settings.IsLocked.Should().BeTrue();
         }
 
         public class Translating

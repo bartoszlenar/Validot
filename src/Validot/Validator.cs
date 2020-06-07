@@ -48,6 +48,8 @@ namespace Validot
             {
                 _referenceLoopProtectionEnabled = false;
             }
+
+            Settings.IsLocked = true;
         }
 
         public ValidatorSettings Settings { get; }

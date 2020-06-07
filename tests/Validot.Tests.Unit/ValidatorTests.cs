@@ -34,6 +34,26 @@ namespace Validot.Tests.Unit
         public class Settings
         {
             [Fact]
+            public void Should_HaveLockedSettings()
+            {
+                var validator = new Validator<object>(_ => _);
+
+                validator.Settings.IsLocked.Should().BeTrue();
+            }
+
+            [Fact]
+            public void Should_LockSettingsAfterPassingToValidator()
+            {
+                var settings = new ValidatorSettings();
+
+                settings.IsLocked.Should().BeFalse();
+
+                _ = new Validator<object>(_ => _, settings);
+
+                settings.IsLocked.Should().BeTrue();
+            }
+
+            [Fact]
             public void Should_SetSettings_IfProvided()
             {
                 var settings = new ValidatorSettings();
@@ -69,6 +89,8 @@ namespace Validot.Tests.Unit
                 validator.Settings.Translations["test2"]["nested22"].Should().Be("n22");
                 validator.Settings.CapacityInfo.Should().BeSameAs(settings.CapacityInfo);
                 validator.Settings.ReferenceLoopProtection.Should().BeFalse();
+
+                validator.Settings.IsLocked.Should().BeTrue();
             }
 
             [Fact]

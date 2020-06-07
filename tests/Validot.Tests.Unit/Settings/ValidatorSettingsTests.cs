@@ -26,6 +26,7 @@ namespace Validot.Tests.Unit.Settings
             validatorSettings.Translations.Should().BeEmpty();
             validatorSettings.CapacityInfo.Should().NotBeNull();
             validatorSettings.ReferenceLoopProtection.Should().BeNull();
+            validatorSettings.IsLocked.Should().BeFalse();
         }
 
         [Fact]
@@ -76,6 +77,36 @@ namespace Validot.Tests.Unit.Settings
                 validatorSettings.WithReferenceLoopProtectionDisabled();
 
                 validatorSettings.ReferenceLoopProtection.Should().BeFalse();
+            }
+
+            [Fact]
+            public void Should_WithReferenceLoopProtection_ThrowException_When_Locked()
+            {
+                var validatorSettings = new ValidatorSettings();
+
+                validatorSettings.IsLocked = true;
+
+                Action action = () =>
+                {
+                    validatorSettings.WithReferenceLoopProtection();
+                };
+
+                action.Should().ThrowExactly<InvalidOperationException>();
+            }
+
+            [Fact]
+            public void Should_WithReferenceLoopProtectionDisabled_ThrowException_When_Locked()
+            {
+                var validatorSettings = new ValidatorSettings();
+
+                validatorSettings.IsLocked = true;
+
+                Action action = () =>
+                {
+                    validatorSettings.WithReferenceLoopProtectionDisabled();
+                };
+
+                action.Should().ThrowExactly<InvalidOperationException>();
             }
         }
 
@@ -145,6 +176,21 @@ namespace Validot.Tests.Unit.Settings
                 Action action = () => validatorSettings.WithTranslation(name, key, translation);
 
                 action.Should().ThrowExactly<ArgumentNullException>();
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_Locked()
+            {
+                var validatorSettings = new ValidatorSettings();
+
+                validatorSettings.IsLocked = true;
+
+                Action action = () =>
+                {
+                    validatorSettings.WithTranslation("a", "b", "c");
+                };
+
+                action.Should().ThrowExactly<InvalidOperationException>();
             }
 
             public class TestTranslationHolder : ITranslationHolder

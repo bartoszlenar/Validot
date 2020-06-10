@@ -423,8 +423,6 @@ Please check the [official Microsoft document](https://github.com/dotnet/standar
 
 Unit tests coverage hits 100% very close, it can be detaily verified on [codecov.io](https://codecov.io/gh/bartoszlenar/Validot/branch/master).
 
-Functional tests are in [the separate project](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Tests.Functional), which also stands as a base of usage examples, contains all code snippets from the [documentation](#../docs/DOCUMENTATION.md) and helps with following [semver](https://semver.org/) rules.
-
 [Semantic versioning](https://semver.org/) is being used very strictly. Major version is updated only when there is a breaking change, no matter how small it might be (e.g. adding extra function to the public interface). On the other hand, huge pack of new features will bump the minor version only.
 
 Before publishing, each release is tested on the [latest versions](https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners#supported-runners-and-hardware-resources) of operating systems:
@@ -440,13 +438,20 @@ using the [LTS versions](https://dotnet.microsoft.com/platform/support/policy/do
 * .NET Framework 4.8 (Windows only)
 
 ### Performance
-Benchmarks exist in the form of  [a console app project](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Benchmarks) based on [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet). Also, you can trigger performance tests [from the build script](../docs/DOCUMENTATION.md#benchmarks).
+
+Benchmarks exist in the form of  [the console app project](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Benchmarks) based on [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet). Also, you can trigger performance tests [from the build script](../docs/DOCUMENTATION.md#benchmarks).
+
+### Documentation
+
+The documentation is hosted alongside the source code, in the git repository, as a single markdown file: [DOCUMENTATION.md](./../docs/DOCUMENTATION.md).
+
+Code examples from the documentation live as [functional tests](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Tests.Functional).
 
 ### Development
 
-The entire project (source code, issue tracker, documentation and CI workflows) is hosted here on github.com.
+The entire project ([source code](https://github.com/bartoszlenar/Validot), [issue tracker](https://github.com/bartoszlenar/Validot/issues), [documentation](./../docs/DOCUMENTATION.md) and [CI workflows](https://github.com/bartoszlenar/Validot/actions)) is hosted here on github.com.
 
-Any contribution is more than welcome. If you'd like to help, don't forget to check out [CONTRIBUTING](docs/CONTRIBUTING.md) file and [issues](https://github.com/bartoszlenar/Validot/issues).
+Any contribution is more than welcome. If you'd like to help, please don't forget to check out the [CONTRIBUTING](docs/CONTRIBUTING.md) file and [issues page](https://github.com/bartoszlenar/Validot/issues).
 
 ### Licencing
 

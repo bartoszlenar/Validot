@@ -10,7 +10,7 @@ If you're reading this file, it means that you are - more or less - interested i
    - Let's have a short chat about a feature that you have in mind (or a bug that you found), _before_ any actual code work.
 2. Fork and code!
    - How to build, run unit and functional tests? How to analyse code coverage a execute benchmarks? It's all covered in the [documentation](./DOCUMENTATION.md#Development).
-   - Please get familiar with Validot's [project pricinples](#project-principles), [git](#git) and [code standards](#code-standards)
+   - Please get familiar with Validot's [project principles](#project-principles), [git](#git) and [code standards](#code-standards)
    - Provide changes in the documentation if needed.
 3. Raise the PR!
 

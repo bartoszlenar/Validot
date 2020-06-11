@@ -6,8 +6,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-- Replaced `IsValid` property in `IValidationResult` (a flag set to `true` if no errors) with `AnyErrors` property (similar, but negation) to avoid confusion with `IsValid` method in `IValidator` interface.
-
-## [1.0.0-preview1] - 2020-04-25
+## [1.0.0] - 2020-06-21
 Initial development point. Everything starts here.

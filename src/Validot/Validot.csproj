@@ -14,7 +14,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>assets/logo/validot-icon.png</PackageIcon>
     <Description>Tiny lib for advanced model validation. With performance in mind.</Description>
-    <PackageTags>validation validator specification fluent fluent-api</PackageTags>
+    <PackageTags>validation validation-library validator specification fluent-api model-validation</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -748,7 +748,7 @@ namespace Validot.Tests.Unit.Results
 
                 var stringified = validationResult.ToString();
 
-                stringified.Should().Be("(no error output)");
+                stringified.Should().Be("OK");
             }
 
             [Fact]

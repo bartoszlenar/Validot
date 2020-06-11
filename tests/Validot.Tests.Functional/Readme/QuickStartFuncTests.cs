@@ -1,15 +1,10 @@
 namespace Validot.Tests.Functional.Readme
 {
-    using System;
     using System.Linq;
-
-    using Xunit;
-
-    using Validot;
-
     using FluentAssertions;
-
+    using Validot;
     using Validot.Testing;
+    using Xunit;
 
     public class QuickStartTest
     {
@@ -52,11 +47,11 @@ namespace Validot.Tests.Functional.Readme
             var model = new UserModel(email: "inv@lidv@lue", age: 14);
 
             var result = validator.Validate(model);
-            
+
             result.AnyErrors.Should().BeTrue();
 
             result.MessageMap["Email"].Single().Should().Be("Must be a valid email address");
-            
+
             result.Codes.Should().Contain("ERR_EMAIL", "ERR_NAME");
 
             var messagesString = result.ToString();

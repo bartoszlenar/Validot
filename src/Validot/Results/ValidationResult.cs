@@ -9,7 +9,7 @@ namespace Validot.Results
 
     internal class ValidationResult : IValidationResult
     {
-        private const string NoErrorsString = "(no error output)";
+        private const string NoErrorsString = "OK";
 
         private const string PathSeparator = ": ";
 

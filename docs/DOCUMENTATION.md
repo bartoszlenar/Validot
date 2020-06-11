@@ -69,6 +69,8 @@
     - [Time argument](#time-argument)
     - [Translation argument](#translation-argument)
     - [Type argument](#type-argument)
+    - [Path argument](#path-argument)
+    - [Name argument](#name-argument)
   - [Translations](#translations)
     - [Overriding messages](#overriding-messages)
     - [Custom translation](#custom-translation)
@@ -3982,6 +3984,81 @@ result.ToString(translationName: "Polish");
 | `{arg\|format=toString}` | `typeof(int?)` | `System.Nullable'1[System.Int32]` |
 | `{arg\|translation=true}` | `typeof(int?)` | `{_translation\|key=Type.System.Nullable<System.Int32>}` |
 
+### Path argument
+
+- Path argument allows to include the [path](#path) of the validated value.
+- It's always in this form:
+  - `{_path}`
+- It's more difficult to cache such messages (they are less deterministic), so overusing path arguments might slightly decrease the performance.
+- It doesn't contain parameters.
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Positive()
+    .WithPath("Number.Value")
+    .WithMessage("Number value under {_path} needs to be positive!");
+
+var validator = Validator.Factory.Create(specification);
+
+var result = validator.Validate(-1);
+
+result.ToString();
+// Number.Value: Number value under Number.Value needs to be positive!
+```
+
+- In case of the root path, the value is just empty string.
+  - And it might look weird in the final printing.
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Positive()
+    .WithMessage("Number value under {_path} needs to be positive!");
+
+var validator = Validator.Factory.Create(specification);
+
+var result = validator.Validate(-1);
+
+result.ToString();
+// Number value under  needs to be positive!
+```
+
+### Name argument
+
+- Name argument allows to include the name of the validated value.
+  - Name is the last segment of the [path](#path).
+- It's always in this form:
+  - `{_name}`
+- It's more difficult to cache such messages (they are less deterministic), so overusing name arguments might slightly decrease the performance.
+- It doesn't contain parameters.
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Positive()
+    .WithPath("Number.Primary.SuperValue")
+    .WithMessage("The {_name} needs to be positive!");
+
+var validator = Validator.Factory.Create(specification);
+
+var result = validator.Validate(-1);
+
+result.ToString();
+// Number.Primary.SuperValue: The SuperValue needs to be positive!
+```
+
+- Similarly to [path argument](#path-argument), in case of the root path, the value is just empty string.
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Positive()
+    .WithMessage("The {_name} needs to be positive!");
+
+var validator = Validator.Factory.Create(specification);
+
+var result = validator.Validate(-1);
+
+result.ToString();
+// The  needs to be positive!
+```
 
 ## Translations
 

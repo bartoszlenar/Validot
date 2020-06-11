@@ -133,5 +133,71 @@ namespace Validot.Tests.Functional.Documentation
                 ToStringContentType.Messages,
                 "!!! sześć sześć sześć !!!");
         }
+
+        [Fact]
+        public void PathArgument()
+        {
+            Specification<decimal> specification = s => s
+                .Positive()
+                .WithPath("Number.Value")
+                .WithMessage("Number value under {_path} needs to be positive!");
+
+            var validator = Validator.Factory.Create(specification);
+
+            var result = validator.Validate(-1);
+
+            result.ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Number.Value: Number value under Number.Value needs to be positive!");
+        }
+
+        [Fact]
+        public void PathArgument_Root()
+        {
+            Specification<decimal> specification = s => s
+                .Positive()
+                .WithMessage("Number value under {_path} needs to be positive!");
+
+            var validator = Validator.Factory.Create(specification);
+
+            var result = validator.Validate(-1);
+
+            result.ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Number value under  needs to be positive!");
+        }
+
+        [Fact]
+        public void NameArgument()
+        {
+            Specification<decimal> specification = s => s
+                .Positive()
+                .WithPath("Number.Primary.SuperValue")
+                .WithMessage("The {_name} needs to be positive!");
+
+            var validator = Validator.Factory.Create(specification);
+
+            var result = validator.Validate(-1);
+
+            result.ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Number.Primary.SuperValue: The SuperValue needs to be positive!");
+        }
+
+        [Fact]
+        public void NameArgument_Root()
+        {
+            Specification<decimal> specification = s => s
+                .Positive()
+                .WithMessage("The {_name} needs to be positive!");
+
+            var validator = Validator.Factory.Create(specification);
+
+            var result = validator.Validate(-1);
+
+            result.ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "The  needs to be positive!");
+        }
     }
 }

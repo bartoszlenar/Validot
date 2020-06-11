@@ -3930,7 +3930,7 @@ validator.Validate(new DateTime(2001, 1, 1, 1, 1, 1, 1)).ToString();
 
 ### Translation argument
 
-- Translation arguments allows to include a phrase from the current translation.
+- Translation argument allows to include a phrase from the current translation.
 - It's always in this form:
   - `{_translation|key=MessageKey}`
 

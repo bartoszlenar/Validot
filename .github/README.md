@@ -43,16 +43,22 @@
       Features
     </a>
     |
-    <a href="#validot-vs-fluentvalidation">
-      Validot vs FluentValidation
-    </a>
-    |
     <a href="#project-info">
       Project info
     </a>
     |
     <a href="../docs/DOCUMENTATION.md">
       Documentation
+    </a>
+    |
+    <a href="../docs/CHANGELOG.md">
+      Changelog
+    </a>
+  </h3>
+  <br />
+  <h3>
+  <a href="#validot-vs-fluentvalidation">
+      Validot vs FluentValidation
     </a>
   </h3>
 </div>

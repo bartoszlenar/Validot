@@ -10,6 +10,36 @@ namespace Validot.Tests.Functional.Documentation
     public class MessageArgumentsFuncTests
     {
         [Fact]
+        public void MessageArguments()
+        {
+            Specification<decimal> specification = s => s
+                .Between(min: 0.123M, max: 100.123M)
+                .WithMessage("The number needs to fit between {min} and {max}");
+
+            var validator = Validator.Factory.Create(specification);
+
+            validator.Validate(105).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "The number needs to fit between 0.123 and 100.123");
+        }
+
+        [Fact]
+        public void MessageArguments_Arguments()
+        {
+            Specification<decimal> specification = s => s
+                .Between(min: 0.123M, max: 100.123M)
+                .WithMessage("The maximum value is {max|format=000.000}")
+                .WithExtraMessage("The minimum value is {min|format=000.000|culture=pl-PL}");
+
+            var validator = Validator.Factory.Create(specification);
+
+            validator.Validate(105).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "The maximum value is 100.123",
+                "The minimum value is 000,123");
+        }
+
+        [Fact]
         public void EnumArgument()
         {
             Specification<string> gmailSpecification = s => s

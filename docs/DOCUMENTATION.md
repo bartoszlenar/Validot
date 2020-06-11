@@ -3739,11 +3739,38 @@ result.ToString(translationName: "Polish");
 
 - [Error message](#message) might contain arguments in its content.
   - The placeholder for the argument value is using pattern: `{argumentName}`.
+  - Arguments can be used in [WithMessage](#withmessage), [WithExtraMessage](#withextramessage) and [RuleTemplate](#ruletemplate).
+  - The pattern followed in all [the built-in rules](#rules) is that the argument name is named exactly as the method's argument.
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Between(min: 0.123M, max: 100.123M)
+    .WithMessage("The number needs to fit between {min} and {max}");
+
+var validator = Validator.Factory.Create(specification);
+
+validator.Validate(105).ToString();
+// The number needs to fit between 0.123 and 100.123
+```
+
 - Arguments can be parametrized:
   - Parameters follow format: `parameterName=parameterValue`
   - Parameters are separated with `|` (vertical bar, pipe) character from the argument name and from each other
   - Single parameter example: `{argumentName|parameterName=parameterValue}`
   - Multiple parameters example: `{argumentName|param1=value1|param2=value2|param3=value3}`
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Between(min: 0.123M, max: 100.123M)
+    .WithMessage("The maximum value is {max|format=000.000}")
+    .WithExtraMessage("The minimum value is {min|format=000.000|culture=pl-PL}");
+
+var validator = Validator.Factory.Create(specification);
+
+validator.Validate(105).ToString();
+// The maximum value is 100.123
+// The minimum value is 000,123
+```
 
 ### Enum argument
 

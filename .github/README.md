@@ -460,4 +460,4 @@ Any contribution is more than welcome. If you'd like to help, please don't forge
 
 ### Licencing
 
-Validot uses [MIT licence](../LICENCE). Long story short; you are more than welcome to use it anywhere you like, completely free of charge and without opressive obligations.
+Validot uses [MIT licence](../LICENCE). Long story short; you are more than welcome to use it anywhere you like, completely free of charge and without oppressive obligations.

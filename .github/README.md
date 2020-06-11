@@ -7,7 +7,7 @@
 </h1>
 
 
- <h3 align="center">Tiny lib for advanced model validation, with performance in mind</h3>
+ <h3 align="center">Tiny lib for advanced model validation. With performance in mind.</h3>
 
   <br />
 <p align="center">

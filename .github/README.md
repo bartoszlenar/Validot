@@ -394,13 +394,12 @@ validator.Validate(model, failFast: true);
 
 Features that might be in the scope and are technically possible to implement in the future:
 
-* `await`/`async` support
-* dependent rules
-* transforming values
-* severities
-* failing fast only in a single scope
-* validated value in the error message
-* "smart paths" in the error message (`RootUserCollection` member becomes `Root User Collection`)
+* `await`/`async` support ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/2))
+* transforming values ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/3))
+* severities  ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/4))
+* failing fast only in a single scope ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/5))
+* validated value in the error message  ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/4))
+* "smart paths" in the error message, e.g. `RootUserCollection` member becomes `Root User Collection` ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/1))
 
 Features that are very unlikely to be in the scope as they contradict with the project's principles, and/or would have very negative impact on performance, and/or are impossible to implement:
 

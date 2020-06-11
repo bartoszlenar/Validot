@@ -455,7 +455,7 @@ Code examples from the documentation live as [functional tests](https://github.c
 
 The entire project ([source code](https://github.com/bartoszlenar/Validot), [issue tracker](https://github.com/bartoszlenar/Validot/issues), [documentation](./../docs/DOCUMENTATION.md) and [CI workflows](https://github.com/bartoszlenar/Validot/actions)) is hosted here on github.com.
 
-Any contribution is more than welcome. If you'd like to help, please don't forget to check out the [CONTRIBUTING](docs/CONTRIBUTING.md) file and [issues page](https://github.com/bartoszlenar/Validot/issues).
+Any contribution is more than welcome. If you'd like to help, please don't forget to check out the [CONTRIBUTING](./../docs/CONTRIBUTING.md) file and [issues page](https://github.com/bartoszlenar/Validot/issues).
 
 ### Licencing
 

@@ -95,7 +95,7 @@ Specification<UserModel> specification = _ => _
         .WithExtraCode("ERR_NAME");
 ```
 
-The next step is to create a validator. As its name stands - it validates objects according to the specification. It's also thread-safe so you can seamlessly register it as a singleton in your DI container.
+The next step is to create a [validator](../docs/DOCUMENTATION.md#validator). As its name stands - it validates objects according to the [specification](../docs/DOCUMENTATION.md#specification). It's also thread-safe so you can seamlessly register it as a singleton in your DI container.
 
 ``` csharp
 var validator = Validator.Factory.Create(specification);
@@ -109,7 +109,7 @@ var model = new UserModel(email: "inv@lidv@lue", age: 14);
 var result = validator.Validate(model);
 ```
 
-The result object contains all information about the errors. Without retriggering the validation process you can extract the desired form of an output.
+The [result](../docs/DOCUMENTATION.md#result) object contains all information about the [errors](../docs/DOCUMENTATION.md#error-output). Without retriggering the validation process you can extract the desired form of an output.
 
 ``` csharp
 result.AnyErrors; // bool flag:
@@ -134,7 +134,7 @@ result.ToString(); // compact printing of codes and messages:
 
 ### Advanced fluent API, inline
 
-No more obligatory if-ology around input models or separate classes wrapping just validation logic. Write specifications inline with simple, human-readable fluent API. Native support for properties and fields, structs and classes, nullables, collections, nested members and all of the possible combinations.
+No more obligatory if-ology around input models or separate classes wrapping just validation logic. Write [specifications](../docs/DOCUMENTATION.md#specification) inline with simple, human-readable [fluent API](../docs/DOCUMENTATION.md#fluent0api). Native support for properties and fields, structs and classes, [nullables](../docs/DOCUMENTATION.md#asnullable), [collections](../docs/DOCUMENTATION.md#ascollection), [nested members](../docs/DOCUMENTATION.md#member) and all of the possible combinations.
 
 ``` csharp
 Specification<string> nameSpecification = s => s
@@ -161,7 +161,7 @@ Specification<UserModel> userSpecification = s => s
     }).WithMessage("Alternative emails must not contain the primary email address");
 ```
 
-* [Guide through Validot's fluent API](../docs/DOCUMENTATION.md#specification)
+* [Guide through Validot's fluent API](../docs/DOCUMENTATION.md#fluent-api)
 * [If you prefer approach of having separate class for just validation logic, it's also fully supported](../docs/DOCUMENTATION.md#specification-holder)
 
 ### Validators
@@ -206,7 +206,7 @@ bookValidator.Template.ToString(); // Template contains all of the possible erro
 
 ### Results
 
-A flag, list of codes or full error paths with messages. Additionally - access to the raw errors data so you can produce your own kind of report.
+A [flag](../docs/DOCUMENTATION.md#anyerrors), full [list of codes](../docs/DOCUMENTATION.md#codes), detailed maps of [messages](../docs/DOCUMENTATION.md#messagemap) or [codes](../docs/DOCUMENTATION.md#codemap). Or a [full, friendly printing](../docs/DOCUMENTATION.md#tostring) that contains everything.
 
 
 ``` csharp
@@ -232,12 +232,11 @@ if (validationResult.AnyErrors)
 }
 ```
 
-* [Reports and their types](../docs/DOCUMENTATION.md#reports)
-* [Building custom report](../docs/DOCUMENTATION.md#custom-report)
+* [Validation result types](../docs/DOCUMENTATION.md#result)
 
 ### Rules
 
-Tons of rules available out of the box. Plus an easy way to define your own with full support of Validot internal features like formattable message arguments.
+Tons of [rules available out of the box](../docs/DOCUMENTATION.md#rules). Plus an easy way to [define your own](../docs/DOCUMENTATION.md#custom-rules) with full support of Validot internal features like [formattable message arguments](../docs/DOCUMENTATION.md#message-arguments).
 
 ``` csharp
 public static IRuleOut<string> ExactLinesCount(this IRuleIn<string> @this, int count)
@@ -261,9 +260,9 @@ public static IRuleOut<string> ExactLinesCount(this IRuleIn<string> @this, int c
 // Required lines count: 004,00
 ```
 
-* [List of built-in rules](../docs/DOCUMENTATION.md#rule-list)
+* [List of built-in rules](../docs/DOCUMENTATION.md#rules)
 * [Writing custom rules](../docs/DOCUMENTATION.md#custom-rules)
-* [Parametrized messages](../docs/DOCUMENTATION.md#parameterized-messages)
+* [Message arguments](../docs/DOCUMENTATION.md#message-arguments)
 
 ### Translations
 
@@ -295,7 +294,7 @@ result.ToString(translationName: "Polish");
 
 ## Validot vs FluentValidation
 
-A short statement to start with - [@JeremySkinner](https://twitter.com/JeremySkinner)'s [FluentValidation](https://fluentvalidation.net/) is a great piece of work and has been a huge inspiration for this project. True, you can call Validot a direct competitor, but it differs in some fundamental decisions and lot of attention has been focused on completely different aspects. If after reading this section you think you can bear another approach, api and [limitations](#fluentValidations-features-that-validot-is-missing), at least give Validot a try. You might be positivly surprised. Otherwise, FluentValidation is a good, safe choice, as Validot is certainly less hackable and achieving some very specific goals might be either difficult or impossible.
+A short statement to start with - [@JeremySkinner](https://twitter.com/JeremySkinner)'s [FluentValidation](https://fluentvalidation.net/) is a great piece of work and has been a huge inspiration for this project. True, you can call Validot a direct competitor, but it differs in some fundamental decisions and lot of attention has been focused on completely different aspects. If after reading this section you think you can bear another approach, api and [limitations](#fluentValidations-features-that-validot-is-missing), at least give Validot a try. You might be positively surprised. Otherwise, FluentValidation is a good, safe choice, as Validot is certainly less hackable and achieving some very specific goals might be either difficult or impossible.
 
 ### Validot is faster and consumes less memory
 
@@ -321,7 +320,7 @@ Of course, any help with making these benchmarks more accurate and covering more
 | ErrorMessages, FullReport | FluentValidation | .NET Core 3.1, i7-9750H, X64 RyuJIT | `7513.665` | `7201.38` |
 | ErrorMessages, FullReport | Validot | .NET Core 3.1, i7-9750H, X64 RyuJIT | `3699.273` | `2502.20` |
 
-FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors or not. Validot has `AnyErrors` that acts the same way, but `IsValid` is a dedicated special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude:
+FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors or not. Validot has [AnyErrors](../docs/DOCUMENTATION.md#anyerrors) that acts the same way, but [IsValid](../docs/DOCUMENTATION.md#isvalid) is a dedicated special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify the incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude:
 
 | Test name | Library | Environment | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
@@ -330,7 +329,7 @@ FluentValidation's `IsValid` is a property that wraps a simple check whether the
 | NoErrors, IsValid | FluentValidation | .NET Core 3.1, i7-9750H, X64 RyuJIT | `6253.320` | `6689.79` |
 | NoErrors, IsValid | Validot | .NET Core 3.1, i7-9750H, X64 RyuJIT | `2404.450` | `788.60` |
 
-In fact, combining these two methods in most cases could be quite beneficial. At first `IsValid` quickly verifies the object and if it contains errors - only then `Validate` is executed to report the details. Of course in some extreme cases (megabyte-size data? milions of items in the collection? dozens of nested levels with loops in reference graphs?) traversing through the object twice could neglate the profit, but for the regular web api input validation it will certainly serve its purpose:
+In fact, combining these two methods in most cases could be quite beneficial. At first [IsValid](../docs/DOCUMENTATION.md#isvalid) quickly verifies the object and if it contains errors - only then [Validate](../docs/DOCUMENTATION.md#validate) is executed to report the details. Of course in some extreme cases (megabyte-size data? milions of items in the collection? dozens of nested levels with loops in reference graphs?) traversing through the object twice could neglate the profit, but for the regular web api input validation it will certainly serve its purpose:
 
 ``` csharp
 if (validator.IsValid(model))
@@ -346,7 +345,7 @@ if (validator.IsValid(model))
 
 ### Validot handles nulls by default
 
-In Validot, null is a special case handled by the core engine. You don't need to secure the validation logic from null as your predicate will never receive it.
+In Validot, null is a special case [handled by the core engine](../docs/DOCUMENTATION.md#null-policy). You don't need to secure the validation logic from null as your predicate will never receive it.
 
 ``` csharp
 Member(m => m.LastName, m => m
@@ -361,7 +360,7 @@ Unless explicitly commanded, the model is marked as required by default. In the 
 LastName: Required
 ```
 
-If null should be allowed, place `Optional` command at the beginning:
+If null should be allowed, place [Optional](../docs/DOCUMENTATION.md#optional) command at the beginning:
 
 ``` csharp
 Member(m => m.LastName, m => m
@@ -373,13 +372,13 @@ Member(m => m.LastName, m => m
 
 Again, no rule predicate is triggered. Also null `LastName` member doesn't result with errors.
 
-The strategy of handling nulls is deeply baked in Validot's foundations and can't be altered. Although some scenarios could be achieved by mixing `Rule` (the logic) + `WithMessage` (error message) + `WithName` (target path) commands at the higher level.
+The [strategy of handling nulls](../docs/DOCUMENTATION.md#null-policy) is deeply baked in Validot's foundations and can't be altered. Although some scenarios could be achieved by mixing [Rule](../docs/DOCUMENTATION.md#rule) (the logic) + [WithMessage](../docs/DOCUMENTATION.md#withmessage) ([error message](../docs/DOCUMENTATION.md#message)) + [WithPath](../docs/DOCUMENTATION.md#withpath) (target path) commands at the higher level.
 
-* [Read more about how Validot handles nulls](../docs/DOCUMENTATION.md#handling-nulls)
+* [Read more about how Validot handles nulls](../docs/DOCUMENTATION.md#null-policy)
 
 ### Validot's Validator is immutable
 
-Once Validator is created, you can't modify its internal state or options. If you need the process to fail fast (FluentValidation's `CascadeMode.StopOnFirstFailure`), use the flag:
+Once [validator](../docs/DOCUMENTATION.md#validator) instance is created, you can't modify its internal state or [settings](../docs/DOCUMENTATION.md#settings). If you need the process to fail fast (FluentValidation's `CascadeMode.StopOnFirstFailure`), use the flag:
 
 ``` csharp
 validator.Validate(model, failFast: true);
@@ -399,17 +398,17 @@ Features that might be in the scope and are technically possible to implement in
 
 Features that are very unlikely to be in the scope as they contradict with the project's principles, and/or would have very negative impact on performance, and/or are impossible to implement:
 
-* access to any stateful context in the rule condition predicate
-  * it implicates already mentioned lack of support for dynamic message content and/or amount
-* integration with ASP.NET or other frameworks
-  * making such a thing wouldn't be a difficult task at all, but Validot tries to remain a single-purpose library and all integrations need to be done individually
-* callbacks
-  * please react on failure/success after getting validation result
-* pre-validation
-  * all cases can be handled by additional validation and a proper if-else
-  * also, the problem of root being null doesn't exist in Validot (it's a regular case, covered entirely with fluent api)
-* rule sets
-  * workaround; multiple validators for different sets of properties
+* Access to any stateful context in the rule condition predicate:
+  * It implicates already mentioned lack of support for dynamic message content and/or amount.
+* Integration with ASP.NET or other frameworks:
+  * Making such a thing wouldn't be a difficult task at all, but Validot tries to remain a single-purpose library and all integrations need to be done individually
+* Callbacks:
+  * Please react on [failure/success](../docs/DOCUMENTATION.md#anyerrors) after getting [validation result](../docs/DOCUMENTATION.md#result).
+* Pre-validation:
+  * All cases can be handled by additional validation and a proper if-else.
+  * Also, the problem of root being null doesn't exist in Validot (it's a regular case, [covered entirely with fluent api](../docs/DOCUMENTATION.md#presence-commands))
+* Rule sets
+  * workaround; multiple [validators](../docs/DOCUMENTATION.md#validator) for different parts of the object.
 
 ## Project info
 

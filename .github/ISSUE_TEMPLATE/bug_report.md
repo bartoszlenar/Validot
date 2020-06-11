@@ -25,7 +25,7 @@ Please replace the placeholders (like point lists or code snippets) with your ow
 ```
 
 ``` csharp
-// If the code is spread across multiple files, please contain each one in a separate blockgit
+// If the code is spread across multiple files, please contain each one in a separate block
 ```
 
 Steps to reproduce:
@@ -42,6 +42,6 @@ Steps to reproduce:
 
 ## Environment
 
-* Validot version: <!-- nuget package version or commit sha -->
-* dotnet version: <!-- dotnet SDK version and framework id (TargetFramework tag in csproj) -->
+* Validot version: <!-- nuget package version and/or commit sha -->
+* dotnet version: <!-- dotnet SDK version and framework id (TargetFramework tag in your csproj) -->
 * OS: <!-- OS name and version -->

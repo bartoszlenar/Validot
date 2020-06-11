@@ -7,7 +7,7 @@ Please replace the placeholders (like point lists or code snippets) with your ow
 
 ## Issue
 
-Related issue: # (required - if the issue doesn't exist, please creat it first)
+Related issue: # (required - if the issue doesn't exist, please create it first)
 
 ## Type of changes
 

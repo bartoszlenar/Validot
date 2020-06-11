@@ -14,7 +14,7 @@ Please replace the placeholders (like point lists or code snippets) with your ow
 
 ## Feature description
 
-* Please provide the feature desciption in points.
+* Please provide the feature description in points.
 * What is the problem you're trying to solve?
 * What is in-scope and what is out-of-scope?
 

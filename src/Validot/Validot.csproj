@@ -13,7 +13,7 @@
     <RepositoryUrl>https://github.com/bartoszlenar/Validot.git</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>assets/logo/validot-icon.png</PackageIcon>
-    <Description>Tiny lib for advanced model validation, with performance in mind</Description>
+    <Description>Tiny lib for advanced model validation. With performance in mind.</Description>
     <PackageTags>validation validator specification fluent fluent-api</PackageTags>
   </PropertyGroup>
 

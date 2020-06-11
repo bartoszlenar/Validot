@@ -69,6 +69,8 @@
     - [Time argument](#time-argument)
     - [Translation argument](#translation-argument)
     - [Type argument](#type-argument)
+    - [Path argument](#path-argument)
+    - [Name argument](#name-argument)
   - [Translations](#translations)
     - [Overriding messages](#overriding-messages)
     - [Custom translation](#custom-translation)
@@ -450,22 +452,16 @@ _Above, `MemberCollection.#0.NestedMember.MoreNestedMemberCollection.#23.Email:`
 
 - The order the commands in the specification is strictly enforced by the language constructs. Invalid order means compilation error.
 
-- Fluent api order conditions:
-  - Can be followed
-
-- [Scope commands](#scope-commands):
-  - Can be placed anywhere, except for the scope starting with [Forbidden](#forbidden) [presence command](#presence-commands).
-  - Can be followed by:
-    - [parameter commands](#parameter-commands) to modify their scope: [WithCondition](#withcondition), [WithPath](#withpath), [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
-    - any of the [scope commands](#scope-commands), to start a new scope: [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable).
-- [Presence commands](#presence-commands):
-  - Can be placed at the beginning of the scope
-  - They can be followed with:
-
 ---
 
 #### Rule
 
+- `Rule` is a [scope command](#scope-commands).
+  - Can be placed after:
+    - any command except [Forbidden](#forbidden).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - any of the [parameter commands](#parameter-commands).
 - `Rule` defines a single, atomic bit of validation logic with a predicate that accepts the scope value and returns:
   - `true`, if the scope value is valid.
   - `false`, if the scope value in invalid.
@@ -561,12 +557,17 @@ catch(VerySpecialException exception)
 
 - After processing the [Specification](#specification), the [validator](#validator) stores the predicate in its internals.
   - This is the very reason to be double-cautious when "capturing" variables in the predicate as you're risking memory leak. Especially when the [validator](#validator) is registered as singleton in a DI container.
-- Fluent api conditions: `Rule` is a [scope command](#scope-commands) and as such follows the conditions described at the beginning of the [fluent api section](#fluent-api).
 
 ---
 
 #### RuleTemplate
 
+- `RuleTemplate` is a [scope command](#scope-commands).
+  - Can be placed after:
+    - any command except [Forbidden](#forbidden).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - any of the [parameter commands](#parameter-commands).
 - `RuleTemplate` is a special version of [Rule](#rule).
   - All of the details described in the [Rule](#rule) section apply also in here.
 - The purpose of `RuleTemplate` is to deliver a convenient foundation for predefined, reusable rules.
@@ -733,12 +734,17 @@ _In the above example, `Between` is a built-in rule for `int` type values that e
     - [Message arguments](#message-arguments) - everything about the available arguments, their types and parameters.
     - [Custom rules](#custom-rules) - how to create a custom rule, step by step
     - [Rules](#rules) - the detailed list of all arguments available in each of the built-in rule.
-- Fluent api conditions: `RuleTemplate` is a [scope command](#scope-commands) and as such follows the conditions described at the beginning of the [fluent api section](#fluent-api).
 
 ---
 
 #### Member
 
+- `Member` is a [scope command](#scope-commands).
+  - Can be placed after:
+    - any command except [Forbidden](#forbidden).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - any of the [parameter commands](#parameter-commands).
 - `Member` executes a specification upon a scope object's member.
 - `Member` command accepts:
   - member selector - a lambda expression pointing at a scope object's member.
@@ -892,12 +898,16 @@ _Without any [presence command](#presence-commands) in `publisherSpecification`,
 
 _If the specification starts with `Optional`, no error is returned from the member scope._
 
-- Fluent api conditions: `Member` is a [scope command](#scope-commands) and as such follows the conditions described at the beginning of the [fluent api section](#fluent-api).
-
 ---
 
 #### AsModel
 
+- `AsModel` is a [scope command](#scope-commands).
+  - Can be placed after:
+    - any command except [Forbidden](#forbidden).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - any of the [parameter commands](#parameter-commands).
 - `AsModel` executes a specification upon the scope value.
 - `AsModel` command accepts only one argument; a specification `Specification<T>`, where `T` is the current scope type.
 - Technically `AsModel` executes specification in the same scope that it lives itself.
@@ -1082,12 +1092,16 @@ emailValidator.Validate("Email").ToString();
 // This value is invalid as email address
 ```
 
-- Fluent api conditions: `AsModel` is a [scope command](#scope-commands) and as such follows the conditions described at the beginning of the [fluent api section](#fluent-api).
-
 ---
 
 #### AsCollection
 
+- `AsCollection` is a [scope command](#scope-commands).
+  - Can be placed after:
+    - any command except [Forbidden](#forbidden).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - any of the [parameter commands](#parameter-commands).
 - `AsCollection` command has two generic type parameters: `AsCollection<T, TItem>`, where:
   - `TItem` - is a type of the single item in the collection.
   - `T` - is derived from `IEnumerable<TItem>`.
@@ -1292,12 +1306,16 @@ bookValidator.Validate(book).ToString();
 // Authors: Book can have max 5 authors.
 ```
 
-- Fluent api conditions: `AsCollection` is a [scope command](#scope-commands) and as such follows the conditions described at the beginning of the [fluent api section](#fluent-api).
-
 ---
 
 #### AsNullable
 
+- `AsNullable` is a [scope command](#scope-commands).
+  - Can be placed after:
+    - any command except [Forbidden](#forbidden).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - any of the [parameter commands](#parameter-commands).
 - `AsNullable` "unwraps" the nullable value and provides the way to validate it with a [specification](#specification).
 - `AsNullable` accepts single parameter; `Specification<T>`, where `T` is a value type wrapped in `Nullable<T>` (`T?`).
 - Null value never reaches `AsNullable`, exactly as [handling nulls policy](#null-policy) states.
@@ -1399,13 +1417,18 @@ bookValidator.Validate(book).ToString()
 
 _Above the example how two members - nullable `YearOfPublication` and non-nullable `YearOfFirstAnnouncement` - can be validated with the same specification `yearSpecification`._
 
-- Fluent api conditions: `Rule` is a [scope command](#scope-commands) and as such follows the conditions described at the beginning of the [fluent api section](#fluent-api).
-
 ---
 
 #### WithCondition
 
-- `WithCondition` is a [parameter command](#parameter-commands) that sets the execution condition to the related (preceding) [scope command](#scope-commands).
+
+- `WithCondition` is a [parameter command](#parameter-commands).
+  - Can be placed after:
+    - the related [scope command](#scope-commands).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - other [parameter commands](#parameter-commands):  [WithPath](#withpath), [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
+- `WithCondition` sets the execution condition to the related (preceding) [scope command](#scope-commands).
 - `WithCondition` accepts single argument; a predicate `Predicate<T>`, where `T` is the current scope type.
   - So `T` is exactly the same as in `Specification<T>` where the command exists.
   - The received argument is never null.
@@ -1549,19 +1572,18 @@ validator.Validate(author2).AnyErrors; // false
 
 _The above code shows how to validate a member with three different specifications,  depending on the the email provider._
 
-- Fluent api conditions: `Rule` is a [scope command](#scope-commands) and as such follows the conditions described at the beginning of the [fluent api section](#fluent-api).
-
-- `WithCondition` fluent api conditions:
-    - Needs to be placed directly after the related [scope command](#scope-commands): [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable)).
-    - Can be followed by:
-        - [parameter commands](#parameter-commands), to continue the modification of the related [scope command](#scope-commands): [WithPath](#withpath), [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
-        - any of the [scope commands](#scope-commands), to start a new scope: [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable).
-
 ---
 
 #### WithPath
 
-- `WithPath` is a [parameter command](#parameter-commands) that sets the [path](#path) for the related scope's [error output](#error-output).
+- `WithPath` is a [parameter command](#parameter-commands).
+  - Can be placed after:
+    - the related [scope command](#scope-commands).
+    - other [parameter commands](#parameter-commands): [WithCondition](#withcondition).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - other [parameter commands](#parameter-commands): [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
+- `WithPath` sets the [path](#path) for the related scope's [error output](#error-output).
 - `WithPath` accepts one parameter; a path relative to the current scope path.
   - Example 1; at level `FirstLevel.SecondLevel`, placing setting `ThirdLevel` as path results with `FirstLevel.SecondLevel.ThirdLevel`, not just `ThirdLevel`.
   - Example 2; at root level, placing setting `Characters` as path results with `Characters`:
@@ -1743,18 +1765,18 @@ publisherValidator.Validate(publisher).ToString();
 
 _Above, two rules from the same scope are saving [error messages](#message) into completely different [paths](#path) (`Characters` and `Grammar`)._
 
-- `WithPath` fluent api conditions:
-    - Needs to be placed directly after:
-        - the related [scope command](#scope-commands): [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable)).
-        - [parameter commands](#parameter-commands): [WithCondition](#withcondition)
-    - Can be followed by:
-        - [parameter commands](#parameter-commands): [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
-        - any of the [scope commands](#scope-commands), to start a new scope: [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable).
-
 ---
 
 #### WithMessage
 
+- `WithMessage` is a [parameter command](#parameter-commands).
+  - Can be placed after:
+    - the related [scope command](#scope-commands).
+    - the related [presence commands](#presence-commands): [Required](#required), [Forbidden](#forbidden).
+    - other [parameter commands](#parameter-commands): [WithCondition](#withcondition), [WithPath](#withpath).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - other [parameter commands](#parameter-commands): [WithExtraMessage](#withextramessage), [WithExtraCode](#withextracode).
 - `WithMessage` overwrites the entire [error output](#error-output) of the related (preceding) [scope command](#scope-commands) with a single [error message](#message).
 - `WithMessage` accepts single parameters: message content.
 - `WithMessage` is the only way to override the default message (`"Error"`) recorded if the predicate in [Rule](#rule) fails:
@@ -1831,18 +1853,19 @@ _`Between` rule takes two arguments; `max` and `min`. These values can be used w
 - Validation result presents messages in:
   - [ToString](#tostring) - prints messages preceded by their paths, each in a separate line.
   - [MessageMap](#messagemap) - dictionary that holds collections of messages grouped by the paths.
-- `WithMessage` fluent api conditions:
-  - Needs to be placed directly after:
-      - the related [scope command](#scope-commands): [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable)).
-      - [parameter commands](#parameter-commands): [WithCondition](#withcondition), [WithPath](#withpath)
-  - Can be followed by:
-      - [parameter commands](#parameter-commands): [WithExtraMessage](#withextramessage), [WithExtraCode](#withextracode).
-      - any of the [scope commands](#scope-commands), to start a new scope: [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable).
 
 ---
 
 #### WithExtraMessage
 
+- `WithExtraMessage` is a [parameter command](#parameter-commands).
+  - Can be placed after:
+    - the related [scope command](#scope-commands).
+    - the related [presence commands](#presence-commands): [Required](#required), [Forbidden](#forbidden).
+    - other [parameter commands](#parameter-commands): [WithCondition](#withcondition), [WithPath](#withpath), [WithMessage](#withmessage).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - other [parameter commands](#parameter-commands): [WithExtraMessage](#withextramessage), [WithExtraCode](#withextracode).
 - `WithExtraMessage` adds a single [message](#message) to the [error output](#error-output) of the related scope.
 - `WithExtraMessage` accepts single parameter: message content.
 - `WithExtraMessage` is the only way to an add additional messages to the [error output](#error-output).
@@ -1920,16 +1943,17 @@ _`Between` rule takes two arguments; `max` and `min`. These values can be used w
 - Validation result presents messages in:
   - [ToString](#tostring) - prints messages preceded by their paths, each in a separate line.
   - [MessageMap](#messagemap) - dictionary that holds collections of messages grouped by the paths.
-- `WithExtraMessage` fluent api conditions:
-  - Needs to be placed directly after:
-    - the related [scope command](#scope-commands): [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable)).
-    - [parameter commands](#parameter-commands): [WithCondition](#withcondition), [WithPath](#withpath), [WithMessage](#withmessage)
-  - Can be followed by:
-    - [parameter commands](#parameter-commands): [WithExtraCode](#withextracode).
-    - any of the [scope commands](#scope-commands), to start a new scope: [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable).
 
 #### WithCode
 
+- `WithCode` is a [parameter command](#parameter-commands).
+  - Can be placed after:
+    - the related [scope command](#scope-commands).
+    - the related [presence commands](#presence-commands): [Required](#required), [Forbidden](#forbidden).
+    - other [parameter commands](#parameter-commands): [WithCondition](#withcondition), [WithPath](#withpath).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - other [parameter commands](#parameter-commands): [WithExtraCode](#withextracode).
 - `WithCode` overwrites the [entire output](#error-output) of the related scope with a single [error code](#code).
 - `WithCode` accepts single parameters: [code](#code).
   - [Error code](#code) can't contain white space characters.
@@ -2016,18 +2040,18 @@ result.CodeMap["Authors"]; // collection with single item: ["INVALID_AUTHORS"]
 
 _Above, [AsCollection](#ascollection) would return messages under multiple different paths. When followed by `WithCode` even a single error coming from [AsCollection](#ascollection) results with just a single error code._
 
-- `WithCode` fluent api conditions:
-  - Needs to be placed directly after:
-    - the related [scope command](#scope-commands): [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable)).
-    - [parameter commands](#parameter-commands): [WithCondition](#withcondition), [WithPath](#withpath)
-  - Can be followed by:
-    - [parameter commands](#parameter-commands): [WithExtraCode](#withextracode).
-    - any of the [scope commands](#scope-commands), to start a new scope: [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable).
-
 ---
 
 #### WithExtraCode
 
+- `WithExtraCode` is a [parameter command](#parameter-commands).
+  - Can be placed after:
+    - the related [scope command](#scope-commands).
+    - the related [presence commands](#presence-commands): [Required](#required), [Forbidden](#forbidden).
+    - other [parameter commands](#parameter-commands): [WithCondition](#withcondition), [WithPath](#withpath), [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - other [parameter commands](#parameter-commands): [WithExtraCode](#withextracode).
 - `WithExtraCode` adds a single [error code](#code) to the [error output](#error-output) of the related (preceding) [command scope](#scope-commands).
 - `WithExtraCode` accepts single parameter; [code](#code).
   - Reminder; error code can't contain white space characters.
@@ -2088,17 +2112,12 @@ result.ToString();
 
 _In the above example you can observe how [ToString()][#tostring] prints codes and messages. Of course, both can be detaily examined using [Codes](#codes), [CodeMap](#codemap) and [MessageMap](#messagemap) properties of validation result._
 
-- `WithExtraCode` fluent api conditions:
-    - Needs to be placed directly after:
-        - the related [scope command](#scope-commands): [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable)).
-        - [parameter commands](#parameter-commands): [WithCondition](#withcondition), [WithPath](#withpath), [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode).
-    - Can be followed by:
-        - [parameter commands](#parameter-commands): [WithExtraCode](#withextracode).
-        - any of the [scope commands](#scope-commands), to start a new scope: [Rule](#rule) (and [RuleTemplate](#ruletemplate)), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable).
-
 #### Optional
 
 - `Optional` is a [presence command](#presence-commands).
+  - Needs to be placed as the first on in the scope.
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
 - `Optional` makes the current scope value as optional (null is allowed).
   - `Optional` is the only way to avoid errors in case of null value.
 
@@ -2165,16 +2184,16 @@ validator.Validate(book2).ToString();
 ```
 
 - Good to read; [null policy](#null-policy) - the entire logic of handling nulls.
-- `Optional` fluent api conditions:
-    - Needs to be placed as a first command inside the scope.
-    - Can be followed by:
-        - [Rule](#rule), [RuleTemplate](#ruletemplate), [Member](#member), [AsModel](#asmodel), [AsCollection](#ascollection), [AsNullable](#asnullable).
 
 ---
 
 #### Required
 
 - `Required` is a [presence command](#presence-commands).
+  - Needs to be placed as the first on in the scope.
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - [parameter commands](#parameter-commands): [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
 - `Required` makes the current scope value required (null is not allowed).
     - In fact, every scope by default requires the incoming value to be non-null and inserting single `Required` doesn't change anything:
 
@@ -2285,16 +2304,15 @@ result.ToString();
 _Above, `Title` is optional, so no presence error is saved under `Title` path. If `Title` is null, the [error output](#error-output) from [Rule](#rule) is saved under `BookTitle` path._
 
 - Good to read; [null policy](#null-policy) - the entire logic of handling nulls.
-- `Required` fluent api conditions:
-    - Needs to be placed as a first command inside the scope.
-    - Can be followed by [parameter commands](#parameter-commands): [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
-    - Can be followed by all the [scope commands](#scope-commands).
 
 ---
 
 #### Forbidden
 
 - `Forbidden` is a [presence command](#presence-commands).
+  - Needs to be placed as the first on in the scope.
+  - Can be followed by:
+    - [parameter commands](#parameter-commands): [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
 - `Forbidden` makes the current scope forbidden.
   - Non-null is not allowed, or in another words; the value must be null.
   - `Forbidden` is exactly opposite to [Required](#required).
@@ -2334,11 +2352,6 @@ result.ToString();
 ```
 
 - Good to read; [null policy](#null-policy) - the entire logic of handling nulls.
-- `Forbidden` fluent api conditions:
-  - Needs to be placed as a first command inside the scope.
-  - Can be followed by [parameter commands](#parameter-commands): [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
-  - `Forbidden` is a special case. If the scope contains it, it cannot contain any scope commands.
-    - Because it doesn't make any sense. If the value is null, they wouldn't be executed anyway. If the value is non-null - same case, plus the error is already recorded.
 
 ### Null policy
 
@@ -3739,11 +3752,38 @@ result.ToString(translationName: "Polish");
 
 - [Error message](#message) might contain arguments in its content.
   - The placeholder for the argument value is using pattern: `{argumentName}`.
+  - Arguments can be used in [WithMessage](#withmessage), [WithExtraMessage](#withextramessage) and [RuleTemplate](#ruletemplate).
+  - The pattern followed in all [the built-in rules](#rules) is that the argument name is named exactly as the method's argument.
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Between(min: 0.123M, max: 100.123M)
+    .WithMessage("The number needs to fit between {min} and {max}");
+
+var validator = Validator.Factory.Create(specification);
+
+validator.Validate(105).ToString();
+// The number needs to fit between 0.123 and 100.123
+```
+
 - Arguments can be parametrized:
   - Parameters follow format: `parameterName=parameterValue`
   - Parameters are separated with `|` (vertical bar, pipe) character from the argument name and from each other
   - Single parameter example: `{argumentName|parameterName=parameterValue}`
   - Multiple parameters example: `{argumentName|param1=value1|param2=value2|param3=value3}`
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Between(min: 0.123M, max: 100.123M)
+    .WithMessage("The maximum value is {max|format=000.000}")
+    .WithExtraMessage("The minimum value is {min|format=000.000|culture=pl-PL}");
+
+var validator = Validator.Factory.Create(specification);
+
+validator.Validate(105).ToString();
+// The maximum value is 100.123
+// The minimum value is 000,123
+```
 
 ### Enum argument
 
@@ -3903,7 +3943,7 @@ validator.Validate(new DateTime(2001, 1, 1, 1, 1, 1, 1)).ToString();
 
 ### Translation argument
 
-- Translation arguments allows to include a phrase from the current translation.
+- Translation argument allows to include a phrase from the current translation.
 - It's always in this form:
   - `{_translation|key=MessageKey}`
 
@@ -3955,6 +3995,81 @@ result.ToString(translationName: "Polish");
 | `{arg\|format=toString}` | `typeof(int?)` | `System.Nullable'1[System.Int32]` |
 | `{arg\|translation=true}` | `typeof(int?)` | `{_translation\|key=Type.System.Nullable<System.Int32>}` |
 
+### Path argument
+
+- Path argument allows to include the [path](#path) of the validated value.
+- It's always in this form:
+  - `{_path}`
+- It's more difficult to cache such messages (they are less deterministic), so overusing path arguments might slightly decrease the performance.
+- It doesn't contain parameters.
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Positive()
+    .WithPath("Number.Value")
+    .WithMessage("Number value under {_path} needs to be positive!");
+
+var validator = Validator.Factory.Create(specification);
+
+var result = validator.Validate(-1);
+
+result.ToString();
+// Number.Value: Number value under Number.Value needs to be positive!
+```
+
+- In case of the root path, the value is just empty string.
+  - And it might look weird in the final printing.
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Positive()
+    .WithMessage("Number value under {_path} needs to be positive!");
+
+var validator = Validator.Factory.Create(specification);
+
+var result = validator.Validate(-1);
+
+result.ToString();
+// Number value under  needs to be positive!
+```
+
+### Name argument
+
+- Name argument allows to include the name of the validated value.
+  - Name is the last segment of the [path](#path).
+- It's always in this form:
+  - `{_name}`
+- It's more difficult to cache such messages (they are less deterministic), so overusing name arguments might slightly decrease the performance.
+- It doesn't contain parameters.
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Positive()
+    .WithPath("Number.Primary.SuperValue")
+    .WithMessage("The {_name} needs to be positive!");
+
+var validator = Validator.Factory.Create(specification);
+
+var result = validator.Validate(-1);
+
+result.ToString();
+// Number.Primary.SuperValue: The SuperValue needs to be positive!
+```
+
+- Similarly to [path argument](#path-argument), in case of the root path, the value is just empty string.
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Positive()
+    .WithMessage("The {_name} needs to be positive!");
+
+var validator = Validator.Factory.Create(specification);
+
+var result = validator.Validate(-1);
+
+result.ToString();
+// The  needs to be positive!
+```
 
 ## Translations
 

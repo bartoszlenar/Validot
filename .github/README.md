@@ -7,7 +7,7 @@
 </h1>
 
 
- <h3 align="center">Tiny lib for advanced model validation, with performance in mind</h3>
+ <h3 align="center">Tiny lib for advanced model validation. With performance in mind.</h3>
 
   <br />
 <p align="center">
@@ -43,10 +43,6 @@
       Features
     </a>
     |
-    <a href="#validot-vs-fluentvalidation">
-      Validot vs FluentValidation
-    </a>
-    |
     <a href="#project-info">
       Project info
     </a>
@@ -54,8 +50,18 @@
     <a href="../docs/DOCUMENTATION.md">
       Documentation
     </a>
-  </h3>
+    |
+    <a href="../docs/CHANGELOG.md">
+      Changelog
+    </a>
 </div>
+
+<p align="center">
+    <a href="#validot-vs-fluentvalidation">
+        🔥⚔️ Validot vs FluentValidation ⚔️🔥
+    </a>
+</p>
+<br/>
 
 <p align="center">
     Built with 🤘🏻by <a href="https://lenar.dev">Bartosz Lenar</a>
@@ -388,13 +394,12 @@ validator.Validate(model, failFast: true);
 
 Features that might be in the scope and are technically possible to implement in the future:
 
-* `await`/`async` support
-* dependent rules
-* transforming values
-* severities
-* failing fast only in a single scope
-* validated value in the error message
-* "smart paths" in the error message (`RootUserCollection` member becomes `Root User Collection`)
+* `await`/`async` support ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/2))
+* transforming values ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/3))
+* severities  ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/4))
+* failing fast only in a single scope ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/5))
+* validated value in the error message  ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/4))
+* "smart paths" in the error message, e.g. `RootUserCollection` member becomes `Root User Collection` ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/1))
 
 Features that are very unlikely to be in the scope as they contradict with the project's principles, and/or would have very negative impact on performance, and/or are impossible to implement:
 
@@ -450,8 +455,8 @@ Code examples from the documentation live as [functional tests](https://github.c
 
 The entire project ([source code](https://github.com/bartoszlenar/Validot), [issue tracker](https://github.com/bartoszlenar/Validot/issues), [documentation](./../docs/DOCUMENTATION.md) and [CI workflows](https://github.com/bartoszlenar/Validot/actions)) is hosted here on github.com.
 
-Any contribution is more than welcome. If you'd like to help, please don't forget to check out the [CONTRIBUTING](docs/CONTRIBUTING.md) file and [issues page](https://github.com/bartoszlenar/Validot/issues).
+Any contribution is more than welcome. If you'd like to help, please don't forget to check out the [CONTRIBUTING](./../docs/CONTRIBUTING.md) file and [issues page](https://github.com/bartoszlenar/Validot/issues).
 
 ### Licencing
 
-Validot uses [MIT licence](../LICENCE). Long story short; you are more than welcome to use it anywhere you like, completely free of charge and without opressive obligations.
+Validot uses [MIT licence](../LICENCE). Long story short; you are more than welcome to use it anywhere you like, completely free of charge and without oppressive obligations.

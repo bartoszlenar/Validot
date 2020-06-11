@@ -54,14 +54,14 @@
     <a href="../docs/CHANGELOG.md">
       Changelog
     </a>
-  </h3>
-  <br />
-  <h3>
-  <a href="#validot-vs-fluentvalidation">
-      Validot vs FluentValidation
-    </a>
-  </h3>
 </div>
+
+<p align="center">
+    <a href="#validot-vs-fluentvalidation">
+        🔥⚔️ Validot vs FluentValidation ⚔️🔥
+    </a>
+</p>
+<br/>
 
 <p align="center">
     Built with 🤘🏻by <a href="https://lenar.dev">Bartosz Lenar</a>

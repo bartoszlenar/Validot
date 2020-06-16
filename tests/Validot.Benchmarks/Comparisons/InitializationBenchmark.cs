@@ -8,13 +8,13 @@ namespace Validot.Benchmarks.Comparisons
         [Benchmark]
         public object Initialization_FluentValidation()
         {
-            return new ComparisonSetup.FullModelValidator();
+            return new ComparisonDataSet.FullModelValidator();
         }
         
         [Benchmark]
         public object Initialization_Validot()
         {
-            return Validator.Factory.Create(ComparisonSetup.FullModelSpecification);
+            return Validator.Factory.Create(ComparisonDataSet.FullModelSpecification);
         }
     }
 }

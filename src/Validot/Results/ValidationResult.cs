@@ -88,7 +88,7 @@ namespace Validot.Results
                 ? MessageMap
                 : GetTranslatedMessageMap(translationName);
 
-            var capacity = GetCapacity(messageMap, Codes);
+            var (capacity, lines) = EstimateCapacityAndLines(messageMap, Codes);
 
             var stringBuilder = new StringBuilder(capacity);
 
@@ -109,10 +109,13 @@ namespace Validot.Results
 
             if (messageMap.Count > 0)
             {
+                var linesCount = 0;
+
                 if (Codes.Count > 0)
                 {
                     stringBuilder.Append(Environment.NewLine);
                     stringBuilder.Append(Environment.NewLine);
+                    linesCount = 3;
                 }
 
                 foreach (var pair in messageMap)
@@ -128,7 +131,7 @@ namespace Validot.Results
                             stringBuilder.Append($"{pair.Key}{PathSeparator}{message}");
                         }
 
-                        if (stringBuilder.Length < capacity)
+                        if (++linesCount < lines)
                         {
                             stringBuilder.Append(Environment.NewLine);
                         }
@@ -137,43 +140,6 @@ namespace Validot.Results
             }
 
             return stringBuilder.ToString();
-
-            int GetCapacity(IReadOnlyDictionary<string, IReadOnlyList<string>> mMap, IReadOnlyCollection<string> cMap)
-            {
-                var result = 0;
-
-                foreach (var pair in mMap)
-                {
-                    foreach (var message in pair.Value)
-                    {
-                        if (pair.Key.Length > 0)
-                        {
-                            result += pair.Key.Length + PathSeparator.Length;
-                        }
-
-                        result += message.Length;
-                    }
-
-                    result += (pair.Value.Count - 1) * Environment.NewLine.Length;
-                }
-
-                if (cMap.Count > 0)
-                {
-                    foreach (var code in cMap)
-                    {
-                        result += code.Length;
-                    }
-
-                    result += (cMap.Count - 1) * CodeSeparator.Length;
-                }
-
-                if (mMap.Count > 0 && cMap.Count > 0)
-                {
-                    result += 2 * Environment.NewLine.Length;
-                }
-
-                return result;
-            }
         }
 
         internal IReadOnlyDictionary<string, IReadOnlyList<IError>> GetErrorOutput()
@@ -193,6 +159,47 @@ namespace Validot.Results
             }
 
             return result;
+        }
+
+        private static (int capacity, int lines) EstimateCapacityAndLines(IReadOnlyDictionary<string, IReadOnlyList<string>> mMap, IReadOnlyCollection<string> cMap)
+        {
+            var lines = 0;
+            var capacity = 10;
+
+            foreach (var pair in mMap)
+            {
+                foreach (var message in pair.Value)
+                {
+                    if (pair.Key.Length > 0)
+                    {
+                        capacity += pair.Key.Length + PathSeparator.Length;
+                    }
+
+                    capacity += message.Length;
+                }
+
+                lines += pair.Value.Count;
+                capacity += (pair.Value.Count - 1) * Environment.NewLine.Length;
+            }
+
+            if (cMap.Count > 0)
+            {
+                foreach (var code in cMap)
+                {
+                    capacity += code.Length;
+                }
+
+                capacity += (cMap.Count - 1) * CodeSeparator.Length;
+                lines += 1;
+            }
+
+            if (mMap.Count > 0 && cMap.Count > 0)
+            {
+                capacity += 2 * Environment.NewLine.Length;
+                lines += 2;
+            }
+
+            return (capacity, lines);
         }
 
         private IReadOnlyCollection<string> GetCodes()

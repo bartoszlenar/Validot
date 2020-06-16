@@ -134,7 +134,7 @@ result.ToString(); // compact printing of codes and messages:
 // Name: Required for underaged user
 ```
 
-* [See this example's real code](../tests/Validot.Tests.Functional/Readme/QuickStartTest.cs)
+* [See this example's real code](../tests/Validot.Tests.Functional/Readme/QuickStartFuncTests.cs)
 
 ## Features
 
@@ -212,7 +212,7 @@ bookValidator.Template.ToString(); // Template contains all of the possible erro
 
 ### Results
 
-A [flag](../docs/DOCUMENTATION.md#anyerrors), full [list of codes](../docs/DOCUMENTATION.md#codes), detailed maps of [messages](../docs/DOCUMENTATION.md#messagemap) or [codes](../docs/DOCUMENTATION.md#codemap). Or a [full, friendly printing](../docs/DOCUMENTATION.md#tostring) that contains everything.
+Whatever you want. [Error flag](../docs/DOCUMENTATION.md#anyerrors), compact [list of codes](../docs/DOCUMENTATION.md#codes), or detailed maps of [messages](../docs/DOCUMENTATION.md#messagemap) or [codes](../docs/DOCUMENTATION.md#codemap). And sugar on top; a friendly [ToString() printing](../docs/DOCUMENTATION.md#tostring) that contains everything, nicely formatted.
 
 
 ``` csharp
@@ -304,50 +304,60 @@ A short statement to start with - [@JeremySkinner](https://twitter.com/JeremySki
 
 ### Validot is faster and consumes less memory
 
-Of course, it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over flexibility and extra features. For instance, Validot relies heavingly on caching and output size predictions. You'll never receive validation context to dynamically create the message during the validation process. Messages are very customizable, but ultimately the content needs to be deterministic (_the workaround for including validated value in the message is technically possible, but will be released later_). Fine with that kind of trade-off? Good, because in validation and gathering detailed error messages from thousands of objects Validot might be ~2.5x faster while consuming ~3.5x less memory:
+Before anything else; this document shows terribly oversimplified results of [BenchmarkDotNet](https://benchmarkdotnet.org/) execution, but the intention is to present the general trend only. To have truly reliable numbers, I highly encourage you to [run the benchmarks yourself](../docs/DOCUMENTATION.md#benchmarks) and [review their code](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Benchmarks).
 
-<details>
-  <summary>Click here to expand important comment about the benchmarks.</summary>
+There are three data sets, 10k models each; `ManyErrors` (every model has many errors), `HalfErrors` (around 60% have errors, the rest are valid), `NoErrors` (all are valid) and the rules reflect each other as much as technically possible. I did my best to make sure that the tests are just and adequate, but I'm a human being and I make mistakes. Really, if you spot errors in the code, framework usage, applied methodology... or if you can provide any counterexample proving that Validot struggles with some particular scenarios - I'd be very very very happy to accept a PR and/or discuss it on [GitHub Issues](https://github.com/bartoszlenar/Validot/issues).
 
-The input data set of 100000 objects is the same for both libraries, so are the error messages and the rules reflect each other as much as technically possible. Of course, the below tables show terribly oversimplified results of BenchmarkDotNet execution, but the intention is to present the general trend only. All benchmarks live in the [separate project](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Benchmarks) that you can [run yourself](../docs/DOCUMENTATION.md#benchmarks), which is highly recommended if you want to have truly reliable numbers.
+To the point; the statement in the header is true, but if course, it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over [flexibility and extra features](#fluentvalidations-features-that-validot-is-missing). Fine with that kind of trade-off? Good, because the validation process in Validot might be **~2.5x faster while consuming ~3.5x less memory**. Especially when it comes to memory consumption, Validot is usually far, far more efficient than that (depending on the use case it might be even **~15x more efficient** than FluentValidation):
 
-Of course, any help with making these benchmarks more accurate and covering more use cases would be very very welcomed - especially errors in the code, usage or methodology, as well as counterexamples proving that Validot struggles with some particular scenarios (please make a pull request and/or [rise an issue](https://github.com/bartoszlenar/Validot/issues/new)).
-
-* [ErrorMessages benchmark](../tests/Validot.Benchmarks/Comparisons/ErrorMessagesBenchmark.cs) - objects with all possible member types, simple logic and custom error messages
-* [NoErrors benchmark](../tests/Validot.Benchmarks/Comparisons/NoErrorsBenchmark.cs) - similar to Messages benchmark, but all objects are valid
-* [NoLogic benchmark](../tests/Validot.Benchmarks/Comparisons/NoLogicBenchmark.cs) - very simple model, validating multiple members, but no validation logic (testing core engines only)
-* [Initialization benchmark](../tests/Validot.Benchmarks/Comparisons/InitializationBenchmark.cs) - creating validators only
-
-</details>
-
-
-| Test name | Library | Environment | Mean [ms] | Allocated [MB] |
+| Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| ErrorMessages, FullReport | FluentValidation | .NET Core 3.1, i7-9750H, X64 RyuJIT | `7513.665` | `7201.38` |
-| ErrorMessages, FullReport | Validot | .NET Core 3.1, i7-9750H, X64 RyuJIT | `3699.273` | `2502.20` |
+| Validate | `ManyErrors` | FluentValidation | `747.66` | `686.80` |
+| Validate | `ManyErrors` | Validot | `321.00` | `183.19` |
+| FailFast | `ManyErrors` | FluentValidation | `748.11` | `686.80` |
+| FailFast | `ManyErrors` | Validot | `14.20` | `31.9` |
+| Validate | `HalfErrors` | FluentValidation | `658.10` | `684.60` |
+| Validate | `HalfErrors` | Validot | `273.51` | `85.10` |
+| FailFast | `HalfErrors` | FluentValidation | `666.12` | `684.60` |
+| FailFast | `HalfErrors` | Validot | `185.19` | `64.96` |
+
+* [Validate](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated.
+* [FailFast](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, the process stops on the first error.
 
 FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors or not. Validot has [AnyErrors](../docs/DOCUMENTATION.md#anyerrors) that acts the same way, but [IsValid](../docs/DOCUMENTATION.md#isvalid) is a dedicated special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify the incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude:
 
-| Test name | Library | Environment | Mean [ms] | Allocated [MB] |
+| Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| ErrorMessages, IsValid | FluentValidation | .NET Core 3.1, i7-9750H, X64 RyuJIT | `7385.523` | `6859.70` |
-| ErrorMessages, IsValid | Validot | .NET Core 3.1, i7-9750H, X64 RyuJIT | `147.647` | `312.13` |
-| NoErrors, IsValid | FluentValidation | .NET Core 3.1, i7-9750H, X64 RyuJIT | `6253.320` | `6689.79` |
-| NoErrors, IsValid | Validot | .NET Core 3.1, i7-9750H, X64 RyuJIT | `2404.450` | `788.60` |
+| IsValid | `ManyErrors` | FluentValidation | `750.33` | `686.80` |
+| IsValid | `ManyErrors` | Validot | `14.43` | `31.21` |
+| IsValid | `HalfErrors` | FluentValidation | `647.11` | `684.60` |
+| IsValid | `HalfErrors` | Validot | `181.90` | `64.57` |
+| IsValid | `NoErrors` | FluentValidation | `652.64` | `668.51` |
+| IsValid | `NoErrors` | Validot | `266.63` | `78.82` |
+
+* [IsValid](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, but only to know if they are valid or not.
 
 In fact, combining these two methods in most cases could be quite beneficial. At first [IsValid](../docs/DOCUMENTATION.md#isvalid) quickly verifies the object and if it contains errors - only then [Validate](../docs/DOCUMENTATION.md#validate) is executed to report the details. Of course in some extreme cases (megabyte-size data? milions of items in the collection? dozens of nested levels with loops in reference graphs?) traversing through the object twice could neglate the profit, but for the regular web api input validation it will certainly serve its purpose:
 
 ``` csharp
-if (validator.IsValid(model))
+if (!validator.IsValid(model))
 {
     errorMessages = validator.Validate(model).ToString();
 }
 ```
 
-| Test name | Library | Environment | Mean [ms] | Allocated [MB] |
+| Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| ErrorMessages, IsValidAndValidate | FluentValidation | .NET Core 3.1, i7-9750H, X64 RyuJIT | `6446.736` | `6863.09` |
-| ErrorMessages, IsValidAndValidate | Validot | .NET Core 3.1, i7-9750H, X64 RyuJIT | `2805.867` | `964.45` |
+| Reporting | `ManyErrors` | FluentValidation | `753.50` | `721.01` |
+| Reporting | `ManyErrors` | Validot | `419.60` | `335.99 ` |
+| Reporting | `HalfErrors` | FluentValidation | `651.90` | `685.22` |
+| Reporting | `HalfErrors` | Validot | `364.80` | `123.74` |
+
+* [Reporting](../tests/Validot.Benchmarks/Comparisons/ReportingBenchmark.cs) benchmark:
+  * FluentValidation validates model, but `ToString()` is called only if errors detected.
+  * Validot processes the model twice - at first, with its special mode, [IsValid](../docs/DOCUMENTATION.md#isvalid). Secondly - in case of errors spotted - with the standard method, gathering all errors and printing them with `ToString()`.
+
+Benchmarks environment: .NET Core 3.1.4, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Catalina
 
 ### Validot handles nulls by default
 
@@ -398,13 +408,13 @@ Features that might be in the scope and are technically possible to implement in
 * transforming values ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/3))
 * severities  ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/4))
 * failing fast only in a single scope ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/5))
-* validated value in the error message  ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/4))
+* validated value in the error message ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/6))
 * "smart paths" in the error message, e.g. `RootUserCollection` member becomes `Root User Collection` ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/1))
 
 Features that are very unlikely to be in the scope as they contradict with the project's principles, and/or would have very negative impact on performance, and/or are impossible to implement:
 
 * Access to any stateful context in the rule condition predicate:
-  * It implicates already mentioned lack of support for dynamic message content and/or amount.
+  * It implicates lack of support for dynamic message content and/or amount.
 * Integration with ASP.NET or other frameworks:
   * Making such a thing wouldn't be a difficult task at all, but Validot tries to remain a single-purpose library and all integrations need to be done individually
 * Callbacks:

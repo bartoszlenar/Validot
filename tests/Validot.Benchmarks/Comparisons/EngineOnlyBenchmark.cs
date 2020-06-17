@@ -8,7 +8,7 @@ namespace Validot.Benchmarks.Comparisons
     using FluentValidation;
 
     [MemoryDiagnoser]
-    public class NoLogicBenchmark
+    public class EngineOnlyBenchmark
     {
         private IReadOnlyList<VoidModel> _noLogicModels;
         
@@ -50,7 +50,7 @@ namespace Validot.Benchmarks.Comparisons
             }
         }
         
-        [Params(1000, 100000)]
+        [Params(10000)]
         public int N { get; set; }
         
         [GlobalSetup]

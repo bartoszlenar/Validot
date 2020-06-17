@@ -9,10 +9,9 @@ namespace Validot.Benchmarks.Comparisons
 
     using FluentValidation;
 
-    public static class ComparisonSetup
+    public static class ComparisonDataSet
     {
-
-        static ComparisonSetup()
+        static ComparisonDataSet()
         {
             void SetupValidotSpecifications()
             {
@@ -143,7 +142,32 @@ namespace Validot.Benchmarks.Comparisons
             SetupValidotSpecifications();
             SetupFullModelManyErrorsFaker();
             SetupFullModelNoErrorsFaker();
+
+            Size = 10_000;
+            
+            Randomizer.Seed = new Random(666);
+            
+            ManyErrorsDataSet = FullModelManyErrorsFaker.GenerateLazy(Size).ToList();
+            HalfErrorsDataSet = FullModelHalfErrorsFaker.GenerateLazy(Size).ToList();
+            NoErrorsDataSet = FullModelNoErrorsFaker.GenerateLazy(Size).ToList();
+
+            DataSets = new Dictionary<string, IReadOnlyList<FullModel>>(3)
+            {
+                ["ManyErrors"] = ManyErrorsDataSet,
+                ["HalfErrors"] = HalfErrorsDataSet,
+                ["NoErrors"] = NoErrorsDataSet
+            };
         }
+
+        public static int Size { get; }
+        
+        public static IReadOnlyList<FullModel> ManyErrorsDataSet { get; }
+        
+        public static IReadOnlyList<FullModel> HalfErrorsDataSet { get; }
+        
+        public static IReadOnlyList<FullModel> NoErrorsDataSet { get; }
+
+        public static IReadOnlyDictionary<string, IReadOnlyList<FullModel>> DataSets { get; }
 
         public class FullModel
         {
@@ -192,7 +216,6 @@ namespace Validot.Benchmarks.Comparisons
             
             public decimal? SuperNumber2 { get; set; }
         }
-        
 
         public class FullModelValidator : AbstractValidator<FullModel> 
         {
@@ -273,12 +296,13 @@ namespace Validot.Benchmarks.Comparisons
         }
         
         public static Specification<FullModel> FullModelSpecification { get; private set; }
+        
         public static Specification<NestedModel> NestedModelSpecification { get; private set;}
         
-        public static Faker<FullModel> FullModelManyErrorsFaker { get; private set;} 
-        public static Faker<FullModel> FullModelNoErrorsFaker { get; private set;} 
-            
-        public static Faker<FullModel> FullModelHalfErrorsFaker { get; private set;} 
+        public static Faker<FullModel> FullModelManyErrorsFaker { get; private set;}
         
+        public static Faker<FullModel> FullModelNoErrorsFaker { get; private set;}
+        
+        public static Faker<FullModel> FullModelHalfErrorsFaker { get; private set;}
     }
 }

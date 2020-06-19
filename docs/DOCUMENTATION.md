@@ -83,9 +83,9 @@
 
 - This documentation is written in short points.
   - Sometimes a point contains a subpoint.
-  - Occasionally, a point could have a source code below it.
+  - Occasionally, a point could have a source code following it.
     - It's for demonstration and the code is also commented in italic font.
-- Most code examples in this documentation is based on this model structure:
+- Most code examples in this documentation are using the following set of models:
 
 ``` csharp
 public class BookModel
@@ -129,9 +129,9 @@ _Comments are usually placed below the code sample, but that's not the rock soli
 - Specification is an expression that uses [fluent api](#fluent-api) to describe all conditions of a valid object.
 - Technically, [specification is a generic delegate](../src/Validot/Specification/Specification.cs) and in most cases you'll see it in form of a lambda function.
   - If you prefer the approach of wrapping validation logic into a separate class, use [specification holder](#specification-holder).
-- Specification - considered as a C# function - is executed by the [validator](#validator) (in its constructor or the [factory](#factory)).
-  - However the validation logic is triggered only when [validator](#validator) calls [Validate](#validate) method.
-- Fluent api consist of commands called in a method chain.
+- Specification - considered purely as a C# function - is executed by the [validator](#validator) during its construction (directly or through the [factory](#factory)).
+  - However the validation logic (that specification contains in form of predicates) is triggered only when [validator](#validator) calls [Validate](#validate) method.
+- Fluent api consist of commands called in so-called method chain:
 
 ``` csharp
 Specification<int> yearSpecification = m => m
@@ -144,6 +144,7 @@ _Above; four chained commands: `GreaterThan`, `NotEqualTo`, `WithMessage`, `Less
 
 - Logically, specification consist of scopes. And the scope could be explained as:
   - Set of commands that describe validation rules for the same value.
+    - This value is often referred in this documentation as "scope value".
   - If the value is null, scope acts according to the [null policy](#null-policy).
 
 ``` csharp
@@ -160,17 +161,21 @@ Specification<BookModel> bookSpecification = s => s
     .Rule(m => m.YearOfPublication == m.YearOfFirstAnnouncement).WithMessage("Same year in both places is invalid");
 ```
 
-_Above; `yearSpecification` contains a four commands in its scope, all validating the value of type `int`._
+_Above; `yearSpecification` contains four commands in its scope, all validating the value of type `int`._
 
 _Next one, `bookSpecification`, is more complex. Let's analyse it:_
 
-_First [Member](#member) command steps into the `BookModel`'s member of type `int` named `YearOfFirstAnnouncement` and in its scope validates the value using defined earlier `yearSpecification`._
+_First [Member](#member) command steps into the `BookModel`'s member of type `int` named `YearOfFirstAnnouncement` and in its scope validates the value using the `yearSpecification` defined earlier._
 
-_Second [Member](#member) command opens scope that validates `YearOfPublication` member; this scope contains single rule, `Positive`. Also, according to according to the [null policy](#null-policy), it requires nullable `YearOfPublication` to have value._
+_Second [Member](#member) command opens scope that validates `YearOfPublication`; this scope contains single rule, `Positive`. Also, according to the [null policy](#null-policy), it requires the nullable member `YearOfPublication` to have a value._
 
-_The last [scope command](#scope-commands), [Rule](#rule) contains the piece of logic for `BookModel` and [parameter command](#parameter-commands) [WithMessage](#withmessage) defines the error message if the predicate fails._
+_The last [scope command](#scope-commands), [Rule](#rule) contains a piece of logic for `BookModel` and [parameter command](#parameter-commands) [WithMessage](#withmessage) defines the error message if the predicate fails._
 
-- Because the specification works exacly the same as it was placed in [AsModel](#asmodel) command, you can also say that specification is a scope.
+- You can also say that specification is a scope. A "root level" scope.
+  - All commands and their logic are related with a single value (of type `T` in `Specification<T>`).
+  - The [null policy](#null-policy) is followed here as well.
+  - Commands that validate parts of the model are using... specification to describe the scope rules.
+    - In fact, even the root scope behaves exactly as it was placed in [AsModel](#asmodel) command.
 - There are three types of commands:
   - [Scope commands](#scope-commands) - contain validation logic and produce [error output](#error-output).
   - [Parameter commands](#paramter-commands) - changes the behavior of the preceding [scope command](#scope-commands).
@@ -184,7 +189,7 @@ _The last [scope command](#scope-commands), [Rule](#rule) contains the piece of 
   - executing the validation logic directly:
     - [Rule](#rule) - executes a custom predicate.
     - [RuleTemplate](#ruletemplate) and all of the [built-in rules](#rules) - executes predefined piece of logic.
-  - executing the validation logic wrapped in the nested scope according to some logic:
+  - executing the validation logic wrapped in another [specification](#specification), in the way dependent on the scope value type:
     - [Member](#member) - executes specification on the model's member.
     - [AsModel](#asmodel) - executes specification on the model.
     - [AsCollection](#ascollection) - executes specification on each item of the collection type model.
@@ -199,13 +204,14 @@ Specification<AuthorModel> authorSpecification = m => m
 
 _In the above code you can see the specification containing only scope commands._
 
+
+- Scope command produces [error output](#error-output) if - by any bit of a validation logic - the scope value is considered as invalid.
 - How is "scope" term related with scope command?
   - Good to read; [Specification](#specification) - also tries to describe what is a scope.
   - All scope commands (except for [Rule](#rule) and [RuleTemplate](#ruletemplate)) validate the value by executing a specification (which is a scope).
   - [Rule](#rule) and [RuleTemplate](#ruletemplate) are slightly different. They contain the most atomic part of validation logic - a predicate. They are still [scope commands](#scope-commands), because:
-    - They are able to determine if the value is valid or not. The only difference is that they execute the logic directly instead of wrapped within another scope.
+    - They determines if the value is valid or not. The only difference is that they execute the logic directly instead of wrapped within another scope.
     - They produce [error output](#error-output) in case of validation error.
-- Scope command returns [error output](#error-output).
 
 ---
 
@@ -215,13 +221,13 @@ _In the above code you can see the specification containing only scope commands.
   - [WithCondition](#withcondition) - sets execution condition.
   - [WithPath](#withpath) - sets the path for the [error output](#error-output).
   - [WithMessage](#withmessage) - overwrites the entire [error output](#error-output) with a single message.
-  - [WithExtraMessage](#withextramessage) - adds a single message to the [error output](#error-output).
+  - [WithExtraMessage](#withextramessage) - appends a single message to the [error output](#error-output).
   - [WithCode](#withcode) - overwrites the entire [error output](#error-output) with a single code.
-  - [WithExtraCode](#withextracode) - adds a single code to the [error output](#error-output).
-- Parameter commands have their defined order, enforced by the language constructs.
-  - So you might notice that some commands are not available from some places.
-    - Example; [AsNullable](#asnullable) can't be called in the scope that validates `int`.
-    - Example; [WithCode](#withcode) can't be called after [WithMessage](#withmessage), because that doesn't make much sense (double overwrite...).
+  - [WithExtraCode](#withextracode) - appends a single code to the [error output](#error-output).
+- Parameter commands have their order strictly defined and enforced by the language constructs.
+  - So you might notice that some commands are not available from certain places.
+    - Example: [AsNullable](#asnullable) can't be called in the scope that validates `int`.
+    - Example: [WithCode](#withcode) can't be called after [WithMessage](#withmessage), because that doesn't make much sense (double overwrite...).
   - To know what other commands are allowed to be placed before/after, read the section about the particular command.
 - It doesn't matter how many parameter commands are defined in the row - they are all related to the closest preceding [scope command](#scope-command) (or [presence command](#presence-commands)).
     - All the parameter commands start with `With...`, so it's easy to group them visually:
@@ -254,15 +260,16 @@ _The third scope command - [Rule](#rule) - is configured with [WithCondition](#w
 
 ### Presence commands
 
-- Presence commands define the behavior of the scope in case of the null value:
-  - [Required](#required) - value must not be null.
+- Presence command is the command that defines the behavior of the entire scope in case of null scope value:
+  - [Required](#required) - scope value must not be null.
     - if no presence command exists in the scope, this behavior is set implicitly, by default.
-  - [Forbidden](#forbidden) - value must be null.
-  - [Optional](#optional) - value can be null.
+  - [Forbidden](#forbidden) - scope value must be null.
+  - [Optional](#optional) - scope value can be null.
     - Value gets validated normally if it isn't null, but nothing happens if it is.
 - Only one presence command is allowed within the scope.
 - Presence command needs to be the first command in the scope.
 - Presence commands produce [error output](#error-output) that can be modified with some of the [parameter commands](#parameter-commands).
+  - Not all of them, because e.g. you can't change their [path](#path) or set an [execution condition](#withcondition).
 - Good to read: [Handling nulls](#null-policy) - details about the null value validation strategy.
 
 ``` csharp
@@ -286,14 +293,15 @@ _In the example above the entire model is allowed to be null. Similarly - `Name`
 
 ### Error output
 
-- Error output is everything that is returned by the scope if it considers the value as invalid.
-  - Therefore, the absence of error output means that according to the scope, the value is valid.
+- Error output is everything that is returned from the scope if - according to the internal logic - the scope value is invalid.
+  - Therefore, the absence of error output means that the value is valid.
 - Error output can contain:
   - [Error messages](#message) - human-readable messages explaining what went wrong.
   - [Error codes](#code) - flags that help to organize the logic around certain errors.
   - Both. There is no limitations around that. The error output can contain only messages, only codes, or a mix.
 - The validation process assigns every error output to the [path](#path) where it was produced.
   - The [path](#path) shows the location where the error occurred.
+  - Sometimes this documentation refers to this action as "saving error output _under the path_"
 - Good to read:
   - [Result](#result) - how to get error output from the validation process.
   - [Path](#path) - how the paths are constructed.
@@ -304,7 +312,7 @@ _In the example above the entire model is allowed to be null. Similarly - `Name`
 
 - Messages are primarily targeted for humans.
   - Use case; logs and the details about invalid models incoming from the frontend.
-  - Use case; rest api returning messages that front end shows in the pop up.
+  - Use case; rest api returning messages that frontend shows in the pop up.
 - [Error output](#error-output) can contain one or more error messages.
 - Good to read:
   - [Translations](#translations) - how to translate a message or [overwrite](#overriding-messages) the default one.
@@ -413,8 +421,9 @@ _In the above example, [CodeMap](#codemap) acts similarly to [MessageMap](#messa
 ### Path
 
 - Path is a string that shows the way of reaching the value that is invalid.
+  - "The way" means which members need to be traversed through in order to reach the particular value.
   - Example; `Author.Email` path describes that value of `Email` that is inside `Author`.
-- Path contains segments, each one stands for one property that the validation context needs to enter in order to reach the value.
+- Path contains segments, each one stands for one member that the validation context needs to enter in order to reach the value.
   - Path segments are separated with `.` (dot character).
   - [Member](#member) which is the way of stepping into the nested level uses the member's name as a segment.
 
@@ -481,7 +490,8 @@ ageValidator.Validate(32).ToString();
 ```
 
 - If predicate returns `false`, the `Rule` scope returns [error output](#error-output).
-  - The default error output of `Rule` command is a single [message](#message) key `Global.Error` (English translation for it is just `Error`).
+  - The default error output of `Rule` command is a single [message](#message) key `Global.Error`
+    - Default English translation for it is just `Error`.
   - It can be altered with [WithMessage](#withmessage) command.
 
 ``` csharp
@@ -512,7 +522,7 @@ bookValidator.Validate(new BookModel() { IsSelfPublished = true, Publisher = new
 bookValidator.Validate(new BookModel() { IsSelfPublished = true, Publisher = null }).AnyErrors; // false
 ```
 
-- The value received in the predicate is never null.
+- The value received in the predicate as argument is never null.
   - All null-checks on it are absolutely redundant, no matter what code analysis has to say about it.
   - Although the received value is never null, its members could be!
 
@@ -556,7 +566,7 @@ catch(VerySpecialException exception)
 ```
 
 - After processing the [Specification](#specification), the [validator](#validator) stores the predicate in its internals.
-  - This is the very reason to be double-cautious when "capturing" variables in the predicate as you're risking memory leak. Especially when the [validator](#validator) is registered as singleton in a DI container.
+  - This is the very reason to be double-cautious when "capturing" variables in the predicate function as you're risking memory leak. Especially when the [validator](#validator) is registered as singleton in a DI container.
 
 ---
 
@@ -569,13 +579,14 @@ catch(VerySpecialException exception)
     - any of the [scope commands](#scope-commands).
     - any of the [parameter commands](#parameter-commands).
 - `RuleTemplate` is a special version of [Rule](#rule).
-  - All of the details described in the [Rule](#rule) section apply also in here.
+  - All of the details described in the [Rule](#rule) section apply also to `RuleTemplate`.
 - The purpose of `RuleTemplate` is to deliver a convenient foundation for predefined, reusable rules.
   - All [built-in rules](#rules) use `RuleTemplate` under the hood. There are no exceptions, hacks or special cases.
+  - So if you decide to write your own [custom rules](#custom-rules), you're using the exact same api that the Validot uses.
 - Technically, there is nothing wrong in placing `RuleTemplate` in the specification directly, but it's not considered as a good practice.
-  - You should rather limit the usage of `RuleTemplate` to its purpose; custom rules.
+  - You should rather limit the usage of `RuleTemplate` to its purpose; [custom rules](#custom-rules).
 - `RuleTemplate` accepts three parameters:
-    - `Predicate<T>` - predicate that tells if the value is valid or not (exactly the same meaning as in [Rule](#rule))
+    - `Predicate<T>` - predicate that tells if the value is valid or not (exactly the same meaning as in [Rule](#rule)).
     - `message` - error message content. Required.
     - `args` - collection of [arguments](#message-arguments) that can be used in the message content. Optional.
 - `message` sets the single [error message](#message) that will be in the [error output](#error-output) if the predicate returns `false`.
@@ -599,21 +610,22 @@ ageValidator2.Validate(32).ToString();
 // The age is invalid
 ```
 
-_There is no difference between the basic usage of [Rule](#rule) and [RuleTemplate](#ruletemplate)._
+_The above code presents that there is no difference between the basic usage of [Rule](#rule) and [RuleTemplate](#ruletemplate)._
 
-- `args` is optional, and it's a collection of arguments that can be used within the error message
+- `args` parameter is optional, and it's a collection of [arguments](#message-arguments) that can be used in placeholders within the error message.
   - Each argument needs to be created with `Arg` static factory
       - Ok, technically it doesn't _need_ to be created by the factory, but it's highly recommended as implementing `IArg` yourself could be difficult and more support for it is planned, but not in the very nearly future.
-  - Factory contains helper methods to create arguments related with enums, types, texts, numbers, and guids
+  - Factory contains helper methods to create arguments related with enums, types, texts, numbers, and guids.
   - When creating argument, factory needs:
-      - name - needs to be unique across the collection of arguments
+      - `name` - needs to be unique across the collection of arguments.
+        - it's the base part of the placeholder: `{name}`
       - value - value that the message can use
   - `Arg.Number("minimum", 123)` - creates number argument named `minimum` with `int` value of `123`
   - `Arg.Text("title", "Star Wars")` - creates text argument named `title` with `string` value of `"Star Wars"`
   - Good to read: [Message arguments](#message-arguments) - how to use arguments in messages
-- Placeholders in the [error message](#message) will be replaced with the value of the matching argument
-  - name must be exactly the same
-  - placeholder needs follow the pattern: `{argumentName}`
+- Placeholders in the [error message](#message) will be replaced with the value of the related argument.
+  - Name must be exactly the same
+  - Placeholder needs follow the pattern: `{argumentName}`
 
 ``` csharp
 Predicate<int> isAgeValid = age => (age >= 0) && (age < 18);
@@ -649,9 +661,9 @@ ageValidator.Validate(32).ToString();
 
 _Notice that the format follows dotnet [custom numeric format strings](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-numeric-format-strings). The `maxAge` argument also has a different culture set (`pl-PL`, so `,` as a divider instead of `.`)._
 
-- Not all arguments needs to be used.
+- Not all arguments need to be used.
 - One argument can be used more than once in the same message.
-- If there is any error (like invalid name of the argument or parameter), no exception is thrown, but the string, unformatted, goes to the error output.
+- If there is any error (like invalid name of the argument or parameter), no exception is thrown in the code, but the string, unformatted, goes directly to the error output.
 
 ``` csharp
 Predicate<int> isAgeValid = age => (age >= 0) && (age < 18);
@@ -670,10 +682,10 @@ ageValidator.Validate(32).ToString();
 // "Age must be between 0.00 and {maximumAge|format=0.00|culture=pl-PL}"
 ```
 
-_In the above example, `maximumAge` is invalid argument name and therefore - the placeholder stays as it is._
+_In the above example, `maximumAge` is invalid argument name (`maxAge` would be OK in this case) and therefore - the placeholder stays as it is._
 
-- `RuleTemplate` allows using the arguments in all [messages](#message) in its [error output](#error-output).
-  - Each message can contain only selected arguments.
+- `RuleTemplate` exposes its arguments to all [messages](#message) in its [error output](#error-output).
+  - Each message can contain only subset of arguments.
   - Each message is free to use any kind of formatting it wants.
 
 ``` csharp
@@ -717,7 +729,7 @@ ageValidator.Validate(32).ToString();
 // Only 0-18!
 ```
 
-- Because all the [built-in rules](#rules) are based on `RuleTemplate`, this is the magic behind altering their error message still having access to arguments.
+- Because all the [built-in rules](#rules) are based on `RuleTemplate`, this is the magic behind altering their error message and still having access to the arguments.
 
 ``` csharp
 Specification<int> ageSpecification = m => m.Between(min: 0, max: 18).WithMessage("Only {min}-{max|format=0.00}!");
@@ -732,7 +744,7 @@ _In the above example, `Between` is a built-in rule for `int` type values that e
 
 - Good to read:
     - [Message arguments](#message-arguments) - everything about the available arguments, their types and parameters.
-    - [Custom rules](#custom-rules) - how to create a custom rule, step by step
+    - [Custom rules](#custom-rules) - how to create a custom rule, step by step.
     - [Rules](#rules) - the detailed list of all arguments available in each of the built-in rule.
 
 ---
@@ -753,7 +765,7 @@ _In the above example, `Between` is a built-in rule for `int` type values that e
   - It points at the member that will be validated with the passed [specification](#specification).
     - So technically it determines type `T` in `Specification<T>` that `Member` accepts as a second parameter.
   - It defines the nested path under which the entire [error output](#error-output) from the passed [specification](#specification) will be saved.
-    - By default, if the member selector is `m => m.Author`, the [error output](#error-output) will be saved under the path `Author`.
+    - By default, if the member selector is `m => m.Author`, the [error output](#error-output) will be saved under the path `Author` (as a next segment).
 
 ``` csharp
 Specification<string> nameSpecification = s => s
@@ -767,7 +779,7 @@ nameValidator.Validate("Adam !!!").ToString();
 // Must not contain whitespace!
 ```
 
-_In the above example you can see specification and validation of a string value. Let's use this specification in `Member` command and observe how the entire output is saved under a nested path:_
+_In the above example you can see specification and validation of a string value. Let's use this exact specification inside `Member` command and observe how the entire output is saved under a nested path:_
 
 ``` csharp
 Specification<PublisherModel> publisherSpecification = s => s
@@ -785,7 +797,7 @@ publisherValidator.Validate(publisher).ToString();
 // Name: Must not contain whitespace!
 ```
 
-_Let's go with it even one more level:_
+_Let's add one more level:_
 
 
 ``` csharp
@@ -809,7 +821,7 @@ authorValidator.Validate(book).ToString();
 
 - Whether to define a [specification](#specification) upfront and pass it to the `Member` command, or define everything inline - it's totally up to you. It doesn't make any difference.
   - The only thing that is affected is the source code readability.
-  - However in some very specific situations, reusing predefined specifications could lead to having an infinite reference loop in the object. More is covered in [Reference loop](#reference-loop) section.
+  - However in some very specific situations, reusing predefined specifications could lead to having an infinite reference loop in the object. this topic is covered in [Reference loop](#reference-loop) section.
 
 ``` csharp
 Specification<BookModel> bookSpecification = s => s
@@ -836,7 +848,7 @@ authorValidator.Validate(book).ToString();
 ```
 
 - Selected member can be only one level from the scope object!
-  - No language construct prevents you from stepping into more nested levels (so no compilation errors), but then during runtime, [validator](#validator) throws the exception from its constructor (or [factory](#factory)).
+  - No language construct prevents you from stepping into more nested levels (so no compilation errors), but then, during runtime, [validator](#validator) throws the exception from its constructor (or [factory](#factory)).
   - This behavior is very likely to be updated in the future versions, so such selectors might be allowed some day... but not now.
 
 ``` csharp
@@ -846,13 +858,13 @@ Specification<BookModel> bookSpecification = s => s
 Validator.Factory.Create(bookSpecification); // throws exception
 ```
 
-_In the above example, exception is thrown because member selector goes two levels down (`Publisher.Name`), while only one level down is allowed (`Publisher`)._
+_In the above example, exception is thrown because member selector goes two levels down (`Publisher.Name`). Please remember that one level down is allowed (just `Publisher` would be totally OK)._
 
 - Selected member can be either property or variable.
   - It can't be a function.
-- Type of selected member doesn't matter (can be reference type, value type, `string`, enum, or whatever...).
+- Type of selected member doesn't matter (can be reference type, value type, string, enum, or whatever...).
 - The default path for the [error output](#error-output) (determined by the member selector) can be altered using [WithPath](#withpath) command.
-- If the selected member is null in the validated object, the scope is still executed and the [error output](#error-output) fully depends on the [specification](#specification).
+- If the selected member contains null, the member scope is still executed and the [error output](#error-output) fully depends on the [specification](#specification).
   - It means that null member is not anything special. It's a normal situation and the behavior relies on the passed [specification](#specification), its [presence commands](#presence-commands) and the [null handling strategy](#null-policy).
 
 ``` csharp
@@ -1044,8 +1056,7 @@ emailValidator.Validate("Email").ToString();
 
 _As you can notice, null passed to `emailOptionalValidator` doesn't produce any validation errors (and it's fine, because the specification allows that with `Optional` command). Having the same specification in `AsModel` effectively changes this behavior. True, null passed to `AsModel` would not return any error output, but null never gets there. The root scope (`emailSpecification`) doesn't allow nulls and it terminates the validation before reaching `AsModel`._
 
-
-- `AsModel` can be very helpful if you want to bundle many commands and want a single [error message](#message) if any of them indicate validation error.
+- `AsModel` can be very helpful if you want to bundle many commands and want a single [error message](#message) if any of them indicates validation error.
   - Saying that, `AsModel` can wrap the entire [specification](#specification) and return single [error message](#message) out of it.
   - This is just a regular usage of [WithMessage](#withmessage) command and applies to all [scope commands](#scope-commands), not only `AsModel`. It's mentioned here only to present this very specific use case. For more details, please read the [WithMessage](#withmessage) section.
 
@@ -1116,7 +1127,7 @@ emailValidator.Validate("Email").ToString();
 - `AsCollection` accepts one parameter; item [specification](#specification) `Specification<TItem>`.
 - `AsCollection` executes the passed [specification](#specification) upon each item in the collection.
   - Internally, getting the items out of the collection is done using `foreach` loop.
-    - Validation doesn't materialize the collection. Elements are picked up using enumerator (as in a standard `foreach` loop).
+    - Validation doesn't materialize the collection. Elements are picked up using enumerator (as in standard `foreach` loop).
     - So it might get very tricky when you implement IEnumerable yourself; there is no protection against infinite stream of objects coming from the enumerator, etc.
   - Items are validated one after another, sequentially.
       - Support for async collection validation is coming in the future releases.
@@ -1146,8 +1157,8 @@ validator.Validate(numbers).ToString();
 _`AsCollection` is able to automatically resolve the type parameters for array. In this case, `AsCollection` is `AsCollection<int[], int>` under the hood._
 
 - `AsCollection` makes sense only if the type validated in the scope is a collection
-  - Well... technically that's not entirely true, because the only requirement is that it needs to implement `IEnumerable<TItem>` interface.
-  - Code completion tools (IntelliSense, Omnisharp, etc.) will show `AsCollection` as available for all kind of types, but once inserted you'll need to define `T` and `TItem`, so effectively - `AsCollection` works only for collections.
+  - Well... technically that's not entirely true, because the only requirement is that it implements `IEnumerable<TItem>` interface.
+  - Code completion tools (IntelliSense, Omnisharp, etc.) will show `AsCollection` as always available, but once inserted you'll need to define `T` and `TItem`, so effectively - `AsCollection` works only for collections.
 
 _Let's consider a custom class holding two collections:_
 
@@ -1234,7 +1245,7 @@ bookValidator.Validate(book).ToString();
 
 _In the code above you can see that null items in the collection result with the default [error message](#message). This is because `authorSpecification` doesn't allow nulls._
 
-_Let's change this and see what will happen:_
+_Let's change this and see what happens:_
 
 
 ``` csharp
@@ -1269,7 +1280,7 @@ validator.Validate(book).ToString();
 
 _Above, `authorSpecification` starts with [Optional](#optional) command and therefore null items in the collection are allowed._
 
-- `AsCollection` validates the collection items, but the collection itself (as an object) can be normally validated in its own scope as every other object.
+- `AsCollection` validates the collection items, but the collection itself (as an object) can be normally validated in its own scope normally, as any other value.
   - One of the popular use cases is to verify the collection size:
 
 ``` csharp
@@ -1319,7 +1330,7 @@ bookValidator.Validate(book).ToString();
 - `AsNullable` "unwraps" the nullable value and provides the way to validate it with a [specification](#specification).
 - `AsNullable` accepts single parameter; `Specification<T>`, where `T` is a value type wrapped in `Nullable<T>` (`T?`).
 - Null value never reaches `AsNullable`, exactly as [handling nulls policy](#null-policy) states.
-  - In fact, the passed [specification](#specification) describes `T` that is a value type, so `Optional` command is not even available.
+  - In fact, the passed [specification](#specification) describes `T` that is a value type, so [Optional](#optional) command is not even available.
   - Null must be handled one level higher (in the [specification](#specification) that contains `AsNullable`).
 
 ``` csharp
@@ -1344,7 +1355,6 @@ _In the above code, `Validate` method accepts `int?`. You can observe that the v
 
 _If the nullable value is null, it is stopped at the level of `nullableSpecification`, which doesn't allow nulls. Of course, you can change this behavior:_
 
-
 ``` csharp
 Specification<int> numberSpecification = s => s
     .Rule(number => number < 10).WithMessage("Number must be less than 10");
@@ -1363,7 +1373,7 @@ validator.Validate(15).ToString();
 // Number must be less than 10
 ```
 
-_Now, `nullableSpecification` starts with [Optional](#optional) command and therefore - null doesn't result with an error. On the other hand - if nullable has value, it is passed and validated with `numberSpecification`._
+_Now, `nullableSpecification` starts with [Optional](#optional) command and therefore - null doesn't result with an error. On the other hand - if nullable has a value, it is passed and validated with `numberSpecification`._
 
 - [Every built-in rule](#rules) for a value type has an extra variant for the nullable of this type.
   - So you don't need to provide `AsNullable` in the most popular and simple cases.
@@ -1386,7 +1396,7 @@ nullableValidator.Validate(15).ToString();
 // Must be less than 10
 ```
 
-_In the above code, `GreaterThan` and `LessThan` can be applied to both `Specification<int?>` and `Specification<int>`. Technically, they are two separate rules with the same names. The consistency of their inner logic is verified by the unit tests._
+_In the above code, `GreaterThan` and `LessThan` can be applied to both `Specification<int?>` and `Specification<int>`. Technically, they are two separate rules with same names. The consistency of their inner logic is verified by the unit tests._
 
 - `AsNullable` can be handy when you have two versions of the same type (nullable and non-nullable) that can be validated with the same specification.
 
@@ -1421,7 +1431,6 @@ _Above the example how two members - nullable `YearOfPublication` and non-nullab
 
 #### WithCondition
 
-
 - `WithCondition` is a [parameter command](#parameter-commands).
   - Can be placed after:
     - the related [scope command](#scope-commands).
@@ -1430,7 +1439,7 @@ _Above the example how two members - nullable `YearOfPublication` and non-nullab
     - other [parameter commands](#parameter-commands):  [WithPath](#withpath), [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
 - `WithCondition` sets the execution condition to the related (preceding) [scope command](#scope-commands).
 - `WithCondition` accepts single argument; a predicate `Predicate<T>`, where `T` is the current scope type.
-  - So `T` is exactly the same as in `Specification<T>` where the command exists.
+  - So `T` is exactly the same as in `Specification<T>` where the command lives.
   - The received argument is never null.
 - If the predicate returns:
   - `true` - the related [scope command](#scope-commands) is going to be executed.
@@ -1511,7 +1520,7 @@ validator.Validate(bookModel2).AnyErrors; // false
 validator.Validate(bookModel3).AnyErrors; // false
 ```
 
-_Validot never passes null into predicates, but the above code `isAuthorAPublisher` doesn't care at all about null also at the nested levels (`Publisher` and `Publisher.Name`). The logic in `WithCondition` makes sure that the values are always going to be there._
+_Validot never passes null into predicates, but in the above code `isAuthorAPublisher` doesn't care at all about null also at the nested levels (`Publisher` and `Publisher.Name`). The logic in `WithCondition` makes sure that the values are always going to be there._
 
 - `WithCondition` allows you to define many [specifications](#specification) (each validating different case) and execute them selectively, based on some logic. Either exclusively (one at the time), or using any way of mixing them.
 
@@ -1570,7 +1579,7 @@ validator.Validate(author1).ToString();
 validator.Validate(author2).AnyErrors; // false
 ```
 
-_The above code shows how to validate a member with three different specifications,  depending on the the email provider._
+_The above code shows how to validate a member with three different specifications, depending on the the email provider._
 
 ---
 
@@ -1585,7 +1594,7 @@ _The above code shows how to validate a member with three different specificatio
     - other [parameter commands](#parameter-commands): [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
 - `WithPath` sets the [path](#path) for the related scope's [error output](#error-output).
 - `WithPath` accepts one parameter; a path relative to the current scope path.
-  - Example 1; at level `FirstLevel.SecondLevel`, placing setting `ThirdLevel` as path results with `FirstLevel.SecondLevel.ThirdLevel`, not just `ThirdLevel`.
+  - Example 1; at `FirstLevel.SecondLevel`, setting `ThirdLevel` as path results with `FirstLevel.SecondLevel.ThirdLevel`, not just `ThirdLevel`.
   - Example 2; at root level, placing setting `Characters` as path results with `Characters`:
 
 ``` csharp
@@ -1618,7 +1627,7 @@ _You can observe that the [error output](#error-output) coming from the `Rule` s
     - Passing `<<<` would move the error output three levels up, etc.
   - To move it to the upper level, and to the nested level (but e.g. different branch), combine the two methods described above.
     - Passing `<<Test` would go two levels up and then step into `Test`
-    - Going up always stops at the root level, so don't worry that you put too many `<`.
+    - Going up always stops at the root level, so don't worry if you put too many of `<`.
       - This wouldn't result with exception, but it could be very misleading if you use such [specification](#specification) in another specification. Please be careful because Validot won't warn you about this problem.
 
 | Current path | WithName parameter | Final path |
@@ -1664,7 +1673,6 @@ bookValidator.Validate(book).ToString();
 ```
 
 _[Rule](#rule) would normally save the message within its scope's path (`Publisher.Name`), but `<<NameOfPublisher` moves its location two levels up and then down to `NameOfPublisher`_
-
 
 - Path passed to `WithPath` has few restrictions related to `.` (dot) being a special character used to separate levels:
   - you can't start the path with `.`
@@ -1735,8 +1743,7 @@ publisherValidator.Validate(publisher).ToString().ShouldResultToStringHaveLines(
 
 _[Error messages](#message) from two scopes (members `Name` and `CompanyId`) are both placed under `Info` path._
 
-
-- `WithPath` can be used to split [error output](#error-output) and distribute errors from a single scope into distinct [paths](#path).
+- `WithPath` can be used to split [error output](#error-output) and distribute errors from single scope into distinct [paths](#path).
 
 ``` csharp
 Specification<string> nameSpecification = s => s
@@ -1777,7 +1784,8 @@ _Above, two rules from the same scope are saving [error messages](#message) into
   - Can be followed by:
     - any of the [scope commands](#scope-commands).
     - other [parameter commands](#parameter-commands): [WithExtraMessage](#withextramessage), [WithExtraCode](#withextracode).
-- `WithMessage` overwrites the entire [error output](#error-output) of the related (preceding) [scope command](#scope-commands) with a single [error message](#message).
+- `WithMessage` overwrites the entire [error output](#error-output) of the related (preceding) [scope command](#scope-commands) with an error output that contains a single [error message](#message).
+  - Effectively it's overwriting all errors with a single message.
 - `WithMessage` accepts single parameters: message content.
 - `WithMessage` is the only way to override the default message (`"Error"`) recorded if the predicate in [Rule](#rule) fails:
 
@@ -1800,7 +1808,7 @@ Validator.Factory.Create(specificationWithMessage).Validate(0).ToString();
 // Year 0 is invalid
 ```
 
-- It doesn't matter how many nested levels or messages the [error output](#error-output) has. If any of the inner validation rule indicates failure, the entire related scope returns a single message passed to `WithMessage`.
+- It doesn't matter how many nested levels or messages/codes the [error output](#error-output) has. If any of the inner validation rule indicates failure, the entire related scope returns a single message passed to `WithMessage`.
   - If there is no error - there is no [error output](#error-output), and of course, no message as well.
 
 ``` csharp
@@ -1888,7 +1896,7 @@ validator.Validate(0).ToString().ShouldResultToStringHaveLines(
 );
 ```
 
-- `WithExtraMessage` acts very similar to [WithMessage](#withmessage), with one important difference; in case of error it appends error message to the error output of the related scope, instead of overwriting it (as [WithMessage](#withmessage) would do).
+- `WithExtraMessage` acts very similar to [WithMessage](#withmessage), with one important difference; in case of error it appends message to the [error output](#error-output) of the related scope, instead of overwriting it (as [WithMessage](#withmessage) would do).
   - Message is added only if the related scope has [error output](#error-output). No error output - no extra message.
 
 ``` csharp
@@ -1955,11 +1963,11 @@ _`Between` rule takes two arguments; `max` and `min`. These values can be used w
     - any of the [scope commands](#scope-commands).
     - other [parameter commands](#parameter-commands): [WithExtraCode](#withextracode).
 - `WithCode` overwrites the [entire output](#error-output) of the related scope with a single [error code](#code).
-- `WithCode` accepts single parameters: [code](#code).
+- `WithCode` accepts one parameter: [code](#code).
   - [Error code](#code) can't contain white space characters.
 - `WithCode` acts very similar to [WithMessage](#withmessage), with one important difference; in case of error it overrides the entire [error output](#error-output) with the [error code](#code), instead of the [error message](#message) (as [WithMessage](#withmessage) would do).
    - Error code is only if the related scope has any error output. No error output - no error code.
-   - The entire error output is overriden, including the messages! If you want to have both [messages](#message) AND [codes](#code), you should use [WithExtraCode](#withextracode) command.
+   - The entire error output is overridden, including the messages! If you want to have both [messages](#message) AND [codes](#code), you should use [WithExtraCode](#withextracode) command.
 
 ``` csharp
  Specification<int> specification = s => s
@@ -2118,8 +2126,8 @@ _In the above example you can observe how [ToString()][#tostring] prints codes a
   - Needs to be placed as the first on in the scope.
   - Can be followed by:
     - any of the [scope commands](#scope-commands).
-- `Optional` makes the current scope value as optional (null is allowed).
-  - `Optional` is the only way to avoid errors in case of null value.
+- `Optional` makes the current scope value optional (null is allowed).
+  - `Optional` is the only way to avoid errors in case of null scope value.
 
 ``` csharp
 Specification<string> specification1 = s => s
@@ -2190,7 +2198,7 @@ validator.Validate(book2).ToString();
 #### Required
 
 - `Required` is a [presence command](#presence-commands).
-  - Needs to be placed as the first on in the scope.
+  - Needs to be placed as the first in the scope.
   - Can be followed by:
     - any of the [scope commands](#scope-commands).
     - [parameter commands](#parameter-commands): [WithMessage](#withmessage), [WithExtraMessage](#withextramessage), [WithCode](#withcode), [WithExtraCode](#withextracode).
@@ -2230,7 +2238,7 @@ result2.ToString();
 // Required
 ```
 
-_Similarly to [Optional](#optional), in both cases (with and without `Required`), when the value is provided - there is no difference is the [error output](#error-output):_
+_Similarly to [Optional](#optional), in both cases (with and without `Required`), when the value is provided - there is no difference ns the [error output](#error-output):_
 
 ``` csharp
 validator1.Validate("a").ToString();
@@ -2356,24 +2364,23 @@ result.ToString();
 ### Null policy
 
 - If the value is entering the scope, presence commands are the first to take action.
-- If the value entering the scope is null, **no commands*- other than presence commands are even executed.
-    - It doesn't matter how many rules, commands and logic the scope has.
-    - Literally, after presence commands are checked to configure the error output (or its absence), the rest is just skipped and the validation process leaves the scope.
-    - This is why you don't need to check in your [Rule](#rule) (and [RuleTemplate](#ruletemplate)) predicates if the incoming value is null and secure the code from `NullReferenceException`. It will never be null. If the scope value is null, the validation never reaches any of your defined commands. It stops immediately after presence commands.
+- If the value entering the scope is null, [scope commands](#scope-commands) are not executed.
+    - It doesn't matter how many rules, commands and logic the scope has - it is skipped and the validation process leaves the scope.
+    - This is why you don't need to secure your code from `NullReferenceException` in the predicates passed to the [Rule](#rule) (and [RuleTemplate](#ruletemplate)) commands. Validot will never pass null to a predicate.
 - If the scope doesn't contain any presence command, it acts as it had a single [Required](#required) command at the beginning.
     - Therefore, every specification by default marks the validated input as required (non-null).
-- [Required](#required) command itself doesn't do anything extra comparing to the specification without it, however it gives the possibility to change the error output returned in case the incoming value is null.
-    - By default, the error output contains the single error message with key `Global.Required`.
+- [Required](#required) command itself doesn't do anything extra comparing to the specification without it, however it gives a possibility to change the [error output](#error-output) returned in case the incoming value is null.
+    - By default, the error output contains the single error message key `Global.Required`.
 - [Optional](#optional) command allows the value to be null. In such a case, validation leaves the scope immedietaly and no error output is recorded.
 - [Forbidden](#forbidden) command requires the value to be null.
-    - By default, the error output contains the single error message with key `Global.Forbidden`.
+    - By default, the error output contains the single error message key `Global.Forbidden`.
 - To know how you can modify the error outputs of the presence commands, read their sections: [Required](#required), [Optional](#optional), [Forbidden](#forbidden)
 
 
 ### Reference loop
 
 - Reference loop is a loop in a reference graph of your incoming model.
-    - In another words; reference loop exists in a model if you traverse through its members and reaching some reference twice at some point.
+    - In another words; reference loop exists in a model if you traverse through its members and can reach some reference twice at some point.
     - On a simple example (imagine a classic linked list, letters represents references):
         - `A->A`, a direct self-reference; type defines a member of the same type and the object has itself assigned there.
         - `A->B->C->A`, no direct self-reference, but `A` has member `B` that has member `C` that has member `A`, so same reference as at the beginning.
@@ -2392,8 +2399,9 @@ public class B
 
 _Above; simple structure `A->B->A`._
 
-- If you're traversing through an object graph and have a reference loop, you can end up in infinite loop and stack overflow exception.
+- If you're traversing through the object graph and have a reference loop, you can end up in infinite loop and stack overflow exception.
 - Reference loop are visible in the [Template](#template).
+  - The root of the loop is marked with message key `Global.ReferenceLoop`.
 - Reference loop is the only case where the [Template](#template) doesn't reflect what ultimately lands in the validation [result](#result).
     - The validation process inside the loop is running normally, however the lack of caching might slightly affect the performance.
 
@@ -2431,7 +2439,7 @@ validator.Validate(a).ToString();
         - `Type` - what type was at the beginning of the loop
         - `Path` - path where the loop starts
         - `NestedPath` - path where the loop ends (so where the object (of type described in `Type`) has same reference as the object under path visible in `Path`).
-        - `ScopeId` - the id of the scope where the loop happends. This is information from Validot's internals, not useful in the outside world, however please include it when raising an issue, as it will help the dev team.
+        - `ScopeId` - the id of the scope where the loop happens. This is the information from Validot's internals, not useful in the outside world, however please include it when raising an issue, as it will help the dev team.
 
 
 ``` csharp
@@ -2478,7 +2486,7 @@ catch(ReferenceLoopException exception)
     - You can explicitly enable/disable the the protection in the [settings](#settings).
         - Please do know what you're doing; e.g. if disabled, there is no protection from stack overflow exception.
 - There is a risk of reference loop and stack overflow if:
-    - There is a loop in the type graph and same types are using same specification.
+    - There is a loop in the type graph and same types are using the same specification.
         - It is true that loop in the type graph indicates possibility of having loop in the reference graph, but as long as the same types don't use the same specification - it's totally fine, because the validation would never end up in the endless loop.
     - Reference loop is reachable at all.
         - Validation is based on the specification. If specification doesn't even step into the members that are in the loop, there is no risk.
@@ -2488,7 +2496,7 @@ catch(ReferenceLoopException exception)
 ## Validator
 
 - Validator is the object that performs validation process.
-- Validator validates the object according to the [specification](#specification) `Specification<T>`.
+- Validator validates the object according to the [specification](#specification) `Specification<T>` that it receives in the constructor (directly or through the [factory](#factory)).
   - Validator is in fact a generic class `Validator<T>` where `T` is the type of objects it can validate.
   - Type `T` comes from [specification](#specification) `Specification<T>`
 - Validator can be initialized directly with its own constructor, however using the [factory](#factory) is the recommended way.
@@ -2517,9 +2525,9 @@ var settings = new ValidatorSettings().WithPolishTranslation();
 var validator = new Validator<BookModel>(specification, settings);
 ```
 
-- When initialized, validator executes the [specification](#specification) function and performs deep analysis on all the commands that it has.
-  - All the possible [paths](#path) and [errors](#error-output) are detected and prepared in the form of the [template](#template).
+- When initialized, validator executes the [specification](#specification) function and performs deep analysis on all of the commands that it has.
   - All of the [error messages](#message) (along with their [translations](#translations)) are pre-generated and cached.
+    - They are presented in the form of a regular [validation result](#result), as [Template](#template).
   - All the capacities are calculated (to optimize memory allocations during the actual validation).
   - [Reference loops](#reference-loop) are detected.
     - If detected, [reference loop protection](#withreferenceloopprotection) is automatically enabled, but you can override this behavior in the [settings](#settings).
@@ -2547,14 +2555,14 @@ validator.Validate(book).ToString();
 // Title: Contains errors!
 ```
 
-_Above the `Title` value was check by `NotEmpty` and `NotWhiteSpace` rules. `NotWhiteSpace` reports an error, therefore there is no need of executing `NotEqualTo` and `Rule` - as the entire error output is replaced with the message defined in [WithMessage](#withmessage)._
+_Above, the `Title` value is checked by `NotEmpty` and `NotWhiteSpace` rules. `NotWhiteSpace` reports an error, therefore there is no need of executing `NotEqualTo` and `Rule` - as the entire error output is replaced with the message defined in [WithMessage](#withmessage)._
 
 ### Validate
 
-- `Validate` is the main function for validation.
+- `Validate` is the very function that triggers the full validation process.
   - It accepts two parameters:
     - Model of type `T` - the object to validate.
-    - `failFast` (default value: `false`) - a flag indicating whether the process should finish immediately after detecting the first error.
+    - `failFast` (default value: `false`) - a flag indicating whether the process should terminate immediately after detecting the first [error](#error-output).
   - It returns [validation result](#result).
 
 ``` csharp
@@ -2593,8 +2601,9 @@ _In the code above you can observe that the validation process triggered with `f
 
 ### IsValid
 
-- `IsValid` is the highly-optimized version of `Validate` to check if the model is valid.
-  - It doesn't provide any information where is the error.
+- `IsValid` is the highly-optimized version of [Validate](#validate) to check if the model is valid or not.
+  - It's super-fast, but it has its price; no [error output](#error-output) and no [paths](#path).
+    - So you don't know what value is wrong and where it is.
   - It returns a bool - if `true`, then no error found. Otherwise, `false`.
 
 ``` csharp
@@ -2630,7 +2639,7 @@ validator.IsValid(book2); // true
 - In fact, `IsValid` is so fast that it might be a good idea to call it first and then - if model is invalid - trigger `Validate` to get all of the details.
 
 ``` csharp
-if (validator.IsValid(heavyModel))
+if (!validator.IsValid(heavyModel))
 {
     _logger.Log("Errors found: " + validator.Validate(heavyModel).ToString());
 }
@@ -2646,15 +2655,16 @@ var validator = Validator.Factory.Create(specification);
 ```
 
 - Similarly to the constructor, validator takes:
-    - [Specification](#specification) - fluent-api definition of a valid model state
-    - [Settings](#settings) - validator settings
-- Factory is just a wrapper around the constructor, however it does provide some extra functionality:
-    - It prepares the default [validation settings](#settings).
-    - It provides the additional way of initializing the [validator](#validator), using [Specification holder](#specification-holder) / [Translation holder](#translation-holder).
+    - [Specification](#specification) - fluent-api definition of a valid model state.
+    - [Settings](#settings) - validator settings.
+- Factory is just a wrapper around the [Validator](#validator)'s constructor, however it does provide some extra functionality:
+    - It prepares the default [settings](#settings).
+    - It provides a way of initializing the [validator](#validator) with [Specification holder](#specification-holder) / [Translation holder](#translation-holder).
 
 #### Specification holder
 
-- Specification holder is the class that implements `ISpecificationHolder<T>` generic interface.
+- Logically, specification holder is a class that holds [specification](#specification) that [factory](#factory) will fetch and initialize the [validator](#validator) with.
+- Technically, specification holder is a class that implements `ISpecificationHolder<T>` generic interface.
   - This interface exposes single member of type `Specification<T>`.
 
 ``` csharp
@@ -2666,7 +2676,7 @@ interface ISpecificationHolder<T>
 
 - [Factory](#factory) has a `Create` method that accepts `ISpecificationHolder<T>` instead of `Specification<T>`.
   - Specification is taken directly from `Specification` interface member.
-- Specification holder is a way to wrap the entire specification into a single class.
+- Specification holder is a way to wrap the entire specification within a single class.
 
 ``` csharp
 class BookSpecificationHolder : ISpecificationHolder<BookModel>
@@ -2720,7 +2730,8 @@ validator.Validate(book).ToString();
 
 #### Translation holder
 
-- Translation holder is the class that implements `ITranslationHolder`:
+- Logically, translation holder is a class that holds [translation](#translations) that [factory](#factory) will fetch and initialize the [validator](#validator) with.
+- Technically, translation holder is a class that implements `ITranslationHolder`:
 
 ``` csharp
 interface ITranslationHolder
@@ -2800,7 +2811,7 @@ result.ToString("Polish");
   - [Translations](#translations) - values for the message keys used in specification.
   - [Reference loop](#reference-loop) protection - prevention against stack overflow exception.
 - Settings are represented by `ValidationSettings` class (namespace `Validot.Settings`).
-- All properties in `ValidationSettings` are read-only, but you can change their values only with the related methods.
+- All properties in `ValidationSettings` are read-only, but you can change their values with the related methods.
 
 ``` csharp
 var settings = new ValidatorSettings();
@@ -2814,7 +2825,7 @@ settings.WithReferenceLoopProtection(); // the proper way of changing the value
 settings.ReferenceLoopProtection; // true
 ```
 
-- You can create `ValidatorSettings` object directly and pass it to the [validator]'s constructor, but the recommended way is to use the builder pattern exposed by the [factory](#factory).
+- You can create `ValidatorSettings` object directly and pass it to the [validator]'s constructor, however the recommended way is to use the builder pattern exposed by the [factory](#factory).
   - [Factory](#factory) initializes the settings object with the default values and exposes it through the builder pattern:
 
 ``` csharp
@@ -2840,7 +2851,7 @@ validator.Settings.WithReferenceLoopProtectionDisabled(); // throws InvalidOpera
 #### WithReferenceLoopProtection
 
 - `WithReferenceLoopProtection` enables the protection against the [reference loop](#reference-loop).
-  - If not set explicitly, the [validator](#validator) turns it on automatically if the [reference loop](#reference-loop) is teoretically possible according to the [specification](#specification).
+  - If not explicitly set, the [validator](#validator) turns it on automatically if the [reference loop](#reference-loop) is theoretically possible according to the [specification](#specification).
 - `WithReferenceLoopProtectionDisabled` disables the protection against the [reference loop](#reference-loop).
   - One scenario when this protection is redundant is when you're absolutely sure that the object won't have [reference loops](#reference-loop), because the model is e.g. deserialized from the string.
 
@@ -2860,7 +2871,8 @@ settings => settings
 
 - Called with keys (`name` or `messageKey`) for the first time, `WithTranslation` creates the underlying dictionaries.
 - Called multiple times with the same keys (`name` and `messageKey`), `WithTranslation` overwrites the previous value with the provided `translation` value.
-- `WithTranslation` can be also used to overwrite the existing (e.g. default) values. In order to do that, you need to check the message key that the rule uses.
+- `WithTranslation` can be also used to overwrite the existing values (like the default ones or those added before, with another `WithTranslation` method, in whatever form).
+  - In order to do overwrite the default value, you need to check the message key that the rule uses.
   - Good to read;
     - [Translations](#translations) - how translations works.
     - [Rules](#rules) - the list of rules and their message keys.
@@ -2946,7 +2958,7 @@ settings => settings
 ### Template
 
 - `Template` is a byproduct of the analysis that the [validator](#validator) performs during the initialization.
-  - Validator traverses through all the commands in [specification](#specification), determines and caches all the possible [paths](#path), [messages](#message) and [codes](#code).
+  - Validator traverses through all of the commands in [specification](#specification), determines and caches all the possible [paths](#path), [messages](#message) and [codes](#code).
   - `Template` is the object of the same type as [results](#result) (`IValidationResult`), so you can check all of the cached data with the same properties, verify the translations, error codes, etc.
 
 ``` csharp
@@ -2966,7 +2978,7 @@ validator.Template.ToString();
 
 - First difference between the actual [validation result](#result) and the `Template` is that the `Template` doesn't have indexes in the [paths](#path).
     - It doesn't make any sense, because `Template` isn't related with any particular object.
-    - Example; `Collection.#.NestedCollection.#.Something` instead of `Collection.#5.NestedCollection.#0.Something` that would apper in the [validation results](#result).
+    - Example; `Collection.#.NestedCollection.#.Something` instead of `Collection.#5.NestedCollection.#0.Something` that would appear in the [result](#result) of the [Validate](#validate) method.
 
 ``` csharp
 Specification<BookModel> specification = s => s
@@ -3007,8 +3019,8 @@ validator.Template.ToString();
 // B.A: (reference loop)
 ```
 
-- `Template` contains all theoretically possible errors, so it would also have the [error outputs](#error-output) that in the real world would be exclusive to each other (all predicates, including the ones set by [Rule](#rule) and [WithCondition](#withcondition) are ignored).
-  - It also means, that the [ToString](#tostring) printing of the `Template` could be quite large.
+- `Template` contains all theoretically possible errors, so it would also have the [error outputs](#error-output) that in the real world would be exclusive to each other (literally all predicates are ignored).
+  - It also means, that the printing of the `Template` (generated by [ToString](#tostring) method) could be quite large.
 
 ``` csharp
 Specification<AuthorModel> authorSpecification = s => s
@@ -3057,11 +3069,11 @@ validator.Template.ToString();
 
 ## Result
 
-- Validation result is the object of type `IValidationResult` and is produced by the [Validate](#validate) method.
+- Validation result is an object of type `IValidationResult` and is produced by the [Validate](#validate) method.
 - The result is internally linked with the [validator](#validator) that created it.
   - This is the reason behind its ability to translate the [messages](#message) that are registered within the [validator](#validator).
   - This is also the reason you shouldn't store the `IValidationResult` object for too long or pass it around your system.
-    - You can, however, retrieve the data using its properties (listed here in this section). They are safe to operate on.
+    - You can, however, retrieve the data using its properties (listed below, here in this section). They are safe to operate on.
 
 ### AnyErrors
 
@@ -3086,7 +3098,7 @@ result2.AnyErrors; // true
 
 ### Paths
 
-- `Paths` is the collection of all [paths](#path) that contain [error output](#error-output).
+- `Paths` property is the collection of all [paths](#path) that contain [error output](#error-output).
   - It doesn't matter whether it's an [error output](#error-output) with only [messages](#message), only [codes](#code), or a mix.
 - `Paths` can be used to check if the value under a certain [path](#path) is valid or not.
 - `Paths` collection doesn't contain duplicates.
@@ -3133,7 +3145,7 @@ _In the above example, all [paths](#path) with errors are listed in `Paths` coll
 
 ### Codes
 
-- `Codes` is the collection of all the [codes](#code) in the [error output](#error-output).
+- `Codes` property is the collection of all the [codes](#code) in the [error output](#error-output).
   - The path doesn't matter. All codes from all the error outputs are listed.
 - `Codes` colllection can be used to check if some [code](#code) has been recorded for the validated model.
   - To check where exactly, you need to use [CodeMap](#codemap).
@@ -3410,7 +3422,7 @@ result.ToString();
 ```
 
 - `ToString` has also a version that accepts single parameter; `translationName`. Use to to retrieve the same content, but translated using the dictionary of the given name.
-  - `translationName` needs to be listed in [TranslationNames](#translationnames), otherwise you can expect the exception.
+  - `translationName` needs to be listed in [TranslationNames](#translationnames), otherwise you can expect exception.
 
 ``` csharp
 Specification<PublisherModel> specification = s => s
@@ -3640,12 +3652,12 @@ result.ToString();
 
 ### Custom rules
 
-- Custom rules should be based on [RuleTemplate](#ruletemplate) command, wrapped into the extension method.
-  - The method needs extend the `IRuleIn<T>` interface, where `T` is the type of the object to be validated.
+- Custom rules should be based on [RuleTemplate](#ruletemplate) command, wrapped into an extension method.
+  - The method needs to extend the `IRuleIn<T>` interface, where `T` is the type of the object to be validated.
   - The methods needs to return `IRuleOut<T>`.
-  - Both `IRuleOut<T>` and `IRuleIn<T>` ensure that the custom rule complies with the Validot fluent api structures.
+  - Both `IRuleOut<T>` and `IRuleIn<T>` ensure that the custom rule complies with the Validot's fluent api structures.
 - The namespace where the extension method is doesn't matter that much.
-  - All built-in rules live in `Validot` namespace.
+  - However, all built-in rules live in `Validot` namespace.
 
 ``` csharp
 public static class MyCustomValidotRules
@@ -3675,8 +3687,8 @@ validator.Validate("").ToString();
 ```
 
 - Custom rules can have arguments.
-  - Please be extra careful with wrapping/boxing external references into the predicate. It might cause the memory leak if the [validator](#validator) does exists as a singleton.
-  - The pattern is that all method arguments should be available as [message arguments](#message-arguments), under the same names.
+  - Please be extra careful with wrapping/boxing external references into the predicate. It might cause the memory leak, especially if the [validator](#validator) does exists as a singleton.
+  - The pattern is: all method arguments should be available as [message arguments](#message-arguments), under the same names.
 
 ``` csharp
 public static IRuleOut<string> HasCharacter(
@@ -3705,10 +3717,10 @@ validator.Validate("").ToString();
 // Must have character 't' in the amount of 2
 ```
 
-- Instead of a message you can provide a message key. Technically there is no difference, but it's easier for the user to overwrite the content.
+- Instead of a message, you can provide a message key. Technically there is no difference, but it's easier for the user to overwrite the content.
   - The pattern for the message key is `Category.MethodName`.
-    - Example; `EqualTo` for texts is `Text.EqualTo`
-    - Example; `GreaterThan` for numbers is `Number.GreaterThan`
+    - Example; `EqualTo` for texts is `Texts.EqualTo`
+    - Example; `GreaterThan` for numbers is `Numbers.GreaterThan`
   - Good to read:
     - [Rules](#rules) - list of built-in rules, along with their message keys and available arguments.
     - [Translations](#translations) - how translations work.
@@ -3753,7 +3765,7 @@ result.ToString(translationName: "Polish");
 - [Error message](#message) might contain arguments in its content.
   - The placeholder for the argument value is using pattern: `{argumentName}`.
   - Arguments can be used in [WithMessage](#withmessage), [WithExtraMessage](#withextramessage) and [RuleTemplate](#ruletemplate).
-  - The pattern followed in all [the built-in rules](#rules) is that the argument name is named exactly as the method's argument.
+  - The pattern followed in all [the built-in rules](#rules) is: the argument name is exactly the same as the method's argument.
 
 ``` csharp
 Specification<decimal> specification = s => s
@@ -3767,10 +3779,10 @@ validator.Validate(105).ToString();
 ```
 
 - Arguments can be parametrized:
-  - Parameters follow format: `parameterName=parameterValue`
-  - Parameters are separated with `|` (vertical bar, pipe) character from the argument name and from each other
-  - Single parameter example: `{argumentName|parameterName=parameterValue}`
-  - Multiple parameters example: `{argumentName|param1=value1|param2=value2|param3=value3}`
+  - Parameters follow format: `parameterName=parameterValue`.
+  - Parameters are separated with `|` (vertical bar, pipe) character from the argument name and from each other.
+  - Single parameter example: `{argumentName|parameterName=parameterValue}`.
+  - Multiple parameters example: `{argumentName|param1=value1|param2=value2|param3=value3}`.
 
 ``` csharp
 Specification<decimal> specification = s => s
@@ -3822,8 +3834,8 @@ validator.Validate("john.doe@outlook.com").ToString();
 _In the example above, [WithMessage](#withmessage) is using `{stringComparison|translation=true}` placeholder, which is - under the hood - transformed into [translation argument](#translation-argument) `{_translation|key=Enum.System.StringComparison.Ordinal}` and ultimately - replaced with the message registered under the key `Enum.System.StringComparison.Ordinal`._
 
 - Good to read:
-  - [translation argument](#translation-argument) - how to translationa argument works
-  - [translations](#translations) - how translations works
+  - [translation argument](#translation-argument) - how to translation argument works.
+  - [translations](#translations) - how translations work.
 
 ### Guid argument
 
@@ -3979,7 +3991,7 @@ result.ToString(translationName: "Polish");
     - if not sent, the default `format` value is `name`.
   - `translation` - if set to `true`, placeholder is transformed into [translation argument](#translation-argument): `{_translation|key=messageKey}`.
     - the message key is in this format: `Type.FullName`.
-    - ultimately, placeholder will be replace with text from the specification.
+    - ultimately, placeholder will be replaced with text from the specification.
     - if `translation` is present, `format` is ignored.
 
 
@@ -4225,16 +4237,16 @@ validator.Validate(20).ToString("YodaEnglish");
 
 ## Development
 
-- The build system is based on [nuke.build](https://nuke.build/) project.
-- This section contains examples using powershell, but bash scripts are also fully supported.
+- The build system is based on the [nuke.build](https://nuke.build/) project.
+- This section contains examples that uses powershell, but bash scripts are also fully supported.
   - Just replace `pwsh build.ps1` with `bash build.sh`
-- If you're keep experiencing compilation errors that your IDE doesn't show (and `dotnet build` completes OK), consider adding `--AllowWarnings`.
+- If you're keep experiencing compilation errors that your IDE doesn't show (and at the same time `dotnet build` completes OK), consider adding `--AllowWarnings`.
   - By default, the build system requires the code to follow the rules set in [ruleset](../Validot.sln.ruleset) and [editorconfig](../.editorconfig).
 - If you don't provide `--Version` parameter (value needs to follow [semver](https://semver.org/) rules), the default version is `0.0.0-XHHmmss`, where `X` is the day of the current year, `HHmmss` is the timestamp.
 
 ### Build
 
-- Compile the project and the tests:
+- Compile the project with the tests:
   - `pwsh build.ps1`
     - This is the same as `pwsh build.ps1 --target Compile`
 - Create nuget package:
@@ -4261,9 +4273,9 @@ validator.Validate(20).ToString("YodaEnglish");
 - Run tests on specific framework:
   - `pwsh build.ps1 --target Tests --DotNet netcoreapp2.1`
   - `pwsh build.ps1 --target Tests --DotNet net48`
-  - It sets the `TargetFramework` in the test projects csproj files.
+  - It sets the `TargetFramework` in the test projects' csproj files.
   - You can use the framework id (`netcoreapp3.1`), as well as the sdk version (`3.1.100`)
-    - the highest framework id version available in the sdk will be used
+    - the highest framework id version available in the sdk will be used.
 - Get code coverage report:
   - `pwsh build.ps1 --target CodeCoverageReport`
   - HTML and JSON reports will appear in `artifacts/coverage_reports` directory.
@@ -4289,5 +4301,5 @@ validator.Validate(20).ToString("YodaEnglish");
   - `pwsh build.ps1 --target Benchmarks --BenchmarksFilter "X"`
   - `X` is the full name of the benchmark method: `namespace.typeName.methodName`.
     - Wildcards are accepted, so `pwsh build.ps1 --target Benchmarks --BenchmarksFilter "*NoErrors*"` would execute all methods inside [`NoErrorsBenchmark.cs`](../tests/Validot.Benchmarks/Comparisons/NoErrorsBenchmark.cs).
-  - Benchmarks are based on [benchmarkdotnet](https://benchmarkdotnet.org).
   - Can be combined with `--FullBenchmark`.
+- Benchmarks are based on [benchmarkdotnet](https://benchmarkdotnet.org).

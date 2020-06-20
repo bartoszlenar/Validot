@@ -34,3 +34,8 @@ Please replace the placeholders (like point lists or code snippets) with your ow
 * Technical implementation details?
 * Caveats and considerations for the future?
 * Is this might be a breaking change?
+
+## Discussion
+
+* Questions to the maintainers or users?
+* Pools?

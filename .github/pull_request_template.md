@@ -18,7 +18,7 @@ Related issue: # (required - if the issue doesn't exist, please create it first)
 
 ## Description
 
-* Please provide the PR desciption in points.
+* Please provide the PR description in points.
 * Include as many details as you can
     * What code areas are affected?
     * Any impact on performance?

@@ -212,7 +212,7 @@ bookValidator.Template.ToString(); // Template contains all of the possible erro
 
 ### Results
 
-Whatever you want. [Error flag](../docs/DOCUMENTATION.md#anyerrors), compact [list of codes](../docs/DOCUMENTATION.md#codes), or detailed maps of [messages](../docs/DOCUMENTATION.md#messagemap) or [codes](../docs/DOCUMENTATION.md#codemap). And sugar on top; a friendly [ToString() printing](../docs/DOCUMENTATION.md#tostring) that contains everything, nicely formatted.
+Whatever you want. [Error flag](../docs/DOCUMENTATION.md#anyerrors), compact [list of codes](../docs/DOCUMENTATION.md#codes), or detailed maps of [messages](../docs/DOCUMENTATION.md#messagemap) and [codes](../docs/DOCUMENTATION.md#codemap). With a sugar on top: friendly [ToString() printing](../docs/DOCUMENTATION.md#tostring) that contains everything, nicely formatted.
 
 
 ``` csharp
@@ -223,11 +223,13 @@ if (validationResult.AnyErrors)
     // check if a specific code has been recorded for Email property:
     if (validationResult.CodeMap["Email"].Contains("DOMAIN_BANNED"))
     {
-        _actions.RecordBannedDomainRegistrationAttempt(signUpModel.Email);
+        _actions.NotifyAboutDomainBanned(signUpModel.Email);
     }
 
+    var errorsPrinting = validationResult.ToString();
+
     // save all messages and codes printing into the logs
-    _logger.LogError("Errors in incoming SignUpModel: {errors}", validationResult.ToString());
+    _logger.LogError("Errors in incoming SignUpModel: {errors}", errorsPrinting);
 
     // return all error codes to the frontend
     return new SignUpActionResult
@@ -304,11 +306,11 @@ A short statement to start with - [@JeremySkinner](https://twitter.com/JeremySki
 
 ### Validot is faster and consumes less memory
 
-Before anything else; this document shows terribly oversimplified results of [BenchmarkDotNet](https://benchmarkdotnet.org/) execution, but the intention is to present the general trend only. To have truly reliable numbers, I highly encourage you to [run the benchmarks yourself](../docs/DOCUMENTATION.md#benchmarks) and [review their code](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Benchmarks).
+Before anything else; this document shows terribly oversimplified results of [BenchmarkDotNet](https://benchmarkdotnet.org/) execution, but the intention is to present the general trend only. To have truly reliable numbers, I highly encourage you to [run the benchmarks yourself](../docs/DOCUMENTATION.md#benchmarks).
 
-There are three data sets, 10k models each; `ManyErrors` (every model has many errors), `HalfErrors` (around 60% have errors, the rest are valid), `NoErrors` (all are valid) and the rules reflect each other as much as technically possible. I did my best to make sure that the tests are just and adequate, but I'm a human being and I make mistakes. Really, if you spot errors in the code, framework usage, applied methodology... or if you can provide any counterexample proving that Validot struggles with some particular scenarios - I'd be very very very happy to accept a PR and/or discuss it on [GitHub Issues](https://github.com/bartoszlenar/Validot/issues).
+There are three data sets, 10k models each; `ManyErrors` (every model has many errors), `HalfErrors` (around 60% have errors, the rest are valid), `NoErrors` (all are valid) and the rules reflect each other as much as technically possible. I did my best to make sure that the tests are just and adequate, but I'm a human being and I make mistakes. Really, if you spot errors [in the code](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Benchmarks), framework usage, applied methodology... or if you can provide any counterexample proving that Validot struggles with some particular scenarios - I'd be very very very happy to accept a PR and/or discuss it on [GitHub Issues](https://github.com/bartoszlenar/Validot/issues).
 
-To the point; the statement in the header is true, but if course, it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over [flexibility and extra features](#fluentvalidations-features-that-validot-is-missing). Fine with that kind of trade-off? Good, because the validation process in Validot might be **~2.5x faster while consuming ~3.5x less memory**. Especially when it comes to memory consumption, Validot is usually far, far more efficient than that (depending on the use case it might be even **~15x more efficient** than FluentValidation):
+To the point; the statement in the header is true, but it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over [flexibility and extra features](#fluentvalidations-features-that-validot-is-missing). Fine with that kind of trade-off? Good, because the validation process in Validot might be **~2.5x faster while consuming ~3.5x less memory**. Especially when it comes to memory consumption, Validot is usually far, far more better than that (depending on the use case it might be even **~15x more efficient** comparing to FluentValidation):
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
@@ -321,8 +323,8 @@ To the point; the statement in the header is true, but if course, it doesn't com
 | FailFast | `HalfErrors` | FluentValidation | `666.12` | `684.60` |
 | FailFast | `HalfErrors` | Validot | `185.19` | `64.96` |
 
-* [Validate](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated.
-* [FailFast](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, the process stops on the first error.
+* [Validate benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated.
+* [FailFast benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, the process stops on the first error.
 
 FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors or not. Validot has [AnyErrors](../docs/DOCUMENTATION.md#anyerrors) that acts the same way, but [IsValid](../docs/DOCUMENTATION.md#isvalid) is a dedicated special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify the incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude:
 
@@ -335,9 +337,9 @@ FluentValidation's `IsValid` is a property that wraps a simple check whether the
 | IsValid | `NoErrors` | FluentValidation | `652.64` | `668.51` |
 | IsValid | `NoErrors` | Validot | `266.63` | `78.82` |
 
-* [IsValid](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, but only to know if they are valid or not.
+* [IsValid benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, but only to know if they are valid or not.
 
-In fact, combining these two methods in most cases could be quite beneficial. At first [IsValid](../docs/DOCUMENTATION.md#isvalid) quickly verifies the object and if it contains errors - only then [Validate](../docs/DOCUMENTATION.md#validate) is executed to report the details. Of course in some extreme cases (megabyte-size data? milions of items in the collection? dozens of nested levels with loops in reference graphs?) traversing through the object twice could neglate the profit, but for the regular web api input validation it will certainly serve its purpose:
+In fact, combining these two methods in most cases could be quite beneficial. At first [IsValid](../docs/DOCUMENTATION.md#isvalid) quickly verifies the object and if it contains errors - only then [Validate](../docs/DOCUMENTATION.md#validate) is executed to report the details. Of course in some extreme cases (megabyte-size data? millions of items in the collection? dozens of nested levels with loops in reference graphs?) traversing through the object twice could neglect the profit, but for the regular web api input validation it will certainly serve its purpose:
 
 ``` csharp
 if (!validator.IsValid(model))
@@ -353,13 +355,13 @@ if (!validator.IsValid(model))
 | Reporting | `HalfErrors` | FluentValidation | `651.90` | `685.22` |
 | Reporting | `HalfErrors` | Validot | `364.80` | `123.74` |
 
-* [Reporting](../tests/Validot.Benchmarks/Comparisons/ReportingBenchmark.cs) benchmark:
-  * FluentValidation validates model, but `ToString()` is called only if errors detected.
-  * Validot processes the model twice - at first, with its special mode, [IsValid](../docs/DOCUMENTATION.md#isvalid). Secondly - in case of errors spotted - with the standard method, gathering all errors and printing them with `ToString()`.
+* [Reporting benchmark](../tests/Validot.Benchmarks/Comparisons/ReportingBenchmark.cs) benchmark:
+  * FluentValidation validates model, and `ToString()` is called if errors are detected.
+  * Validot processes the model twice - at first, with its special mode, [IsValid](../docs/DOCUMENTATION.md#isvalid). Secondly - in case of errors detected - with the standard method, gathering all errors and printing them with `ToString()`.
 
-Benchmarks environment: .NET Core 3.1.4, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Catalina
+Benchmarks environment: Validot 1.0.0, FluentValidation 8.6.2, .NET Core 3.1.4, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Catalina.
 
-### Validot handles nulls by default
+### Validot handles nulls automatically
 
 In Validot, null is a special case [handled by the core engine](../docs/DOCUMENTATION.md#null-policy). You don't need to secure the validation logic from null as your predicate will never receive it.
 
@@ -370,7 +372,9 @@ Member(m => m.LastName, m => m
 )
 ```
 
-Unless explicitly commanded, the model is marked as required by default. In the above example, if `LastName` member were null, the validation process would exit `LastName` scope immediately only with this single error message (content can be changed):
+### Validot requires values by default
+
+In opposition to FluentValidation, all values are marked as required by default. In the above example, if `LastName` member were null, the validation process would exit `LastName` scope immediately only with this single error message (content can be changed):
 
 ```
 LastName: Required
@@ -387,8 +391,6 @@ Member(m => m.LastName, m => m
 ```
 
 Again, no rule predicate is triggered. Also null `LastName` member doesn't result with errors.
-
-The [strategy of handling nulls](../docs/DOCUMENTATION.md#null-policy) is deeply baked in Validot's foundations and can't be altered. Although some scenarios could be achieved by mixing [Rule](../docs/DOCUMENTATION.md#rule) (the logic) + [WithMessage](../docs/DOCUMENTATION.md#withmessage) ([error message](../docs/DOCUMENTATION.md#message)) + [WithPath](../docs/DOCUMENTATION.md#withpath) (target path) commands at the higher level.
 
 * [Read more about how Validot handles nulls](../docs/DOCUMENTATION.md#null-policy)
 

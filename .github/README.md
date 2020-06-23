@@ -337,7 +337,7 @@ FluentValidation's `IsValid` is a property that wraps a simple check whether the
 | IsValid | `NoErrors` | FluentValidation | `652.64` | `668.51` |
 | IsValid | `NoErrors` | Validot | `266.63` | `78.82` |
 
-* [IsValid benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, but only to know if they are valid or not.
+* [IsValid benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, but only to check if they are valid or not.
 
 In fact, combining these two methods in most cases could be quite beneficial. At first [IsValid](../docs/DOCUMENTATION.md#isvalid) quickly verifies the object and if it contains errors - only then [Validate](../docs/DOCUMENTATION.md#validate) is executed to report the details. Of course in some extreme cases (megabyte-size data? millions of items in the collection? dozens of nested levels with loops in reference graphs?) traversing through the object twice could neglect the profit, but for the regular web api input validation it will certainly serve its purpose:
 
@@ -361,7 +361,7 @@ if (!validator.IsValid(model))
 
 Benchmarks environment: Validot 1.0.0, FluentValidation 8.6.2, .NET Core 3.1.4, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Catalina.
 
-### Validot handles nulls automatically
+### Validot handles nulls on its own
 
 In Validot, null is a special case [handled by the core engine](../docs/DOCUMENTATION.md#null-policy). You don't need to secure the validation logic from null as your predicate will never receive it.
 
@@ -372,13 +372,15 @@ Member(m => m.LastName, m => m
 )
 ```
 
-### Validot requires values by default
+### Validot treats null as error by default
 
-In opposition to FluentValidation, all values are marked as required by default. In the above example, if `LastName` member were null, the validation process would exit `LastName` scope immediately only with this single error message (content can be changed):
+All values are marked as required by default. In the above example, if `LastName` member were null, the validation process would exit `LastName` scope immediately only with this single error message:
 
 ```
 LastName: Required
 ```
+
+The content of the message is, of course, [customizable](../docs/DOCUMENTATION.md#withmessage)).
 
 If null should be allowed, place [Optional](../docs/DOCUMENTATION.md#optional) command at the beginning:
 
@@ -435,11 +437,15 @@ Validot is a dotnet class library targeting .NET Standard 2.0. There are no extr
 
 Please check the [official Microsoft document](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.0.md) that lists all the platforms that can use it on.
 
+### Versioning
+
+[Semantic versioning](https://semver.org/) is being used very strictly. Major version is updated only when there is a breaking change, no matter how small it might be (e.g. adding extra function to the public interface). On the other hand, huge pack of new features will bump the minor version only.
+
+Before every major version update, at least one preview version is published.
+
 ### Reliability
 
 Unit tests coverage hits 100% very close, it can be detaily verified on [codecov.io](https://codecov.io/gh/bartoszlenar/Validot/branch/master).
-
-[Semantic versioning](https://semver.org/) is being used very strictly. Major version is updated only when there is a breaking change, no matter how small it might be (e.g. adding extra function to the public interface). On the other hand, huge pack of new features will bump the minor version only.
 
 Before publishing, each release is tested on the [latest versions](https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners#supported-runners-and-hardware-resources) of operating systems:
 
@@ -471,4 +477,4 @@ Any contribution is more than welcome. If you'd like to help, please don't forge
 
 ### Licencing
 
-Validot uses [MIT licence](../LICENCE). Long story short; you are more than welcome to use it anywhere you like, completely free of charge and without oppressive obligations.
+Validot uses [MIT licence](../LICENSE). Long story short; you are more than welcome to use it anywhere you like, completely free of charge and without oppressive obligations.

@@ -1733,12 +1733,10 @@ var publisher = new PublisherModel()
     CompanyId = ""
 };
 
-publisherValidator.Validate(publisher).ToString().ShouldResultToStringHaveLines(
-    ToStringContentType.Messages,
-    "Info: Name must consist of letters only!",
-    "Info: Name must not contain whitespace!",
-    "Info: Company Id must not be empty!"
-);
+publisherValidator.Validate(publisher).ToString();
+// Info: Name must consist of letters only!
+// Info: Name must not contain whitespace!
+// Info: Company Id must not be empty!
 ```
 
 _[Error messages](#message) from two scopes (members `Name` and `CompanyId`) are both placed under `Info` path._
@@ -1888,12 +1886,10 @@ Specification<int> specification = s => s
 
 var validator = Validator.Factory.Create(specification);
 
-validator.Validate(0).ToString().ShouldResultToStringHaveLines(
-    ToStringContentType.Messages,
-    "Year 0 is invalid",
-    "Year 0 didn't exist",
-    "Please change to 1 B.C. or 1 A.D."
-);
+validator.Validate(0).ToString();
+// Year 0 is invalid
+// Year 0 didn't exist
+// Please change to 1 B.C. or 1 A.D.
 ```
 
 - `WithExtraMessage` acts very similar to [WithMessage](#withmessage), with one important difference; in case of error it appends message to the [error output](#error-output) of the related scope, instead of overwriting it (as [WithMessage](#withmessage) would do).
@@ -2301,7 +2297,7 @@ var book = new BookModel() { Title = null };
 
 var result = validator.Validate(book);
 
-result.Codes.Should().ContainSingle("MISSING_TITLE");
+result.Codes; // [ "MISSING_TITLE" ]
 
 result.ToString();
 // MISSING_TITLE
@@ -2351,7 +2347,7 @@ var book = new BookModel() { Title = null };
 
 var result = validator.Validate(book);
 
-result.Codes.Should().ContainSingle("TITLE_EXISTS");
+result.Codes; // [ "TITLE_EXISTS" ]
 
 result.ToString();
 // TITLE_EXISTS
@@ -3263,7 +3259,8 @@ var result = validator.Validate(publisher);
 result.MessageMap["Name"];
 // [ "The field is empty", "Error in Name field", "The field is too short", "Error in Name field" ]
 
-result.MessageMap[""].Should().ContainSingle("All members must be present");
+result.MessageMap[""];
+// [ "All members must be present" ]
 ```
 
 - If the [path](#path) is not present in `MessagesMap.Keys` collection, it means no [code](#code) has been saved for it.
@@ -4101,9 +4098,8 @@ Specification<string> specification = s => s
 
 var validator = Validator.Factory.Create(specification);
 
-validator.Validate("").ToString().ShouldResultToStringHaveLines(
-    ToStringContentType.Messages,
-    "Must contain @ character");
+validator.Validate("").ToString();
+// Must contain @ character
 ```
 
 _In the above code, [WithMessage](#withmessage) sets `"Must contain @ character"` message key for [Rule](#rule). However, there is no such message key in the standard, default `English` translation, so [ToString](#tostring) prints the original message key._

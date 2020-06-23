@@ -18,11 +18,10 @@ If you're reading this file, it means that you are - more or less - interested i
 
 - Validot is not the ultimate solution to all validation scenarios and cases in the world. Let's keep it compact and simple, focused on a single problem.
 - Validot should not have any other dependencies than .NET Standard 2.0.
-- Validot - unless absolutely necessary and detaily discussed - should not sacrifice performance for extra features.
+- Validot - unless absolutely necessary - should not sacrifice performance for extra features.
 - Validot follows [semantic versioning](https://semver.org/) very strictly, no matter how annoying it could be.
 
 ## Code standards
-
 
 - Be aware that the code needs to compile and pass the tests on all of the LTS versions of .NET, under all supported OSes.
   - The CI system will let you know if your PR fails.

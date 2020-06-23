@@ -14,7 +14,7 @@ Please replace the placeholders (like point lists or code snippets) with your ow
 
 ## Bug description
 
-* Please provide the bug desciption in points.
+* Please provide the bug description in points.
 * What is the current behavior?
 * What is affected by the bug?
 

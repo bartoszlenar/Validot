@@ -13,12 +13,22 @@ namespace Validot
 
         private static readonly Regex EmailRegex = new Regex(@"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-0-9a-z]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$", RegexOptions.Compiled, TimeSpan.FromMilliseconds(250));
 
-        public static IRuleOut<string> Email(this IRuleIn<string> @this)
+        public static IRuleOut<string> Email(this IRuleIn<string> @this, EmailValidationMode mode = EmailValidationMode.ComplexRegex)
         {
-            return @this.RuleTemplate(IsValidEmail, MessageKey.Texts.Email);
+            if (!Enum.IsDefined(typeof(EmailValidationMode), mode))
+            {
+                throw new ArgumentException("Invalid EmailValidationMode value", nameof(mode));
+            }
+
+            if (mode == EmailValidationMode.DataAnnotationsCompatible)
+            {
+                return @this.RuleTemplate(IsEmailValidAccordingToDataAnnotations, MessageKey.Texts.Email);
+            }
+
+            return @this.RuleTemplate(IsEmailValidAccordingToRegex, MessageKey.Texts.Email);
         }
 
-        private static bool IsValidEmail(string email)
+        private static bool IsEmailValidAccordingToRegex(string email)
         {
             // Entirely copy-pasted from https://docs.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format
             if (string.IsNullOrWhiteSpace(email))
@@ -56,6 +66,20 @@ namespace Validot
             {
                 return false;
             }
+        }
+
+        private static bool IsEmailValidAccordingToDataAnnotations(string email)
+        {
+            // Method copy pasted from EmailAddressAttribute.cs:
+            // https://github.com/dotnet/runtime/blob/master/src/libraries/System.ComponentModel.Annotations/src/System/ComponentModel/DataAnnotations/EmailAddressAttribute.cs
+
+            // only return true if there is only 1 '@' character
+            // and it is neither the first nor the last character
+            int index = email.IndexOf('@');
+
+            return index > 0 &&
+                   index != email.Length - 1 &&
+                   index == email.LastIndexOf('@');
         }
     }
 }

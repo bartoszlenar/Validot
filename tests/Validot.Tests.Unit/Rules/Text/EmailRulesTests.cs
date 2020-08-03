@@ -1,5 +1,8 @@
 namespace Validot.Tests.Unit.Rules.Text
 {
+    using System;
+    using System.Collections.Generic;
+
     using Validot.Testing;
     using Validot.Translations;
 
@@ -8,51 +11,124 @@ namespace Validot.Tests.Unit.Rules.Text
     public class EmailRulesTests
     {
         [Theory]
-        [InlineData(@"prettyandsimple@example.com", true)]
-        [InlineData(@"very.common@example.com", true)]
-        [InlineData(@"disposable.style.email.with+symbol@example.com", true)]
-        [InlineData(@"other.email-with-dash@example.com", true)]
-        [InlineData(@"fully-qualified-domain@example.com.", false)]
-        [InlineData(@"user.name+tag+sorting@example.com", true)]
-        [InlineData(@"x@example.com", true)]
-        [InlineData(@"example-indeed@strange-example.com", true)]
-        [InlineData(@"admin@mailserver1", false)]
-        [InlineData(@"email@123.123.123.123", true)]
-        [InlineData(@"email@[123.123.123.123]", true)]
-        [InlineData(@"1234567890@example.com", true)]
-        [InlineData(@"#!$%&'*+-/=?^_`{}|~@example.org", false)]
-        [InlineData(@"""()<>[]:,;@\\\""!#$%&'-/=?^_`{}| ~.a""@example.org", true)]
-        [InlineData(@"Abc.example.com", false)]
-        [InlineData(@"A@b@c@example.com", false)]
-        [InlineData(@"a""b(c)d,e:f;g<h>i[j\k]l@example.com", false)]
-        [InlineData(@"just""not""right@example.com", false)]
-        [InlineData(@"this is""not\allowed@example.com", false)]
-        [InlineData(@"this\ still\""not\\allowed@example.com", false)]
-        [InlineData(@"Duy", false)]
-        [InlineData(@" email@example.com", false)]
-        [InlineData(@"email@example.com ", false)]
-        [InlineData(@"", false)]
-        [InlineData(@"david.jones@proseware.com", true)]
-        [InlineData(@"d.j@server1.proseware.com", true)]
-        [InlineData(@"jones@ms1.proseware.com", true)]
-        [InlineData(@"j.@server1.proseware.com", false)]
-        [InlineData(@"j@proseware.com9", true)]
-        [InlineData(@"js#internal@proseware.com", true)]
-        [InlineData(@"j_9@[129.126.118.1]", true)]
-        [InlineData(@"j..s@proseware.com", false)]
-        [InlineData(@"js*@proseware.com", false)]
-        [InlineData(@"js@proseware..com", false)]
-        [InlineData(@"js@proseware.com9", true)]
-        [InlineData(@"j.s@server1.proseware.com", true)]
-        [InlineData(@"""j""s""@proseware.com", true)]
-        [InlineData(@"js@contoso.中国", true)]
-        public void Email_Should_CollectError(string model, bool expectedIsValid)
+        [InlineData(-1)]
+        [InlineData(20)]
+        [InlineData(100)]
+        public void Email_Should_ThrowException_When_EnumIsNotDefined(int mode)
+        {
+            Tester.TestExceptionOnInit<string>(m => m.Email(mode: (EmailValidationMode)mode), typeof(ArgumentException));
+        }
+
+        public static IEnumerable<object[]> Email_UsingMode_ComplexRegex_Should_CollectError_Data()
+        {
+            var testCases = GetTestCases();
+
+            foreach (var testCase in testCases)
+            {
+                yield return new object[] { testCase.Key, testCase.Value.complexRegex };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(Email_UsingMode_ComplexRegex_Should_CollectError_Data))]
+        public void Email_UsingMode_ComplexRegex_Should_CollectError(string model, bool expectedIsValid)
+        {
+            Tester.TestSingleRule(
+                model,
+                m => m.Email(mode: EmailValidationMode.ComplexRegex),
+                expectedIsValid,
+                MessageKey.Texts.Email);
+        }
+
+        [Theory]
+        [MemberData(nameof(Email_UsingMode_ComplexRegex_Should_CollectError_Data))]
+        public void Email_Should_CollectError_WithComplexRegexMode_ByDefault(string model, bool expectedIsValid)
         {
             Tester.TestSingleRule(
                 model,
                 m => m.Email(),
                 expectedIsValid,
                 MessageKey.Texts.Email);
+        }
+
+        public static IEnumerable<object[]> Email_UsingMode_DataAnnotationsCompatible_Should_CollectError_Data()
+        {
+            var testCases = GetTestCases();
+
+            foreach (var testCase in testCases)
+            {
+                yield return new object[] { testCase.Key, testCase.Value.dataAnnotations };
+            }
+        }
+
+        [Theory]
+        [MemberData(nameof(Email_UsingMode_DataAnnotationsCompatible_Should_CollectError_Data))]
+        public void Email_UsingMode_DataAnnotationsCompatible_Should_CollectError(string model, bool expectedIsValid)
+        {
+            Tester.TestSingleRule(
+                model,
+                m => m.Email(mode: EmailValidationMode.DataAnnotationsCompatible),
+                expectedIsValid,
+                MessageKey.Texts.Email);
+        }
+
+        private static Dictionary<string, (bool complexRegex, bool dataAnnotations)> GetTestCases()
+        {
+            var dictionary = new Dictionary<string, (bool complexRegex, bool dataAnnotations)>()
+            {
+                ["prettyandsimple@example.com"] = (complexRegex: true, dataAnnotations: true),
+                ["very.common@example.com"] = (complexRegex: true, dataAnnotations: true),
+                ["disposable.style.email.with+symbol@example.com"] = (complexRegex: true, dataAnnotations: true),
+                ["other.email-with-dash@example.com"] = (complexRegex: true, dataAnnotations: true),
+                ["fully-qualified-domain@example.com."] = (complexRegex: false, dataAnnotations: true),
+                ["user.name+tag+sorting@example.com"] = (complexRegex: true, dataAnnotations: true),
+                ["x@example.com"] = (complexRegex: true, dataAnnotations: true),
+                ["example-indeed@strange-example.com"] = (complexRegex: true, dataAnnotations: true),
+                ["admin@mailserver1"] = (complexRegex: false, dataAnnotations: true),
+                ["email@123.123.123.123"] = (complexRegex: true, dataAnnotations: true),
+                ["email@[123.123.123.123]"] = (complexRegex: true, dataAnnotations: true),
+                ["1234567890@example.com"] = (complexRegex: true, dataAnnotations: true),
+                ["#!$%&'*+-/=?^_`{}|~@example.org"] = (complexRegex: false, dataAnnotations: true),
+                [@"""()<>[]:,;@\\\""!#$%&'-/=?^_`{}| ~.a""@example.org"] = (complexRegex: true, dataAnnotations: false),
+                ["Abc.example.com"] = (complexRegex: false, dataAnnotations: false),
+                ["A@b@c@example.com"] = (complexRegex: false, dataAnnotations: false),
+                [@"a""b(c)d,e:f;g<h>i[j\k]l@example.com"] = (complexRegex: false, dataAnnotations: true),
+                [@"just""not""right@example.com"] = (complexRegex: false, dataAnnotations: true),
+                [@"this is""not\allowed@example.com"] = (complexRegex: false, dataAnnotations: true),
+                [@"this\ still\""not\\allowed@example.com"] = (complexRegex: false, dataAnnotations: true),
+                ["Duy"] = (complexRegex: false, dataAnnotations: false),
+                [" email@example.com"] = (complexRegex: false, dataAnnotations: true),
+                ["email@example.com "] = (complexRegex: false, dataAnnotations: true),
+                [""] = (complexRegex: false, dataAnnotations: false),
+                ["david.jones@proseware.com"] = (complexRegex: true, dataAnnotations: true),
+                ["d.j@server1.proseware.com"] = (complexRegex: true, dataAnnotations: true),
+                ["jones@ms1.proseware.com"] = (complexRegex: true, dataAnnotations: true),
+                ["j.@server1.proseware.com"] = (complexRegex: false, dataAnnotations: true),
+                ["j@proseware.com9"] = (complexRegex: true, dataAnnotations: true),
+                ["js#internal@proseware.com"] = (complexRegex: true, dataAnnotations: true),
+                ["j_9@[129.126.118.1]"] = (complexRegex: true, dataAnnotations: true),
+                ["j..s@proseware.com"] = (complexRegex: false, dataAnnotations: true),
+                ["js*@proseware.com"] = (complexRegex: false, dataAnnotations: true),
+                ["js@proseware..com"] = (complexRegex: false, dataAnnotations: true),
+                ["js@proseware.com9"] = (complexRegex: true, dataAnnotations: true),
+                ["j.s@server1.proseware.com"] = (complexRegex: true, dataAnnotations: true),
+                ["js@contoso.中国"] = (complexRegex: true, dataAnnotations: true),
+                [@"""j""s""@proseware.com"] = (complexRegex: true, dataAnnotations: true),
+                ["\u00A0@someDomain.com"] = (complexRegex: false, dataAnnotations: true),
+                ["!#$%&'*+-/=?^_`|~@someDomain.com"] = (complexRegex: false, dataAnnotations: true),
+                ["someName@some~domain.com"] = (complexRegex: false, dataAnnotations: true),
+                ["someName@some_domain.com"] = (complexRegex: false, dataAnnotations: true),
+                ["someName@1234.com"] = (complexRegex: true, dataAnnotations: true),
+                ["someName@someDomain\uFFEF.com"] = (complexRegex: false, dataAnnotations: true),
+                [" \r \t \n"] = (complexRegex: false, dataAnnotations: false),
+                ["@someDomain.com"] = (complexRegex: false, dataAnnotations: false),
+                ["@someDomain@abc.com"] = (complexRegex: false, dataAnnotations: false),
+                ["someName"] = (complexRegex: false, dataAnnotations: false),
+                ["someName@"] = (complexRegex: false, dataAnnotations: false),
+                ["someName@a@b.com"] = (complexRegex: false, dataAnnotations: false),
+            };
+
+            return dictionary;
         }
     }
 }

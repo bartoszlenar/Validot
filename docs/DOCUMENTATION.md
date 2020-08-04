@@ -3590,7 +3590,10 @@ result.ToString();
 | `LengthBetween` | `Texts.LengthBetween` | `min` : [number](#number-argument), <br> `max` : [number](#number-argument) |
 
 - Email rules
-    - The logic is entirely copy-pasted from the [Microsoft Docs](https://docs.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format).
+    - `Email` rule has two modes, set by the enum value of type `Validot.EmailValidationMode`
+      - `.Email(mode: EmailValidationMode.ComplexRegex)` is set by default (works the same as parameterless `.Email()`) and contains the regex-based logic copy-pasted from the [Microsoft Docs](https://docs.microsoft.com/en-us/dotnet/standard/base-types/how-to-verify-that-strings-are-in-valid-email-format).
+      - `.Email(mode: EmailValidationMode.DataAnnotationsCompatible)` checks only if the value contains a single `@` character in the middle, which is the logic used in the dotnet's [System.ComponentModel.DataAnnotations.EmailAddressAttribute](https://docs.microsoft.com/en-us/dotnet/api/system.componentmodel.dataannotations.emailaddressattribute).
+        - It's less accurate, but benchmarks show that it's about 6x faster while consuming 32% less memory.
 
 | Fluent api | Message key | Args |
 | - | - | - |

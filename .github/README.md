@@ -115,7 +115,7 @@ var model = new UserModel(email: "inv@lidv@lue", age: 14);
 var result = validator.Validate(model);
 ```
 
-The [result](../docs/DOCUMENTATION.md#result) object contains all information about the [errors](../docs/DOCUMENTATION.md#error-output). Without retriggering the validation process you can extract the desired form of an output.
+The [result](../docs/DOCUMENTATION.md#result) object contains all information about the [errors](../docs/DOCUMENTATION.md#error-output). Without retriggering the validation process, you can extract the desired form of output.
 
 ``` csharp
 result.AnyErrors; // bool flag:
@@ -140,7 +140,7 @@ result.ToString(); // compact printing of codes and messages:
 
 ### Advanced fluent API, inline
 
-No more obligatory if-ology around input models or separate classes wrapping just validation logic. Write [specifications](../docs/DOCUMENTATION.md#specification) inline with simple, human-readable [fluent API](../docs/DOCUMENTATION.md#fluent0api). Native support for properties and fields, structs and classes, [nullables](../docs/DOCUMENTATION.md#asnullable), [collections](../docs/DOCUMENTATION.md#ascollection), [nested members](../docs/DOCUMENTATION.md#member) and all of the possible combinations.
+No more obligatory if-ology around input models or separate classes wrapping just validation logic. Write [specifications](../docs/DOCUMENTATION.md#specification) inline with simple, human-readable [fluent API](../docs/DOCUMENTATION.md#fluent0api). Native support for properties and fields, structs and classes, [nullables](../docs/DOCUMENTATION.md#asnullable), [collections](../docs/DOCUMENTATION.md#ascollection), [nested members](../docs/DOCUMENTATION.md#member), and possible combinations.
 
 ``` csharp
 Specification<string> nameSpecification = s => s
@@ -168,11 +168,11 @@ Specification<UserModel> userSpecification = s => s
 ```
 
 * [Guide through Validot's fluent API](../docs/DOCUMENTATION.md#fluent-api)
-* [If you prefer approach of having separate class for just validation logic, it's also fully supported](../docs/DOCUMENTATION.md#specification-holder)
+* [If you prefer the approach of having a separate class for just validation logic, it's also fully supported](../docs/DOCUMENTATION.md#specification-holder)
 
 ### Validators
 
-Compact, highly optimized and thread-safe objects to handle the validation.
+Compact, highly optimized, and thread-safe objects to handle the validation.
 
 ``` csharp
 Specification<BookModel> bookSpecification = s => s
@@ -212,7 +212,7 @@ bookValidator.Template.ToString(); // Template contains all of the possible erro
 
 ### Results
 
-Whatever you want. [Error flag](../docs/DOCUMENTATION.md#anyerrors), compact [list of codes](../docs/DOCUMENTATION.md#codes), or detailed maps of [messages](../docs/DOCUMENTATION.md#messagemap) and [codes](../docs/DOCUMENTATION.md#codemap). With a sugar on top: friendly [ToString() printing](../docs/DOCUMENTATION.md#tostring) that contains everything, nicely formatted.
+Whatever you want. [Error flag](../docs/DOCUMENTATION.md#anyerrors), compact [list of codes](../docs/DOCUMENTATION.md#codes), or detailed maps of [messages](../docs/DOCUMENTATION.md#messagemap) and [codes](../docs/DOCUMENTATION.md#codemap). With sugar on top: friendly [ToString() printing](../docs/DOCUMENTATION.md#tostring) that contains everything, nicely formatted.
 
 
 ``` csharp
@@ -244,7 +244,7 @@ if (validationResult.AnyErrors)
 
 ### Rules
 
-Tons of [rules available out of the box](../docs/DOCUMENTATION.md#rules). Plus an easy way to [define your own](../docs/DOCUMENTATION.md#custom-rules) with full support of Validot internal features like [formattable message arguments](../docs/DOCUMENTATION.md#message-arguments).
+Tons of [rules available out of the box](../docs/DOCUMENTATION.md#rules). Plus, an easy way to [define your own](../docs/DOCUMENTATION.md#custom-rules) with the full support of Validot internal features like [formattable message arguments](../docs/DOCUMENTATION.md#message-arguments).
 
 ``` csharp
 public static IRuleOut<string> ExactLinesCount(this IRuleIn<string> @this, int count)
@@ -274,7 +274,7 @@ public static IRuleOut<string> ExactLinesCount(this IRuleIn<string> @this, int c
 
 ### Translations
 
-Pass errors directly to the end users in the language of your application.
+Pass errors directly to the end-users in the language of your application.
 
 ``` csharp
 Specification<UserModel> specification = s => s
@@ -302,15 +302,15 @@ result.ToString(translationName: "Polish");
 
 ## Validot vs FluentValidation
 
-A short statement to start with - [@JeremySkinner](https://twitter.com/JeremySkinner)'s [FluentValidation](https://fluentvalidation.net/) is a great piece of work and has been a huge inspiration for this project. True, you can call Validot a direct competitor, but it differs in some fundamental decisions and lot of attention has been focused on completely different aspects. If after reading this section you think you can bear another approach, api and [limitations](#fluentValidations-features-that-validot-is-missing), at least give Validot a try. You might be positively surprised. Otherwise, FluentValidation is a good, safe choice, as Validot is certainly less hackable and achieving some very specific goals might be either difficult or impossible.
+A short statement to start with - [@JeremySkinner](https://twitter.com/JeremySkinner)'s [FluentValidation](https://fluentvalidation.net/) is an excellent piece of work and has been a huge inspiration for this project. True, you can call Validot a direct competitor, but it differs in some fundamental decisions, and lot of attention has been focused on entirely different aspects. If - after reading this section - you think you can bear another approach, api and [limitations](#fluentValidations-features-that-validot-is-missing), at least give Validot a try. You might be positively surprised. Otherwise, FluentValidation is a good, safe choice, as Validot is certainly less hackable, and achieving some particular goals might be either difficult or impossible.
 
 ### Validot is faster and consumes less memory
 
-Before anything else; this document shows terribly oversimplified results of [BenchmarkDotNet](https://benchmarkdotnet.org/) execution, but the intention is to present the general trend only. To have truly reliable numbers, I highly encourage you to [run the benchmarks yourself](../docs/DOCUMENTATION.md#benchmarks).
+This document shows oversimplified results of [BenchmarkDotNet](https://benchmarkdotnet.org/) execution, but the intention is to present the general trend only. To have truly reliable numbers, I highly encourage you to [run the benchmarks yourself](../docs/DOCUMENTATION.md#benchmarks).
 
 There are three data sets, 10k models each; `ManyErrors` (every model has many errors), `HalfErrors` (around 60% have errors, the rest are valid), `NoErrors` (all are valid) and the rules reflect each other as much as technically possible. I did my best to make sure that the tests are just and adequate, but I'm a human being and I make mistakes. Really, if you spot errors [in the code](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Benchmarks), framework usage, applied methodology... or if you can provide any counterexample proving that Validot struggles with some particular scenarios - I'd be very very very happy to accept a PR and/or discuss it on [GitHub Issues](https://github.com/bartoszlenar/Validot/issues).
 
-To the point; the statement in the header is true, but it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over [flexibility and extra features](#fluentvalidations-features-that-validot-is-missing). Fine with that kind of trade-off? Good, because the validation process in Validot might be **~2.5x faster while consuming ~3.5x less memory**. Especially when it comes to memory consumption, Validot is usually far, far more better than that (depending on the use case it might be even **~15x more efficient** comparing to FluentValidation):
+To the point; the statement in the header is true, but it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over [flexibility and extra features](#fluentvalidations-features-that-validot-is-missing). Fine with that kind of trade-off? Good, because the validation process in Validot might be **~2.5x faster while consuming ~3.5x less memory**. Especially when it comes to memory consumption, Validot is usually far, far better than that (depending on the use case it might be even **~15x more efficient** comparing to FluentValidation):
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
@@ -326,7 +326,7 @@ To the point; the statement in the header is true, but it doesn't come for free.
 * [Validate benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated.
 * [FailFast benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, the process stops on the first error.
 
-FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors or not. Validot has [AnyErrors](../docs/DOCUMENTATION.md#anyerrors) that acts the same way, but [IsValid](../docs/DOCUMENTATION.md#isvalid) is a dedicated special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify the incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude:
+FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors or not. Validot has [AnyErrors](../docs/DOCUMENTATION.md#anyerrors) that act exactly the same way, and [IsValid](../docs/DOCUMENTATION.md#isvalid) is a special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify the incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude:
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
@@ -339,7 +339,7 @@ FluentValidation's `IsValid` is a property that wraps a simple check whether the
 
 * [IsValid benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, but only to check if they are valid or not.
 
-In fact, combining these two methods in most cases could be quite beneficial. At first [IsValid](../docs/DOCUMENTATION.md#isvalid) quickly verifies the object and if it contains errors - only then [Validate](../docs/DOCUMENTATION.md#validate) is executed to report the details. Of course in some extreme cases (megabyte-size data? millions of items in the collection? dozens of nested levels with loops in reference graphs?) traversing through the object twice could neglect the profit, but for the regular web api input validation it will certainly serve its purpose:
+Combining these two methods in most cases could be quite beneficial. At first, [IsValid](../docs/DOCUMENTATION.md#isvalid) quickly verifies the object, and if it contains errors - only then [Validate](../docs/DOCUMENTATION.md#validate) is executed to report the details. Of course in some extreme cases (megabyte-size data? millions of items in the collection? dozens of nested levels with loops in reference graphs?) traversing through the object twice could neglect the profit. Still, for the regular web api input validation, it will undoubtedly serve its purpose:
 
 ``` csharp
 if (!validator.IsValid(model))
@@ -355,7 +355,7 @@ if (!validator.IsValid(model))
 | Reporting | `HalfErrors` | FluentValidation | `651.90` | `685.22` |
 | Reporting | `HalfErrors` | Validot | `364.80` | `123.74` |
 
-* [Reporting benchmark](../tests/Validot.Benchmarks/Comparisons/ReportingBenchmark.cs) benchmark:
+* [Reporting benchmark](../tests/Validot.Benchmarks/Comparisons/ReportingBenchmark.cs):
   * FluentValidation validates model, and `ToString()` is called if errors are detected.
   * Validot processes the model twice - at first, with its special mode, [IsValid](../docs/DOCUMENTATION.md#isvalid). Secondly - in case of errors detected - with the standard method, gathering all errors and printing them with `ToString()`.
 
@@ -372,7 +372,7 @@ Member(m => m.LastName, m => m
 )
 ```
 
-### Validot treats null as error by default
+### Validot treats null as an error by default
 
 All values are marked as required by default. In the above example, if `LastName` member were null, the validation process would exit `LastName` scope immediately only with this single error message:
 
@@ -392,7 +392,7 @@ Member(m => m.LastName, m => m
 )
 ```
 
-Again, no rule predicate is triggered. Also null `LastName` member doesn't result with errors.
+Again, no rule predicate is triggered. Also, null `LastName` member doesn't result with errors.
 
 * [Read more about how Validot handles nulls](../docs/DOCUMENTATION.md#null-policy)
 
@@ -415,17 +415,17 @@ Features that might be in the scope and are technically possible to implement in
 * validated value in the error message ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/6))
 * "smart paths" in the error message, e.g. `RootUserCollection` member becomes `Root User Collection` ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/1))
 
-Features that are very unlikely to be in the scope as they contradict with the project's principles, and/or would have very negative impact on performance, and/or are impossible to implement:
+Features that are very unlikely to be in the scope as they contradict the project's principles, and/or would have a very negative impact on performance, and/or are impossible to implement:
 
 * Access to any stateful context in the rule condition predicate:
-  * It implicates lack of support for dynamic message content and/or amount.
+  * It implicates a lack of support for dynamic message content and/or amount.
 * Integration with ASP.NET or other frameworks:
-  * Making such a thing wouldn't be a difficult task at all, but Validot tries to remain a single-purpose library and all integrations need to be done individually
+  * Making such a thing wouldn't be a difficult task at all, but Validot tries to remain a single-purpose library, and all integrations need to be done individually
 * Callbacks:
   * Please react on [failure/success](../docs/DOCUMENTATION.md#anyerrors) after getting [validation result](../docs/DOCUMENTATION.md#result).
 * Pre-validation:
   * All cases can be handled by additional validation and a proper if-else.
-  * Also, the problem of root being null doesn't exist in Validot (it's a regular case, [covered entirely with fluent api](../docs/DOCUMENTATION.md#presence-commands))
+  * Also, the problem of the root being null doesn't exist in Validot (it's a regular case, [covered entirely with fluent api](../docs/DOCUMENTATION.md#presence-commands))
 * Rule sets
   * workaround; multiple [validators](../docs/DOCUMENTATION.md#validator) for different parts of the object.
 
@@ -439,13 +439,13 @@ Please check the [official Microsoft document](https://github.com/dotnet/standar
 
 ### Versioning
 
-[Semantic versioning](https://semver.org/) is being used very strictly. Major version is updated only when there is a breaking change, no matter how small it might be (e.g. adding extra function to the public interface). On the other hand, huge pack of new features will bump the minor version only.
+[Semantic versioning](https://semver.org/) is being used very strictly. The major version is updated only when there is a breaking change, no matter how small it might be (e.g., adding extra method to the public interface). On the other hand, a huge pack of new features will bump the minor version only.
 
 Before every major version update, at least one preview version is published.
 
 ### Reliability
 
-Unit tests coverage hits 100% very close, it can be detaily verified on [codecov.io](https://codecov.io/gh/bartoszlenar/Validot/branch/master).
+Unit tests coverage hits 100% very close, and it can be detaily verified on [codecov.io](https://codecov.io/gh/bartoszlenar/Validot/branch/master).
 
 Before publishing, each release is tested on the [latest versions](https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners#supported-runners-and-hardware-resources) of operating systems:
 
@@ -471,10 +471,10 @@ Code examples from the documentation live as [functional tests](https://github.c
 
 ### Development
 
-The entire project ([source code](https://github.com/bartoszlenar/Validot), [issue tracker](https://github.com/bartoszlenar/Validot/issues), [documentation](./../docs/DOCUMENTATION.md) and [CI workflows](https://github.com/bartoszlenar/Validot/actions)) is hosted here on github.com.
+The entire project ([source code](https://github.com/bartoszlenar/Validot), [issue tracker](https://github.com/bartoszlenar/Validot/issues), [documentation](./../docs/DOCUMENTATION.md), and [CI workflows](https://github.com/bartoszlenar/Validot/actions)) is hosted here on github.com.
 
 Any contribution is more than welcome. If you'd like to help, please don't forget to check out the [CONTRIBUTING](./../docs/CONTRIBUTING.md) file and [issues page](https://github.com/bartoszlenar/Validot/issues).
 
 ### Licencing
 
-Validot uses [MIT licence](../LICENSE). Long story short; you are more than welcome to use it anywhere you like, completely free of charge and without oppressive obligations.
+Validot uses the [MIT license](../LICENSE). Long story short; you are more than welcome to use it anywhere you like, completely free of charge and without oppressive obligations.

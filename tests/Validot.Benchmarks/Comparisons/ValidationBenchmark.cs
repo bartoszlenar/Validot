@@ -29,7 +29,7 @@ namespace Validot.Benchmarks.Comparisons
         [Benchmark]
         public bool IsValid_FluentValidation()
         {   
-            _fluentValidationValidator.CascadeMode = CascadeMode.StopOnFirstFailure;
+            _fluentValidationValidator.CascadeMode = CascadeMode.Stop;
             var models = _dataSets[DataSet];
             
             var t = true;
@@ -60,7 +60,7 @@ namespace Validot.Benchmarks.Comparisons
         [Benchmark]
         public object FailFast_FluentValidation()
         {
-            _fluentValidationValidator.CascadeMode = CascadeMode.StopOnFirstFailure;
+            _fluentValidationValidator.CascadeMode = CascadeMode.Stop;
             var models = _dataSets[DataSet];
 
             object t = null;

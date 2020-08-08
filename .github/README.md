@@ -398,7 +398,7 @@ Again, no rule predicate is triggered. Also, null `LastName` member doesn't resu
 
 ### Validot's Validator is immutable
 
-Once [validator](../docs/DOCUMENTATION.md#validator) instance is created, you can't modify its internal state or [settings](../docs/DOCUMENTATION.md#settings). If you need the process to fail fast (FluentValidation's `CascadeMode.StopOnFirstFailure`), use the flag:
+Once [validator](../docs/DOCUMENTATION.md#validator) instance is created, you can't modify its internal state or [settings](../docs/DOCUMENTATION.md#settings). If you need the process to fail fast (FluentValidation's `CascadeMode.Stop`), use the flag:
 
 ``` csharp
 validator.Validate(model, failFast: true);

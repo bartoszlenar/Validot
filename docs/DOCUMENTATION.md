@@ -3506,8 +3506,8 @@ result.ToString();
 
 | Fluent api | Message key | Args |
 | - | - | - |
-| `EqualToIgnoreCase` | `BoolType.True` | `value` : [text](#text-argument) |
-| `NotEqualToIgnoreCase` | `BoolType.False` | `value` : [text](#text-argument) |
+| `EqualToIgnoreCase` | `CharType.True` | `value` : [text](#text-argument) |
+| `NotEqualToIgnoreCase` | `CharType.False` | `value` : [text](#text-argument) |
 
 ### Collections rules
 

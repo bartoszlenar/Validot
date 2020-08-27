@@ -7,8 +7,8 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
-    <PackageReference Include="Bogus" Version="30.0.2" />
-    <PackageReference Include="FluentValidation" Version="9.1.1" />
+    <PackageReference Include="Bogus" Version="30.0.4" />
+    <PackageReference Include="FluentValidation" Version="9.2.0" />
   </ItemGroup>
 
   <ItemGroup>

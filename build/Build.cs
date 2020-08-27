@@ -377,13 +377,13 @@ class Build : NukeBuild
 
     string GetFramework(string dotnet)
     {
-        if (dotnet is null)
+        if (string.IsNullOrWhiteSpace(dotnet))
         {
             Logger.Warn("DotNet: parameter not provided");
             return DefaultFrameworkId;
         }
 
-        if (dotnet.All(c => char.IsDigit(c) || c == '.'))
+        if (char.IsDigit(dotnet.First()))
         {
             Logger.Info($"DotNet parameter recognized as SDK version: " + dotnet);
 
@@ -395,6 +395,11 @@ class Build : NukeBuild
             if (dotnet.StartsWith("3.1."))
             {
                 return "netcoreapp3.1";
+            }
+            
+            if (dotnet.StartsWith("5.0."))
+            {
+                return "net5.0";
             }
 
             Logger.Warn("Unrecognized dotnet SDK version: " + dotnet);

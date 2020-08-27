@@ -20,6 +20,11 @@ namespace Validot.Factory
 
         public IValidator<T> Create<T>(ISpecificationHolder<T> specificationHolder, Func<ValidatorSettings, ValidatorSettings> settings = null)
         {
+            if (specificationHolder is null)
+            {
+                throw new ArgumentNullException(nameof(specificationHolder));
+            }
+
             var initSettings = ValidatorSettings.GetDefault();
 
             if (specificationHolder is ITranslationHolder translationHolder)

@@ -134,7 +134,6 @@ class Build : NukeBuild
         });
 
     Target CompileProject => _ => _
-        .Unlisted()
         .DependsOn(Clean, Restore)
         .Executes(() =>
         {
@@ -148,7 +147,6 @@ class Build : NukeBuild
         });
 
     Target CompileTests => _ => _
-        .Unlisted()
         .DependsOn(Clean, Restore)
         .After(CompileProject)
         .Executes(() =>
@@ -177,7 +175,6 @@ class Build : NukeBuild
 
     Target Tests => _ => _
         .DependsOn(CompileTests)
-        .ProceedAfterFailure()
         .Executes(() =>
         {
             DotNetTest(p => p
@@ -199,7 +196,7 @@ class Build : NukeBuild
 
     Target CodeCoverage => _ => _
         .DependsOn(CompileTests)
-        .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
+        .Requires(() => Configuration == Configuration.Debug)
         .Executes(() =>
         {
             var reportFile = CodeCoverageDirectory / $"Validot.{Version}.opencover.xml";
@@ -220,7 +217,7 @@ class Build : NukeBuild
 
     Target CodeCoverageReport => _ => _
         .DependsOn(CodeCoverage)
-        .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
+        .Requires(() => Configuration == Configuration.Debug)
         .Executes(() =>
         {
             var toolPath = InstallAndGetToolPath("dotnet-reportgenerator-globaltool", "4.5.1", "ReportGenerator.dll", "netcoreapp3.0");
@@ -263,7 +260,7 @@ class Build : NukeBuild
 
     Target NugetPackage => _ => _
         .DependsOn(Compile)
-        .OnlyWhenDynamic(() => Configuration == Configuration.Release)
+        .Requires(() => Configuration == Configuration.Release)
         .Executes(() =>
         {
             DotNetPack(p => p
@@ -277,8 +274,8 @@ class Build : NukeBuild
 
     Target PublishNugetPackage => _ => _
         .DependsOn(NugetPackage)
-        .OnlyWhenDynamic(() => NuGetApiKey != null)
-        .OnlyWhenDynamic(() => Configuration == Configuration.Release)
+        .Requires(() => NuGetApiKey != null)
+        .Requires(() => Configuration == Configuration.Release)
         .Executes(() =>
         {
             DotNetNuGetPush(p => p
@@ -290,8 +287,8 @@ class Build : NukeBuild
 
     Target PublishCodeCoverage => _ => _
         .DependsOn(CodeCoverage)
-        .OnlyWhenDynamic(() => CodeCovApiKey != null)
-        .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
+        .Requires(() => CodeCovApiKey != null)
+        .Requires(() => Configuration == Configuration.Debug)
         .Executes(() =>
         {
             var reportFile = CodeCoverageDirectory / $"Validot.{Version}.opencover.xml";

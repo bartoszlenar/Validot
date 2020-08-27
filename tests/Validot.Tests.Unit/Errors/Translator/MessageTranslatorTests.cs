@@ -23,6 +23,16 @@ namespace Validot.Tests.Unit.Errors.Translator
                 Parameters = new Dictionary<string, string>()
             };
 
+            private static readonly ArgPlaceholder TitleCaseNamePlaceholders = new ArgPlaceholder()
+            {
+                Name = "_name",
+                Placeholder = "{_name|format=titleCase}",
+                Parameters = new Dictionary<string, string>()
+                {
+                    ["format"] = "titleCase"
+                }
+            };
+
             private static readonly ArgPlaceholder ParameterlessPathPlaceholders = new ArgPlaceholder()
             {
                 Name = "_path",
@@ -120,6 +130,77 @@ namespace Validot.Tests.Unit.Errors.Translator
                 results[2].Should().Be("message3");
                 results[3].Should().Be("message4 path");
                 results[4].Should().Be("message5 some.path");
+            }
+
+            [Fact]
+            public void Should_Translate_WithPathArgs_WithParameters()
+            {
+                var errorMessages = new[]
+                {
+                    "message1",
+                    "message2 {_name|format=titleCase} {_path}",
+                    "message3 >{_name}<",
+                    "message4 '{_name|format=titleCase}'",
+                    "message5 {_path}",
+                };
+
+                var indexedPathsPlaceholders = new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                {
+                    [1] = new[]
+                    {
+                        TitleCaseNamePlaceholders,
+                        ParameterlessPathPlaceholders
+                    },
+                    [2] = new[]
+                    {
+                        ParameterlessNamePlaceholders
+                    },
+                    [3] = new[]
+                    {
+                        TitleCaseNamePlaceholders
+                    },
+                    [4] = new[]
+                    {
+                        ParameterlessPathPlaceholders
+                    }
+                };
+
+                var results = MessageTranslator.TranslateMessagesWithPathPlaceholders("some.path.veryImportantPath", errorMessages, indexedPathsPlaceholders);
+
+                results.Count.Should().Be(5);
+
+                results[0].Should().Be("message1");
+                results[1].Should().Be("message2 Very Important Path some.path.veryImportantPath");
+                results[2].Should().Be("message3 >veryImportantPath<");
+                results[3].Should().Be("message4 'Very Important Path'");
+                results[4].Should().Be("message5 some.path.veryImportantPath");
+            }
+
+            public static IEnumerable<object[]> Should_Translate_WithNameArg_Data()
+            {
+                yield return new object[] { "someWeirdName123", TitleCaseNamePlaceholders, "Message {_name|format=titleCase}", "Message Some Weird Name 123" };
+                yield return new object[] { "nested.path.someWeirdName123", TitleCaseNamePlaceholders, "Message {_name|format=titleCase}", "Message Some Weird Name 123" };
+                yield return new object[] { "very.nested.path.SetSlot123ToInput456", TitleCaseNamePlaceholders, "Message >{_name|format=titleCase}<", "Message >Set Slot 123 To Input 456<" };
+                yield return new object[] { "path.This_is_a_Test_of_Network123_in_12_days", TitleCaseNamePlaceholders, "XXX ### {_name|format=titleCase} ### XXX", "XXX ### This Is A Test Of Network 123 In 12 Days ### XXX" };
+            }
+
+            [Theory]
+            [MemberData(nameof(Should_Translate_WithNameArg_Data))]
+            public void Should_Translate_WithNameArg(string path, ArgPlaceholder placeholder, string message, string expectedTranslatedMessage)
+            {
+                var indexedPathsPlaceholders = new Dictionary<int, IReadOnlyList<ArgPlaceholder>>()
+                {
+                    [0] = new[]
+                    {
+                        placeholder
+                    }
+                };
+
+                var results = MessageTranslator.TranslateMessagesWithPathPlaceholders(path, new[] { message }, indexedPathsPlaceholders);
+
+                results.Count.Should().Be(1);
+
+                results[0].Should().Be(expectedTranslatedMessage);
             }
 
             [Fact]

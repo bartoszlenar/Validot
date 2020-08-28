@@ -457,6 +457,7 @@ Before publishing, each release is tested on the [latest versions](https://help.
 
 using the [LTS versions](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) of the underlying frameworks:
 
+* .NET Core 5.0 preview
 * .NET Core 3.1
 * .NET Core 2.1
 * .NET Framework 4.8 (Windows only)

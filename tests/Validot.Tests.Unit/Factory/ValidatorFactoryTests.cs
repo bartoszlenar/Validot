@@ -1,5 +1,6 @@
 namespace Validot.Tests.Unit.Factory
 {
+    using System;
     using System.Collections.Generic;
 
     using FluentAssertions;
@@ -130,6 +131,14 @@ namespace Validot.Tests.Unit.Factory
 
                 validator.ShouldHaveIsValueTrueIfNoErrors(model, expectedIsValid, exceptionCase);
             }
+        }
+
+        [Fact]
+        public void Should_ThrowException_When_SpecificationHolder_IsNull()
+        {
+            Action action = () => _ = Validator.Factory.Create(null as ISpecificationHolder<object>);
+
+            action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("specificationHolder");
         }
 
         [Fact]

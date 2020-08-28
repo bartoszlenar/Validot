@@ -134,7 +134,6 @@ class Build : NukeBuild
         });
 
     Target CompileProject => _ => _
-        .Unlisted()
         .DependsOn(Clean, Restore)
         .Executes(() =>
         {
@@ -148,7 +147,6 @@ class Build : NukeBuild
         });
 
     Target CompileTests => _ => _
-        .Unlisted()
         .DependsOn(Clean, Restore)
         .After(CompileProject)
         .Executes(() =>
@@ -177,7 +175,6 @@ class Build : NukeBuild
 
     Target Tests => _ => _
         .DependsOn(CompileTests)
-        .ProceedAfterFailure()
         .Executes(() =>
         {
             DotNetTest(p => p
@@ -185,7 +182,7 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .SetProjectFile(TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj")
                 .SetFramework(DotNet)
-                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.testresults"/ $"Validot.{Version}.unit.trx"}")
+                .SetLogger($"junit;LogFilePath={TestsResultsDirectory / $"Validot.{Version}.testresults"/ $"Validot.{Version}.unit.junit"}")
             );
 
             DotNetTest(p => p
@@ -193,13 +190,13 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .SetProjectFile(TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj")
                 .SetFramework(DotNet)
-                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.functional.trx"}")
+                .SetLogger($"junit;LogFilePath={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.functional.junit"}")
             );
         });
 
     Target CodeCoverage => _ => _
         .DependsOn(CompileTests)
-        .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
+        .Requires(() => Configuration == Configuration.Debug)
         .Executes(() =>
         {
             var reportFile = CodeCoverageDirectory / $"Validot.{Version}.opencover.xml";
@@ -220,10 +217,10 @@ class Build : NukeBuild
 
     Target CodeCoverageReport => _ => _
         .DependsOn(CodeCoverage)
-        .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
+        .Requires(() => Configuration == Configuration.Debug)
         .Executes(() =>
         {
-            var toolPath = InstallAndGetToolPath("dotnet-reportgenerator-globaltool", "4.5.1", "ReportGenerator.dll", "netcoreapp3.0");
+            var toolPath = InstallAndGetToolPath("dotnet-reportgenerator-globaltool", "4.6.4", "ReportGenerator.dll", "netcoreapp3.0");
 
             var toolParameters = new[]
             {
@@ -263,7 +260,7 @@ class Build : NukeBuild
 
     Target NugetPackage => _ => _
         .DependsOn(Compile)
-        .OnlyWhenDynamic(() => Configuration == Configuration.Release)
+        .Requires(() => Configuration == Configuration.Release)
         .Executes(() =>
         {
             DotNetPack(p => p
@@ -277,8 +274,8 @@ class Build : NukeBuild
 
     Target PublishNugetPackage => _ => _
         .DependsOn(NugetPackage)
-        .OnlyWhenDynamic(() => NuGetApiKey != null)
-        .OnlyWhenDynamic(() => Configuration == Configuration.Release)
+        .Requires(() => NuGetApiKey != null)
+        .Requires(() => Configuration == Configuration.Release)
         .Executes(() =>
         {
             DotNetNuGetPush(p => p
@@ -290,13 +287,13 @@ class Build : NukeBuild
 
     Target PublishCodeCoverage => _ => _
         .DependsOn(CodeCoverage)
-        .OnlyWhenDynamic(() => CodeCovApiKey != null)
-        .OnlyWhenDynamic(() => Configuration == Configuration.Debug)
+        .Requires(() => CodeCovApiKey != null)
+        .Requires(() => Configuration == Configuration.Debug)
         .Executes(() =>
         {
             var reportFile = CodeCoverageDirectory / $"Validot.{Version}.opencover.xml";
 
-            var toolPath = InstallAndGetToolPath("codecov.tool", "1.10.0", "codecov.dll", "netcoreapp3.0");
+            var toolPath = InstallAndGetToolPath("codecov.tool", "1.12.2", "codecov.dll", "netcoreapp3.0");
 
             var toolParameters = new[]
             {
@@ -377,13 +374,13 @@ class Build : NukeBuild
 
     string GetFramework(string dotnet)
     {
-        if (dotnet is null)
+        if (string.IsNullOrWhiteSpace(dotnet))
         {
             Logger.Warn("DotNet: parameter not provided");
             return DefaultFrameworkId;
         }
 
-        if (dotnet.All(c => char.IsDigit(c) || c == '.'))
+        if (char.IsDigit(dotnet.First()))
         {
             Logger.Info($"DotNet parameter recognized as SDK version: " + dotnet);
 
@@ -395,6 +392,11 @@ class Build : NukeBuild
             if (dotnet.StartsWith("3.1."))
             {
                 return "netcoreapp3.1";
+            }
+            
+            if (dotnet.StartsWith("5.0."))
+            {
+                return "net5.0";
             }
 
             Logger.Warn("Unrecognized dotnet SDK version: " + dotnet);

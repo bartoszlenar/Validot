@@ -109,7 +109,7 @@ namespace Validot.Errors.Translator
             return new[]
             {
                 Arg.Text(PathArgName, path),
-                Arg.Text(NameArgName, name)
+                new NameArg(name),
             };
         }
 

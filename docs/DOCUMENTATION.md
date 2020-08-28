@@ -4049,10 +4049,20 @@ result.ToString();
 
 - Name argument allows to include the name of the validated value.
   - Name is the last segment of the [path](#path).
-- It's always in this form:
-  - `{_name}`
-- It's more difficult to cache such messages (they are less deterministic), so overusing name arguments might slightly decrease the performance.
-- It doesn't contain parameters.
+- Parameters:
+  - `format`
+    - available values: `titleCase`.
+
+| Placeholder | Path | Final form |
+| - | - | - |
+| `{_name}` | `someWeirdName123` | `someWeirdName123` |
+| `{_name|format=titleCase}` | `someWeirdName123` | `Some Weird Name 123` |
+| `{_name}` | `nested.path.someWeirdName123` | `someWeirdName123` |
+| `{_name|format=titleCase}` | `nested.path.someWeirdName123` | `Some Weird Name 123` |
+| `{_name}` | `path.This_is_a_Test_of_Network123_in_12_days` | `path.This_is_a_Test_of_Network123_in_12_days` |
+| `{_name|format=titleCase}` | `path.This_is_a_Test_of_Network123_in_12_days` | `This Is A Test Of Network 123 In 12 Days` |
+
+- It's more difficult (and sometimes it's even impossible) to cache such messages (they are less deterministic), so overusing name arguments might slightly decrease the performance.
 
 ``` csharp
 Specification<decimal> specification = s => s
@@ -4066,6 +4076,22 @@ var result = validator.Validate(-1);
 
 result.ToString();
 // Number.Primary.SuperValue: The SuperValue needs to be positive!
+```
+
+- Use `{_name|format=titleCase}` to get the name title cased.
+
+``` csharp
+Specification<decimal> specification = s => s
+    .Positive()
+    .WithPath("Number.Primary.SuperDuperValue123")
+    .WithMessage("The {_name|format=titleCase} needs to be positive!");
+
+var validator = Validator.Factory.Create(specification);
+
+var result = validator.Validate(-1);
+
+result.ToString();
+// Number.Primary.SuperDuperValue123: The Super Duper Value 123 needs to be positive!
 ```
 
 - Similarly to [path argument](#path-argument), in case of the root path, the value is just empty string.

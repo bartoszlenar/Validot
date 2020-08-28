@@ -199,5 +199,22 @@ namespace Validot.Tests.Functional.Documentation
                 ToStringContentType.Messages,
                 "The  needs to be positive!");
         }
+
+        [Fact]
+        public void NameArgument_TitleCase()
+        {
+            Specification<decimal> specification = s => s
+                .Positive()
+                .WithPath("Number.Primary.SuperDuperValue123")
+                .WithMessage("The {_name|format=titleCase} needs to be positive!");
+
+            var validator = Validator.Factory.Create(specification);
+
+            var result = validator.Validate(-1);
+
+            result.ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Number.Primary.SuperDuperValue123: The Super Duper Value 123 needs to be positive!");
+        }
     }
 }

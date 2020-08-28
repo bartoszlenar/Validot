@@ -4268,7 +4268,7 @@ validator.Validate(20).ToString("YodaEnglish");
 
 - Run tests:
   - `pwsh build.ps1 --target Tests`
-  - The detailed result files (`trx` format) appear in `artifacts/tests` directory.
+  - The detailed result files (`junit` format) appear in `artifacts/tests` directory.
 - Run tests on specific framework:
   - `pwsh build.ps1 --target Tests --DotNet netcoreapp2.1`
   - `pwsh build.ps1 --target Tests --DotNet net48`

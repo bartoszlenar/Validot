@@ -182,7 +182,7 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .SetProjectFile(TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj")
                 .SetFramework(DotNet)
-                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.testresults"/ $"Validot.{Version}.unit.trx"}")
+                .SetLogger($"junit;LogFilePath={TestsResultsDirectory / $"Validot.{Version}.testresults"/ $"Validot.{Version}.unit.junit"}")
             );
 
             DotNetTest(p => p
@@ -190,7 +190,7 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .SetProjectFile(TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj")
                 .SetFramework(DotNet)
-                .SetLogger($"trx;LogFileName={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.functional.trx"}")
+                .SetLogger($"junit;LogFilePath={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.functional.junit"}")
             );
         });
 

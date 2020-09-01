@@ -361,7 +361,7 @@ if (!validator.IsValid(model))
   * FluentValidation validates model, and `ToString()` is called if errors are detected.
   * Validot processes the model twice - at first, with its special mode, [IsValid](../docs/DOCUMENTATION.md#isvalid). Secondly - in case of errors detected - with the standard method, gathering all errors and printing them with `ToString()`.
 
-Benchmarks environment: Validot 1.0.0, FluentValidation 9.2.0, .NET Core 3.1.7, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Catalina.
+Benchmarks environment: Validot 1.1.0, FluentValidation 9.2.0, .NET Core 3.1.7, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Catalina.
 
 ### Validot handles nulls on its own
 
@@ -410,12 +410,9 @@ validator.Validate(model, failFast: true);
 
 Features that might be in the scope and are technically possible to implement in the future:
 
-* `await`/`async` support ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/2))
 * transforming values ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/3))
-* severities  ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/4))
 * failing fast only in a single scope ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/5))
 * validated value in the error message ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/6))
-* "smart paths" in the error message, e.g. `RootUserCollection` member becomes `Root User Collection` ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/1))
 
 Features that are very unlikely to be in the scope as they contradict the project's principles, and/or would have a very negative impact on performance, and/or are impossible to implement:
 
@@ -430,6 +427,10 @@ Features that are very unlikely to be in the scope as they contradict the projec
   * Also, the problem of the root being null doesn't exist in Validot (it's a regular case, [covered entirely with fluent api](../docs/DOCUMENTATION.md#presence-commands))
 * Rule sets
   * workaround; multiple [validators](../docs/DOCUMENTATION.md#validator) for different parts of the object.
+* `await`/`async` support
+  * only support for large collections is planned ([more details on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/2))
+* severities  ([more details on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/4))
+  * workaround: multiple [validators](../docs/DOCUMENTATION.md#validator) for error groups with different severities.
 
 ## Project info
 

@@ -60,6 +60,11 @@
     <a href="#validot-vs-fluentvalidation">
         🔥⚔️ Validot vs FluentValidation ⚔️🔥
     </a>
+    </br>
+    </br>
+    <a href="https://lenar.dev/posts/validots-performance-explained">
+        📜 Blogged: Validot's performance explained
+    </a>
 </p>
 <br/>
 

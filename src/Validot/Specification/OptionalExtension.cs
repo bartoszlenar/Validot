@@ -34,7 +34,8 @@ namespace Validot
     {
         public interface IOptionalOut<T> :
             ISpecificationOut<T>,
-            IRuleIn<T>
+            IRuleIn<T>,
+            IAndIn<T>
         {
         }
 

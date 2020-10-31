@@ -52,7 +52,8 @@ namespace Validot
             IWithMessageIn<T>,
             IWithExtraMessageIn<T>,
             IWithCodeIn<T>,
-            IWithExtraCodeIn<T>
+            IWithExtraCodeIn<T>,
+            IAndIn<T>
         {
         }
 

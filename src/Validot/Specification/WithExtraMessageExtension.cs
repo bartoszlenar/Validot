@@ -35,7 +35,8 @@ namespace Validot
             ISpecificationOut<T>,
             IRuleIn<T>,
             IWithExtraMessageIn<T>,
-            IWithExtraCodeIn<T>
+            IWithExtraCodeIn<T>,
+            IAndIn<T>
         {
         }
 

@@ -5,6 +5,14 @@ namespace Validot
 
     public static class RequiredExtension
     {
+        /// <summary>
+        /// Forbids the current scope value to have null. In case of null, an error is saved in the current scope.
+        /// All values are required by default - this command allows to modify the error output in case of null value.
+        /// This is a presence command - must be at the beginning, error output can be altered by following parameter commands: WithMessage, WithExtraMessage, WithCode, WithExtraCode.
+        /// </summary>
+        /// <param name="this">Fluent API builder - input.</param>
+        /// <typeparam name="T">Type of the current scope value.</typeparam>
+        /// <returns>Fluent API builder - output.</returns>
         public static IRequiredOut<T> Required<T>(this IRequiredIn<T> @this)
             where T : class
         {
@@ -13,6 +21,7 @@ namespace Validot
             return ((SpecificationApi<T>)@this).AddCommand(RequiredCommand.Instance);
         }
 
+        /// <inheritdoc cref="Required{T}(Validot.Specification.IRequiredIn{T})"/>
         public static IRequiredOut<T?> Required<T>(this IRequiredIn<T?> @this)
             where T : struct
         {

@@ -5,6 +5,14 @@ namespace Validot
 
     public static class WithMessageExtension
     {
+        /// <summary>
+        /// Overwrites the entire error output (of the closest preceding scope command) with a single error message.
+        /// This is a parameter command - it can be followed by a new scope command or other parameter commands: WithExtraMessage, WithExtraCode.
+        /// </summary>
+        /// <param name="this">Fluent API builder - input.</param>
+        /// <param name="message">Error message to be saved in the error output in case the closest preceding scope command indicates invalid value. This is also a message key that could be replaced by the translation dictionary.</param>
+        /// <typeparam name="T">Type of the current scope value.</typeparam>
+        /// <returns>Fluent API builder - output.</returns>
         public static IWithMessageOut<T> WithMessage<T>(this IWithMessageIn<T> @this, string message)
         {
             ThrowHelper.NullArgument(@this, nameof(@this));
@@ -12,6 +20,7 @@ namespace Validot
             return ((SpecificationApi<T>)@this).AddCommand(new WithMessageCommand(message));
         }
 
+        /// <inheritdoc cref="WithMessage{T}(Validot.Specification.IWithMessageIn{T},string)"/>
         public static IWithMessageForbiddenOut<T> WithMessage<T>(this IWithMessageForbiddenIn<T> @this, string message)
         {
             ThrowHelper.NullArgument(@this, nameof(@this));

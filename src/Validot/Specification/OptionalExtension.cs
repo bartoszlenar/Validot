@@ -5,6 +5,13 @@ namespace Validot
 
     public static class OptionalExtension
     {
+        /// <summary>
+        /// Allows the current scope value to have null. In case of null, no error is saved.
+        /// This is a presence command - must be at the beginning.
+        /// </summary>
+        /// <param name="this">Fluent API builder - input.</param>
+        /// <typeparam name="T">Type of the current scope value.</typeparam>
+        /// <returns>Fluent API builder - output.</returns>
         public static IOptionalOut<T> Optional<T>(this IOptionalIn<T> @this)
             where T : class
         {
@@ -13,6 +20,7 @@ namespace Validot
             return ((SpecificationApi<T>)@this).AddCommand(OptionalCommand.Instance);
         }
 
+        /// <inheritdoc cref="Optional{T}(Validot.Specification.IOptionalIn{T})"/>
         public static IOptionalOut<T?> Optional<T>(this IOptionalIn<T?> @this)
             where T : struct
         {

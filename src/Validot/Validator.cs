@@ -13,9 +13,13 @@ namespace Validot
 
     public abstract class Validator
     {
+        /// <summary>
+        /// Factory - the recommended way of creating instances of <see cref="Validator{T}"/>.
+        /// </summary>
         public static ValidatorFactory Factory { get; } = new ValidatorFactory();
     }
 
+    /// <inheritdoc cref="IValidator{T}"/>
     public sealed class Validator<T> : Validator, IValidator<T>
     {
         private readonly IMessageService _messageService;
@@ -24,6 +28,12 @@ namespace Validot
 
         private readonly bool _referenceLoopProtectionEnabled;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Validator{T}"/> class.
+        /// However, the recommended way is using Validator.Factory.Create instead of this constructor.
+        /// </summary>
+        /// <param name="specification">Specification used to validate models.</param>
+        /// <param name="settings">Settings used to validate models.</param>
         public Validator(Specification<T> specification, ValidatorSettings settings = null)
         {
             Settings = settings ?? ValidatorSettings.GetDefault();
@@ -52,10 +62,13 @@ namespace Validot
             Settings.IsLocked = true;
         }
 
+        /// <inheritdoc cref="IValidator{T}.Settings"/>
         public ValidatorSettings Settings { get; }
 
+        /// <inheritdoc cref="IValidator{T}.Template"/>
         public IValidationResult Template { get; }
 
+        /// <inheritdoc cref="IValidator{T}.IsValid"/>
         public bool IsValid(T model)
         {
             var validationContext = new ValidationContext(_modelScheme, true, _referenceLoopProtectionEnabled ? new ReferenceLoopProtectionSettings(model) : null);
@@ -65,6 +78,7 @@ namespace Validot
             return validationContext.Errors is null;
         }
 
+        /// <inheritdoc cref="IValidator{T}.Validate"/>
         public IValidationResult Validate(T model, bool failFast = false)
         {
             var validationContext = new ValidationContext(_modelScheme, failFast, _referenceLoopProtectionEnabled ? new ReferenceLoopProtectionSettings(model) : null);

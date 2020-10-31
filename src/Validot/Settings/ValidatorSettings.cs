@@ -6,23 +6,37 @@ namespace Validot.Settings
     using Validot.Settings.Capacities;
     using Validot.Translations;
 
+    /// <summary>
+    /// Settings that <see cref="IValidator{T}"/> uses to perform validations.
+    /// </summary>
     public sealed class ValidatorSettings
     {
         private static readonly DisabledCapacityInfo _disabledCapacityInfo = new DisabledCapacityInfo();
 
         private readonly TranslationCompiler _translationCompiler = new TranslationCompiler();
 
+        /// <summary>
+        /// Gets translations dictionary - the key is the translation name, the value is the translation dictionary (where the key is the message key and the value is error message content for this key).
+        /// </summary>
         public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations
         {
             get => _translationCompiler.Translations;
         }
 
+        /// <summary>
+        /// Gets information whether reference loop protection is enabled or not. If null, then it will be enabled automatically if the reference loop occurence is theoretically possible (based on the specification).
+        /// Reference loop protection is the mechanism that tracks self-references and prevents infinite loop traversing during the validation process.
+        /// </summary>
         public bool? ReferenceLoopProtection { get; private set; }
 
         internal bool IsLocked { get; set; }
 
         internal ICapacityInfo CapacityInfo { get; private set; } = _disabledCapacityInfo;
 
+        /// <summary>
+        /// Gets the <see cref="ValidatorSettings"/> instance, initialized with the default values (English translation).
+        /// </summary>
+        /// <returns><see cref="ValidatorSettings"/> with default values (English translation).</returns>
         public static ValidatorSettings GetDefault()
         {
             var settings = new ValidatorSettings().WithEnglishTranslation();
@@ -30,6 +44,11 @@ namespace Validot.Settings
             return settings;
         }
 
+        /// <summary>
+        /// Enables reference loop protection. It will be enabled automatically if the reference loop occurence is theoretically possible (based on the specification).
+        /// Reference loop protection is the mechanism that tracks self-references and prevents infinite loop traversing during the validation process.
+        /// </summary>
+        /// <returns>Settings fluent API builder - output.</returns>
         public ValidatorSettings WithReferenceLoopProtection()
         {
             ThrowIfLocked();
@@ -39,6 +58,12 @@ namespace Validot.Settings
             return this;
         }
 
+        /// <summary>
+        /// Disables reference loop protection, even if the reference loop occurence is theoretically possible (based on the specification).
+        /// Reference loop protection is the mechanism that tracks self-references and prevents infinite loop traversing during the validation process.
+        /// If the validated payloads are coming from untrustworthy sources, it might be dangerous to disable it.
+        /// </summary>
+        /// <returns>Settings fluent API builder - output.</returns>
         public ValidatorSettings WithReferenceLoopProtectionDisabled()
         {
             ThrowIfLocked();
@@ -48,6 +73,13 @@ namespace Validot.Settings
             return this;
         }
 
+        /// <summary>
+        /// Adds translation entry for error messages.
+        /// </summary>
+        /// <param name="name">Translation name, e.g., "English".</param>
+        /// <param name="messageKey">Message key. For custom messages - same content that is in WithMessage/WithExtraMessage. For built-in messages, find their keys in the docs (e.g., 'Texts.Email' for Email string rule).</param>
+        /// <param name="translation">Translation content.</param>
+        /// <returns>Settings fluent API builder - output.</returns>
         public ValidatorSettings WithTranslation(string name, string messageKey, string translation)
         {
             ThrowIfLocked();

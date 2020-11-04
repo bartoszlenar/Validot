@@ -2388,7 +2388,7 @@ Specification<BookModel> bookSpecificationPlain = s => s
 
 _Above, the example of specification where fluent API methods are separated using indentations. Autoformatting (e.g., when pasting this code) could align all methods like this:_
 
-```
+``` csharp
 Specification<BookModel> bookSpecificationPlain = s => s
   .Member(m => m.Title, m => m
       .Optional()

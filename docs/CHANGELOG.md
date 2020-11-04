@@ -4,8 +4,10 @@ All notable changes to the [Validot project](https://github.com/bartoszlenar/Val
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-- `And` - a fluent API method that [helps to visually separate](DOCUMENTATION.md#And) rules within the specification. [#9](https://github.com/bartoszlenar/Validot/issues/9)
+## [1.2.0] - 2020-11-04
+### Added
+- `And` - a fluent API method that [helps to visually separate the rules](DOCUMENTATION.md#And) within the specification. [#9](https://github.com/bartoszlenar/Validot/issues/9)
+- Inline documentation (XML comments)
 
 ## [1.1.0] - 2020-09-01
 ### Added

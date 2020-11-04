@@ -34,7 +34,8 @@ namespace Validot
         public interface IWithExtraCodeOut<T> :
             ISpecificationOut<T>,
             IRuleIn<T>,
-            IWithExtraCodeIn<T>
+            IWithExtraCodeIn<T>,
+            IAndIn<T>
         {
         }
 

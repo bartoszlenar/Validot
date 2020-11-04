@@ -1596,6 +1596,62 @@ namespace Validot.Tests.Functional.Documentation
             );
         }
 
+        [Fact]
+        public void And_WithPathWorkaround()
+        {
+            Specification<BookModel> bookSpecificationPlain = s => s
+                .Member(m => m.Title, m => m
+                    .Optional()
+                    .Rule(title => title.Length > 5).WithMessage("The minimum length is 5")
+                    .Rule(title => title.Length < 10).WithMessage("The maximum length is 10")
+                )
+                .Rule(m => !m.Title.Contains("title"))
+                .WithPath("Title")
+                .WithCode("TITLE_IN_TITLE")
+                .Rule(m => m.YearOfFirstAnnouncement < 3000)
+                .WithMessage("Maximum year value is 3000");
+
+            Specification<BookModel> bookSpecificationAnd = s => s
+                .Member(m => m.Title, m => m
+                    .Optional()
+                    .And()
+                    .Rule(title => title.Length > 5).WithMessage("The minimum length is 5")
+                    .And()
+                    .Rule(title => title.Length < 10).WithMessage("The maximum length is 10")
+                )
+                .And()
+                .Rule(m => !m.Title.Contains("title"))
+                .WithPath("Title")
+                .WithCode("TITLE_IN_TITLE")
+                .And()
+                .Rule(m => m.YearOfFirstAnnouncement < 3000)
+                .WithMessage("Maximum year value is 3000");
+
+            var book = new BookModel() { Title = "Super long title", YearOfFirstAnnouncement = 3001 };
+
+            var resultPlain = Validator.Factory.Create(bookSpecificationPlain).Validate(book);
+
+            resultPlain.ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.MessagesAndCodes,
+                "TITLE_IN_TITLE",
+                "",
+                "Title: The maximum length is 10",
+                "Maximum year value is 3000"
+            );
+
+            var resultAnd = Validator.Factory.Create(bookSpecificationAnd).Validate(book);
+
+            resultAnd.ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.MessagesAndCodes,
+                "TITLE_IN_TITLE",
+                "",
+                "Title: The maximum length is 10",
+                "Maximum year value is 3000"
+            );
+
+            resultPlain.ToString().Should().Be(resultAnd.ToString());
+        }
+
         public class VerySpecialException : Exception
         {
         }

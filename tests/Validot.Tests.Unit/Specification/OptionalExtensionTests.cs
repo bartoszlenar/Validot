@@ -13,7 +13,8 @@ namespace Validot.Tests.Unit.Specification
             ApiTester.TestOutputPossibilities<IOptionalOut<object>>(new[]
             {
                 typeof(ISpecificationOut<object>),
-                typeof(IRuleIn<object>)
+                typeof(IRuleIn<object>),
+                typeof(IAndIn<object>)
             });
         }
 

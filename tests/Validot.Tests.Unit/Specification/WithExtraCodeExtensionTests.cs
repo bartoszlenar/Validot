@@ -60,7 +60,8 @@ namespace Validot.Tests.Unit.Specification
             {
                 typeof(ISpecificationOut<object>),
                 typeof(IRuleIn<object>),
-                typeof(IWithExtraCodeIn<object>)
+                typeof(IWithExtraCodeIn<object>),
+                typeof(IAndIn<object>)
             });
         }
 

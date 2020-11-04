@@ -29,6 +29,7 @@
       - [Optional](#optional)
       - [Required](#required)
       - [Forbidden](#forbidden)
+      - [And](#and)
     - [Null policy](#null-policy)
     - [Reference loop](#reference-loop)
   - [Validator](#validator)
@@ -2356,6 +2357,74 @@ result.ToString();
 ```
 
 - Good to read; [null policy](#null-policy) - the entire logic of handling nulls.
+
+
+---
+
+#### And
+
+- `And` contains no validation logic, it's purpose is to visually separate rules in the fluent API method chain.
+- `And` is a special case - from the technical point of view, `And` could be described as a [scope command](#scope-commands) that doesn't do anything.
+- The only difference between `And` and a [Rule](#rule) that doesn't do anything are the position restrictions:
+  - `And` can't be placed at the beginning of the specification.
+  - `And` can't be placed at the end of the specification.
+- `And` helps with automatic formatters that could visually spoil the code:
+
+``` csharp
+Specification<BookModel> bookSpecificationPlain = s => s
+  .Member(m => m.Title, m => m
+      .Optional()
+      .Rule(title => title.Length > 5)
+        .WithMessage("The minimum length is 5")
+      .Rule(title => title.Length < 10)
+        .WithMessage("The maximum length is 10")
+  )
+  .Rule(m => !m.Title.Contains("title"))
+    .WithPath("Title")
+    .WithCode("TITLE_IN_TITLE")
+  .Rule(m => m.YearOfFirstAnnouncement < 3000)
+    .WithMessage("Maximum year value is 3000");
+```
+
+_Above, the example of specification where fluent API methods are separated using indentations. Autoformatting (e.g., when pasting this code) could align all methods like this:_
+
+```
+Specification<BookModel> bookSpecificationPlain = s => s
+  .Member(m => m.Title, m => m
+      .Optional()
+      .Rule(title => title.Length > 5).WithMessage("The minimum length is 5")
+      .Rule(title => title.Length < 10).WithMessage("The maximum length is 10")
+  )
+  .Rule(m => !m.Title.Contains("title"))
+  .WithPath("Title")
+  .WithCode("TITLE_IN_TITLE")
+  .Rule(m => m.YearOfFirstAnnouncement < 3000)
+  .WithMessage("Maximum year value is 3000");
+```
+
+_`And` helps to maintain the readability by visually separating the rules:_
+
+``` csharp
+Specification<BookModel> bookSpecificationAnd = s => s
+  .Member(m => m.Title, m => m
+      .Optional()
+      .And()
+      .Rule(title => title.Length > 5).WithMessage("The minimum length is 5")
+      .And()
+      .Rule(title => title.Length < 10).WithMessage("The maximum length is 10")
+  )
+  .And()
+  .Rule(m => !m.Title.Contains("title"))
+  .WithPath("Title")
+  .WithCode("TITLE_IN_TITLE")
+  .And()
+  .Rule(m => m.YearOfFirstAnnouncement < 3000)
+  .WithMessage("Maximum year value is 3000");
+```
+
+_`And` within the fluent API method chain doesn't affect the logic. Both above specifications always produce equal results_.
+
+---
 
 ### Null policy
 

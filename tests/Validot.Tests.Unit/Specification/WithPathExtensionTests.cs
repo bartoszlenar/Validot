@@ -22,6 +22,7 @@ namespace Validot.Tests.Unit.Specification
                 typeof(IWithExtraMessageIn<object>),
                 typeof(IWithCodeIn<object>),
                 typeof(IWithExtraCodeIn<object>),
+                typeof(IAndIn<object>)
             });
         }
 

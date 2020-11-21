@@ -221,7 +221,7 @@ class Build : NukeBuild
         .Requires(() => Configuration == Configuration.Debug)
         .Executes(() =>
         {
-            var toolPath = InstallAndGetToolPath("dotnet-reportgenerator-globaltool", "4.6.4", "ReportGenerator.dll", "netcoreapp3.0");
+            var toolPath = InstallAndGetToolPath("dotnet-reportgenerator-globaltool", "4.8.1", "ReportGenerator.dll", "net5.0");
 
             var toolParameters = new[]
             {
@@ -294,7 +294,7 @@ class Build : NukeBuild
         {
             var reportFile = CodeCoverageDirectory / $"Validot.{Version}.opencover.xml";
 
-            var toolPath = InstallAndGetToolPath("codecov.tool", "1.12.2", "codecov.dll", "netcoreapp3.0");
+            var toolPath = InstallAndGetToolPath("codecov.tool", "1.12.3", "codecov.dll", "netcoreapp3.0");
 
             var toolParameters = new[]
             {

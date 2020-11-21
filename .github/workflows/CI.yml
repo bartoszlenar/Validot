@@ -114,6 +114,10 @@ jobs:
           uses: actions/setup-dotnet@v1
           with:
             dotnet-version: '5.0.x'
+        - name: Setup dotnet sdk for global tool
+          uses: actions/setup-dotnet@v1
+          with:
+            dotnet-version: '3.1.x'
         - name: Init workflow variables
           run: pwsh .github/workflows/Init-WorkflowVariables.ps1
         - name: Create package

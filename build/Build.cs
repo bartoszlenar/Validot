@@ -294,7 +294,7 @@ class Build : NukeBuild
         {
             var reportFile = CodeCoverageDirectory / $"Validot.{Version}.opencover.xml";
 
-            var toolPath = InstallAndGetToolPath("codecov.tool", "1.12.2", "codecov.dll", "netcoreapp3.0");
+            var toolPath = InstallAndGetToolPath("codecov.tool", "1.12.3", "codecov.dll", "netcoreapp3.0");
 
             var toolParameters = new[]
             {

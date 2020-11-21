@@ -14,7 +14,7 @@ namespace Validot
     public abstract class Validator
     {
         /// <summary>
-        /// Factory - the recommended way of creating instances of <see cref="Validator{T}"/>.
+        /// Gets validator factory - the recommended way of creating instances of <see cref="Validator{T}"/>.
         /// </summary>
         public static ValidatorFactory Factory { get; } = new ValidatorFactory();
     }

@@ -2,13 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
-    <PackageReference Include="Bogus" Version="30.0.4" />
-    <PackageReference Include="FluentValidation" Version="9.2.0" />
+    <PackageReference Include="Bogus" Version="31.0.3" />
+    <PackageReference Include="FluentValidation" Version="9.3.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -32,4 +32,7 @@
         <Rule Id="IDE0062" Action="None" />
         <Rule Id="IDE1005" Action="None" />
     </Rules>
+    <Rules AnalyzerId="NSubstitute.Analyzers.CSharp" RuleNamespace="NSubstitute.Analyzers.CSharp">
+        <Rule Id="NS1005" Action="Info" />
+    </Rules>
 </RuleSet>

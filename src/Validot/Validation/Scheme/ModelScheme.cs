@@ -4,7 +4,6 @@ namespace Validot.Validation.Scheme
     using System.Collections.Generic;
 
     using Validot.Errors;
-    using Validot.Settings.Capacities;
     using Validot.Validation.Scopes;
 
     internal class ModelScheme<T> : IModelScheme
@@ -13,7 +12,7 @@ namespace Validot.Validation.Scheme
 
         private readonly IReadOnlyDictionary<int, object> _specificationScopes;
 
-        public ModelScheme(IReadOnlyDictionary<int, object> specificationScopes, int rootSpecificationScopeId, IReadOnlyDictionary<int, IError> errorRegistry, IReadOnlyDictionary<string, IReadOnlyList<int>> template, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> pathMap, ICapacityInfo capacityInfo, bool isReferenceLoopPossible)
+        public ModelScheme(IReadOnlyDictionary<int, object> specificationScopes, int rootSpecificationScopeId, IReadOnlyDictionary<int, IError> errorRegistry, IReadOnlyDictionary<string, IReadOnlyList<int>> template, IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> pathMap, bool isReferenceLoopPossible)
         {
             ThrowHelper.NullArgument(specificationScopes, nameof(specificationScopes));
             ThrowHelper.NullInCollection(specificationScopes.Values, $"{nameof(specificationScopes)}.{nameof(specificationScopes.Values)}");
@@ -55,8 +54,6 @@ namespace Validot.Validation.Scheme
 
             _pathMap = pathMap;
 
-            ThrowHelper.NullArgument(capacityInfo, nameof(capacityInfo));
-            CapacityInfo = capacityInfo;
             IsReferenceLoopPossible = isReferenceLoopPossible;
             RootModelType = typeof(T);
             RootSpecificationScopeId = rootSpecificationScopeId;
@@ -73,8 +70,6 @@ namespace Validot.Validation.Scheme
         public int RootSpecificationScopeId { get; }
 
         public Type RootModelType { get; }
-
-        public ICapacityInfo CapacityInfo { get; }
 
         public string ResolvePath(string basePath, string relativePath)
         {

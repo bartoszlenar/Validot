@@ -3,13 +3,10 @@ namespace Validot.Validation.Scheme
     using System;
     using System.Collections.Generic;
 
-    using Validot.Settings.Capacities;
     using Validot.Validation.Scopes;
 
     internal interface IModelScheme
     {
-        ICapacityInfo CapacityInfo { get; }
-
         bool IsReferenceLoopPossible { get; }
 
         int RootSpecificationScopeId { get; }

@@ -164,24 +164,16 @@ namespace Validot.Validation
 
         private void SaveError(int errorId, bool skipIfDuplicateInPath)
         {
-            var shouldUseCapacityInfo = !FailFast && _modelScheme.CapacityInfo.ShouldRead;
-
             if (Errors is null)
             {
-                Errors = shouldUseCapacityInfo
-                    ? new Dictionary<string, List<int>>(_modelScheme.CapacityInfo.ErrorsPathsCapacity)
-                    : new Dictionary<string, List<int>>(1);
+                Errors = new Dictionary<string, List<int>>(1);
             }
 
             var currentPath = GetCurrentPath();
 
             if (!Errors.ContainsKey(currentPath))
             {
-                var errors = shouldUseCapacityInfo && _modelScheme.CapacityInfo.TryGetErrorsCapacityForPath(currentPath, out var capacity)
-                    ? new List<int>(capacity)
-                    : new List<int>(1);
-
-                Errors.Add(currentPath, errors);
+                Errors.Add(currentPath, new List<int>(1));
             }
 
             if (skipIfDuplicateInPath && Errors[currentPath].Contains(errorId))

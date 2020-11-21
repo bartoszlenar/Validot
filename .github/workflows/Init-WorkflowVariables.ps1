@@ -17,6 +17,6 @@ else {
     $version = $commitShortSha
 }
 
-Write-Output "::set-env name=VALIDOT_VERSION::$version"
-Write-Output "::set-env name=VALIDOT_COMMIT::$commitShortSha"
-Write-Output "::set-env name=VALIDOT_CI::true"
+"VALIDOT_VERSION=$version" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+"VALIDOT_COMMIT=$commitShortSha" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+"VALIDOT_CI=true" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append

@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        dotnet: ['2.1.x', '3.1.x', '5.0.100-rc.2.20479.15']
+        dotnet: ['2.1.x', '3.1.x', '5.0.x']
     runs-on: ${{ matrix.os }}
     name: Test on ${{ matrix.os }} using dotnet ${{ matrix.dotnet }}
     steps:
@@ -24,9 +24,9 @@ jobs:
       - name: Setup latest dotnet LTS version
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.x'
+          dotnet-version: '5.0.x'
       - name: Setup dotnet
-        if: matrix.dotnet != '3.1.x'
+        if: matrix.dotnet != '5.0.x'
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ matrix.dotnet }}
@@ -55,7 +55,7 @@ jobs:
       - name: Setup latest dotnet LTS version
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '3.1.x'
+          dotnet-version: '5.0.x'
       - name: Init workflow variables
         run: pwsh .github/workflows/Init-WorkflowVariables.ps1
       - name: Compile
@@ -79,7 +79,7 @@ jobs:
         - name: Setup latest dotnet LTS version
           uses: actions/setup-dotnet@v1
           with:
-            dotnet-version: '3.1.x'
+            dotnet-version: '5.0.x'
         - name: Init workflow variables
           run: pwsh .github/workflows/Init-WorkflowVariables.ps1
         - name: Analyze code coverage
@@ -113,7 +113,7 @@ jobs:
         - name: Setup latest dotnet LTS version
           uses: actions/setup-dotnet@v1
           with:
-            dotnet-version: '3.1.x'
+            dotnet-version: '5.0.x'
         - name: Init workflow variables
           run: pwsh .github/workflows/Init-WorkflowVariables.ps1
         - name: Create package

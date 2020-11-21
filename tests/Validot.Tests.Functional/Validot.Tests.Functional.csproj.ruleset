@@ -2,6 +2,7 @@
 <RuleSet Name="Validot" ToolsVersion="14.0">
     <Include Path="../../Validot.sln.ruleset" Action="Default" />
     <Rules AnalyzerId="Microsoft.CodeAnalysis.FxCopAnalyzers" RuleNamespace="Microsoft.CodeAnalysis.FxCopAnalyzers">
+        <Rule Id="CA1310" Action="None" />
         <Rule Id="CA1707" Action="None" />
         <Rule Id="CA2237" Action="None" />
     </Rules>

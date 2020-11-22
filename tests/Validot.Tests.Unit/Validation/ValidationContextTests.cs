@@ -9,7 +9,6 @@ namespace Validot.Tests.Unit.Validation
     using NSubstitute;
     using NSubstitute.ExceptionExtensions;
 
-    using Validot.Settings.Capacities;
     using Validot.Validation;
     using Validot.Validation.Scheme;
     using Validot.Validation.Scopes;
@@ -1166,9 +1165,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 _ = testId;
 
-                var capacityInfo = Substitute.For<ICapacityInfo>();
-
-                var modelScheme = ModelSchemeFactory.Create(specification, capacityInfo);
+                var modelScheme = ModelSchemeFactory.Create(specification);
 
                 var context = new ValidationContext(modelScheme, default, new ReferenceLoopProtectionSettings());
 
@@ -1632,9 +1629,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 _ = id;
 
-                var capacityInfo = Substitute.For<ICapacityInfo>();
-
-                var modelScheme = ModelSchemeFactory.Create(rootSpecification, capacityInfo);
+                var modelScheme = ModelSchemeFactory.Create(rootSpecification);
 
                 var context = new ValidationContext(modelScheme, default, new ReferenceLoopProtectionSettings());
 
@@ -1654,9 +1649,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 _ = id;
 
-                var capacityInfo = Substitute.For<ICapacityInfo>();
-
-                var modelScheme = ModelSchemeFactory.Create(rootSpecification, capacityInfo);
+                var modelScheme = ModelSchemeFactory.Create(rootSpecification);
 
                 var context = new ValidationContext(modelScheme, default, new ReferenceLoopProtectionSettings(new object()));
 
@@ -1676,9 +1669,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 _ = id;
 
-                var capacityInfo = Substitute.For<ICapacityInfo>();
-
-                var modelScheme = ModelSchemeFactory.Create(rootSpecification, capacityInfo);
+                var modelScheme = ModelSchemeFactory.Create(rootSpecification);
 
                 var context = new ValidationContext(modelScheme, default, default);
 

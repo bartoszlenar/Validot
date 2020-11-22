@@ -24,7 +24,6 @@ namespace Validot.Tests.Unit.Settings
             var validatorSettings = new ValidatorSettings();
 
             validatorSettings.Translations.Should().BeEmpty();
-            validatorSettings.CapacityInfo.Should().NotBeNull();
             validatorSettings.ReferenceLoopProtection.Should().BeNull();
             validatorSettings.IsLocked.Should().BeFalse();
         }

@@ -8,7 +8,6 @@ namespace Validot.Tests.Unit.Validation.Scheme
     using NSubstitute;
 
     using Validot.Errors.Args;
-    using Validot.Settings.Capacities;
     using Validot.Validation;
     using Validot.Validation.Scheme;
 
@@ -30,25 +29,13 @@ namespace Validot.Tests.Unit.Validation.Scheme
         [Fact]
         public void Should_CreateModelScheme()
         {
-            var capacityInfo = Substitute.For<ICapacityInfo>();
-
-            _ = ModelSchemeFactory.Create<TestClass>(m => m, capacityInfo);
+            _ = ModelSchemeFactory.Create<TestClass>(m => m);
         }
 
         [Fact]
         public void Should_ThrowException_When_NullSpecification()
         {
-            var capacityInfo = Substitute.For<ICapacityInfo>();
-
-            Action action = () => ModelSchemeFactory.Create<TestClass>(null, capacityInfo);
-
-            action.Should().ThrowExactly<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void Should_ThrowException_When_NullCapacityInfo()
-        {
-            Action action = () => ModelSchemeFactory.Create<TestClass>(m => m, null);
+            Action action = () => ModelSchemeFactory.Create<TestClass>(null);
 
             action.Should().ThrowExactly<ArgumentNullException>();
         }
@@ -58,9 +45,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
         {
             Specification<TestClass> classSpecification = c => c.Rule(x => false).WithMessage("Invalid value custom message");
 
-            var capacityInfo = Substitute.For<ICapacityInfo>();
-
-            var modelScheme = ModelSchemeFactory.Create(classSpecification, capacityInfo);
+            var modelScheme = ModelSchemeFactory.Create(classSpecification);
 
             var error = modelScheme.ErrorRegistry.Where(e => e.Value.Args.Count == 0 && e.Value.Codes.Count == 0 && e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value custom message");
 
@@ -79,9 +64,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 .Rule(x => false).WithMessage("Invalid value custom message")
                 .Rule(x => false).WithCode("CODE1");
 
-            var capacityInfo = Substitute.For<ICapacityInfo>();
-
-            var modelScheme = ModelSchemeFactory.Create(classSpecification, capacityInfo);
+            var modelScheme = ModelSchemeFactory.Create(classSpecification);
 
             var error1Candidates = modelScheme.ErrorRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value custom message");
 
@@ -113,86 +96,8 @@ namespace Validot.Tests.Unit.Validation.Scheme
             modelScheme.Template[""].Should().Contain(error3.Key);
         }
 
-        [Theory]
-        [InlineData(true)]
-        [InlineData(false)]
-        public void Should_CreateModelScheme_And_InjectCapacityInfoHelpers_When_CapacityInfo_Is_CapacityInfoHelpersConsumer(bool feedable)
-        {
-            Specification<TestClass> classSpecification = c => c
-                .Optional()
-                .RuleTemplate(x => false, "Invalid value template message {argName}", Arg.Number("argName", 666L))
-                .Rule(x => false).WithMessage("Invalid value custom message")
-                .Rule(x => false).WithCode("CODE1");
-
-            var capacityInfo = feedable
-                ? Substitute.For<IFeedableCapacityInfo, ICapacityInfoHelpersConsumer>()
-                : Substitute.For<ICapacityInfo, ICapacityInfoHelpersConsumer>();
-
-            ModelSchemeFactory.Create(classSpecification, capacityInfo);
-
-            (capacityInfo as ICapacityInfoHelpersConsumer).Received(1).InjectHelpers(NSubstitute.Arg.Is(ModelSchemeFactory.CapacityInfoHelpers));
-        }
-
         [Fact]
-        public void Should_CreateModelScheme_And_FeedCapacityInfo_When_ShouldFeed_IsTrue()
-        {
-            Specification<TestClass> classSpecification = c => c
-                .Optional()
-                .RuleTemplate(x => false, "Invalid value template message {argName}", Arg.Number("argName", 666L))
-                .Rule(x => false).WithMessage("Invalid value custom message")
-                .Rule(x => false).WithCode("CODE1");
-
-            var feedableCapacityInfo = Substitute.For<IFeedableCapacityInfo>();
-
-            IErrorsHolder errorsHolders = null;
-
-            feedableCapacityInfo.ShouldFeed.Returns(true);
-
-            feedableCapacityInfo.When(x => x.Feed(NSubstitute.Arg.Any<IErrorsHolder>())).Do(callInfo =>
-            {
-                errorsHolders = callInfo.Arg<IErrorsHolder>();
-            });
-
-            ModelSchemeFactory.Create(classSpecification, feedableCapacityInfo);
-
-            feedableCapacityInfo.ReceivedWithAnyArgs(1).Feed(default);
-
-            errorsHolders.Should().NotBeNull();
-            errorsHolders.Should().BeOfType<DiscoveryContext>();
-            errorsHolders.Errors.Keys.Should().HaveCount(1);
-            errorsHolders.Errors.Keys.Should().Contain("");
-            errorsHolders.Errors[""].Count.Should().Be(3);
-        }
-
-        [Fact]
-        public void Should_CreateModelScheme_And_NotFeedCapacityInfo_When_ShouldFeed_IsFalse()
-        {
-            Specification<TestClass> classSpecification = c => c
-                .Optional()
-                .RuleTemplate(x => false, "Invalid value template message", Arg.Number("argName", 666L))
-                .Rule(x => false).WithMessage("Invalid value custom message")
-                .Rule(x => false).WithCode("CODE1");
-
-            var feedableCapacityInfo = Substitute.For<IFeedableCapacityInfo>();
-
-            IErrorsHolder errorsHolders = null;
-
-            feedableCapacityInfo.ShouldFeed.Returns(false);
-
-            feedableCapacityInfo.When(x => x.Feed(NSubstitute.Arg.Any<IErrorsHolder>())).Do(callInfo =>
-            {
-                errorsHolders = callInfo.Arg<IErrorsHolder>();
-            });
-
-            ModelSchemeFactory.Create(classSpecification, feedableCapacityInfo);
-
-            feedableCapacityInfo.ReceivedWithAnyArgs(0).Feed(default);
-
-            errorsHolders.Should().BeNull();
-        }
-
-        [Fact]
-        public void Should_CreateModelScheme_With_Errors_And_NestedSpecifications_And_StatsFed()
+        public void Should_CreateModelScheme_With_Errors_And_NestedSpecifications()
         {
             Specification<TestMember> memberSpecification = c => c.Optional().RuleTemplate(x => false, "Nested template message", Arg.Number("nestedArg", 100M)).WithExtraCode("CODE_N");
 
@@ -203,18 +108,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 .Rule(x => false).WithMessage("Invalid value custom message")
                 .Rule(x => false).WithCode("CODE1");
 
-            var feedableCapacityInfo = Substitute.For<IFeedableCapacityInfo>();
-
-            IErrorsHolder errorsHolders = null;
-
-            feedableCapacityInfo.ShouldFeed.Returns(true);
-
-            feedableCapacityInfo.When(x => x.Feed(NSubstitute.Arg.Any<IErrorsHolder>())).Do(callInfo =>
-            {
-                errorsHolders = callInfo.Arg<IErrorsHolder>();
-            });
-
-            var modelScheme = ModelSchemeFactory.Create(classSpecification, feedableCapacityInfo);
+            var modelScheme = ModelSchemeFactory.Create(classSpecification);
 
             var error1Candidates = modelScheme.ErrorRegistry.Where(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Invalid value template message {argName}");
             error1Candidates.Should().HaveCount(1);
@@ -257,20 +151,6 @@ namespace Validot.Tests.Unit.Validation.Scheme
             modelScheme.Template[""].Should().Contain(error3.Key);
             modelScheme.Template.Keys.Should().Contain("Member");
             modelScheme.Template["Member"].Should().Contain(errorNested.Key);
-
-            feedableCapacityInfo.ReceivedWithAnyArgs(1).Feed(default);
-
-            errorsHolders.Should().NotBeNull();
-            errorsHolders.Should().BeOfType<DiscoveryContext>();
-            errorsHolders.Errors.Keys.Should().HaveCount(2);
-            errorsHolders.Errors.Keys.Should().Contain("");
-            errorsHolders.Errors.Keys.Should().Contain("Member");
-            errorsHolders.Errors[""].Count.Should().Be(3);
-            errorsHolders.Errors[""][0].Should().Be(error1.Key);
-            errorsHolders.Errors[""][1].Should().Be(error2.Key);
-            errorsHolders.Errors[""][2].Should().Be(error3.Key);
-            errorsHolders.Errors["Member"].Count.Should().Be(1);
-            errorsHolders.Errors["Member"][0].Should().Be(errorNested.Key);
         }
 
         [Fact]
@@ -282,9 +162,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
                 .Member(m => m.Member, memberSpecification).WithPath("TestNested")
                 .Rule(x => false).WithPath("TestNested").WithMessage("Base error");
 
-            var capacityInfo = Substitute.For<ICapacityInfo>();
-
-            var modelScheme = ModelSchemeFactory.Create(classSpecification, capacityInfo);
+            var modelScheme = ModelSchemeFactory.Create(classSpecification);
 
             var memberError = modelScheme.ErrorRegistry.Single(e => e.Value.Messages.Count == 1 && e.Value.Messages.Single() == "Member error");
 
@@ -338,9 +216,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 Specification<SelfLoop> specificationA = c => c.Member(m => m.Self, m => m.AsModel(specificationB));
 
-                var capacityInfo = Substitute.For<ICapacityInfo>();
-
-                var modelScheme = ModelSchemeFactory.Create(specificationA, capacityInfo);
+                var modelScheme = ModelSchemeFactory.Create(specificationA);
 
                 modelScheme.IsReferenceLoopPossible.Should().BeFalse();
             }
@@ -352,9 +228,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 Specification<DirectLoopClassA> specificationA = c => c.Member(m => m.B, m => m.AsModel(specificationB));
 
-                var capacityInfo = Substitute.For<ICapacityInfo>();
-
-                var modelScheme = ModelSchemeFactory.Create(specificationA, capacityInfo);
+                var modelScheme = ModelSchemeFactory.Create(specificationA);
 
                 modelScheme.IsReferenceLoopPossible.Should().BeFalse();
             }
@@ -368,9 +242,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 Specification<NestedLoopClassA> specificationA = c => c.Member(m => m.B, m => m.AsModel(specificationB));
 
-                var capacityInfo = Substitute.For<ICapacityInfo>();
-
-                var modelScheme = ModelSchemeFactory.Create(specificationA, capacityInfo);
+                var modelScheme = ModelSchemeFactory.Create(specificationA);
 
                 modelScheme.IsReferenceLoopPossible.Should().BeFalse();
             }
@@ -382,9 +254,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 specification = c => c.Member(m => m.Self, m => m.AsModel(specification));
 
-                var capacityInfo = Substitute.For<ICapacityInfo>();
-
-                var modelScheme = ModelSchemeFactory.Create(specification, capacityInfo);
+                var modelScheme = ModelSchemeFactory.Create(specification);
 
                 modelScheme.IsReferenceLoopPossible.Should().BeTrue();
             }
@@ -398,9 +268,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 specificationB = c => c.Member(m => m.A, m => m.AsModel(specificationA));
 
-                var capacityInfo = Substitute.For<ICapacityInfo>();
-
-                var modelScheme = ModelSchemeFactory.Create(specificationA, capacityInfo);
+                var modelScheme = ModelSchemeFactory.Create(specificationA);
 
                 modelScheme.IsReferenceLoopPossible.Should().BeTrue();
             }
@@ -416,9 +284,7 @@ namespace Validot.Tests.Unit.Validation.Scheme
 
                 specificationC = c => c.Member(m => m.A, m => m.AsModel(specificationA));
 
-                var capacityInfo = Substitute.For<ICapacityInfo>();
-
-                var modelScheme = ModelSchemeFactory.Create(specificationA, capacityInfo);
+                var modelScheme = ModelSchemeFactory.Create(specificationA);
 
                 modelScheme.IsReferenceLoopPossible.Should().BeTrue();
             }

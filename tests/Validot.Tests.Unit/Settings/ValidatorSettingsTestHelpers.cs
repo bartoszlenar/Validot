@@ -3,7 +3,6 @@ namespace Validot.Tests.Unit.Settings
     using FluentAssertions;
 
     using Validot.Settings;
-    using Validot.Settings.Capacities;
     using Validot.Translations;
 
     public static class ValidatorSettingsTestHelpers
@@ -11,8 +10,6 @@ namespace Validot.Tests.Unit.Settings
         public static void ShouldBeLikeDefault(this ValidatorSettings @this)
         {
             @this.Should().NotBeNull();
-            @this.CapacityInfo.Should().NotBeNull();
-            @this.CapacityInfo.Should().BeOfType<DisabledCapacityInfo>();
 
             @this.Translations.Keys.Should().HaveCount(1);
             @this.Translations.Keys.Should().Contain("English");

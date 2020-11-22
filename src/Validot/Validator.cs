@@ -6,7 +6,6 @@ namespace Validot
     using Validot.Factory;
     using Validot.Results;
     using Validot.Settings;
-    using Validot.Settings.Capacities;
     using Validot.Validation;
     using Validot.Validation.Scheme;
     using Validot.Validation.Stacks;
@@ -38,7 +37,7 @@ namespace Validot
         {
             Settings = settings ?? ValidatorSettings.GetDefault();
 
-            _modelScheme = ModelSchemeFactory.Create(specification, Settings.CapacityInfo);
+            _modelScheme = ModelSchemeFactory.Create(specification);
             _messageService = new MessageService(Settings.Translations, _modelScheme.ErrorRegistry, _modelScheme.Template);
 
             Template = new ValidationResult(_modelScheme.Template.ToDictionary(p => p.Key, p => p.Value.ToList()), _modelScheme.ErrorRegistry, _messageService);
@@ -86,14 +85,6 @@ namespace Validot
             _modelScheme.RootSpecificationScope.Validate(model, validationContext);
 
             var isValid = validationContext.Errors is null;
-
-            if (!isValid &&
-                !failFast &&
-                Settings.CapacityInfo is IFeedableCapacityInfo feedableCapacityInfo &&
-                feedableCapacityInfo.ShouldFeed)
-            {
-                feedableCapacityInfo.Feed(validationContext);
-            }
 
             return isValid
                 ? ValidationResult.NoErrorsResult

@@ -3,7 +3,6 @@ namespace Validot.Settings
     using System;
     using System.Collections.Generic;
 
-    using Validot.Settings.Capacities;
     using Validot.Translations;
 
     /// <summary>
@@ -11,8 +10,6 @@ namespace Validot.Settings
     /// </summary>
     public sealed class ValidatorSettings
     {
-        private static readonly DisabledCapacityInfo _disabledCapacityInfo = new DisabledCapacityInfo();
-
         private readonly TranslationCompiler _translationCompiler = new TranslationCompiler();
 
         /// <summary>
@@ -30,8 +27,6 @@ namespace Validot.Settings
         public bool? ReferenceLoopProtection { get; private set; }
 
         internal bool IsLocked { get; set; }
-
-        internal ICapacityInfo CapacityInfo { get; private set; } = _disabledCapacityInfo;
 
         /// <summary>
         /// Gets the <see cref="ValidatorSettings"/> instance, initialized with the default values (English translation).
@@ -85,17 +80,6 @@ namespace Validot.Settings
             ThrowIfLocked();
 
             _translationCompiler.Add(name, messageKey, translation);
-
-            return this;
-        }
-
-        internal ValidatorSettings WithCapacityInfo(ICapacityInfo capacityInfo)
-        {
-            ThrowHelper.NullArgument(capacityInfo, nameof(capacityInfo));
-
-            ThrowIfLocked();
-
-            CapacityInfo = capacityInfo;
 
             return this;
         }

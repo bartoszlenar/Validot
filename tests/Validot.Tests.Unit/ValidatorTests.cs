@@ -150,7 +150,7 @@ namespace Validot.Tests.Unit
 
             var validator = new Validator<ValidationTestData.TestClass>(specification);
 
-            validator.ShouldHaveIsValueTrueIfNoErrors(model, expectedIsValid, exceptionCase);
+            validator.ShouldHaveIsValidTrueIfNoErrors(model, expectedIsValid, exceptionCase);
         }
 
         [Theory]

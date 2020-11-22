@@ -1161,7 +1161,7 @@ namespace Validot.Tests.Unit.Validation
             [MemberData(nameof(Loop_ThroughMembers))]
             [MemberData(nameof(Loop_ThroughTypes))]
             [MemberData(nameof(Loop_ThroughIndexes))]
-            public void Should_ThrowException_InifiteReferencesLoopException_WithDetectedLoopInfo_When_ReferencesLoopDetected(string testId, Specification<LoopClassA> specification, LoopClassA model, string path, string infiniteLoopNestedPath, Type type)
+            public void Should_ThrowException_InfiniteReferencesLoopException_WithDetectedLoopInfo_When_ReferencesLoopDetected(string testId, Specification<LoopClassA> specification, LoopClassA model, string path, string infiniteLoopNestedPath, Type type)
             {
                 _ = testId;
 
@@ -1178,10 +1178,10 @@ namespace Validot.Tests.Unit.Validation
                 exception.Type.Should().Be(type);
 
                 var pathStringified = string.IsNullOrEmpty(path)
-                    ? "the root path"
-                    : $"the path {path}";
+                    ? "the root path, so the validated object itself,"
+                    : $"the path '{path}'";
 
-                exception.Message.Should().Be($"Reference loop detected: object of type {type.GetFriendlyName()} is both under {pathStringified} and in the nested path {infiniteLoopNestedPath}");
+                exception.Message.Should().Be($"Reference loop detected: object of type {type.GetFriendlyName()} has been detected twice in the reference graph, effectively creating an infinite references loop (at first under {pathStringified} and then under the nested path '{infiniteLoopNestedPath}')");
             }
         }
 

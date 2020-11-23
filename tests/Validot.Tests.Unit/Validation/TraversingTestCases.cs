@@ -79,15 +79,18 @@
             Specification<LoopClassC> specificationC = null;
 
             specificationA = c => c
+                .Optional()
                 .Member(m => m.A, specificationA)
                 .Member(m => m.B, specificationB);
 
             specificationB = c => c
+                .Optional()
                 .Member(m => m.A, specificationA)
                 .Member(m => m.B, specificationB)
                 .Member(m => m.C, specificationC);
 
             specificationC = c => c
+                .Optional()
                 .Member(m => m.A, specificationA)
                 .Member(m => m.B, specificationB)
                 .Member(m => m.C, specificationC);
@@ -183,15 +186,18 @@
             Specification<LoopStructD> specificationD = null;
 
             specificationA = c => c
+                .Optional()
                 .Member(m => m.A, specificationA)
                 .Member(m => m.B, specificationB);
 
             specificationB = c => c
+                .Optional()
                 .Member(m => m.FieldC, specificationC)
                 .Member(m => m.D, specificationD)
                 .Member(m => m.B, specificationB);
 
             specificationC = c => c
+                .Optional()
                 .Member(m => m.B, specificationB);
 
             specificationD = c => c
@@ -255,21 +261,24 @@
             Specification<LoopStructE> specificationE = null;
 
             specificationA = c => c
+                .Optional()
                 .Member(m => m.A, specificationA)
                 .Member(m => m.B, specificationB);
 
             specificationB = c => c
+                .Optional()
                 .Member(m => m.A, specificationA)
                 .Member(m => m.B, specificationB)
-                .Member(m => m.CollectionA, m => m.AsCollection(specificationA))
+                .Member(m => m.CollectionA, m => m.Optional().AsCollection(specificationA))
                 .Member(m => m.C, specificationC)
                 .Member(m => m.FieldC, specificationC)
                 .Member(m => m.D, specificationD)
-                .Member(m => m.CollectionD, m => m.AsCollection(specificationD))
-                .Member(m => m.NullableD, m => m.AsNullable(specificationD))
-                .Member(m => m.CollectionNullableD, m => m.AsCollection(m1 => m1.AsNullable(specificationD)));
+                .Member(m => m.CollectionD, m => m.Optional().AsCollection(specificationD))
+                .Member(m => m.NullableD, m => m.Optional().AsNullable(specificationD))
+                .Member(m => m.CollectionNullableD, m => m.Optional().AsCollection(m1 => m1.Optional().AsNullable(specificationD)));
 
             specificationC = c => c
+                .Optional()
                 .Member(m => m.A, specificationA)
                 .Member(m => m.B, specificationB)
                 .Member(m => m.C, specificationC);
@@ -277,7 +286,7 @@
             specificationD = c => c
                 .Member(m => m.A, specificationA)
                 .Member(m => m.E, specificationE)
-                .Member(m => m.NullableE, m => m.AsNullable(specificationE));
+                .Member(m => m.NullableE, m => m.Optional().AsNullable(specificationE));
 
             specificationE = c => c
                 .Member(m => m.A, specificationA);
@@ -384,10 +393,12 @@
             Specification<LoopClassB> specificationB = null;
 
             specificationA = c => c
+                .Optional()
                 .Member(m => m.A, specificationA)
                 .Member(m => m.B, specificationB);
 
             specificationB = c => c
+                .Optional()
                 .Member(m => m.A, specificationA)
                 .Member(m => m.B, specificationB)
                 .Member(m => m.CollectionA, m => m.AsCollection(specificationA));
@@ -775,10 +786,12 @@
             Specification<TestClassB> specificationB = null;
 
             specificationA = s => s
+                .Optional()
                 .Member(m => m.CollectionA, m => m.AsCollection(specificationA))
                 .Member(m => m.CollectionB, m => m.AsCollection(specificationB));
 
             specificationB = s => s
+                .Optional()
                 .Member(m => m.A, specificationA);
 
             var model31 = new TestClassA()
@@ -912,9 +925,11 @@
             Specification<TestStructC> specificationc = null;
 
             specificationA = s => s
+                .Optional()
                 .Member(m => m.B, specificationB);
 
             specificationB = s => s
+                .Optional()
                 .Member(m => m.C, specificationc)
                 .Member(m => m.NullableC, m => m.AsNullable(specificationc));
 

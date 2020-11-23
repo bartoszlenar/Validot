@@ -48,7 +48,7 @@ namespace Validot.Tests.Unit
             }
         }
 
-        public static void ShouldHaveIsValueTrueIfNoErrors<T>(this IValidator<T> validator, T model, bool expectedIsValid, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
+        public static void ShouldHaveIsValidTrueIfNoErrors<T>(this IValidator<T> validator, T model, bool expectedIsValid, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
         {
             bool isValid = false;
 
@@ -68,8 +68,8 @@ namespace Validot.Tests.Unit
                 var exceptionThrown = action.Should().ThrowExactly<ReferenceLoopException>().Which;
 
                 exceptionThrown.Type.Should().Be(exceptionCase.Type);
-                exceptionThrown.Path.Should().Be(exceptionCase.Path);
-                exceptionThrown.NestedPath.Should().Be(exceptionCase.NestedPath);
+                exceptionThrown.Path.Should().BeNull();
+                exceptionThrown.NestedPath.Should().BeNull();
             }
         }
 

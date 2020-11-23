@@ -70,11 +70,11 @@ namespace Validot
         /// <inheritdoc cref="IValidator{T}.IsValid"/>
         public bool IsValid(T model)
         {
-            var validationContext = new ValidationContext(_modelScheme, true, _referenceLoopProtectionEnabled ? new ReferenceLoopProtectionSettings(model) : null);
+            var validationContext = new IsValidValidationContext(_modelScheme, _referenceLoopProtectionEnabled ? new ReferenceLoopProtectionSettings(model) : null);
 
             _modelScheme.RootSpecificationScope.Validate(model, validationContext);
 
-            return validationContext.Errors is null;
+            return !validationContext.ErrorFound;
         }
 
         /// <inheritdoc cref="IValidator{T}.Validate"/>

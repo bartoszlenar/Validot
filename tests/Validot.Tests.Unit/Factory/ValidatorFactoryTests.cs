@@ -57,7 +57,7 @@ namespace Validot.Tests.Unit.Factory
 
                 var validator = Validator.Factory.Create(specification);
 
-                validator.ShouldHaveIsValueTrueIfNoErrors(model, expectedIsValid, exceptionCase);
+                validator.ShouldHaveIsValidTrueIfNoErrors(model, expectedIsValid, exceptionCase);
             }
         }
 
@@ -129,7 +129,7 @@ namespace Validot.Tests.Unit.Factory
 
                 var validator = Validator.Factory.Create(holder);
 
-                validator.ShouldHaveIsValueTrueIfNoErrors(model, expectedIsValid, exceptionCase);
+                validator.ShouldHaveIsValidTrueIfNoErrors(model, expectedIsValid, exceptionCase);
             }
         }
 

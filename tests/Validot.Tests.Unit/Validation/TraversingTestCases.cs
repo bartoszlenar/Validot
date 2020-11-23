@@ -1,11 +1,14 @@
 ﻿namespace Validot.Tests.Unit.Validation
 {
+    using System;
     using System.Collections.Generic;
 
     public class TraversingTestCases
     {
         public class LoopClassA
         {
+            private string _id = "A_" + Guid.NewGuid().ToString().Substring(0, 5);
+
             public LoopClassA A { get; set; }
 
             public LoopClassB B { get; set; }
@@ -13,6 +16,8 @@
 
         public class LoopClassB
         {
+            private string _id = "B_" + Guid.NewGuid().ToString().Substring(0, 5);
+
             public LoopClassA[] CollectionA { get; set; }
 
             public LoopClassA A { get; set; }
@@ -34,6 +39,8 @@
 
         public class LoopClassC : LoopClassA
         {
+            private string _id = "C_" + Guid.NewGuid().ToString().Substring(0, 5);
+
             public LoopClassC C { get; set; }
         }
 

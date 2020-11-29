@@ -11,18 +11,16 @@ namespace Validot
             throw new ValidotException($"Oooops! Sorry! That shouldn't have happened! {Environment.NewLine}{message}{Environment.NewLine} Please raise the issue on github with this exception stacktrace and details.");
         }
 
-        public static T NullArgument<T>(T argument, string name)
+        public static void NullArgument<T>(T argument, string name)
             where T : class
         {
             if (argument == null)
             {
                 throw new ArgumentNullException(name);
             }
-
-            return argument;
         }
 
-        public static IReadOnlyCollection<T> NullInCollection<T>(IReadOnlyList<T> collection, string name)
+        public static void NullInCollection<T>(IReadOnlyList<T> collection, string name)
             where T : class
         {
             NullArgument(collection, name);
@@ -34,11 +32,9 @@ namespace Validot
                     throw new ArgumentNullException($"Collection `{name}` contains null under index{i}");
                 }
             }
-
-            return collection;
         }
 
-        public static IEnumerable<T> NullInCollection<T>(IEnumerable<T> collection, string name)
+        public static void NullInCollection<T>(IEnumerable<T> collection, string name)
             where T : class
         {
             NullArgument(collection, name);
@@ -50,18 +46,14 @@ namespace Validot
                     throw new ArgumentNullException($"Collection `{name}` contains null");
                 }
             }
-
-            return collection;
         }
 
-        public static int BelowZero(int argument, string name)
+        public static void BelowZero(int argument, string name)
         {
             if (argument < 0)
             {
                 throw new ArgumentOutOfRangeException(name, argument, $"{name} cannot be less than zero");
             }
-
-            return argument;
         }
 
         public static void InvalidRange(long minArgument, string minName, long maxArgument, string maxName)

@@ -54,11 +54,11 @@ namespace Validot.Validation.Stacks
         {
             if (HasIndexes && _indexesLevelsStack.Peek() == Level)
             {
-                _indexesStack.Pop();
-                _indexesLevelsStack.Pop();
+                _ = _indexesStack.Pop();
+                _ = _indexesLevelsStack.Pop();
             }
 
-            _stack.Pop();
+            _ = _stack.Pop();
 
             Path = _stack.Count > 0 ? _stack.Peek() : string.Empty;
         }

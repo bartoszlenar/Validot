@@ -3,6 +3,8 @@
 
 # Severity settings
 
+dotnet_diagnostic.IDE0058.severity = none
+
 dotnet_diagnostic.CA1310.severity = none
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA2237.severity = none

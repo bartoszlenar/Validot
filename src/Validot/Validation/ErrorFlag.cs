@@ -52,8 +52,8 @@ namespace Validot.Validation
             {
                 var detected = _detectionForLevels[level];
 
-                _errorsForLevels.Remove(level);
-                _detectionForLevels.Remove(level);
+                _ = _errorsForLevels.Remove(level);
+                _ = _detectionForLevels.Remove(level);
 
                 IsDetectedAtAnylevel = _detectionForLevels.Count > 0 && _detectionForLevels.ContainsValue(true);
 

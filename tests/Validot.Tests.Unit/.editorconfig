@@ -15,6 +15,13 @@ resharper_redundant_extends_list_entry_highlighting = suggestion
 
 # Severity settings
 
+dotnet_diagnostic.IDE0017.severity = none
+dotnet_diagnostic.IDE0028.severity = none
+dotnet_diagnostic.IDE0039.severity = none
+dotnet_diagnostic.IDE0058.severity = none
+dotnet_diagnostic.IDE0062.severity = none
+dotnet_diagnostic.IDE1005.severity = none
+
 dotnet_diagnostic.CA1034.severity = none
 dotnet_diagnostic.CA1051.severity = none
 dotnet_diagnostic.CA1052.severity = none
@@ -39,11 +46,5 @@ dotnet_diagnostic.SA1401.severity = none
 dotnet_diagnostic.SA1600.severity = none
 dotnet_diagnostic.SA1601.severity = none
 dotnet_diagnostic.SA1602.severity = none
-
-dotnet_diagnostic.IDE0017.severity = none
-dotnet_diagnostic.IDE0028.severity = none
-dotnet_diagnostic.IDE0039.severity = none
-dotnet_diagnostic.IDE0062.severity = none
-dotnet_diagnostic.IDE1005.severity = none
 
 dotnet_diagnostic.NS1005.severity = none

@@ -206,7 +206,7 @@ namespace Validot.Testing
 
             try
             {
-                Validator.Factory.Create(specification);
+                _ = Validator.Factory.Create(specification);
             }
             catch (Exception exception)
             {

@@ -98,11 +98,11 @@ namespace Validot.Results
 
                 foreach (var code in Codes)
                 {
-                    stringBuilder.Append(code);
+                    _ = stringBuilder.Append(code);
 
                     if (++codeCounter < Codes.Count)
                     {
-                        stringBuilder.Append(CodeSeparator);
+                        _ = stringBuilder.Append(CodeSeparator);
                     }
                 }
             }
@@ -113,8 +113,8 @@ namespace Validot.Results
 
                 if (Codes.Count > 0)
                 {
-                    stringBuilder.Append(Environment.NewLine);
-                    stringBuilder.Append(Environment.NewLine);
+                    _ = stringBuilder.Append(Environment.NewLine);
+                    _ = stringBuilder.Append(Environment.NewLine);
                     linesCount = 3;
                 }
 
@@ -124,16 +124,16 @@ namespace Validot.Results
                     {
                         if (pair.Key.Length == 0)
                         {
-                            stringBuilder.Append($"{message}");
+                            _ = stringBuilder.Append($"{message}");
                         }
                         else
                         {
-                            stringBuilder.Append($"{pair.Key}{PathSeparator}{message}");
+                            _ = stringBuilder.Append($"{pair.Key}{PathSeparator}{message}");
                         }
 
                         if (++linesCount < lines)
                         {
-                            stringBuilder.Append(Environment.NewLine);
+                            _ = stringBuilder.Append(Environment.NewLine);
                         }
                     }
                 }
@@ -221,7 +221,7 @@ namespace Validot.Results
                         {
                             if (!result.Contains(_errorRegistry[pair.Value[i]].Codes[j]))
                             {
-                                result.Add(_errorRegistry[pair.Value[i]].Codes[j]);
+                                _ = result.Add(_errorRegistry[pair.Value[i]].Codes[j]);
                             }
                         }
                     }

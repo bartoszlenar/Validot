@@ -55,7 +55,7 @@ namespace Validot.Errors.Args
 
                 var value = arg.ToString(placeholder.Parameters);
 
-                messageBuilder.Replace(placeholder.Placeholder, value);
+                _ = messageBuilder.Replace(placeholder.Placeholder, value);
             }
 
             return messageBuilder.ToString();

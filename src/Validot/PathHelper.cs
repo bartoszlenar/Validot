@@ -107,7 +107,7 @@ namespace Validot
 
                 if (i == 0 && builder.ToString().EndsWith(_indexAtEnd, StringComparison.Ordinal))
                 {
-                    builder.Replace(_indexAtEnd, $"{Divider}{FormatCollectionIndex(index)}", builder.Length - 2, 2);
+                    _ = builder.Replace(_indexAtEnd, $"{Divider}{FormatCollectionIndex(index)}", builder.Length - 2, 2);
 
                     continue;
                 }
@@ -116,11 +116,11 @@ namespace Validot
 
                 if (pointer != -1)
                 {
-                    builder.Replace(_indexInTheMiddle, $"{Divider}{FormatCollectionIndex(index)}{Divider}", pointer, 3);
+                    _ = builder.Replace(_indexInTheMiddle, $"{Divider}{FormatCollectionIndex(index)}{Divider}", pointer, 3);
                 }
                 else if (builder.ToString().StartsWith(_indexAtStart, StringComparison.Ordinal))
                 {
-                    builder.Replace(_indexAtStart, $"{FormatCollectionIndex(index)}{Divider}", 0, 2);
+                    _ = builder.Replace(_indexAtStart, $"{FormatCollectionIndex(index)}{Divider}", 0, 2);
 
                     break;
                 }

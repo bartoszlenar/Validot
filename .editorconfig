@@ -239,7 +239,7 @@ resharper_redundant_extends_list_entry_highlighting = suggestion
 
 # Severity settings
 
-dotnet_analyzer_diagnostic.severity = warning
+dotnet_analyzer_diagnostic.severity = error
 
 dotnet_diagnostic.IDE0008.severity = none
 dotnet_diagnostic.IDE0046.severity = none

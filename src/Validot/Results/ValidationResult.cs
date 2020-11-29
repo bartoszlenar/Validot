@@ -42,29 +42,11 @@ namespace Validot.Results
 
         public IReadOnlyCollection<string> Paths => _resultErrors.Keys;
 
-        public IReadOnlyCollection<string> Codes
-        {
-            get
-            {
-                return _codes ?? (_codes = GetCodes());
-            }
-        }
+        public IReadOnlyCollection<string> Codes => _codes ?? (_codes = GetCodes());
 
-        public IReadOnlyDictionary<string, IReadOnlyList<string>> CodeMap
-        {
-            get
-            {
-                return _codeMap ?? (_codeMap = GetCodeMap());
-            }
-        }
+        public IReadOnlyDictionary<string, IReadOnlyList<string>> CodeMap => _codeMap ?? (_codeMap = GetCodeMap());
 
-        public IReadOnlyDictionary<string, IReadOnlyList<string>> MessageMap
-        {
-            get
-            {
-                return _messageMap ?? (_messageMap = GetTranslatedMessageMap(null));
-            }
-        }
+        public IReadOnlyDictionary<string, IReadOnlyList<string>> MessageMap => _messageMap ?? (_messageMap = GetTranslatedMessageMap(null));
 
         public IReadOnlyList<string> TranslationNames => _messageService?.TranslationNames ?? Array.Empty<string>();
 

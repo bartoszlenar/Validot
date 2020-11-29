@@ -57,7 +57,10 @@ namespace Validot.Results
                 : EmptyDictionary;
         }
 
-        public override string ToString() => ToString(null);
+        public override string ToString()
+        {
+            return ToString(null);
+        }
 
         public string ToString(string translationName)
         {

@@ -8,7 +8,7 @@ namespace Validot.Tests.Functional.Documentation.Models
 
         public IEnumerable<AuthorModel> Authors { get; set; }
 
-        public IEnumerable<LanguageEnum> Languages { get; set; }
+        public IEnumerable<Language> Languages { get; set; }
 
         public int YearOfFirstAnnouncement { get; set; }
 

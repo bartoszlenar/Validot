@@ -93,7 +93,7 @@ public class BookModel
 {
     public string Title { get; set; }
     public IEnumerable<AuthorModel> Authors { get; set; }
-    public IEnumerable<LanguageEnum> Languages { get; set; }
+    public IEnumerable<Language> Languages { get; set; }
     public int YearOfFirstAnnouncement { get; set; }
     public int? YearOfPublication { get; set; }
     public PublisherModel Publisher { get; set; }
@@ -112,7 +112,7 @@ public class PublisherModel
     public string Name { get; set; }
 }
 
-public enum LanguageEnum
+public enum Language
 {
     English,
     Polish

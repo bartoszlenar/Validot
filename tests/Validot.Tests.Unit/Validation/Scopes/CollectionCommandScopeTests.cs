@@ -23,7 +23,7 @@ namespace Validot.Tests.Unit.Validation.Scopes
 
         public class TestCollection<T> : IEnumerable<T>
         {
-            private List<T> _items;
+            private readonly List<T> _items;
 
             public TestCollection(IEnumerable<T> items)
             {

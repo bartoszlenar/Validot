@@ -19,7 +19,7 @@ namespace Validot.Tests.Unit
         [Fact]
         public void Should_Initialize_With_Message_And_InnerException()
         {
-            var innerException = new Exception();
+            var innerException = new InvalidOperationException();
 
             var exception = new ValidotException("a message", innerException);
 

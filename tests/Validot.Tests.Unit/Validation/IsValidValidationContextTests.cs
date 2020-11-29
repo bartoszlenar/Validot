@@ -44,10 +44,9 @@ namespace Validot.Tests.Unit.Validation
             {
                 var modelScheme = Substitute.For<IModelScheme>();
 
-                ReferenceLoopProtectionSettings referenceLoopProtectionSettings = null;
-
                 modelScheme.RootModelType.Returns(typeof(object));
-                referenceLoopProtectionSettings = new ReferenceLoopProtectionSettings();
+
+                var referenceLoopProtectionSettings = new ReferenceLoopProtectionSettings();
 
                 var validationContext = new IsValidValidationContext(modelScheme, referenceLoopProtectionSettings);
 

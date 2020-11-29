@@ -1,0 +1,16 @@
+# C# files
+[*.cs]
+
+# Severity settings
+
+dotnet_diagnostic.IDE0022.severity = none
+dotnet_diagnostic.IDE0039.severity = none
+dotnet_diagnostic.IDE0058.severity = none
+
+dotnet_diagnostic.CA1310.severity = none
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA2237.severity = none
+
+dotnet_diagnostic.SA1122.severity = none
+dotnet_diagnostic.SA1402.severity = none
+dotnet_diagnostic.SA1649.severity = none

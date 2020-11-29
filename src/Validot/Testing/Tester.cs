@@ -206,7 +206,7 @@ namespace Validot.Testing
 
             try
             {
-                Validator.Factory.Create(specification);
+                _ = Validator.Factory.Create(specification);
             }
             catch (Exception exception)
             {
@@ -319,6 +319,9 @@ namespace Validot.Testing
             return TestResult.Passed();
         }
 
-        public static void ShouldResultToStringHaveLines(this string @this, ToStringContentType toStringContentType, params string[] expectedLines) => TestResultToString(@this, toStringContentType, expectedLines).ThrowExceptionIfFailed();
+        public static void ShouldResultToStringHaveLines(this string @this, ToStringContentType toStringContentType, params string[] expectedLines)
+        {
+            TestResultToString(@this, toStringContentType, expectedLines).ThrowExceptionIfFailed();
+        }
     }
 }

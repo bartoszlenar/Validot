@@ -11,3 +11,44 @@ resharper_unused_auto_property_saccessor_local_highlighting = suggestion
 resharper_unused_auto_property_accessor_global_highlighting = suggestion
 resharper_co_variant_array_conversion_highlighting = suggestion
 resharper_redundant_extends_list_entry_highlighting = suggestion
+
+
+# Severity settings
+
+dotnet_diagnostic.IDE0017.severity = none
+dotnet_diagnostic.IDE0022.severity = none
+dotnet_diagnostic.IDE0028.severity = none
+dotnet_diagnostic.IDE0039.severity = none
+dotnet_diagnostic.IDE0050.severity = suggestion
+dotnet_diagnostic.IDE0052.severity = suggestion
+dotnet_diagnostic.IDE0058.severity = none
+dotnet_diagnostic.IDE0062.severity = none
+dotnet_diagnostic.IDE1005.severity = none
+
+dotnet_diagnostic.CA1034.severity = none
+dotnet_diagnostic.CA1051.severity = none
+dotnet_diagnostic.CA1052.severity = none
+dotnet_diagnostic.CA1062.severity = none
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1711.severity = none
+dotnet_diagnostic.CA1812.severity = none
+dotnet_diagnostic.CA1806.severity = none
+dotnet_diagnostic.CA1815.severity = none
+dotnet_diagnostic.CA1819.severity = none
+dotnet_diagnostic.CA1820.severity = none
+dotnet_diagnostic.CA1823.severity = suggestion
+dotnet_diagnostic.CA1825.severity = none
+
+dotnet_diagnostic.SA1118.severity = none
+dotnet_diagnostic.SA1122.severity = none
+dotnet_diagnostic.SA1125.severity = none
+dotnet_diagnostic.SA1129.severity = none
+dotnet_diagnostic.SA1139.severity = none
+dotnet_diagnostic.SA1201.severity = none
+dotnet_diagnostic.SA1204.severity = none
+dotnet_diagnostic.SA1401.severity = none
+dotnet_diagnostic.SA1600.severity = none
+dotnet_diagnostic.SA1601.severity = none
+dotnet_diagnostic.SA1602.severity = none
+
+dotnet_diagnostic.NS1005.severity = none

@@ -101,7 +101,8 @@ namespace Validot.Tests.Unit.Errors.Args
 
             var stringified1 = arg1.ToString(new Dictionary<string, string>
             {
-                ["format"] = "D", ["translation"] = "true"
+                ["format"] = "D",
+                ["translation"] = "true",
             });
 
             stringified1.Should().Be("{_translation|key=Enum.System.StringComparison.CurrentCulture}");

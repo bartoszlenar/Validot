@@ -32,7 +32,7 @@
 
                 if (_modelScheme.RootModelType.IsClass && !(referenceLoopProtectionSettings.RootModelReference is null))
                 {
-                    _referencesStack.TryPush(_modelScheme.RootSpecificationScopeId, string.Empty, referenceLoopProtectionSettings.RootModelReference, out _);
+                    _ = _referencesStack.TryPush(_modelScheme.RootSpecificationScopeId, string.Empty, referenceLoopProtectionSettings.RootModelReference, out _);
                 }
             }
         }
@@ -77,7 +77,7 @@
 
             if (useReferenceLoopProtection)
             {
-                _referencesStack.Pop(scopeId, out _);
+                _ = _referencesStack.Pop(scopeId, out _);
             }
         }
 

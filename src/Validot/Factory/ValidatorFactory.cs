@@ -46,7 +46,7 @@ namespace Validot.Factory
 
             if (specificationHolder is ITranslationHolder translationHolder)
             {
-                initSettings.WithTranslation(translationHolder);
+                _ = initSettings.WithTranslation(translationHolder);
             }
 
             if (settings != null)

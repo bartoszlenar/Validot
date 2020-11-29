@@ -548,7 +548,7 @@ namespace Validot.Tests.Unit.Validation.Scopes.Builders
         {
             public class TestCollection : IEnumerable<TestClass>
             {
-                private List<TestClass> _list = new List<TestClass>();
+                private readonly List<TestClass> _list = new List<TestClass>();
 
                 public IEnumerator<TestClass> GetEnumerator()
                 {

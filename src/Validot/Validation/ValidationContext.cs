@@ -38,7 +38,7 @@ namespace Validot.Validation
 
                 if (_modelScheme.RootModelType.IsClass && !(referenceLoopProtectionSettings.RootModelReference is null))
                 {
-                    _referencesStack.TryPush(_modelScheme.RootSpecificationScopeId, GetCurrentPath(), referenceLoopProtectionSettings.RootModelReference, out _);
+                    _ = _referencesStack.TryPush(_modelScheme.RootSpecificationScopeId, GetCurrentPath(), referenceLoopProtectionSettings.RootModelReference, out _);
                 }
             }
         }
@@ -127,7 +127,7 @@ namespace Validot.Validation
 
             if (useReferenceLoopProtection)
             {
-                _referencesStack.Pop(scopeId, out _);
+                _ = _referencesStack.Pop(scopeId, out _);
             }
         }
 

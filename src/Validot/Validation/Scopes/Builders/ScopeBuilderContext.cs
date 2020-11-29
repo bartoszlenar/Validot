@@ -64,7 +64,10 @@ namespace Validot.Validation.Scopes.Builders
 
         public int RequiredErrorId { get; }
 
-        public IDiscoverable GetDiscoverableSpecificationScope(int id) => (IDiscoverable)_scopes[id];
+        public IDiscoverable GetDiscoverableSpecificationScope(int id)
+        {
+            return (IDiscoverable)_scopes[id];
+        }
 
         public int RegisterError(IError error)
         {

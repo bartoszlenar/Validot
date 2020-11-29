@@ -15,10 +15,7 @@ namespace Validot.Settings
         /// <summary>
         /// Gets translations dictionary - the key is the translation name, the value is the translation dictionary (where the key is the message key and the value is error message content for this key).
         /// </summary>
-        public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations
-        {
-            get => _translationCompiler.Translations;
-        }
+        public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations => _translationCompiler.Translations;
 
         /// <summary>
         /// Gets information whether reference loop protection is enabled or not. If null, then it will be enabled automatically if the reference loop occurence is theoretically possible (based on the specification).

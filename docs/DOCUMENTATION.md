@@ -93,7 +93,7 @@ public class BookModel
 {
     public string Title { get; set; }
     public IEnumerable<AuthorModel> Authors { get; set; }
-    public IEnumerable<LanguageEnum> Languages { get; set; }
+    public IEnumerable<Language> Languages { get; set; }
     public int YearOfFirstAnnouncement { get; set; }
     public int? YearOfPublication { get; set; }
     public PublisherModel Publisher { get; set; }
@@ -112,7 +112,7 @@ public class PublisherModel
     public string Name { get; set; }
 }
 
-public enum LanguageEnum
+public enum Language
 {
     English,
     Polish
@@ -4335,7 +4335,7 @@ validator.Validate(20).ToString("YodaEnglish");
 - This section contains examples that uses powershell, but bash scripts are also fully supported.
   - Just replace `pwsh build.ps1` with `bash build.sh`
 - If you're keep experiencing compilation errors that your IDE doesn't show (and at the same time `dotnet build` completes OK), consider adding `--AllowWarnings`.
-  - By default, the build system requires the code to follow the rules set in [ruleset](../Validot.sln.ruleset) and [editorconfig](../.editorconfig).
+  - By default, the build system requires the code to follow the rules set in [editorconfig](../.editorconfig).
 - If you don't provide `--Version` parameter (value needs to follow [semver](https://semver.org/) rules), the default version is `0.0.0-XHHmmss`, where `X` is the day of the current year, `HHmmss` is the timestamp.
 
 ### Build

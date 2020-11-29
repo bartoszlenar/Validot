@@ -21,7 +21,7 @@ namespace Validot
 
             foreach (var entry in translation)
             {
-                @this.WithTranslation(name, entry.Key, entry.Value);
+                _ = @this.WithTranslation(name, entry.Key, entry.Value);
             }
 
             return @this;
@@ -40,7 +40,7 @@ namespace Validot
 
             foreach (var translation in translations)
             {
-                @this.WithTranslation(translation.Key, translation.Value);
+                _ = @this.WithTranslation(translation.Key, translation.Value);
             }
 
             return @this;

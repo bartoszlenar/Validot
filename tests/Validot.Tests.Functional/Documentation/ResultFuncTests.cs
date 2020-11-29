@@ -251,7 +251,7 @@ namespace Validot.Tests.Functional.Documentation
 
             var result = validator.Validate(model);
 
-            result.TranslationNames.Should().ContainSingle("English" );
+            result.TranslationNames.Should().ContainSingle("English");
         }
 
         [Fact]

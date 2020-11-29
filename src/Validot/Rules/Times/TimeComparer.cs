@@ -14,6 +14,7 @@ namespace Validot
                 case TimeComparison.JustTime:
                     return TimeSpan.Compare(a.TimeOfDay, b.TimeOfDay);
 
+                case TimeComparison.All:
                 default:
                     return DateTime.Compare(a, b);
             }
@@ -29,6 +30,7 @@ namespace Validot
                 case TimeComparison.JustTime:
                     return TimeSpan.Compare(a.TimeOfDay, b.TimeOfDay);
 
+                case TimeComparison.All:
                 default:
                     return DateTimeOffset.Compare(a, b);
             }

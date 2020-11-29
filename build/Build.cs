@@ -385,17 +385,17 @@ class Build : NukeBuild
         {
             Logger.Info($"DotNet parameter recognized as SDK version: " + dotnet);
 
-            if (dotnet.StartsWith("2.1."))
+            if (dotnet.StartsWith("2.1.", StringComparison.Ordinal))
             {
                 return "netcoreapp2.1";
             }
 
-            if (dotnet.StartsWith("3.1."))
+            if (dotnet.StartsWith("3.1.", StringComparison.Ordinal))
             {
                 return "netcoreapp3.1";
             }
 
-            if (dotnet.StartsWith("5.0."))
+            if (dotnet.StartsWith("5.0.", StringComparison.Ordinal))
             {
                 return "net5.0";
             }
@@ -405,14 +405,14 @@ class Build : NukeBuild
             return dotnet;
         }
 
-        if (dotnet.StartsWith("netcoreapp") && dotnet.Substring("netcoreapp".Length).All(c => char.IsDigit(c) || c == '.'))
+        if (dotnet.StartsWith("netcoreapp", StringComparison.Ordinal) && dotnet["netcoreapp".Length..].All(c => char.IsDigit(c) || c == '.'))
         {
             Logger.Info("DotNet parameter recognized as .NET Core target: " + DotNet);
 
             return dotnet;
         }
 
-        if (dotnet.StartsWith("net") && DotNet.Substring("net".Length).All(char.IsDigit))
+        if (dotnet.StartsWith("net", StringComparison.Ordinal) && DotNet["net".Length..].All(char.IsDigit))
         {
             Logger.Info("DotNet parameter recognized as .NET Framework target: " + dotnet);
 

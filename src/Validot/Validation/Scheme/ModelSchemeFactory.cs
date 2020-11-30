@@ -8,7 +8,7 @@ namespace Validot.Validation.Scheme
 
     internal static class ModelSchemeFactory
     {
-        public static ModelScheme<T> Create<T>(Specification<T> specification)
+        public static IModelScheme<T> Create<T>(Specification<T> specification)
         {
             ThrowHelper.NullArgument(specification, nameof(specification));
 

@@ -191,11 +191,6 @@ namespace Validot.Tests.Unit.Settings
 
                 action.Should().ThrowExactly<InvalidOperationException>();
             }
-
-            public class TestTranslationHolder : ITranslationHolder
-            {
-                public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; set; }
-            }
         }
     }
 }

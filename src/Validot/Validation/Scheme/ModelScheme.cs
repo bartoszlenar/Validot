@@ -6,7 +6,7 @@ namespace Validot.Validation.Scheme
     using Validot.Errors;
     using Validot.Validation.Scopes;
 
-    internal class ModelScheme<T> : IModelScheme
+    internal class ModelScheme<T> : IModelScheme<T>
     {
         private readonly IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> _pathMap;
 
@@ -63,7 +63,7 @@ namespace Validot.Validation.Scheme
 
         public IReadOnlyDictionary<string, IReadOnlyList<int>> Template { get; }
 
-        public SpecificationScope<T> RootSpecificationScope { get; }
+        public ISpecificationScope<T> RootSpecificationScope { get; }
 
         public bool IsReferenceLoopPossible { get; }
 

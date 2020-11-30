@@ -5,6 +5,7 @@ namespace Validot.Tests.Unit.Factory
 
     using FluentAssertions;
 
+    using Validot.Factory;
     using Validot.Settings;
     using Validot.Tests.Unit.Settings;
     using Validot.Tests.Unit.Translations;
@@ -63,11 +64,6 @@ namespace Validot.Tests.Unit.Factory
 
         public class ValidationWhenFromHolder
         {
-            public class TestClassSpecificationHolder : ISpecificationHolder<ValidationTestData.TestClass>
-            {
-                public Specification<ValidationTestData.TestClass> Specification { get; set; }
-            }
-
             [Theory]
             [MemberData(nameof(ValidationTestData.CasesForTemplate_Data), MemberType = typeof(ValidationTestData))]
             public void Should_HaveTemplate(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
@@ -133,48 +129,330 @@ namespace Validot.Tests.Unit.Factory
             }
         }
 
-        [Fact]
-        public void Should_ThrowException_When_SpecificationHolder_IsNull()
+        public class SettingsFromInlineBuilder
         {
-            Action action = () => _ = Validator.Factory.Create(null as ISpecificationHolder<object>);
+            [Fact]
+            public void Should_LockSettings()
+            {
+                var validator = Validator.Factory.Create<object>(s => s, s => s);
 
-            action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("specificationHolder");
+                ((ValidatorSettings)validator.Settings).IsLocked.Should().BeTrue();
+            }
+
+            [Fact]
+            public void Should_SetSettings()
+            {
+                var validator = Validator.Factory.Create<object>(
+                    s => s,
+                    s => s
+                        .WithTranslation("a", "a", "a")
+                        .WithTranslation("a", "b", "c")
+                        .WithTranslation("x", "y", "z")
+                        .WithReferenceLoopProtectionDisabled()
+                );
+
+                validator.Settings.Should().NotBeNull();
+                validator.Settings.Translations.Should().NotBeNull();
+                validator.Settings.Translations.ShouldBeLikeTranslations(new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                {
+                    ["English"] = Translation.English,
+                    ["a"] = new Dictionary<string, string>()
+                    {
+                        ["a"] = "a",
+                        ["b"] = "c"
+                    },
+                    ["x"] = new Dictionary<string, string>()
+                    {
+                        ["y"] = "z"
+                    }
+                });
+
+                validator.Settings.ReferenceLoopProtection.Should().BeFalse();
+            }
+
+            [Fact]
+            public void Should_SetSettings_WhenSpecificationIsFromHolder()
+            {
+                var holder = new TestClassSpecificationHolder()
+                {
+                    Specification = s => s
+                };
+
+                var validator = Validator.Factory.Create(
+                    holder,
+                    s => s
+                        .WithTranslation("a", "a", "a")
+                        .WithTranslation("a", "b", "c")
+                        .WithTranslation("x", "y", "z")
+                        .WithReferenceLoopProtection()
+                );
+
+                validator.Settings.Should().NotBeNull();
+                validator.Settings.Translations.Should().NotBeNull();
+                validator.Settings.Translations.ShouldBeLikeTranslations(new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                {
+                    ["English"] = Translation.English,
+                    ["a"] = new Dictionary<string, string>()
+                    {
+                        ["a"] = "a",
+                        ["b"] = "c"
+                    },
+                    ["x"] = new Dictionary<string, string>()
+                    {
+                        ["y"] = "z"
+                    }
+                });
+
+                validator.Settings.ReferenceLoopProtection.Should().BeTrue();
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_PassingExternalSettings()
+            {
+                Action action = () => _ = Validator.Factory.Create<object>(s => s, s => new ValidatorSettings());
+
+                var exception = action.Should().ThrowExactly<InvalidOperationException>().And;
+                exception.Message.Should().Be("Validator settings fluent API should return the same reference as received.");
+            }
         }
 
-        [Fact]
-        public void Should_HaveDefaultSettings()
+        public class SettingsFromHolder
         {
-            var validator = Validator.Factory.Create<object>(s => s);
+            [Fact]
+            public void Should_LockSettings()
+            {
+                var holder = new TestClassSpecificationAndSettingsHolder()
+                {
+                    Specification = s => s,
+                    Settings = s => s
+                };
 
-            validator.Settings.ShouldBeLikeDefault();
+                var validator = Validator.Factory.Create(holder);
+
+                ((ValidatorSettings)validator.Settings).IsLocked.Should().BeTrue();
+            }
+
+            [Fact]
+            public void Should_LockSettings_When_OverridenByInlineBuilder()
+            {
+                var holder = new TestClassSpecificationAndSettingsHolder()
+                {
+                    Specification = s => s,
+                    Settings = s => s
+                };
+
+                var validator = Validator.Factory.Create(holder, s => s);
+
+                ((ValidatorSettings)validator.Settings).IsLocked.Should().BeTrue();
+            }
+
+            [Fact]
+            public void Should_SetSettings()
+            {
+                var holder = new TestClassSpecificationAndSettingsHolder()
+                {
+                    Specification = s => s,
+                    Settings = s => s
+                        .WithTranslation("a", "a", "a")
+                        .WithTranslation("a", "b", "c")
+                        .WithTranslation("x", "y", "z")
+                        .WithReferenceLoopProtection()
+                };
+
+                var validator = Validator.Factory.Create(holder);
+
+                validator.Settings.Should().NotBeNull();
+                validator.Settings.Translations.Should().NotBeNull();
+                validator.Settings.Translations.ShouldBeLikeTranslations(new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                {
+                    ["English"] = Translation.English,
+                    ["a"] = new Dictionary<string, string>()
+                    {
+                        ["a"] = "a",
+                        ["b"] = "c"
+                    },
+                    ["x"] = new Dictionary<string, string>()
+                    {
+                        ["y"] = "z"
+                    }
+                });
+
+                validator.Settings.ReferenceLoopProtection.Should().BeTrue();
+            }
+
+            [Fact]
+            public void Should_InlineSettings_Overwrite_SettingsFromHolder()
+            {
+                var holder = new TestClassSpecificationAndSettingsHolder()
+                {
+                    Specification = s => s,
+                    Settings = s => s
+                        .WithTranslation("a", "a", "AAA")
+                        .WithTranslation("x", "y", "ZZZ")
+                        .WithReferenceLoopProtectionDisabled()
+                };
+
+                var validator = Validator.Factory.Create(holder, s => s
+                    .WithTranslation("a", "a", "a")
+                    .WithTranslation("a", "b", "c")
+                    .WithTranslation("x", "y", "z")
+                    .WithReferenceLoopProtection()
+                );
+
+                validator.Settings.Should().NotBeNull();
+                validator.Settings.Translations.Should().NotBeNull();
+                validator.Settings.Translations.ShouldBeLikeTranslations(new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                {
+                    ["English"] = Translation.English,
+                    ["a"] = new Dictionary<string, string>()
+                    {
+                        ["a"] = "a",
+                        ["b"] = "c"
+                    },
+                    ["x"] = new Dictionary<string, string>()
+                    {
+                        ["y"] = "z"
+                    }
+                });
+
+                validator.Settings.ReferenceLoopProtection.Should().BeTrue();
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_PassingExternalSettings_UsingHolder()
+            {
+                var holder = new TestClassSpecificationAndSettingsHolder()
+                {
+                    Specification = s => s,
+                    Settings = s => new ValidatorSettings()
+                };
+
+                Action action = () => _ = Validator.Factory.Create(holder);
+
+                var exception = action.Should().ThrowExactly<InvalidOperationException>().And;
+                exception.Message.Should().Be("Validator settings fluent API should return the same reference as received.");
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_PassingExternalSettings_UsingHolder_AndInlineBuilder()
+            {
+                var holder = new TestClassSpecificationAndSettingsHolder()
+                {
+                    Specification = s => s,
+                    Settings = s => s
+                };
+
+                Action action = () => _ = Validator.Factory.Create(holder, s => new ValidatorSettings());
+
+                var exception = action.Should().ThrowExactly<InvalidOperationException>().And;
+                exception.Message.Should().Be("Validator settings fluent API should return the same reference as received.");
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_SpecificationHolder_IsNull()
+            {
+                Action action = () => _ = Validator.Factory.Create(null as ISpecificationHolder<object>);
+
+                action.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("specificationHolder");
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_SpecificationHolder_ContainsNullSpecification()
+            {
+                var holder = new TestClassSpecificationAndSettingsHolder()
+                {
+                    Specification = null
+                };
+
+                Action action = () => _ = Validator.Factory.Create(holder);
+
+                var exception = action.Should().Throw<ArgumentException>().And;
+
+                exception.ParamName.Should().Be("specificationHolder");
+                exception.Message.Should().StartWith("ISettingsHolder can't have null Settings");
+            }
         }
 
-        [Fact]
-        public void Should_HaveDefaultSettingsLocked()
+        public class SettingsFromObject
         {
-            var validator = Validator.Factory.Create<object>(s => s);
+            [Fact]
+            public void Should_LockSettings()
+            {
+                var validatorWithSettings = Validator.Factory.Create<object>(
+                    s => s,
+                    s => s
+                );
 
-            validator.Settings.IsLocked.Should().BeTrue();
-        }
+                var validator = Validator.Factory.Create<object>(
+                    s => s,
+                    validatorWithSettings.Settings
+                );
 
-        [Fact]
-        public void Should_LockSettingsAfterPassingToFactory()
-        {
-            var validator = Validator.Factory.Create<object>(s => s, s => s);
+                ((ValidatorSettings)validator.Settings).IsLocked.Should().BeTrue();
+            }
 
-            validator.Settings.IsLocked.Should().BeTrue();
-        }
+            [Fact]
+            public void Should_SetSettings()
+            {
+                var validatorWithSettings = Validator.Factory.Create<object>(
+                    s => s,
+                    s => s
+                        .WithTranslation("a", "a", "a")
+                        .WithTranslation("a", "b", "c")
+                        .WithTranslation("x", "y", "z")
+                        .WithReferenceLoopProtectionDisabled()
+                );
 
-        [Fact]
-        public void Should_LockSettingsAfterPassingToFactory_ExternalSettings()
-        {
-            var settings = new ValidatorSettings();
+                var validator = Validator.Factory.Create<object>(
+                    s => s,
+                    validatorWithSettings.Settings
+                );
 
-            settings.IsLocked.Should().BeFalse();
+                validator.Settings.Should().NotBeNull();
+                validator.Settings.Should().BeSameAs(validatorWithSettings.Settings);
 
-            _ = Validator.Factory.Create<object>(s => s, s => settings);
+                validator.Settings.Translations.Should().NotBeNull();
+                validator.Settings.Translations.ShouldBeLikeTranslations(new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                {
+                    ["English"] = Translation.English,
+                    ["a"] = new Dictionary<string, string>()
+                    {
+                        ["a"] = "a",
+                        ["b"] = "c"
+                    },
+                    ["x"] = new Dictionary<string, string>()
+                    {
+                        ["y"] = "z"
+                    }
+                });
 
-            settings.IsLocked.Should().BeTrue();
+                validator.Settings.ReferenceLoopProtection.Should().BeFalse();
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_NullSettings()
+            {
+                Action action = () => _ = Validator.Factory.Create<object>(s => s, null as IValidatorSettings);
+
+                action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("settings");
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_CustomSettingsInterfaceImplementation()
+            {
+                Action action = () => _ = Validator.Factory.Create<object>(s => s, new CustomSettings());
+
+                var exception = action.Should().ThrowExactly<ArgumentException>().And;
+                exception.ParamName.Should().Be("settings");
+                exception.Message.Should().StartWith("Custom IValidatorSettings implementations are not supported.");
+            }
+
+            internal class CustomSettings : IValidatorSettings
+            {
+                public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; set; }
+
+                public bool ReferenceLoopProtection { get; set; }
+            }
         }
 
         public class Translating
@@ -372,23 +650,24 @@ namespace Validot.Tests.Unit.Factory
             }
 
             [Fact]
-            public void Should_AddTranslationFromHolder()
+            public void Should_AddTranslationFromSettingsHolder()
             {
                 var holder = new TestClassSpecificationAndTranslationHolder()
                 {
                     Specification = c => c,
-                    Translations = new Dictionary<string, IReadOnlyDictionary<string, string>>()
-                    {
-                        ["name"] = new Dictionary<string, string>()
+                    Settings = s => s
+                        .WithTranslation(new Dictionary<string, IReadOnlyDictionary<string, string>>()
                         {
-                            ["k1"] = "v1",
-                        },
-                        ["English"] = new Dictionary<string, string>()
-                        {
-                            ["Global.Required"] = "OVERWRITTEN",
-                            ["TotallyNewKey"] = "NEW",
-                        }
-                    }
+                            ["name"] = new Dictionary<string, string>()
+                            {
+                                ["k1"] = "v1",
+                            },
+                            ["English"] = new Dictionary<string, string>()
+                            {
+                                ["Global.Required"] = "OVERWRITTEN",
+                                ["TotallyNewKey"] = "NEW",
+                            }
+                        })
                 };
 
                 var validator = Validator.Factory.Create(holder);
@@ -415,23 +694,24 @@ namespace Validot.Tests.Unit.Factory
             }
 
             [Fact]
-            public void Should_AddTranslationFromHolder_AndModifyItByWithTranslation()
+            public void Should_AddTranslationFromSettingsHolder_AndModifyItByWithTranslationFromSettings()
             {
                 var holder = new TestClassSpecificationAndTranslationHolder()
                 {
                     Specification = c => c,
-                    Translations = new Dictionary<string, IReadOnlyDictionary<string, string>>()
-                    {
-                        ["name"] = new Dictionary<string, string>()
+                    Settings = s => s
+                        .WithTranslation(new Dictionary<string, IReadOnlyDictionary<string, string>>()
                         {
-                            ["k1"] = "v1",
-                        },
-                        ["English"] = new Dictionary<string, string>()
-                        {
-                            ["Global.Required"] = "OVERWRITTEN",
-                            ["TotallyNewKey"] = "NEW",
-                        }
-                    }
+                            ["name"] = new Dictionary<string, string>()
+                            {
+                                ["k1"] = "v1",
+                            },
+                            ["English"] = new Dictionary<string, string>()
+                            {
+                                ["Global.Required"] = "OVERWRITTEN",
+                                ["TotallyNewKey"] = "NEW",
+                            }
+                        })
                 };
 
                 var dictionary = new Dictionary<string, IReadOnlyDictionary<string, string>>()
@@ -474,12 +754,40 @@ namespace Validot.Tests.Unit.Factory
                     });
             }
 
-            public class TestClassSpecificationAndTranslationHolder : ISpecificationHolder<ValidationTestData.TestClass>, ITranslationHolder
+            public class TestClassSpecificationAndTranslationHolder : ISpecificationHolder<ValidationTestData.TestClass>, ISettingsHolder
             {
                 public Specification<ValidationTestData.TestClass> Specification { get; set; }
 
-                public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; set; }
+                public Func<ValidatorSettings, ValidatorSettings> Settings { get; set; }
             }
+        }
+
+        [Fact]
+        public void Should_HaveDefaultSettings()
+        {
+            var validator = Validator.Factory.Create<object>(s => s);
+
+            validator.Settings.ShouldBeLikeDefault();
+        }
+
+        [Fact]
+        public void Should_HaveDefaultSettingsLocked()
+        {
+            var validator = Validator.Factory.Create<object>(s => s);
+
+            ((ValidatorSettings)validator.Settings).IsLocked.Should().BeTrue();
+        }
+
+        public class TestClassSpecificationAndSettingsHolder : ISpecificationHolder<ValidationTestData.TestClass>, ISettingsHolder
+        {
+            public Specification<ValidationTestData.TestClass> Specification { get; set; }
+
+            public Func<ValidatorSettings, ValidatorSettings> Settings { get; set; }
+        }
+
+        public class TestClassSpecificationHolder : ISpecificationHolder<ValidationTestData.TestClass>
+        {
+            public Specification<ValidationTestData.TestClass> Specification { get; set; }
         }
     }
 }

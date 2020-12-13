@@ -44,7 +44,7 @@ namespace Validot
         /// <inheritdoc cref="IValidator{T}.IsValid"/>
         public bool IsValid(T model)
         {
-            var validationContext = new IsValidValidationContext(_modelScheme, Settings.ReferenceLoopProtection ? new ReferenceLoopProtectionSettings(model) : null);
+            var validationContext = new IsValidValidationContext(_modelScheme, Settings.ReferenceLoopProtectionEnabled ? new ReferenceLoopProtectionSettings(model) : null);
 
             _modelScheme.RootSpecificationScope.Validate(model, validationContext);
 
@@ -54,7 +54,7 @@ namespace Validot
         /// <inheritdoc cref="IValidator{T}.Validate"/>
         public IValidationResult Validate(T model, bool failFast = false)
         {
-            var validationContext = new ValidationContext(_modelScheme, failFast, Settings.ReferenceLoopProtection ? new ReferenceLoopProtectionSettings(model) : null);
+            var validationContext = new ValidationContext(_modelScheme, failFast, Settings.ReferenceLoopProtectionEnabled ? new ReferenceLoopProtectionSettings(model) : null);
 
             _modelScheme.RootSpecificationScope.Validate(model, validationContext);
 

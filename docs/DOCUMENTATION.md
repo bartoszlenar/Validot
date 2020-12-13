@@ -3027,7 +3027,7 @@ var validator = Validator.Factory.Create(specification, settings => settings
     .WithReferenceLoopProtection()
 );
 
-validator.Settings.ReferenceLoopProtection; // true
+validator.Settings.ReferenceLoopProtectionEnabled; // true
 ```
 
 #### WithReferenceLoopProtection
@@ -3036,6 +3036,7 @@ validator.Settings.ReferenceLoopProtection; // true
   - If not explicitly set, the [validator](#validator) turns it on automatically if the [reference loop](#reference-loop) is theoretically possible according to the [specification](#specification).
 - `WithReferenceLoopProtectionDisabled` disables the protection against the [reference loop](#reference-loop).
   - One scenario when this protection is redundant is when you're absolutely sure that the object won't have [reference loops](#reference-loop), because the model is e.g., deserialized from the string.
+- Settings' property `ReferenceLoopProtectionEnabled` holds to final value.
 
 #### WithTranslation
 
@@ -3092,7 +3093,7 @@ validator2.Validate(author).ToString();
 // Name: You must fill out the name
 ```
 
-_In the above code, the default value for `NotEmpty` (message key `Texts.NotEmpty`) has been overridden with the content `Text value cannot be empty`
+_In the above code, the default value for `NotEmpty` (message key `Texts.NotEmpty`) has been overridden with the content `Text value cannot be empty`_
 
 - `WithTranslation` has a version (via extension method) that wraps the base method and accepts:
     - `name` - translation name

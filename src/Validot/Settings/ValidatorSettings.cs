@@ -19,10 +19,10 @@ namespace Validot.Settings
         /// <inheritdoc cref="IValidatorSettings.Translations"/>
         public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations => _translationCompiler.Translations;
 
-        /// <inheritdoc cref="IValidatorSettings.ReferenceLoopProtection"/>
-        public bool? ReferenceLoopProtection { get; private set; }
+        /// <inheritdoc cref="IValidatorSettings.ReferenceLoopProtectionEnabled"/>
+        public bool? ReferenceLoopProtectionEnabled { get; private set; }
 
-        bool IValidatorSettings.ReferenceLoopProtection => ReferenceLoopProtection == true;
+        bool IValidatorSettings.ReferenceLoopProtectionEnabled => ReferenceLoopProtectionEnabled == true;
 
         internal bool IsLocked { get; set; }
 
@@ -46,7 +46,7 @@ namespace Validot.Settings
         {
             ThrowIfLocked();
 
-            ReferenceLoopProtection = true;
+            ReferenceLoopProtectionEnabled = true;
 
             return this;
         }
@@ -61,7 +61,7 @@ namespace Validot.Settings
         {
             ThrowIfLocked();
 
-            ReferenceLoopProtection = false;
+            ReferenceLoopProtectionEnabled = false;
 
             return this;
         }

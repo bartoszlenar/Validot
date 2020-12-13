@@ -20,7 +20,7 @@ namespace Validot.Tests.Functional.Documentation
                 .WithReferenceLoopProtection()
             );
 
-            validator.Settings.ReferenceLoopProtection.Should().BeTrue();
+            validator.Settings.ReferenceLoopProtectionEnabled.Should().BeTrue();
         }
 
         [Fact]

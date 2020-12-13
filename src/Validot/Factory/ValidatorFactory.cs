@@ -95,7 +95,7 @@ namespace Validot.Factory
 
         private static void SetReferenceLoopProtection(ValidatorSettings settings, bool isReferenceLoopPossible)
         {
-            if (!settings.ReferenceLoopProtection.HasValue)
+            if (!settings.ReferenceLoopProtectionEnabled.HasValue)
             {
                 _ = isReferenceLoopPossible
                     ? settings.WithReferenceLoopProtection()

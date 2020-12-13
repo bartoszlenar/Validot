@@ -118,7 +118,7 @@ namespace Validot.Tests.Functional.Documentation
                 "English", "Polish"
             });
 
-            validator.Settings.ReferenceLoopProtection.Should().BeTrue();
+            validator.Settings.ReferenceLoopProtectionEnabled.Should().BeTrue();
 
             var validator2 = Validator.Factory.Create(
                 new AuthorSpecificationHolder(),
@@ -132,7 +132,7 @@ namespace Validot.Tests.Functional.Documentation
                 "Name: Name must not be empty",
                 "Email: The email address is invalid");
 
-            validator2.Settings.ReferenceLoopProtection.Should().BeFalse();
+            validator2.Settings.ReferenceLoopProtectionEnabled.Should().BeFalse();
         }
 
         [Fact]
@@ -156,7 +156,7 @@ namespace Validot.Tests.Functional.Documentation
                 "Name: Name must not be empty",
                 "Email: The email address is invalid");
 
-            validator.Settings.ReferenceLoopProtection.Should().BeFalse();
+            validator.Settings.ReferenceLoopProtectionEnabled.Should().BeFalse();
         }
 
         [Fact]

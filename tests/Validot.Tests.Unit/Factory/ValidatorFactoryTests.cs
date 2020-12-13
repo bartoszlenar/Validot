@@ -167,7 +167,7 @@ namespace Validot.Tests.Unit.Factory
                     }
                 });
 
-                validator.Settings.ReferenceLoopProtection.Should().BeFalse();
+                validator.Settings.ReferenceLoopProtectionEnabled.Should().BeFalse();
             }
 
             [Fact]
@@ -203,7 +203,7 @@ namespace Validot.Tests.Unit.Factory
                     }
                 });
 
-                validator.Settings.ReferenceLoopProtection.Should().BeTrue();
+                validator.Settings.ReferenceLoopProtectionEnabled.Should().BeTrue();
             }
 
             [Fact]
@@ -277,7 +277,7 @@ namespace Validot.Tests.Unit.Factory
                     }
                 });
 
-                validator.Settings.ReferenceLoopProtection.Should().BeTrue();
+                validator.Settings.ReferenceLoopProtectionEnabled.Should().BeTrue();
             }
 
             [Fact]
@@ -315,7 +315,7 @@ namespace Validot.Tests.Unit.Factory
                     }
                 });
 
-                validator.Settings.ReferenceLoopProtection.Should().BeTrue();
+                validator.Settings.ReferenceLoopProtectionEnabled.Should().BeTrue();
             }
 
             [Fact]
@@ -426,7 +426,7 @@ namespace Validot.Tests.Unit.Factory
                     }
                 });
 
-                validator.Settings.ReferenceLoopProtection.Should().BeFalse();
+                validator.Settings.ReferenceLoopProtectionEnabled.Should().BeFalse();
             }
 
             [Fact]
@@ -451,7 +451,7 @@ namespace Validot.Tests.Unit.Factory
             {
                 public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; set; }
 
-                public bool ReferenceLoopProtection { get; set; }
+                public bool ReferenceLoopProtectionEnabled { get; set; }
             }
         }
 

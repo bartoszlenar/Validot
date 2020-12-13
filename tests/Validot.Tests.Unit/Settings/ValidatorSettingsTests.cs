@@ -24,7 +24,7 @@ namespace Validot.Tests.Unit.Settings
             var validatorSettings = new ValidatorSettings();
 
             validatorSettings.Translations.Should().BeEmpty();
-            validatorSettings.ReferenceLoopProtection.Should().BeNull();
+            validatorSettings.ReferenceLoopProtectionEnabled.Should().BeNull();
             validatorSettings.IsLocked.Should().BeFalse();
         }
 
@@ -49,13 +49,13 @@ namespace Validot.Tests.Unit.Settings
             }
 
             [Fact]
-            public void Should_WithReferenceLoopProtection_Set_ReferenceLoopProtection_To_True()
+            public void Should_WithReferenceLoopProtection_Set_ReferenceLoopProtectionEnabled_To_True()
             {
                 var validatorSettings = new ValidatorSettings();
 
                 validatorSettings.WithReferenceLoopProtection();
 
-                validatorSettings.ReferenceLoopProtection.Should().BeTrue();
+                validatorSettings.ReferenceLoopProtectionEnabled.Should().BeTrue();
             }
 
             [Fact]
@@ -69,13 +69,13 @@ namespace Validot.Tests.Unit.Settings
             }
 
             [Fact]
-            public void Should_WithReferenceLoopProtectionDisabled_Set_ReferenceLoopProtection_To_False()
+            public void Should_WithReferenceLoopProtectionDisabled_Set_ReferenceLoopProtectionEnabled_To_False()
             {
                 var validatorSettings = new ValidatorSettings();
 
                 validatorSettings.WithReferenceLoopProtectionDisabled();
 
-                validatorSettings.ReferenceLoopProtection.Should().BeFalse();
+                validatorSettings.ReferenceLoopProtectionEnabled.Should().BeFalse();
             }
 
             [Fact]
@@ -190,11 +190,6 @@ namespace Validot.Tests.Unit.Settings
                 };
 
                 action.Should().ThrowExactly<InvalidOperationException>();
-            }
-
-            public class TestTranslationHolder : ITranslationHolder
-            {
-                public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; set; }
             }
         }
     }

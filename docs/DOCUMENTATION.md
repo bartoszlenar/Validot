@@ -37,7 +37,8 @@
     - [IsValid](#isvalid)
     - [Factory](#factory)
       - [Specification holder](#specification-holder)
-      - [Translation holder](#translation-holder)
+      - [Settings holder](#settings-holder)
+    - [Reusing settings](#reusing-settings)
     - [Settings](#settings)
       - [WithReferenceLoopProtection](#withreferenceloopprotection)
       - [WithTranslation](#withtranslation)
@@ -2561,10 +2562,10 @@ catch(ReferenceLoopException exception)
 ## Validator
 
 - Validator is the object that performs validation process.
-- Validator validates the object according to the [specification](#specification) `Specification<T>` that it receives in the constructor (directly or through the [factory](#factory)).
+- Validator validates the object according to the [specification](#specification) `Specification<T>`.
   - Validator is a generic class `Validator<T>` where `T` is the type of objects it can validate.
   - Type `T` comes from [specification](#specification) `Specification<T>`
-- Validator can be initialized directly with its own constructor, however using the [factory](#factory) is the recommended way.
+- Validator can be created only using  can be initialized using the [factory](#factory).
   - Constructor receives two parameters:
     - the [specification](#specification).
     - the [settings](#settings).
@@ -2573,30 +2574,30 @@ catch(ReferenceLoopException exception)
 Specification<BookModel> specification = s => s
     .Member(m => m.Title, m => m.NotEmpty());
 
-var validator = new Validator<BookModel>(specification);
+var validator = Validator.Factory.Create(specification);
 ```
 
-_The code above presents that `Validator` can be created with just a [specification](#specification). The code below presents also passing the [settings](#settings):_
+_The code above presents that `Validator` can be created with just a [specification](#specification). The code below presents how to apply [settings](#settings) using a fluent api:_
 
 ``` csharp
 Specification<BookModel> specification = s => s
     .Member(m => m.Title, m => m.NotEmpty())
-
+    .And()
     .Rule(m => m.YearOfPublication > m.YearOfFirstAnnouncement)
     .WithCondition(m => m.YearOfPublication.HasValue);
 
-var settings = new ValidatorSettings().WithPolishTranslation();
-
-var validator = new Validator<BookModel>(specification, settings);
+var validator = Validator.Factory.Create(
+    specification,
+    s => s.WithPolishTranslation()
+);
 ```
 
-- When initialized, validator executes the [specification](#specification) function and performs an in-depth analysis of all of the commands that it has.
+- On creation, [factory](#factory) executes the [specification](#specification) function and performs an in-depth analysis of all of the commands that it has.
   - All of the [error messages](#message) (along with their [translations](#translations)) are pre-generated and cached.
-    - They are presented in the form of a regular [validation result](#result) as [Template](#template).
-  - All the capacities are calculated (to optimize memory allocations during the actual validation).
+    - They are exposed in the form of a regular [validation result](#result) ([Template](#template) property).
   - [Reference loops](#reference-loop) are detected.
-    - If detected, [reference loop protection](#withreferenceloopprotection) is automatically enabled, but you can override this behavior in the [settings](#settings).
-    - The [reference loop protection](#withreferenceloopprotection) is slightly decreasing the validation performance. It's because the validator needs to track all visited references in order to prevent stack overflow.
+    - If [reference loops](#reference-loop) are possible, [reference loop protection](#withreferenceloopprotection) is automatically enabled, unless you explicitly disable using [WithReferenceLoopProtectionDisabled](#withreferenceloopprotection).
+    - The [reference loop protection](#withreferenceloopprotection) slightly decreases the validation performance. It's because the validator needs to track all visited references in order to prevent stack overflow.
 - Validation process always executes the commands in the same order as they appear in the specification.
 - Validation process always executes as few commands as possible in order to satisfy the specification.
   - Example; if the scope is followed with [WithMessage](#withmessage) or [WithCode](#withcode), internally the validation executes the rules until the first error is found. This is because it doesn't matter how many of the rules inside fails, they're all going to be overridden by [WithMessage](#withmessage) or [WithCode](#withcode).
@@ -2608,6 +2609,7 @@ Specification<BookModel> specification = s => s
         .NotEmpty()
         .NotWhiteSpace()
         .NotEqualTo("blank")
+        .And()
         .Rule(t => !t.StartsWith(" ")).WithMessage("Can't start with whitespace")
     )
     .WithMessage("Contains errors!");
@@ -2633,14 +2635,14 @@ _Above, the `Title` value is checked by `NotEmpty` and `NotWhiteSpace` rules. `N
 ``` csharp
 Specification<BookModel> specification = s => s
     .Member(m => m.Title, m => m.NotEmpty())
-
+    .And()
     .Member(m => m.YearOfFirstAnnouncement, m => m.BetweenOrEqualTo(1000, 3000))
-
+    .And()
     .Rule(m => m.YearOfPublication >= m.YearOfFirstAnnouncement)
     .WithCondition(m => m.YearOfPublication.HasValue)
     .WithMessage("Year of publication needs to be after the first announcement");
 
-var validator = new Validator<BookModel>(specification);
+var validator = Validator.Factory.Create(specification);
 
 var book = new BookModel()
 {
@@ -2662,7 +2664,7 @@ failFastResult.ToString();
 // Title: Must not be empty
 ```
 
-_In the code above, you can observe that the validation process triggered with `failFast` set to `true` returns only the first [error message](#message) from the regular run. It's always going to be the same message - because validation executes the rules in the same order as they are defined in the specification._
+_In the code above, you can observe that the validation process triggered with `failFast` set to `true` returns only the first [error message](#message) from the regular run. It's always going to be the same message - because validation executes the rules in the same order as they appear in the specification._
 
 ### IsValid
 
@@ -2674,13 +2676,14 @@ _In the code above, you can observe that the validation process triggered with `
 ``` csharp
 Specification<BookModel> specification = s => s
     .Member(m => m.Title, m => m.NotEmpty())
+    .And()
     .Member(m => m.YearOfFirstAnnouncement, m => m.BetweenOrEqualTo(1000, 3000))
-
+    .And()
     .Rule(m => m.YearOfPublication >= m.YearOfFirstAnnouncement)
     .WithCondition(m => m.YearOfPublication.HasValue)
     .WithMessage("Year of publication needs to be after the first announcement");
 
-var validator = new Validator<BookModel>(specification);
+var validator = Validator.Factory.Create(specification);
 
 var book1 = new BookModel()
 {
@@ -2712,19 +2715,78 @@ if (!validator.IsValid(heavyModel))
 
 ### Factory
 
-- Factory is the recommended way of creating the [validator](#validator).
-- Factory is a static member of the static class named `Validator`:
+- Factory is the way to create the [validator](#validator) instances.
+- Factory is exposed through the static member `Factory` of the static class `Validator`:
 
 ``` csharp
 var validator = Validator.Factory.Create(specification);
 ```
 
-- Similarly to the constructor, validator takes:
-    - [Specification](#specification) - fluent-api definition of a valid model state.
-    - [Settings](#settings) - validator settings.
-- Factory is just a wrapper around the [Validator](#validator)'s constructor, however it does provide some extra functionality:
-    - It prepares the default [settings](#settings).
-    - It provides a way of initializing the [validator](#validator) with [Specification holder](#specification-holder) / [Translation holder](#translation-holder).
+- Factory contains several methods that allows to create [validator](#validator) instances by receiving:
+    - [Specification](#specification) and [settings](#settings) builder
+      - the most popular way
+      - [Validator](#validator) created using this method can validate objects described by the given [specification](#specification), using the [settings](#settings) constructed inline with the fluent API.
+    - [Specification holder](#specification-holder) and [settings](#settings) builder
+      - Similar to the first option, however the [specification](#specification) is acquired from the [specification holder](#specification-holder)
+      - (along with the settings, if it's also a [settings holder](#settings-holder))
+    - [Specification](#specification) and [settings](#settings)
+      - Similar to the first option, but allows to use [settings](#settings) from somewhere else (e.g. another [validator](#validator)).
+
+_Code presenting the usage of [specification holder](#specification-holder) and [validator settings holder](#settings-holder) is placed in their sections._
+
+_Below; simple scenario of creating the [validator](#validator) out the [specification](#specification) and [settings](#settings):_
+
+``` csharp
+// specifications:
+Specification<AuthorModel> authorSpecification = s => s
+    .Member(m => m.Email, m => m
+        .Email()
+        .And()
+        .EndsWith("@gmail.com")
+        .WithMessage("Only gmail accounts are accepted")
+    );
+
+Specification<BookModel> bookSpecification = s => s
+    .Member(m => m.Title, m => m.NotEmpty().NotWhiteSpace())
+    .Member(m => m.Authors, m => m.AsCollection(authorSpecification));
+
+// data:
+var book = new BookModel()
+{
+    Title = "   ",
+    Authors = new[]
+    {
+        new AuthorModel() { Email = "john.doe@gmail.com" },
+        new AuthorModel() { Email = "john.doe@outlook.com" },
+        new AuthorModel() { Email = "inv@lidem@il" },
+    }
+};
+
+// validator:
+var validator = Validator.Factory.Create(bookSpecification, s => s
+    .WithTranslation("English", "Texts.Email", "This is not a valid email address!")
+);
+
+validator.Validate(book).ToString();
+// Title: Must not consist only of whitespace characters
+// Authors.#1.Email: Only gmail accounts are accepted
+// Authors.#2.Email: This is not a valid email address!
+// Authors.#2.Email: Only gmail accounts are accepted
+```
+
+_Above you can observe that `validator` respects the rules described in the `bookSpecification` as well as the settings (notice the custom error message in `Authors.#2.Email`)._
+
+_Below, let's take a look at the continuation of the previous snippet, showing that we can reuse the settings already built for the other [validator](#validator):_
+
+``` csharp
+var validator2 = Validator.Factory.Create(bookSpecification, validator.Settings);
+
+validator2.Validate(book).ToString();
+// Title: Must not consist only of whitespace characters
+// Authors.#1.Email: Only gmail accounts are accepted
+// Authors.#2.Email: This is not a valid email address!
+// Authors.#2.Email: Only gmail accounts are accepted
+```
 
 #### Specification holder
 
@@ -2793,28 +2855,24 @@ validator.Validate(book).ToString();
 // Authors.#2.Email: Only gmail accounts are accepted
 ```
 
-#### Translation holder
+#### Settings holder
 
-- Logically, a translation holder is a class that holds [translation](#translations) that the [factory](#factory) will fetch and initialize the [validator](#validator) with.
-- Technically, translation holder is a class that implements `ITranslationHolder`:
+- Logically, a settings holder is a class that holds [settings](#settings) that the [factory](#factory) will fetch and initialize the [validator](#validator) with.
+- Technically, settings holder is a class that implements `ISettingsHolder`:
 
 ``` csharp
-interface ITranslationHolder
+interface ISettingsHolder
 {
-    IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; }
+    Func<ValidatorSettings, ValidatorSettings> Settings { get; }
 }
 ```
 
-- Translation holder needs to expose `Translation` member which is a dictionary:
-  - The key of type `string` is a translation name.
-  - The value of type `IReadOnlyDictionary<string, string>` is the translation itself:
-    - The key is the message key.
-    - The value is the message content.
-- Translation holder is very similar to [specification holder](#specification-holder), but its purpose is to wrap the [translations](#translations).
-- If the [specification holder](#specification-holder) passed to the [Factory](#factory) implements translation holder as well, the created [validator](#validator) instance will contain all of the translations from it.
+- Settings holder needs to expose `Settings` member which - practically - is a fluent API builder. Same as the one used in `Validate.Factory.Create` method.
+- Settings holder is very similar to [specification holder](#specification-holder), but its purpose is to wrap the [settings](#settings).
+- If the [specification holder](#specification-holder) passed to the [Factory](#factory) implements settings holder as well, the created [validator](#validator) instance will have [settings](#settings) from the holder applied.
 
 ``` csharp
-public class AuthorSpecificationHolder : ISpecificationHolder<AuthorModel>, ITranslationHolder
+public class AuthorSpecificationHolder : ISpecificationHolder<AuthorModel>, ISettingsHolder
 {
     public AuthorSpecificationHolder()
     {
@@ -2828,27 +2886,30 @@ public class AuthorSpecificationHolder : ISpecificationHolder<AuthorModel>, ITra
 
         Specification = authorSpecification;
 
-        Translations = new Dictionary<string, IReadOnlyDictionary<string, string>>()
-        {
-            ["English"] = new Dictionary<string, string>()
+        Settings = s => s
+            .WithReferenceLoopProtection()
+            .WithPolishTranslation()
+            .WithTranslation(new Dictionary<string, IReadOnlyDictionary<string, string>>()
             {
-                ["Name.EmptyValue"] = "Name must not be empty"
-            },
-            ["Polish"] = new Dictionary<string, string>()
-            {
-                ["Invalid email"] = "Nieprawidłowy email",
-                ["Name.EmptyValue"] = "Imię nie może być puste"
-            }
-        };
+                ["English"] = new Dictionary<string, string>()
+                {
+                    ["Name.EmptyValue"] = "Name must not be empty"
+                },
+                ["Polish"] = new Dictionary<string, string>()
+                {
+                    ["Invalid email"] = "Nieprawidłowy email",
+                    ["Name.EmptyValue"] = "Imię nie może być puste"
+                }
+            });
     }
 
     public Specification<AuthorModel> Specification { get; }
 
-    public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations { get; }
+    public Func<ValidatorSettings, ValidatorSettings> Settings { get; }
 }
 ```
 
-_In the above code, [specification](#specification) exposed from the holder internally uses message keys that are resolved in the provided translations. The usage would look like:_
+_In the above code, [specification](#specification) exposed from the holder internally uses message keys that are resolved in the translations provided in the `Settings` builder. The usage would look like:_
 
 ``` csharp
 var validator = Validator.Factory.Create(new AuthorSpecificationHolder());
@@ -2870,47 +2931,103 @@ result.ToString("Polish");
 // Email: Nieprawidłowy email
 ```
 
+_And the validator's `Settings` proves that settings holder has been used:_
+
+``` csharp
+validator.Settings.Translations.Keys // ["English", "Polish"]
+validator.Settings.Translations["English"]["Name.EmptyValue"] // "Name must not be empty"
+validator.Settings.Translations["Polish"]["Invalid email"] // "Nieprawidłowy email"
+
+validator.Settings.ReferenceLoopProtection // true
+```
+
+- The [factory](#factory)'s `Create` method (`Validator.Factory.Create`) that accepts the specification holder, allows to inline modify [settings](#settings) as well.
+  - The inline [settings](#settings) builder overrides the [settings](#settings) from the holder.
+
+_Let's see this behavior in the below code:_
+
+``` csharp
+var validator = Validator.Factory.Create(
+    new AuthorSpecificationHolder(),
+    s => s
+        .WithReferenceLoopProtectionDisabled()
+        .WithTranslation("English", "Invalid email", "The email address is invalid")
+);
+
+var author = new AuthorModel()
+{
+    Name = "",
+    Email = "john.doe@outlook.com",
+};
+
+validator.Validate(author).ToString();
+// Name: Name must not be empty
+// Email: The email address is invalid
+
+validator.Settings.ReferenceLoopProtection; // false
+```
+
+### Reusing settings
+
+- Factory can create the [validator](#validator) instance using settings taken from another.
+- Use the overloaded `Create` method that accepts [specification](#specification) and `IValidatorSettings` instance.
+  - You must pass `IValidatorSettings` instance acquired from a validator. Using custom implementations is not supported and will end up with an exception.
+
+
+_Below, `validator2` uses settings taken from the previously created `validator1`:_
+
+``` csharp
+Specification<AuthorModel> authorSpecification = s => s
+  .Member(m => m.Email, m => m.Email().EndsWith("@gmail.com"))
+  .WithMessage("Invalid email")
+  .And()
+  .Member(m => m.Name, m => m.NotEmpty())
+  .WithMessage("Name.EmptyValue");
+
+var validator1 = Validator.Factory.Create(
+        authorSpecification,
+        s => s
+        .WithTranslation("English", "Invalid email", "The email address is invalid")
+        .WithTranslation("English", "Name.EmptyValue", "Name must not be empty")
+);
+
+var validator2 = Validator.Factory.Create(authorSpecification, validator1.Settings);
+
+var author = new AuthorModel()
+{
+    Name = "",
+    Email = "john.doe@outlook.com",
+};
+
+validator1.Validate(author).ToString()
+// Name: Name must not be empty
+// Email: The email address is invalid
+
+validator2.Validate(author).ToString()
+// Name: Name must not be empty
+// Email: The email address is invalid
+
+object.ReferenceEquals(validator1.Settings, validator2.Settings) // true
+```
+
 ### Settings
 
 - Settings is the object that holds configuration of the validation process that [validator] will perform:
   - [Translations](#translations) - values for the message keys used in specification.
   - [Reference loop](#reference-loop) protection - prevention against stack overflow exception.
-- Settings are represented by `ValidationSettings` class (namespace `Validot.Settings`).
-- All properties in `ValidationSettings` are read-only, but you can change their values with the related methods.
-
-``` csharp
-var settings = new ValidatorSettings();
-
-settings.ReferenceLoopProtection; // false - the default value
-
-settings.ReferenceLoopProtection = true; // compilation error!
-
-settings.WithReferenceLoopProtection(); // the proper way of changing the value
-
-settings.ReferenceLoopProtection; // true
-```
-
-- You can create `ValidatorSettings` object directly and pass it to the [validator](#validator)'s constructor. However, the recommended way is to use the builder pattern exposed by the [factory](#factory).
-  - [Factory](#factory) initializes the settings object with the default values and exposes it through the builder pattern:
+- Settings are represented by `IValidatorSettings` interface (namespace `Validot.Settings`).
+- [Validator](#validator) exposes `Settings` property.
+  - `Settings` property is of type `IValidationSettings`, so you can [reuse it](#reusing-settings) in [Factory](#factory) to initialize a new [validator](#validator) instance with the same settings.
+- All properties in `IValidatorSettings` are read-only, but under the hood there is an instance of `ValidatorSettings` class that has fluent API methods to change the values
+- You can't create `ValidatorSettings` object directly, but there is no reason to do it. Use the builder pattern exposed by the [factory](#factory).
+  - [Factory](#factory) initializes the settings object with the default values and exposes it through the fluent API:
 
 ``` csharp
 var validator = Validator.Factory.Create(specification, settings => settings
     .WithReferenceLoopProtection()
 );
 
-validator.Settings.ReferenceLoopProtection; // true
-```
-
-- Immediately after creation, [Validator](#validator) locks the settings and changes are not permitted.
-
-``` csharp
-var validator = Validator.Factory.Create(specification, settings => settings
-    .WithReferenceLoopProtection()
-);
-
-validator.Settings.ReferenceLoopProtection; // true
-
-validator.Settings.WithReferenceLoopProtectionDisabled(); // throws InvalidOperationException
+validator.Settings.ReferenceLoopProtectionEnabled; // true
 ```
 
 #### WithReferenceLoopProtection
@@ -2919,6 +3036,7 @@ validator.Settings.WithReferenceLoopProtectionDisabled(); // throws InvalidOpera
   - If not explicitly set, the [validator](#validator) turns it on automatically if the [reference loop](#reference-loop) is theoretically possible according to the [specification](#specification).
 - `WithReferenceLoopProtectionDisabled` disables the protection against the [reference loop](#reference-loop).
   - One scenario when this protection is redundant is when you're absolutely sure that the object won't have [reference loops](#reference-loop), because the model is e.g., deserialized from the string.
+- Settings' property `ReferenceLoopProtectionEnabled` holds to final value.
 
 #### WithTranslation
 
@@ -2975,7 +3093,7 @@ validator2.Validate(author).ToString();
 // Name: You must fill out the name
 ```
 
-_In the above code, the default value for `NotEmpty` (message key `Texts.NotEmpty`) has been overridden with the content `Text value cannot be empty`
+_In the above code, the default value for `NotEmpty` (message key `Texts.NotEmpty`) has been overridden with the content `Text value cannot be empty`_
 
 - `WithTranslation` has a version (via extension method) that wraps the base method and accepts:
     - `name` - translation name

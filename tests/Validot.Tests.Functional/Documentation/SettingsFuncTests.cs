@@ -1,11 +1,9 @@
 namespace Validot.Tests.Functional.Documentation
 {
-    using System;
     using System.Collections.Generic;
 
     using FluentAssertions;
 
-    using Validot.Settings;
     using Validot.Testing;
     using Validot.Tests.Functional.Documentation.Models;
 
@@ -13,18 +11,6 @@ namespace Validot.Tests.Functional.Documentation
 
     public class SettingsFuncTests
     {
-        [Fact]
-        public void Settings_ModificationViaMethod()
-        {
-            var settings = new ValidatorSettings();
-
-            settings.ReferenceLoopProtection.Should().BeNull();
-
-            settings.WithReferenceLoopProtection();
-
-            settings.ReferenceLoopProtection.Should().BeTrue();
-        }
-
         [Fact]
         public void Settings_Factory()
         {
@@ -34,26 +20,7 @@ namespace Validot.Tests.Functional.Documentation
                 .WithReferenceLoopProtection()
             );
 
-            validator.Settings.ReferenceLoopProtection.Should().BeTrue();
-        }
-
-        [Fact]
-        public void Settings_ChangingAfterCreation()
-        {
-            Specification<object> specification = s => s;
-
-            var validator = Validator.Factory.Create(specification, settings => settings
-                .WithReferenceLoopProtection()
-            );
-
-            validator.Settings.ReferenceLoopProtection.Should().BeTrue();
-
-            Action action = () =>
-            {
-                validator.Settings.WithReferenceLoopProtectionDisabled();
-            };
-
-            action.Should().ThrowExactly<InvalidOperationException>();
+            validator.Settings.ReferenceLoopProtectionEnabled.Should().BeTrue();
         }
 
         [Fact]

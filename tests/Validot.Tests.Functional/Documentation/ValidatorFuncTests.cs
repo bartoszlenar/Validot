@@ -14,12 +14,9 @@ namespace Validot.Tests.Functional.Documentation
         public void Validator_Create()
         {
             Specification<BookModel> specification = s => s
-                .Member(m => m.Title, m => m.NotEmpty())
+                .Member(m => m.Title, m => m.NotEmpty());
 
-                .Rule(m => m.YearOfPublication > m.YearOfFirstAnnouncement)
-                .WithCondition(m => m.YearOfPublication.HasValue);
-
-            var validator = new Validator<BookModel>(specification);
+            var validator = Validator.Factory.Create(specification);
 
             _ = validator;
         }
@@ -29,13 +26,14 @@ namespace Validot.Tests.Functional.Documentation
         {
             Specification<BookModel> specification = s => s
                 .Member(m => m.Title, m => m.NotEmpty())
-
+                .And()
                 .Rule(m => m.YearOfPublication > m.YearOfFirstAnnouncement)
                 .WithCondition(m => m.YearOfPublication.HasValue);
 
-            var settings = new ValidatorSettings().WithPolishTranslation();
-
-            var validator = new Validator<BookModel>(specification, settings);
+            var validator = Validator.Factory.Create(
+                specification,
+                s => s.WithPolishTranslation()
+            );
 
             _ = validator;
         }
@@ -48,6 +46,7 @@ namespace Validot.Tests.Functional.Documentation
                     .NotEmpty()
                     .NotWhiteSpace()
                     .NotEqualTo("blank")
+                    .And()
                     .Rule(t => !t.StartsWith(" ")).WithMessage("Can't start with whitespace")
                 )
                 .WithMessage("Contains errors!");
@@ -66,13 +65,14 @@ namespace Validot.Tests.Functional.Documentation
         {
             Specification<BookModel> specification = s => s
                 .Member(m => m.Title, m => m.NotEmpty())
+                .And()
                 .Member(m => m.YearOfFirstAnnouncement, m => m.BetweenOrEqualTo(1000, 3000))
-
+                .And()
                 .Rule(m => m.YearOfPublication >= m.YearOfFirstAnnouncement)
                 .WithCondition(m => m.YearOfPublication.HasValue)
                 .WithMessage("Year of publication needs to be after the first announcement");
 
-            var validator = new Validator<BookModel>(specification);
+            var validator = Validator.Factory.Create(specification);
 
             var book = new BookModel()
             {
@@ -101,13 +101,14 @@ namespace Validot.Tests.Functional.Documentation
         {
             Specification<BookModel> specification = s => s
                 .Member(m => m.Title, m => m.NotEmpty())
+                .And()
                 .Member(m => m.YearOfFirstAnnouncement, m => m.BetweenOrEqualTo(1000, 3000))
-
+                .And()
                 .Rule(m => m.YearOfPublication >= m.YearOfFirstAnnouncement)
                 .WithCondition(m => m.YearOfPublication.HasValue)
                 .WithMessage("Year of publication needs to be after the first announcement");
 
-            var validator = new Validator<BookModel>(specification);
+            var validator = Validator.Factory.Create(specification);
 
             var book1 = new BookModel()
             {
@@ -219,7 +220,7 @@ namespace Validot.Tests.Functional.Documentation
                 .WithCondition(m => m.YearOfPublication.HasValue)
                 .WithMessage("Year of publication needs to be after the first announcement");
 
-            var validator = new Validator<BookModel>(specification);
+            var validator = Validator.Factory.Create(specification);
 
             validator.Template.ToString().ShouldResultToStringHaveLines(
                 ToStringContentType.MessagesAndCodes,

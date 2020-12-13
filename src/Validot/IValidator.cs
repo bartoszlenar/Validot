@@ -13,7 +13,7 @@ namespace Validot
         /// <summary>
         /// Gets settings of this <see cref="IValidator{T}"/> instance.
         /// </summary>
-        ValidatorSettings Settings { get; }
+        IValidatorSettings Settings { get; }
 
         /// <summary>
         /// Gets the validation result that contains all possible paths and errors described in the specification.

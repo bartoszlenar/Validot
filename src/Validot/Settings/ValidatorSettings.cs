@@ -8,20 +8,21 @@ namespace Validot.Settings
     /// <summary>
     /// Settings that <see cref="IValidator{T}"/> uses to perform validations.
     /// </summary>
-    public sealed class ValidatorSettings
+    public sealed class ValidatorSettings : IValidatorSettings
     {
         private readonly TranslationCompiler _translationCompiler = new TranslationCompiler();
 
-        /// <summary>
-        /// Gets translations dictionary - the key is the translation name, the value is the translation dictionary (where the key is the message key and the value is error message content for this key).
-        /// </summary>
+        internal ValidatorSettings()
+        {
+        }
+
+        /// <inheritdoc cref="IValidatorSettings.Translations"/>
         public IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> Translations => _translationCompiler.Translations;
 
-        /// <summary>
-        /// Gets information whether reference loop protection is enabled or not. If null, then it will be enabled automatically if the reference loop occurence is theoretically possible (based on the specification).
-        /// Reference loop protection is the mechanism that tracks self-references and prevents infinite loop traversing during the validation process.
-        /// </summary>
-        public bool? ReferenceLoopProtection { get; private set; }
+        /// <inheritdoc cref="IValidatorSettings.ReferenceLoopProtectionEnabled"/>
+        public bool? ReferenceLoopProtectionEnabled { get; private set; }
+
+        bool IValidatorSettings.ReferenceLoopProtectionEnabled => ReferenceLoopProtectionEnabled == true;
 
         internal bool IsLocked { get; set; }
 
@@ -45,7 +46,7 @@ namespace Validot.Settings
         {
             ThrowIfLocked();
 
-            ReferenceLoopProtection = true;
+            ReferenceLoopProtectionEnabled = true;
 
             return this;
         }
@@ -60,7 +61,7 @@ namespace Validot.Settings
         {
             ThrowIfLocked();
 
-            ReferenceLoopProtection = false;
+            ReferenceLoopProtectionEnabled = false;
 
             return this;
         }

@@ -45,19 +45,5 @@ namespace Validot
 
             return @this;
         }
-
-        /// <summary>
-        /// Adds translation dictionaries for error messages.
-        /// </summary>
-        /// <param name="this">Settings fluent API builder - input.</param>
-        /// <param name="translationHolder"><see cref="ITranslationHolder"/> instance that contains the translation dictionaries to be added.</param>
-        /// <returns>Settings fluent API builder - output.</returns>
-        public static ValidatorSettings WithTranslation(this ValidatorSettings @this, ITranslationHolder translationHolder)
-        {
-            ThrowHelper.NullArgument(@this, nameof(@this));
-            ThrowHelper.NullArgument(translationHolder, nameof(translationHolder));
-
-            return @this.WithTranslation(translationHolder.Translations);
-        }
     }
 }

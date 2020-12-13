@@ -5,174 +5,148 @@ namespace Validot.Tests.Unit
 
     using FluentAssertions;
 
+    using NSubstitute;
+
+    using Validot.Errors;
+    using Validot.Errors.Args;
     using Validot.Settings;
-    using Validot.Translations;
+    using Validot.Validation.Scheme;
 
     using Xunit;
 
     public class ValidatorTests
     {
         [Fact]
-        public void Should_Initialize()
+        public void Should_ThrowException_When_NullModelScheme()
         {
-            _ = new Validator<object>(_ => _);
+            Action action = () => _ = new Validator<object>(null, Substitute.For<IValidatorSettings>());
+
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("modelScheme");
         }
 
         [Fact]
-        public void Should_ThrowException_When_NullSpecification()
+        public void Should_ThrowException_When_NullSettings()
         {
-            Action action = () => _ = new Validator<object>(null);
+            Action action = () => _ = new Validator<object>(Substitute.For<IModelScheme<object>>(), null);
 
-            action.Should().ThrowExactly<ArgumentNullException>();
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("settings");
         }
 
-        public class Settings
+        [Fact]
+        public void Should_SetTemplate()
         {
-            [Fact]
-            public void Should_HaveLockedSettings()
+            var modelScheme = Substitute.For<IModelScheme<object>>();
+
+            modelScheme.ErrorRegistry.Returns(new Dictionary<int, IError>()
             {
-                var validator = new Validator<object>(_ => _);
-
-                validator.Settings.IsLocked.Should().BeTrue();
-            }
-
-            [Fact]
-            public void Should_LockSettingsAfterPassingToValidator()
-            {
-                var settings = new ValidatorSettings();
-
-                settings.IsLocked.Should().BeFalse();
-
-                _ = new Validator<object>(_ => _, settings);
-
-                settings.IsLocked.Should().BeTrue();
-            }
-
-            [Fact]
-            public void Should_SetSettings_IfProvided()
-            {
-                var settings = new ValidatorSettings();
-
-                settings.WithReferenceLoopProtectionDisabled();
-
-                settings.WithTranslation(new Dictionary<string, IReadOnlyDictionary<string, string>>()
+                [0] = new Error()
                 {
-                    ["test1"] = new Dictionary<string, string>()
+                    Messages = new[]
                     {
-                        ["nested11"] = "n11",
-                        ["nested12"] = "n12",
+                        "Zero"
                     },
-                    ["test2"] = new Dictionary<string, string>()
+                    Codes = new[]
                     {
-                        ["nested21"] = "n21",
-                        ["nested22"] = "n22",
+                        "000"
                     },
-                });
-
-                var validator = new Validator<object>(_ => _, settings);
-
-                validator.Settings.Should().NotBeNull();
-
-                validator.Settings.Should().BeSameAs(settings);
-                validator.Settings.Translations.Should().BeSameAs(settings.Translations);
-                validator.Settings.Translations.Should().HaveCount(2);
-                validator.Settings.Translations["test1"].Should().HaveCount(2);
-                validator.Settings.Translations["test1"]["nested11"].Should().Be("n11");
-                validator.Settings.Translations["test1"]["nested12"].Should().Be("n12");
-                validator.Settings.Translations["test2"].Should().HaveCount(2);
-                validator.Settings.Translations["test2"]["nested21"].Should().Be("n21");
-                validator.Settings.Translations["test2"]["nested22"].Should().Be("n22");
-                validator.Settings.ReferenceLoopProtection.Should().BeFalse();
-
-                validator.Settings.IsLocked.Should().BeTrue();
-            }
-
-            [Fact]
-            public void Should_SetSettings_AsDefault_IfNotProvided()
-            {
-                var validator = new Validator<object>(_ => _);
-
-                validator.Settings.Should().NotBeNull();
-
-                validator.Settings.Translations.Keys.Should().ContainSingle("English");
-
-                var defaultEnglishTranslation = validator.Settings.Translations["English"];
-
-                defaultEnglishTranslation.Should().NotBeSameAs(Translation.English);
-
-                defaultEnglishTranslation.Should().HaveCount(Translation.English.Count);
-
-                foreach (var pair in Translation.English)
+                    Args = Array.Empty<IArg>()
+                },
+                [1] = new Error()
                 {
-                    defaultEnglishTranslation[pair.Key].Should().Be(pair.Value);
+                    Messages = new[]
+                    {
+                        "One"
+                    },
+                    Codes = new[]
+                    {
+                        "111"
+                    },
+                    Args = Array.Empty<IArg>()
                 }
-            }
-        }
+            });
 
-        [Theory]
-        [MemberData(nameof(ValidationTestData.CasesForTemplate_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_HaveTemplate(string name, Specification<ValidationTestData.TestClass> specification, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases)
-        {
-            _ = name;
-
-            var validator = new Validator<ValidationTestData.TestClass>(specification);
-
-            validator.ShouldHaveTemplate(errorCases);
-        }
-
-        [Theory]
-        [MemberData(nameof(ValidationTestData.CasesForValidation_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_Validate(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
-        {
-            _ = name;
-
-            var validator = new Validator<ValidationTestData.TestClass>(specification);
-
-            validator.ShouldValidateAndHaveResult(model, false, errorCases, exceptionCase);
-        }
-
-        [Theory]
-        [MemberData(nameof(ValidationTestData.CasesForValidationWithFailFast_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_Validate_AndFailFast(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
-        {
-            _ = name;
-
-            var validator = new Validator<ValidationTestData.TestClass>(specification);
-
-            validator.ShouldValidateAndHaveResult(model, true, errorCases, exceptionCase);
-        }
-
-        [Theory]
-        [MemberData(nameof(ValidationTestData.CasesForIsValid_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_IsValid_Return_True_If_NoErrors(string name, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, bool expectedIsValid, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
-        {
-            _ = name;
-
-            var validator = new Validator<ValidationTestData.TestClass>(specification);
-
-            validator.ShouldHaveIsValidTrueIfNoErrors(model, expectedIsValid, exceptionCase);
-        }
-
-        [Theory]
-        [MemberData(nameof(ValidationTestData.CasesForReferenceLoop_Data), MemberType = typeof(ValidationTestData))]
-        public void Should_Validate_With_ReferenceLoopProtection(string name, bool referenceLoopProtectionEnabled, Specification<ValidationTestData.TestClass> specification, ValidationTestData.TestClass model, IReadOnlyDictionary<string, IReadOnlyList<ValidationTestData.ErrorTestCase>> errorCases, ValidationTestData.ReferenceLoopExceptionCase exceptionCase)
-        {
-            _ = name;
-
-            var settings = new ValidatorSettings();
-
-            if (referenceLoopProtectionEnabled)
+            modelScheme.Template.Returns(new Dictionary<string, IReadOnlyList<int>>()
             {
-                settings.WithReferenceLoopProtection();
-            }
-            else
+                [""] = new[]
+                {
+                    0
+                },
+                ["path"] = new[]
+                {
+                    1
+                },
+                ["path.nested"] = new[]
+                {
+                    0, 1
+                }
+            });
+
+            var settings = Substitute.For<IValidatorSettings>();
+
+            settings.Translations.Returns(new Dictionary<string, IReadOnlyDictionary<string, string>>()
             {
-                settings.WithReferenceLoopProtectionDisabled();
-            }
+                ["English"] = new Dictionary<string, string>()
+                {
+                    ["Zero"] = "English translated ZERO",
+                    ["One"] = "English translated ONE!!!"
+                }
+            });
 
-            var validator = new Validator<ValidationTestData.TestClass>(specification, settings);
+            var validator = new Validator<object>(modelScheme, settings);
 
-            validator.ShouldValidateAndHaveResult(model, false, errorCases, exceptionCase);
+            validator.Template.Should().NotBeNull();
+
+            validator.Template.MessageMap[""].Should().HaveCount(1);
+            validator.Template.MessageMap[""].Should().Contain("English translated ZERO");
+
+            validator.Template.MessageMap["path"].Should().HaveCount(1);
+            validator.Template.MessageMap["path"].Should().Contain("English translated ONE!!!");
+
+            validator.Template.MessageMap["path.nested"].Should().HaveCount(2);
+            validator.Template.MessageMap["path.nested"].Should().Contain("English translated ZERO", "English translated ONE!!!");
+
+            validator.Template.CodeMap[""].Should().HaveCount(1);
+            validator.Template.CodeMap[""].Should().Contain("000");
+
+            validator.Template.CodeMap["path"].Should().HaveCount(1);
+            validator.Template.CodeMap["path"].Should().Contain("111");
+
+            validator.Template.CodeMap["path.nested"].Should().HaveCount(2);
+            validator.Template.CodeMap["path.nested"].Should().Contain("000", "111");
+        }
+
+        [Fact]
+        public void Should_SetSettings()
+        {
+            var settings = Substitute.For<IValidatorSettings>();
+
+            settings.Translations.Returns(new Dictionary<string, IReadOnlyDictionary<string, string>>()
+            {
+                ["English"] = new Dictionary<string, string>()
+                {
+                    ["X"] = "XXX"
+                }
+            });
+
+            var modelScheme = Substitute.For<IModelScheme<object>>();
+
+            modelScheme.ErrorRegistry.Returns(new Dictionary<int, IError>()
+            {
+                [0] = new Error()
+                {
+                    Messages = new[]
+                    {
+                        "X"
+                    },
+                    Codes = Array.Empty<string>(),
+                    Args = Array.Empty<IArg>()
+                }
+            });
+
+            var validator = new Validator<object>(modelScheme, settings);
+
+            validator.Settings.Should().NotBeNull();
+            validator.Settings.Should().BeSameAs(settings);
         }
 
         [Fact]

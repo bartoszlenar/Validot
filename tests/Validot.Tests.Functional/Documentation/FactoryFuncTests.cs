@@ -2,14 +2,13 @@ namespace Validot.Tests.Functional.Documentation
 {
     using System;
     using System.Collections.Generic;
-
+    using System.Linq;
+    using AssemblyWithHolders;
     using FluentAssertions;
-
     using Validot.Factory;
     using Validot.Settings;
     using Validot.Testing;
     using Validot.Tests.Functional.Documentation.Models;
-
     using Xunit;
 
     public class FactoryFuncTests
@@ -195,6 +194,24 @@ namespace Validot.Tests.Functional.Documentation
                 "Email: The email address is invalid");
 
             validator1.Settings.Should().BeSameAs(validator2.Settings);
+        }
+
+        [Fact]
+        public void FetchingHolders()
+        {
+            var assemblies = new[]
+            {
+                typeof(HolderOfIntSpecificationAndSettings).Assembly
+            };
+
+            var holder = Validator.Factory.FetchHolders(assemblies).Single(h => h.HolderType == typeof(HolderOfIntSpecificationAndSettings));
+
+            var validator = (Validator<int>)holder.CreateValidator();
+
+            validator.Validate(11).ToString(translationName: "BinaryEnglish").ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "The maximum value is 0b1010"
+            );
         }
 
         public class BookSpecificationHolder : ISpecificationHolder<BookModel>

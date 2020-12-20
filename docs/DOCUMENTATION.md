@@ -38,7 +38,9 @@
     - [Factory](#factory)
       - [Specification holder](#specification-holder)
       - [Settings holder](#settings-holder)
-    - [Reusing settings](#reusing-settings)
+      - [Reusing settings](#reusing-settings)
+      - [Fetching holders](#fetching-holders)
+      - [Dependency injection](#dependency-injection)
     - [Settings](#settings)
       - [WithReferenceLoopProtection](#withreferenceloopprotection)
       - [WithTranslation](#withtranslation)
@@ -2967,7 +2969,7 @@ validator.Validate(author).ToString();
 validator.Settings.ReferenceLoopProtection; // false
 ```
 
-### Reusing settings
+#### Reusing settings
 
 - Factory can create the [validator](#validator) instance using settings taken from another.
 - Use the overloaded `Create` method that accepts [specification](#specification) and `IValidatorSettings` instance.
@@ -3008,6 +3010,113 @@ validator2.Validate(author).ToString()
 // Email: The email address is invalid
 
 object.ReferenceEquals(validator1.Settings, validator2.Settings) // true
+```
+
+#### Fetching holders
+
+- Factory has `FetchHolders` method that scans the provided assemblies for [specification holders](#specification-holder).
+   -  If no assembly is provided as a method's argument (function is called in a form of `Validator.Factory.FetchHolders()`), the factory will attempt to get them with the code: `AppDomain.CurrentDomain.GetAssemblies()`.
+  - [Specification holder](#specification-holder) is included in the result collection if it:
+    -  is a class that implements `ISpecificationHolder<T>` interface.
+    -  contains a parameterless constructor.
+-  `FetchHolders` returns a collection of `HolderInfo` objects, each containing following members:
+   - `HolderType` - type of the holder, the class that implements `ISpecificationHolder<T>`
+   -  `SpecifiedType` - the type that is covered by the [specification](#specification), it's `T` from `ISpecificationHolder<T>` and its member `Specification<T>`.
+   - `HoldsSettings` - a flag, `true` if the class is also a [settings holder](#settings-holder) (implements `ISettingsHolder` interface).
+   - `CreateValidator` - a method that using reflection creates instance of `HolderType` (with its parametless constructor) and then - the validator out of it.
+     - If you want to use it directly, you need to cast it, as the return type is just top-level `object`.
+   - `ValidatorType` - the type of the validator created by `CreateValidator` method. It's always `IValidator<T>` where `T` is `SpecifiedType`.
+
+_Let's have a [specification holder](#specification-holder) that holds also the settings:_
+
+``` csharp
+public class HolderOfIntSpecificationAndSettings : ISpecificationHolder<int>, ISettingsHolder
+{
+    public Specification<int> Specification { get; } = s => s
+        .GreaterThanOrEqualTo(1).WithMessage("Min value is 1")
+        .LessThanOrEqualTo(10).WithMessage("Max value is 10");
+
+    public Func<ValidatorSettings, ValidatorSettings> Settings { get; } = s => s
+        .WithTranslation("English", "Min value is 1", "The minimum value is 1")
+        .WithTranslation("English", "Max value is 10", "The maximum value is 10")
+        .WithTranslation("BinaryEnglish", "Min value is 1", "The minimum value is 0b0001")
+        .WithTranslation("BinaryEnglish", "Max value is 10", "The maximum value is 0b1010")
+        .WithReferenceLoopProtection();
+
+}
+```
+
+_It will be detected by `FetchHolders` method:_
+
+``` csharp
+var holder = Validator.Factory.FetchHolders(assemblies).Single(h => h.HolderType == typeof(HolderOfIntSpecificationAndSettings));
+
+var validator = (Validator<int>)holder.CreateValidator();
+
+validator.Validate(11).ToString(translationName: "BinaryEnglish");
+// The maximum value is 0b1010
+```
+
+_Above, we can observe that the created validator respects the rules and the settings acquired from `HolderOfIntSpecificationAndSettings`._
+
+- `FetchHolders` outputs `HolderInfo` in the following order:
+  - Assemblies are analyzed in the order they are provided.
+    - Or, if called without parameters, it's the order returned by `AppDomain.CurrentDomain.GetAssemblies()`.
+  - For each assembly, holders are analyzed in the order they appear in the output of `assembly.GetTypes()`.
+  - For each [specification holder](#specification-holder), the types are analyzed in the order returned by `type.GetInterfaces()`.
+
+#### Dependency injection
+
+- Validot doesn't have any dependencies (apart of the pure .NET Standard 2.0), and therefore - there is no direct support for third-party dependency injection containers.
+- However, the [factory](#factory) is able to [fetch the holders](#fetching-holders) from the referenced assemblies and provides helpers to create [validators](#validator) out of them.
+- For example, if you want your validators to be automatically registered within the DI container, you can implement the following strategy:
+  - Define [specifications](#specification) for your models in [specification holders](#specification-holder)
+    - Each in a separate class or everything in a big, single one - it doesn't matter.
+  - Call `Validator.Factory.FetchHolders()` to get the information about the holders and group the results by the `SpecifiedType`.
+    - Theoretically, you could define more than one specification for a single type. Let's assume it's not the case here, but as you will notice, the entire operation is merely a short LINQ call. You can easily adjust it to your needs and/or the used DI container's requirements.
+  - Out of every group, take the `ValidatorType` (this is your registered type) and the result of `CreateValidator` (this is your implementation instance).
+  - It's safe to register validators as singletons.
+
+_Below the code snippet for ASP.NET Core and its default `Microsoft.Extensions.DependencyInjection`:_
+
+``` csharp
+using System.Linq;
+using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
+using Validot;
+
+static class AddValidatorsExtensions
+{
+    public static IServiceCollection AddValidators(this IServiceCollection @this, params Assembly[] assemblies)
+    {
+        var holders = Validator.Factory.FetchHolders(assemblies)
+            .GroupBy(h => h.SpecifiedType)
+            .Select(s => new
+            {
+                ValidatorType = s.First().ValidatorType,
+                ValidatorInstance = s.First().CreateValidator()
+            });
+
+        foreach (var holder in holders)
+        {
+            @this.AddSingleton(holder.ValidatorType, holder.ValidatorInstance);
+        }
+
+        return @this;
+    }
+}
+```
+
+_And the example of usage within the app's `Startup.cs`:_
+
+
+``` csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    // ... registering other dependencies ...
+
+    services.AddValidators();
+}
 ```
 
 ### Settings

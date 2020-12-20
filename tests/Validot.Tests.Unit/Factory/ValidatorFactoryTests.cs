@@ -2,15 +2,15 @@ namespace Validot.Tests.Unit.Factory
 {
     using System;
     using System.Collections.Generic;
-
+    using System.Linq;
+    using AssemblyWithHolders;
     using FluentAssertions;
-
     using Validot.Factory;
     using Validot.Settings;
+    using Validot.Testing;
     using Validot.Tests.Unit.Settings;
     using Validot.Tests.Unit.Translations;
     using Validot.Translations;
-
     using Xunit;
 
     public class ValidatorFactoryTests
@@ -759,6 +759,178 @@ namespace Validot.Tests.Unit.Factory
                 public Specification<ValidationTestData.TestClass> Specification { get; set; }
 
                 public Func<ValidatorSettings, ValidatorSettings> Settings { get; set; }
+            }
+        }
+
+        public class FetchHolders
+        {
+            [Fact]
+            public void Should_FetchAllHoldersFromAssembly()
+            {
+                var holders = Validator.Factory.FetchHolders(typeof(AssemblyWithHoldersHook).Assembly);
+
+                holders.Should().HaveCount(13);
+
+                holders.Should().Contain(h => h.HolderType == typeof(HolderOfDecimalSpecification) && h.SpecifiedType == typeof(decimal) && !h.HoldsSettings);
+                holders.Should().Contain(h => h.HolderType == typeof(HolderOfIntSpecificationAndSettings) && h.SpecifiedType == typeof(int) && h.HoldsSettings);
+
+                holders.Should().Contain(h => h.HolderType == typeof(HolderOfStringSpecification) && h.SpecifiedType == typeof(string) && !h.HoldsSettings);
+                holders.Should().Contain(h => h.HolderType == typeof(HolderOfStringSpecificationAndSettings) && h.SpecifiedType == typeof(string) && h.HoldsSettings);
+
+                holders.Should().Contain(h => h.HolderType == typeof(HolderOfMultipleSpecifications) && h.SpecifiedType == typeof(DateTime) && !h.HoldsSettings);
+                holders.Should().Contain(h => h.HolderType == typeof(HolderOfMultipleSpecifications) && h.SpecifiedType == typeof(DateTimeOffset) && !h.HoldsSettings);
+
+                holders.Should().Contain(h => h.HolderType == typeof(HolderOfMultipleSpecificationsAndSettings) && h.SpecifiedType == typeof(float) && h.HoldsSettings);
+                holders.Should().Contain(h => h.HolderType == typeof(HolderOfMultipleSpecificationsAndSettings) && h.SpecifiedType == typeof(double) && h.HoldsSettings);
+
+                holders.Should().Contain(h => h.HolderType == typeof(NestedHolders.NestedHolderOfBoolSpecification) && h.SpecifiedType == typeof(bool) && !h.HoldsSettings);
+                holders.Should().Contain(h => h.HolderType == typeof(NestedHolders.NestedHolderOfStringSpecification) && h.SpecifiedType == typeof(string) && !h.HoldsSettings);
+                holders.Should().Contain(h => h.HolderType == typeof(NestedHolders.NestedHolderOfStringSpecificationAndSettings) && h.SpecifiedType == typeof(string) && h.HoldsSettings);
+
+                holders.Should().Contain(h => h.HolderType == typeof(PrivateSpecificationHolder) && h.SpecifiedType == typeof(string) && !h.HoldsSettings);
+                holders.Should().Contain(h => h.HolderType == typeof(PrivateSpecificationAndSettingsHolder) && h.SpecifiedType == typeof(string) && h.HoldsSettings);
+            }
+
+            [Fact]
+            public void Should_FetchAllHoldersFromMultipleAssemblies()
+            {
+                var thisTestsHolders = Validator.Factory.FetchHolders(typeof(ValidatorFactoryTests).Assembly);
+
+                var separateAssemblyHolders = Validator.Factory.FetchHolders(typeof(AssemblyWithHoldersHook).Assembly);
+
+                var holders = Validator.Factory.FetchHolders(typeof(AssemblyWithHoldersHook).Assembly, typeof(ValidatorFactoryTests).Assembly);
+
+                holders.Should().HaveCount(separateAssemblyHolders.Count + thisTestsHolders.Count);
+
+                foreach (var holder in separateAssemblyHolders)
+                {
+                    holders.Should().Contain(h => h.HolderType == holder.HolderType && h.SpecifiedType == holder.SpecifiedType && h.HoldsSettings == holder.HoldsSettings && h.ValidatorType == holder.ValidatorType);
+                }
+
+                foreach (var holder in thisTestsHolders)
+                {
+                    holders.Should().Contain(h => h.HolderType == holder.HolderType && h.SpecifiedType == holder.SpecifiedType && h.HoldsSettings == holder.HoldsSettings && h.ValidatorType == holder.ValidatorType);
+                }
+            }
+
+            [Fact]
+            public void Should_FetchAllHoldersFromDomainAssemblies()
+            {
+                var thisTestsHolders = Validator.Factory.FetchHolders(typeof(ValidatorFactoryTests).Assembly);
+
+                var separateAssemblyHolders = Validator.Factory.FetchHolders(typeof(AssemblyWithHoldersHook).Assembly);
+
+                var holders = Validator.Factory.FetchHolders();
+
+                holders.Should().HaveCount(separateAssemblyHolders.Count + thisTestsHolders.Count);
+
+                foreach (var holder in separateAssemblyHolders)
+                {
+                    holders.Should().Contain(h => h.HolderType == holder.HolderType && h.SpecifiedType == holder.SpecifiedType && h.HoldsSettings == holder.HoldsSettings && h.ValidatorType == holder.ValidatorType);
+                }
+
+                foreach (var holder in thisTestsHolders)
+                {
+                    holders.Should().Contain(h => h.HolderType == holder.HolderType && h.SpecifiedType == holder.SpecifiedType && h.HoldsSettings == holder.HoldsSettings && h.ValidatorType == holder.ValidatorType);
+                }
+            }
+
+            [Fact]
+            public void Should_FetchAllHolders_And_CreateValidatorsOutOfThem()
+            {
+                var holders = Validator.Factory.FetchHolders(typeof(AssemblyWithHoldersHook).Assembly);
+
+                var holderOfDecimalSpecificationValidator = (Validator<decimal>)holders.Single(h => h.HolderType == typeof(HolderOfDecimalSpecification) && h.SpecifiedType == typeof(decimal) && !h.HoldsSettings).CreateValidator();
+                holderOfDecimalSpecificationValidator.Validate(10.01M).ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Max value is 10");
+
+                var holderOfIntSpecificationAndSettingsValidator = (Validator<int>)holders.Single(h => h.HolderType == typeof(HolderOfIntSpecificationAndSettings) && h.SpecifiedType == typeof(int) && h.HoldsSettings).CreateValidator();
+                holderOfIntSpecificationAndSettingsValidator.Validate(11).ToString("BinaryEnglish").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "The maximum value is 0b1010");
+
+                var holderOfStringSpecificationValidator = (Validator<string>)holders.Single(h => h.HolderType == typeof(HolderOfStringSpecification) && h.SpecifiedType == typeof(string) && !h.HoldsSettings).CreateValidator();
+                holderOfStringSpecificationValidator.Validate("!").ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Text shorter than 3 characters not allowed",
+                    "Text containing exclamation mark not allowed");
+
+                var holderOfStringSpecificationAndSettingsValidator = (Validator<string>)holders.Single(h => h.HolderType == typeof(HolderOfStringSpecificationAndSettings) && h.SpecifiedType == typeof(string) && h.HoldsSettings).CreateValidator();
+                holderOfStringSpecificationAndSettingsValidator.Validate("").ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Empty string is invalid!",
+                    "Only strings of length from 3 to 10 are allowed"
+                );
+
+                var holderOfMultipleSpecificationsDateTimeValidator = (Validator<DateTime>)holders.Single(h => h.HolderType == typeof(HolderOfMultipleSpecifications) && h.SpecifiedType == typeof(DateTime) && !h.HoldsSettings).CreateValidator();
+                holderOfMultipleSpecificationsDateTimeValidator.Validate(new DateTime(1999, 10, 10)).ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Dates after 1st of Jan'00 are allowed"
+                );
+
+                var holderOfMultipleSpecificationsDateTimeOffsetValidator = (Validator<DateTimeOffset>)holders.Single(h => h.HolderType == typeof(HolderOfMultipleSpecifications) && h.SpecifiedType == typeof(DateTimeOffset) && !h.HoldsSettings).CreateValidator();
+                holderOfMultipleSpecificationsDateTimeOffsetValidator.Validate(new DateTimeOffset(2077, 10, 10, 10, 10, 10, TimeSpan.Zero)).ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Dates before midnight 1st of Jan'21 are allowed");
+
+                var holderOfMultipleSpecificationsAndSettingsFloatValidator = (Validator<float>)holders.Single(h => h.HolderType == typeof(HolderOfMultipleSpecificationsAndSettings) && h.SpecifiedType == typeof(float) && h.HoldsSettings).CreateValidator();
+                holderOfMultipleSpecificationsAndSettingsFloatValidator.Validate(0.99F).ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Minimum value is 1");
+
+                var holderOfMultipleSpecificationsAndSettingsDoubleValidator = (Validator<double>)holders.Single(h => h.HolderType == typeof(HolderOfMultipleSpecificationsAndSettings) && h.SpecifiedType == typeof(double) && h.HoldsSettings).CreateValidator();
+                holderOfMultipleSpecificationsAndSettingsDoubleValidator.Validate(10.001D).ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Maximum value is 10"
+                );
+
+                var nestedHolderOfBoolSpecificationValidator = (Validator<bool>)holders.Single(h => h.HolderType == typeof(NestedHolders.NestedHolderOfBoolSpecification) && h.SpecifiedType == typeof(bool) && !h.HoldsSettings).CreateValidator();
+                nestedHolderOfBoolSpecificationValidator.Validate(false).ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Must be true");
+
+                var nestedHolderOfStringSpecificationValidator = (Validator<string>)holders.Single(h => h.HolderType == typeof(NestedHolders.NestedHolderOfStringSpecification) && h.SpecifiedType == typeof(string) && !h.HoldsSettings).CreateValidator();
+                nestedHolderOfStringSpecificationValidator.Validate("").ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Must not be empty");
+
+                var nestedHolderOfStringSpecificationAndSettingsValidator = (Validator<string>)holders.Single(h => h.HolderType == typeof(NestedHolders.NestedHolderOfStringSpecificationAndSettings) && h.SpecifiedType == typeof(string) && h.HoldsSettings).CreateValidator();
+                nestedHolderOfStringSpecificationAndSettingsValidator.Validate("").ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Cannot be empty!");
+
+                var privateSpecificationHolderValidator = (Validator<string>)holders.Single(h => h.HolderType == typeof(PrivateSpecificationHolder) && h.SpecifiedType == typeof(string) && !h.HoldsSettings).CreateValidator();
+                privateSpecificationHolderValidator.Validate("").ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Must not be empty"
+                );
+
+                var privateSpecificationAndSettingsHolderValidator = (Validator<string>)holders.Single(h => h.HolderType == typeof(PrivateSpecificationAndSettingsHolder) && h.SpecifiedType == typeof(string) && h.HoldsSettings).CreateValidator();
+                privateSpecificationAndSettingsHolderValidator.Validate("").ToString().ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Must not be empty"
+                );
+                privateSpecificationAndSettingsHolderValidator.Settings.ReferenceLoopProtectionEnabled.Should().BeTrue();
+            }
+
+            [Fact]
+            public void Should_FetchHolders_And_InitializeValidatorsWithSettings()
+            {
+                var holders = Validator.Factory.FetchHolders(typeof(AssemblyWithHoldersHook).Assembly);
+
+                var holderOfIntSpecificationAndSettingsValidator = (Validator<int>)holders.Single(h => h.HolderType == typeof(HolderOfIntSpecificationAndSettings) && h.SpecifiedType == typeof(int) && h.HoldsSettings).CreateValidator();
+
+                holderOfIntSpecificationAndSettingsValidator.Settings.ReferenceLoopProtectionEnabled.Should().BeTrue();
+                holderOfIntSpecificationAndSettingsValidator.Settings.Translations.Keys.Should().Contain("English");
+                holderOfIntSpecificationAndSettingsValidator.Settings.Translations["English"]["Min value is 1"].Should().Be("The minimum value is 1");
+                holderOfIntSpecificationAndSettingsValidator.Settings.Translations["English"]["Max value is 10"].Should().Be("The maximum value is 10");
+
+                holderOfIntSpecificationAndSettingsValidator.Settings.Translations.Keys.Should().Contain("BinaryEnglish");
+                holderOfIntSpecificationAndSettingsValidator.Settings.Translations["BinaryEnglish"].Should().HaveCount(2);
+                holderOfIntSpecificationAndSettingsValidator.Settings.Translations["BinaryEnglish"].Keys.Should().HaveCount(2);
+                holderOfIntSpecificationAndSettingsValidator.Settings.Translations["BinaryEnglish"]["Min value is 1"].Should().Be("The minimum value is 0b0001");
+                holderOfIntSpecificationAndSettingsValidator.Settings.Translations["BinaryEnglish"]["Max value is 10"].Should().Be("The maximum value is 0b1010");
             }
         }
 

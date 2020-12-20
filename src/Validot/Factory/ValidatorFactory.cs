@@ -1,6 +1,9 @@
 namespace Validot.Factory
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
 
     using Validot.Settings;
     using Validot.Validation.Scheme;
@@ -91,6 +94,53 @@ namespace Validot.Factory
             validatorSettings.IsLocked = true;
 
             return new Validator<T>(modelScheme, settings);
+        }
+
+        /// <summary>
+        /// Fetches information about the specification holders contained in the provided assemblies and provides the way to create the validators of them. Helps with populating dependency injection containers automatically, or with limited effort.
+        /// </summary>
+        /// <param name="assemblies">Assemblies to scan for specification holders. If not provided, it will be AppDomain.CurrentDomain.GetAssemblies().</param>
+        /// <returns>Collection of items containing information about the specification holders found in provided assembly and a method to create validators out of them.</returns>
+        public IReadOnlyList<HolderInfo> FetchHolders(params Assembly[] assemblies)
+        {
+            ThrowHelper.NullInCollection(assemblies, nameof(assemblies));
+
+            var assembliesToScan = assemblies.Length > 0
+                ? assemblies
+                : AppDomain.CurrentDomain.GetAssemblies();
+
+            var holders = new List<HolderInfo>();
+
+            var holderTypes = assembliesToScan.SelectMany(GetAllSpecificationHoldersFromAssembly).ToList();
+
+            foreach (var holderType in holderTypes)
+            {
+                var specificationHolderTypes = holderType.GetInterfaces().Where(IsSpecificationHolderInterface).ToList();
+
+                foreach (var specificationHolderType in specificationHolderTypes)
+                {
+                    var specifiedType = specificationHolderType.GetGenericArguments().Single();
+
+                    holders.Add(new HolderInfo(holderType, specifiedType));
+                }
+            }
+
+            return holders;
+
+            IReadOnlyList<Type> GetAllSpecificationHoldersFromAssembly(Assembly assembly)
+            {
+                return assembly
+                    .GetTypes()
+                    .Where(type => type.IsClass &&
+                                   type.GetConstructor(Type.EmptyTypes) != null &&
+                                   type.GetInterfaces().Any(IsSpecificationHolderInterface))
+                    .ToArray();
+            }
+
+            bool IsSpecificationHolderInterface(Type @interface)
+            {
+                return @interface.IsGenericType && @interface.GetGenericTypeDefinition() == typeof(ISpecificationHolder<>).GetGenericTypeDefinition();
+            }
         }
 
         private static void SetReferenceLoopProtection(ValidatorSettings settings, bool isReferenceLoopPossible)

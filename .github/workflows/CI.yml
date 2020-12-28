@@ -70,7 +70,7 @@ jobs:
           path: artifacts/tests/Validot.${{ env.VALIDOT_VERSION }}.testresults
   code_coverage:
       needs: [ tests, tests_netframework ]
-      if: github.event_name == 'release' || github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
+      if: github.event_name == 'release' || github.event_name == 'pull_request' || github.ref == 'refs/heads/main'
       runs-on: ubuntu-latest
       name: Code coverage
       steps:

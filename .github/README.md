@@ -11,19 +11,19 @@
 
   <br />
 <p align="center">
-  <a href="https://github.com/bartoszlenar/Validot/actions?query=branch%3Amaster+workflow%3ACI">
-    <img src="https://img.shields.io/github/workflow/status/bartoszlenar/Validot/CI/master?style=for-the-badge&label=CI&logo=github&logoColor=white&logoWidth=20">
+  <a href="https://github.com/bartoszlenar/Validot/actions?query=branch%3Amain+workflow%3ACI">
+    <img src="https://img.shields.io/github/workflow/status/bartoszlenar/Validot/CI/main?style=for-the-badge&label=CI&logo=github&logoColor=white&logoWidth=20">
   </a>
-  <a href="https://codecov.io/gh/bartoszlenar/Validot/branch/master">
-    <img src="https://img.shields.io/codecov/c/gh/bartoszlenar/Validot/master?style=for-the-badge&logo=codecov&logoColor=white&logoWidth=20">
+  <a href="https://codecov.io/gh/bartoszlenar/Validot/branch/main">
+    <img src="https://img.shields.io/codecov/c/gh/bartoszlenar/Validot/main?style=for-the-badge&logo=codecov&logoColor=white&logoWidth=20">
   </a>
   <a href="https://www.nuget.org/packages/Validot">
       <img src="https://img.shields.io/nuget/v/Validot?style=for-the-badge&logo=nuget&logoColor=white&logoWidth=20&label=STABLE%20VERSION">
   </a>
 </p>
 <p align="center">
-  <a href="https://github.com/bartoszlenar/Validot/commits/master">
-    <img src="https://img.shields.io/github/last-commit/bartoszlenar/Validot/master?style=flat-square">
+  <a href="https://github.com/bartoszlenar/Validot/commits/main">
+    <img src="https://img.shields.io/github/last-commit/bartoszlenar/Validot/main?style=flat-square">
   </a>
   <a href="https://github.com/bartoszlenar/Validot/releases">
     <img src="https://img.shields.io/github/release-date-pre/bartoszlenar/Validot?include_prereleases&style=flat-square&label=last%20release">
@@ -313,7 +313,7 @@ A short statement to start with - [@JeremySkinner](https://twitter.com/JeremySki
 
 This document shows oversimplified results of [BenchmarkDotNet](https://benchmarkdotnet.org/) execution, but the intention is to present the general trend only. To have truly reliable numbers, I highly encourage you to [run the benchmarks yourself](../docs/DOCUMENTATION.md#benchmarks).
 
-There are three data sets, 10k models each; `ManyErrors` (every model has many errors), `HalfErrors` (circa 60% have errors, the rest are valid), `NoErrors` (all are valid) and the rules reflect each other as much as technically possible. I did my best to make sure that the tests are just and adequate, but I'm a human being and I make mistakes. Really, if you spot errors [in the code](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Benchmarks), framework usage, applied methodology... or if you can provide any counterexample proving that Validot struggles with some particular scenarios - I'd be very very very happy to accept a PR and/or discuss it on [GitHub Issues](https://github.com/bartoszlenar/Validot/issues).
+There are three data sets, 10k models each; `ManyErrors` (every model has many errors), `HalfErrors` (circa 60% have errors, the rest are valid), `NoErrors` (all are valid) and the rules reflect each other as much as technically possible. I did my best to make sure that the tests are just and adequate, but I'm a human being and I make mistakes. Really, if you spot errors [in the code](https://github.com/bartoszlenar/Validot/tree/main/tests/Validot.Benchmarks), framework usage, applied methodology... or if you can provide any counterexample proving that Validot struggles with some particular scenarios - I'd be very very very happy to accept a PR and/or discuss it on [GitHub Issues](https://github.com/bartoszlenar/Validot/issues).
 
 To the point; the statement in the header is true, but it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over [flexibility and extra features](#fluentvalidations-features-that-validot-is-missing). Fine with that kind of trade-off? Good, because the validation process in Validot might be **~2.5x faster while consuming ~3.5x less memory**. Especially when it comes to memory consumption, Validot is usually far, far better than that (depending on the use case it might be even **~10x more efficient** comparing to FluentValidation):
 
@@ -453,7 +453,7 @@ Before every major version update, at least one preview version is published.
 
 ### Reliability
 
-Unit tests coverage hits 100% very close, and it can be detaily verified on [codecov.io](https://codecov.io/gh/bartoszlenar/Validot/branch/master).
+Unit tests coverage hits 100% very close, and it can be detaily verified on [codecov.io](https://codecov.io/gh/bartoszlenar/Validot/branch/main).
 
 Before publishing, each release is tested on the [latest versions](https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners#supported-runners-and-hardware-resources) of operating systems:
 
@@ -470,13 +470,13 @@ using the current and all the supported [LTS versions](https://dotnet.microsoft.
 
 ### Performance
 
-Benchmarks exist in the form of  [the console app project](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Benchmarks) based on [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet). Also, you can trigger performance tests [from the build script](../docs/DOCUMENTATION.md#benchmarks).
+Benchmarks exist in the form of  [the console app project](https://github.com/bartoszlenar/Validot/tree/main/tests/Validot.Benchmarks) based on [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet). Also, you can trigger performance tests [from the build script](../docs/DOCUMENTATION.md#benchmarks).
 
 ### Documentation
 
 The documentation is hosted alongside the source code, in the git repository, as a single markdown file: [DOCUMENTATION.md](./../docs/DOCUMENTATION.md).
 
-Code examples from the documentation live as [functional tests](https://github.com/bartoszlenar/Validot/tree/master/tests/Validot.Tests.Functional).
+Code examples from the documentation live as [functional tests](https://github.com/bartoszlenar/Validot/tree/main/tests/Validot.Tests.Functional).
 
 ### Development
 

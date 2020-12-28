@@ -1,5 +1,5 @@
 <!--
-Please read the CONTRIBUTING document (url: https://github.com/bartoszlenar/Validot/blob/master/docs/CONTRIBUTING.md) before submitting this PR.
+Please read the CONTRIBUTING document (url: https://github.com/bartoszlenar/Validot/blob/main/docs/CONTRIBUTING.md) before submitting this PR.
 
 This is only a template.
 Please replace the placeholders (like point lists or code snippets) with your own content.

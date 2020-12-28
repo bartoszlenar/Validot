@@ -313,7 +313,7 @@ A short statement to start with - [@JeremySkinner](https://twitter.com/JeremySki
 
 This document shows oversimplified results of [BenchmarkDotNet](https://benchmarkdotnet.org/) execution, but the intention is to present the general trend only. To have truly reliable numbers, I highly encourage you to [run the benchmarks yourself](../docs/DOCUMENTATION.md#benchmarks).
 
-There are three data sets, 10k models each; `ManyErrors` (every model has many errors), `HalfErrors` (circa 60% have errors, the rest are valid), `NoErrors` (all are valid) and the rules reflect each other as much as technically possible. I did my best to make sure that the tests are just and adequate, but I'm a human being and I make mistakes. Really, if you spot errors [in the code](https://github.com/bartoszlenar/Validot/tree/main/tests/Validot.Benchmarks), framework usage, applied methodology... or if you can provide any counterexample proving that Validot struggles with some particular scenarios - I'd be very very very happy to accept a PR and/or discuss it on [GitHub Issues](https://github.com/bartoszlenar/Validot/issues).
+There are three data sets, 10k models each; `ManyErrors` (every model has many errors), `HalfErrors` (circa 60% have errors, the rest are valid), `NoErrors` (all are valid) and the rules reflect each other as much as technically possible. I did my best to make sure that the tests are just and adequate, but I'm a human being and I make mistakes. Really, if you spot errors [in the code](https://github.com/bartoszlenar/Validot/tree/5219a8da7cc20cd5b9c5c49dd5c0940e829f6fe9/tests/Validot.Benchmarks), framework usage, applied methodology... or if you can provide any counterexample proving that Validot struggles with some particular scenarios - I'd be very very very happy to accept a PR and/or discuss it on [GitHub Issues](https://github.com/bartoszlenar/Validot/issues).
 
 To the point; the statement in the header is true, but it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over [flexibility and extra features](#fluentvalidations-features-that-validot-is-missing). Fine with that kind of trade-off? Good, because the validation process in Validot might be **~2.5x faster while consuming ~3.5x less memory**. Especially when it comes to memory consumption, Validot is usually far, far better than that (depending on the use case it might be even **~10x more efficient** comparing to FluentValidation):
 
@@ -463,20 +463,20 @@ Before publishing, each release is tested on the [latest versions](https://help.
 
 using the current and all the supported [LTS versions](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) of the underlying frameworks:
 
-* .NET Core 5.0 RC2
+* .NET 5.0
 * .NET Core 3.1
 * .NET Core 2.1
 * .NET Framework 4.8 (Windows only)
 
 ### Performance
 
-Benchmarks exist in the form of  [the console app project](https://github.com/bartoszlenar/Validot/tree/main/tests/Validot.Benchmarks) based on [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet). Also, you can trigger performance tests [from the build script](../docs/DOCUMENTATION.md#benchmarks).
+Benchmarks exist in the form of  [the console app project](https://github.com/bartoszlenar/Validot/tree/5219a8da7cc20cd5b9c5c49dd5c0940e829f6fe9/tests/Validot.Benchmarks) based on [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet). Also, you can trigger performance tests [from the build script](../docs/DOCUMENTATION.md#benchmarks).
 
 ### Documentation
 
 The documentation is hosted alongside the source code, in the git repository, as a single markdown file: [DOCUMENTATION.md](./../docs/DOCUMENTATION.md).
 
-Code examples from the documentation live as [functional tests](https://github.com/bartoszlenar/Validot/tree/main/tests/Validot.Tests.Functional).
+Code examples from the documentation live as [functional tests](https://github.com/bartoszlenar/Validot/tree/5219a8da7cc20cd5b9c5c49dd5c0940e829f6fe9/tests/Validot.Tests.Functional).
 
 ### Development
 

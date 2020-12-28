@@ -55,20 +55,30 @@ namespace Validot.Tests.Functional.Readme
 
             Specification<string> emailSpecification = s => s
                 .Email()
-                .Rule(email => email.All(char.IsLower)).WithMessage("Must contain only lower case characters");
+                .And()
+                .Rule(email => email.All(char.IsLower))
+                .WithMessage("Must contain only lower case characters");
 
             Specification<UserModel> userSpecification = s => s
-                .Member(m => m.Name, nameSpecification).WithMessage("Must comply with name rules")
+                .Member(m => m.Name, nameSpecification)
+                .WithMessage("Must comply with name rules")
+                .And()
                 .Member(m => m.PrimaryEmail, emailSpecification)
+                .And()
                 .Member(m => m.AlternativeEmails, m => m
                     .Optional()
-                    .MaxCollectionSize(3).WithMessage("Must not contain more than 3 addresses")
+                    .And()
+                    .MaxCollectionSize(3)
+                    .WithMessage("Must not contain more than 3 addresses")
+                    .And()
                     .AsCollection(emailSpecification)
                 )
+                .And()
                 .Rule(user =>
                 {
-                    return user.PrimaryEmail == null || user.AlternativeEmails?.Contains(user.PrimaryEmail) == false;
-                }).WithMessage("Alternative emails must not contain the primary email address");
+                    return user.PrimaryEmail is null || user.AlternativeEmails?.Contains(user.PrimaryEmail) == false;
+                })
+                .WithMessage("Alternative emails must not contain the primary email address");
 
             _ = Validator.Factory.Create(userSpecification);
         }

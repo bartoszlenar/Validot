@@ -9,6 +9,8 @@
 
  <h3 align="center">Tiny lib for advanced model validation. With performance in mind.</h3>
 
+ <p align="center">What's Validot in simple words? A compact library for static model validation.</p>
+
   <br />
 <p align="center">
   <a href="https://github.com/bartoszlenar/Validot/actions?query=branch%3Amain+workflow%3ACI">
@@ -92,18 +94,24 @@ And you're good to go! At first, create a specification for your model with the 
 ``` csharp
 Specification<UserModel> specification = _ => _
     .Member(m => m.Email, m => m
-        .Email().WithExtraCode("ERR_EMAIL")
+        .Email()
+        .WithExtraCode("ERR_EMAIL")
+        .And()
         .MaxLength(100)
     )
     .Member(m => m.Name, m => m
         .Optional()
+        .And()
         .LengthBetween(8, 100)
-        .Rule(name => name.All(char.IsLetterOrDigit)).WithMessage("Must contain only letter or digits")
+        .And()
+        .Rule(name => name.All(char.IsLetterOrDigit))
+        .WithMessage("Must contain only letter or digits")
     )
+    .And()
     .Rule(m => m.Age >= 18 || m.Name != null)
-        .WithPath("Name")
-        .WithMessage("Required for underaged user")
-        .WithExtraCode("ERR_NAME");
+    .WithPath("Name")
+    .WithMessage("Required for underaged user")
+    .WithExtraCode("ERR_NAME");
 ```
 
 The next step is to create a [validator](../docs/DOCUMENTATION.md#validator). As its name stands - it validates objects according to the [specification](../docs/DOCUMENTATION.md#specification). It's also thread-safe so you can seamlessly register it as a singleton in your DI container.
@@ -120,7 +128,7 @@ var model = new UserModel(email: "inv@lidv@lue", age: 14);
 var result = validator.Validate(model);
 ```
 
-The [result](../docs/DOCUMENTATION.md#result) object contains all information about the [errors](../docs/DOCUMENTATION.md#error-output). Without retriggering the validation process, you can extract the desired form of output.
+The [result](../docs/DOCUMENTATION.md#result) object contains all information about the [errors](../docs/DOCUMENTATION.md#error-output). Without retriggering the validation process, you can extract the desired form of an output.
 
 ``` csharp
 result.AnyErrors; // bool flag:
@@ -155,21 +163,31 @@ Specification<string> nameSpecification = s => s
 
 Specification<string> emailSpecification = s => s
     .Email()
-    .Rule(email => email.All(char.IsLower)).WithMessage("Must contain only lower case characters");
+    .And()
+    .Rule(email => email.All(char.IsLower))
+    .WithMessage("Must contain only lower case characters");
 
 Specification<UserModel> userSpecification = s => s
-    .Member(m => m.Name, nameSpecification).WithMessage("Must comply with name rules")
+    .Member(m => m.Name, nameSpecification)
+    .WithMessage("Must comply with name rules")
+    .And()
     .Member(m => m.PrimaryEmail, emailSpecification)
+    .And()
     .Member(m => m.AlternativeEmails, m => m
         .Optional()
-        .MaxCollectionSize(3).WithMessage("Must not contain more than 3 addresses")
+        .And()
+        .MaxCollectionSize(3)
+        .WithMessage("Must not contain more than 3 addresses")
+        .And()
         .AsCollection(emailSpecification)
     )
+    .And()
     .Rule(user => {
 
-        return user.PrimaryEmail == null || user.AlternativeEmails?.Contains(user.PrimaryEmail) == false;
+        return user.PrimaryEmail is null || user.AlternativeEmails?.Contains(user.PrimaryEmail) == false;
 
-    }).WithMessage("Alternative emails must not contain the primary email address");
+    })
+    .WithMessage("Alternative emails must not contain the primary email address");
 ```
 
 * [Guide through Validot's fluent API](../docs/DOCUMENTATION.md#fluent-api)
@@ -304,6 +322,12 @@ result.ToString(translationName: "Polish");
 * [How translations work](../docs/DOCUMENTATION.md#translations)
 * [Custom translation](../docs/DOCUMENTATION.md#custom-translation)
 * [How to selectively override built-in error messages](../docs/DOCUMENTATION.md#overriding-messages)
+
+### IoC/DI helpers
+
+Validot tries to remain a single-purpose library with zero dependencies (solely .NET Standard 2.0).
+
+
 
 ## Validot vs FluentValidation
 

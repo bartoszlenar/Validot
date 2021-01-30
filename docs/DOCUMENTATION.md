@@ -3067,14 +3067,14 @@ _Above, we can observe that the created validator respects the rules and the set
 
 #### Dependency injection
 
-- Validot doesn't have any dependencies (apart of the pure .NET Standard 2.0), and therefore - there is no direct support for third-party inversion of control (dependency injection) containers.
+- Validot doesn't have any dependencies (apart of the pure .NET Standard 2.0), and therefore - there is no direct support for third-party dependency injection containers.
 - However, the [factory](#factory) is able to [fetch the holders](#fetching-holders) from the referenced assemblies and provides helpers to create [validators](#validator) out of them.
 - For example, if you want your validators to be automatically registered within the DI container, you can implement the following strategy:
   - Define [specifications](#specification) for your models in [specification holders](#specification-holder)
     - Each in a separate class or everything in the single one - it doesn't matter.
   - Call `Validator.Factory.FetchHolders(AppDomain.CurrentDomain.GetAssemblies())` to get the information about the holders and group the results by the `SpecifiedType`.
     - instead of `AppDomain.CurrentDomain.GetAssemblies()` you can pass the array of `System.Reflection.Assembly` that the function will scan for `ISpecificationHolder` implementations.
-    - Theoretically, you could define more than one specification for a single type. Let's assume it's not the case here, but as you will notice, the entire operation is merely a short LINQ call. You can easily adjust it to your needs and/or the used IoC/DI container's requirements.
+    - Theoretically, you could define more than one specification for a single type. Let's assume it's not the case here, but as you will notice, the entire operation is merely a short LINQ call. You can easily adjust it to your needs and/or the used DI container's requirements.
   - Out of every group, take the `ValidatorType` (this is your registered type) and the result of `CreateValidator` (this is your implementation instance).
   - It's safe to register validators as singletons.
 

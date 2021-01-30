@@ -78,6 +78,7 @@
     Built with 🤘🏻by <a href="https://lenar.dev">Bartosz Lenar</a>
 </p>
 
+
 ## Quickstart
 
 Add the Validot nuget package to your project using dotnet CLI:
@@ -327,10 +328,38 @@ result.ToString(translationName: "Polish");
 * [Custom translation](../docs/DOCUMENTATION.md#custom-translation)
 * [How to selectively override built-in error messages](../docs/DOCUMENTATION.md#overriding-messages)
 
-### IoC/DI helpers
+### Dependency injection
 
-Validot tries to remain a single-purpose library with zero dependencies (solely .NET Standard 2.0).
+Although Validot doesn't contain direct support for the dependency injection containers (because it aims to rely solely on the .NET Standard 2.0), it includes helpers that can be used with any DI/IoC system.
 
+For example, if you're working with ASP.NET Core and looking for an easy way to register all of your validators with a single call (something like `services.AddValidators()`), wrap your specifications in the [specification holders](../docs/DOCUMENTATION.md#specification-holders), and use the following snippet:
+
+``` csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    // ... registering other dependencies ...
+
+    // Registering Validot's validators from the current domain's loaded assemblies
+    var holderAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+    var holders = Validator.Factory.FetchHolders(holderAssemblies)
+        .GroupBy(h => h.SpecifiedType)
+        .Select(s => new
+        {
+            ValidatorType = s.First().ValidatorType,
+            ValidatorInstance = s.First().CreateValidator()
+        });
+    foreach (var holder in holders)
+    {
+        services.AddSingleton(holder.ValidatorType, holder.ValidatorInstance);
+    }
+
+    // ... registering other dependencies ...
+}
+```
+
+* [What specification holders are and how to create them](../docs/DOCUMENTATION.md#specification-holders)
+* [Fetching specification holders from assemblies](../docs/DOCUMENTATION.md#fetching-holders)
+* [Writing the fully-featured `AddValidators` extension step-by-step](../docs/DOCUMENTATION.md#dependency-injection)
 
 
 ## Validot vs FluentValidation

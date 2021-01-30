@@ -372,34 +372,34 @@ This document shows oversimplified results of [BenchmarkDotNet](https://benchmar
 
 There are three data sets, 10k models each; `ManyErrors` (every model has many errors), `HalfErrors` (circa 60% have errors, the rest are valid), `NoErrors` (all are valid) and the rules reflect each other as much as technically possible. I did my best to make sure that the tests are just and adequate, but I'm a human being and I make mistakes. Really, if you spot errors [in the code](https://github.com/bartoszlenar/Validot/tree/5219a8da7cc20cd5b9c5c49dd5c0940e829f6fe9/tests/Validot.Benchmarks), framework usage, applied methodology... or if you can provide any counterexample proving that Validot struggles with some particular scenarios - I'd be very very very happy to accept a PR and/or discuss it on [GitHub Issues](https://github.com/bartoszlenar/Validot/issues).
 
-To the point; the statement in the header is true, but it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over [flexibility and extra features](#fluentvalidations-features-that-validot-is-missing). Fine with that kind of trade-off? Good, because the validation process in Validot might be **~2.5x faster while consuming ~3.5x less memory**. Especially when it comes to memory consumption, Validot is usually far, far better than that (depending on the use case it might be even **~10x more efficient** comparing to FluentValidation):
+To the point; the statement in the header is true, but it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over [flexibility and extra features](#fluentvalidations-features-that-validot-is-missing). Fine with that kind of trade-off? Good, because the validation process in Validot might be **~2.5x faster while consuming ~3.5x less memory**. Especially when it comes to memory consumption, Validot is usually far, far better than that (depending on the use case it might be even **~25x more efficient** comparing to FluentValidation, like in `IsValid` test using `HalfErrors` data set):
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| Validate | `ManyErrors` | FluentValidation | `774.69` | `747.66` |
-| Validate | `ManyErrors` | Validot | `331.70` | `183.19` |
-| FailFast | `ManyErrors` | FluentValidation | `22.23` | `26.42` |
-| FailFast | `ManyErrors` | Validot | `14.23` | `31.90` |
-| Validate | `HalfErrors` | FluentValidation | `711.15` | `675.69` |
-| Validate | `HalfErrors` | Validot | `271.77` | `85.10` |
-| FailFast | `HalfErrors` | FluentValidation | `558.96` | `519.92` |
-| FailFast | `HalfErrors` | Validot | `182.89` | `64.96` |
-| Validate | `NoErrors` | FluentValidation | `659.07` | `660.00` |
-| Validate | `NoErrors` | Validot | `242.92` | `78.82 ` |
+| Validate | `ManyErrors` | FluentValidation | `764.82` | `768.00` |
+| Validate | `ManyErrors` | Validot | `375.13` | `180.73` |
+| FailFast | `ManyErrors` | FluentValidation | `19.44` | `26.89` |
+| FailFast | `ManyErrors` | Validot | `14.92` | `32.07` |
+| Validate | `HalfErrors` | FluentValidation | `624.39` | `674.39` |
+| Validate | `HalfErrors` | Validot | `285.48` | `81.40` |
+| FailFast | `HalfErrors` | FluentValidation | `532.18` | `518.34` |
+| FailFast | `HalfErrors` | Validot | `181.00` | `62.48` |
+| Validate | `NoErrors` | FluentValidation | `664.57` | `658.14` |
+| Validate | `NoErrors` | Validot | `234.33` | `75.10 ` |
 
 * [Validate benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated.
 * [FailFast benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, the process stops on the first error.
 
-FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors or not. Validot has [AnyErrors](../docs/DOCUMENTATION.md#anyerrors) that act exactly the same way, and [IsValid](../docs/DOCUMENTATION.md#isvalid) is a special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify the incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude:
+FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors or not. Validot has [AnyErrors](../docs/DOCUMENTATION.md#anyerrors) that acts the same way, and [IsValid](../docs/DOCUMENTATION.md#isvalid) is a special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify the incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude:
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| IsValid | `ManyErrors` | FluentValidation | `22.21` | `26.42` |
-| IsValid | `ManyErrors` | Validot | `13.29` | `31.21` |
-| IsValid | `HalfErrors` | FluentValidation | `545.65` | `519.92` |
-| IsValid | `HalfErrors` | Validot | `183.07` | `64.57` |
-| IsValid | `NoErrors` | FluentValidation | `667.74` | `660.00` |
-| IsValid | `NoErrors` | Validot | `240.49` | `78.82` |
+| IsValid | `ManyErrors` | FluentValidation | `22.96` | `26.89` |
+| IsValid | `ManyErrors` | Validot | `5.66` | `6.43` |
+| IsValid | `HalfErrors` | FluentValidation | `509.72` | `518.34` |
+| IsValid | `HalfErrors` | Validot | `82.76` | `19.87` |
+| IsValid | `NoErrors` | FluentValidation | `667.80` | `658.14` |
+| IsValid | `NoErrors` | Validot | `122.61` | `23.78` |
 
 * [IsValid benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, but only to check if they are valid or not.
 
@@ -414,16 +414,16 @@ if (!validator.IsValid(model))
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| Reporting | `ManyErrors` | FluentValidation | `795.90` | `781.86` |
-| Reporting | `ManyErrors` | Validot | `418.60` | `335.99` |
-| Reporting | `HalfErrors` | FluentValidation | `697.00` | `676.32` |
-| Reporting | `HalfErrors` | Validot | `367.20` | `123.74` |
+| Reporting | `ManyErrors` | FluentValidation | `727.00` | `779.48` |
+| Reporting | `ManyErrors` | Validot | `448.10` | `301.43` |
+| Reporting | `HalfErrors` | FluentValidation | `651.20` | `675.01` |
+| Reporting | `HalfErrors` | Validot | `289.30` | `76.60` |
 
 * [Reporting benchmark](../tests/Validot.Benchmarks/Comparisons/ReportingBenchmark.cs):
   * FluentValidation validates model, and `ToString()` is called if errors are detected.
   * Validot processes the model twice - at first, with its special mode, [IsValid](../docs/DOCUMENTATION.md#isvalid). Secondly - in case of errors detected - with the standard method, gathering all errors and printing them with `ToString()`.
 
-Benchmarks environment: Validot 1.1.0, FluentValidation 9.2.0, .NET Core 3.1.7, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Catalina.
+Benchmarks environment: Validot 2.0.0, FluentValidation 9.4.0, .NET 5.0.2, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Big Sur.
 
 ### Validot handles nulls on its own
 

@@ -3,6 +3,7 @@ namespace Validot.Tests.Unit.Factory
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reflection;
     using AssemblyWithHolders;
     using FluentAssertions;
     using Validot.Factory;
@@ -814,28 +815,6 @@ namespace Validot.Tests.Unit.Factory
             }
 
             [Fact]
-            public void Should_FetchAllHoldersFromDomainAssemblies()
-            {
-                var thisTestsHolders = Validator.Factory.FetchHolders(typeof(ValidatorFactoryTests).Assembly);
-
-                var separateAssemblyHolders = Validator.Factory.FetchHolders(typeof(AssemblyWithHoldersHook).Assembly);
-
-                var holders = Validator.Factory.FetchHolders();
-
-                holders.Should().HaveCount(separateAssemblyHolders.Count + thisTestsHolders.Count);
-
-                foreach (var holder in separateAssemblyHolders)
-                {
-                    holders.Should().Contain(h => h.HolderType == holder.HolderType && h.SpecifiedType == holder.SpecifiedType && h.HoldsSettings == holder.HoldsSettings && h.ValidatorType == holder.ValidatorType);
-                }
-
-                foreach (var holder in thisTestsHolders)
-                {
-                    holders.Should().Contain(h => h.HolderType == holder.HolderType && h.SpecifiedType == holder.SpecifiedType && h.HoldsSettings == holder.HoldsSettings && h.ValidatorType == holder.ValidatorType);
-                }
-            }
-
-            [Fact]
             public void Should_FetchAllHolders_And_CreateValidatorsOutOfThem()
             {
                 var holders = Validator.Factory.FetchHolders(typeof(AssemblyWithHoldersHook).Assembly);
@@ -931,6 +910,24 @@ namespace Validot.Tests.Unit.Factory
                 holderOfIntSpecificationAndSettingsValidator.Settings.Translations["BinaryEnglish"].Keys.Should().HaveCount(2);
                 holderOfIntSpecificationAndSettingsValidator.Settings.Translations["BinaryEnglish"]["Min value is 1"].Should().Be("The minimum value is 0b0001");
                 holderOfIntSpecificationAndSettingsValidator.Settings.Translations["BinaryEnglish"]["Max value is 10"].Should().Be("The maximum value is 0b1010");
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_Assemblies_IsEmpty()
+            {
+                Action action = () => Validator.Factory.FetchHolders(Array.Empty<Assembly>());
+
+                var exception = action.Should().ThrowExactly<ArgumentException>().And;
+                exception.ParamName.Should().Be("assemblies");
+                exception.Message.Should().StartWith("Assembly collection must not be empty");
+            }
+
+            [Fact]
+            public void Should_ThrowException_When_Assemblies_ContainsNull()
+            {
+                Action action = () => Validator.Factory.FetchHolders(typeof(AssemblyWithHoldersHook).Assembly, null);
+
+                action.Should().ThrowExactly<ArgumentNullException>();
             }
         }
 

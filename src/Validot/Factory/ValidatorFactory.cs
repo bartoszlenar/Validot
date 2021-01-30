@@ -97,21 +97,23 @@ namespace Validot.Factory
         }
 
         /// <summary>
-        /// Fetches information about the specification holders contained in the provided assemblies and provides the way to create the validators of them. Helps with populating dependency injection containers automatically, or with limited effort.
+        /// Fetches information about the specification holders contained in the given assemblies and provides the way to create the validators out of them. Helps with populating IoC/DI containers almost automatically, or with very limited effort.
         /// </summary>
-        /// <param name="assemblies">Assemblies to scan for specification holders. If not provided, it will be AppDomain.CurrentDomain.GetAssemblies().</param>
-        /// <returns>Collection of items containing information about the specification holders found in provided assembly and a method to create validators out of them.</returns>
+        /// <param name="assemblies">Assemblies to scan for specification holders. Must not be empty. If you don't know what to do, try passing AppDomain.CurrentDomain.GetAssemblies().</param>
+        /// <returns>Collection of items containing information about the specification holders found in provided assembly and a method to create the validators out of them.</returns>
         public IReadOnlyList<HolderInfo> FetchHolders(params Assembly[] assemblies)
         {
+            ThrowHelper.NullArgument(assemblies, nameof(assemblies));
             ThrowHelper.NullInCollection(assemblies, nameof(assemblies));
 
-            var assembliesToScan = assemblies.Length > 0
-                ? assemblies
-                : AppDomain.CurrentDomain.GetAssemblies();
+            if (assemblies.Length == 0)
+            {
+                throw new ArgumentException("Assembly collection must not be empty", nameof(assemblies));
+            }
 
             var holders = new List<HolderInfo>();
 
-            var holderTypes = assembliesToScan.SelectMany(GetAllSpecificationHoldersFromAssembly).ToList();
+            var holderTypes = assemblies.SelectMany(GetAllSpecificationHoldersFromAssembly).ToList();
 
             foreach (var holderType in holderTypes)
             {

@@ -6,34 +6,38 @@
   <br />
 </h1>
 
-
- <h3 align="center">Tiny lib for advanced model validation. With performance in mind.</h3>
-
- <p align="center">What's Validot in simple words? A compact library for static model validation.</p>
+ <p align="center">Validot is a performance-first, compact library for advanced model validation. Using a simple declarative fluent interface, it efficiently handles classes, structs, nested members, collections, nullables, plus any relation or combination of them. It also supports translations, custom logic extensions with tests, and DI containers.</p>
 
   <br />
 <p align="center">
-  <a href="https://github.com/bartoszlenar/Validot/actions?query=branch%3Amain+workflow%3ACI">
-    <img src="https://img.shields.io/github/workflow/status/bartoszlenar/Validot/CI/main?style=for-the-badge&label=CI&logo=github&logoColor=white&logoWidth=20">
-  </a>
-  <a href="https://codecov.io/gh/bartoszlenar/Validot/branch/main">
-    <img src="https://img.shields.io/codecov/c/gh/bartoszlenar/Validot/main?style=for-the-badge&logo=codecov&logoColor=white&logoWidth=20">
+  <a href="https://www.nuget.org/packages/Validot">
+      <img src="https://img.shields.io/nuget/v/Validot?style=for-the-badge&logo=nuget&logoColor=white&logoWidth=20&label=CURRENT%20VERSION">
   </a>
   <a href="https://www.nuget.org/packages/Validot">
-      <img src="https://img.shields.io/nuget/v/Validot?style=for-the-badge&logo=nuget&logoColor=white&logoWidth=20&label=STABLE%20VERSION">
+      <img src="https://img.shields.io/github/release-date/bartoszlenar/Validot?include_prereleases&style=for-the-badge&label=RELEASED">
   </a>
 </p>
 <p align="center">
   <a href="https://github.com/bartoszlenar/Validot/commits/main">
+    <img src="https://img.shields.io/github/commits-since/bartoszlenar/Validot/v1.2.0/main?logo=git&logoColor=white&style=flat-square">
+  </a>
+  <a href="https://github.com/bartoszlenar/Validot/commits/main">
     <img src="https://img.shields.io/github/last-commit/bartoszlenar/Validot/main?style=flat-square">
   </a>
-  <a href="https://github.com/bartoszlenar/Validot/releases">
-    <img src="https://img.shields.io/github/release-date-pre/bartoszlenar/Validot?include_prereleases&style=flat-square&label=last%20release">
+  <a href="https://github.com/bartoszlenar/Validot/actions?query=branch%3Amain+workflow%3ACI">
+    <img src="https://img.shields.io/github/workflow/status/bartoszlenar/Validot/CI/main?style=flat-square&label=build&logo=github&logoColor=white&logoWidth=20">
   </a>
-  <a href="https://github.com/bartoszlenar/Validot/releases">
-    <img src="https://img.shields.io/github/v/release/bartoszlenar/Validot?include_prereleases&style=flat-square&label=last%20release%20version">
+  <a href="https://codecov.io/gh/bartoszlenar/Validot/branch/main">
+    <img src="https://img.shields.io/codecov/c/gh/bartoszlenar/Validot/main?style=flat-square&logo=codecov&logoColor=white&logoWidth=20">
   </a>
 </p>
+<!--
+<p align="center">
+  <a href="https://github.com/bartoszlenar/Validot/releases">
+    <img src="https://img.shields.io/github/v/release/bartoszlenar/Validot?include_prereleases&style=for-the-badge&label=latest%20pre-release%20version&logo=nuget&logoColor=white&logoWidth=20">
+  </a>
+</p>
+ -->
 
 <div align="center">
   <h3>

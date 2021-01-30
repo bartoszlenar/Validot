@@ -71,11 +71,6 @@
         // Title case method taken from https://stackoverflow.com/a/35953318/1633913
         private static string ConvertToTitleCase(string input)
         {
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                return input;
-            }
-
             if (input.Contains("_"))
             {
                 input = input.Replace('_', ' ');

@@ -73,6 +73,8 @@
         [InlineData("SubIDIn", "Sub ID In")]
         [InlineData("ConfigureCFDsImmediately", "Configure CFDs Immediately")]
         [InlineData("UseTakerLoginForOnBehalfOfSubIDInOrders", "Use Taker Login For On Behalf Of Sub ID In Orders")]
+        [InlineData("X", "X")]
+        [InlineData("x", "X")]
         public void Should_Stringify_To_TitleCase(string name, string expectedTitleCase)
         {
             var arg = new NameArg(name);

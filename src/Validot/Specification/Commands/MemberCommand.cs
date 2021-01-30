@@ -57,10 +57,6 @@ namespace Validot.Specification.Commands
             {
                 memberExpression = (MemberExpression)field.Body;
             }
-            else if (field.Body is UnaryExpression)
-            {
-                memberExpression = (MemberExpression)((UnaryExpression)field.Body).Operand;
-            }
             else
             {
                 throw new InvalidOperationException($"Only properties and variables are valid members to validate, {field} looks like it is pointing at something else (a method?).");

@@ -1,6 +1,8 @@
 # C# files
 [*.cs]
 
+csharp_style_prefer_pattern_matching = false
+
 # Severity settings
 
 dotnet_diagnostic.IDE0022.severity = none

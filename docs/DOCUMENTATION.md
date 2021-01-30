@@ -3686,7 +3686,7 @@ var result = validator.Validate(model);
 result.TranslationNames; // [ "English" ]
 ```
 
-- The list is exactly the same as in the [Validator](#validator) that produced the result.
+- The list is the same as in the [Validator](#validator) that produced the result.
 
 ``` csharp
 var validator = Validator.Factory.Create(specification, settings => settings

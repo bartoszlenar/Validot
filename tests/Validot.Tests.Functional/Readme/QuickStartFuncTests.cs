@@ -29,18 +29,24 @@ namespace Validot.Tests.Functional.Readme
         {
             Specification<UserModel> specification = _ => _
                 .Member(m => m.Email, m => m
-                    .Email().WithExtraCode("ERR_EMAIL")
+                    .Email()
+                    .WithExtraCode("ERR_EMAIL")
+                    .And()
                     .MaxLength(100)
                 )
                 .Member(m => m.Name, m => m
                     .Optional()
+                    .And()
                     .LengthBetween(8, 100)
-                    .Rule(name => name.All(char.IsLetterOrDigit)).WithMessage("Must contain only letter or digits")
+                    .And()
+                    .Rule(name => name.All(char.IsLetterOrDigit))
+                    .WithMessage("Must contain only letter or digits")
                 )
+                .And()
                 .Rule(m => m.Age >= 18 || m.Name != null)
-                    .WithPath("Name")
-                    .WithMessage("Required for underaged user")
-                    .WithExtraCode("ERR_NAME");
+                .WithPath("Name")
+                .WithMessage("Required for underaged user")
+                .WithExtraCode("ERR_NAME");
 
             var validator = Validator.Factory.Create(specification);
 

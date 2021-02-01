@@ -26,7 +26,7 @@ namespace Validot.Factory
 
             if (!hasParameterlessConstructor)
             {
-                throw new ArgumentException($"{holderType.GetFriendlyName()} must have parameterless constructor.", nameof(holderType));
+                throw new ArgumentException($"{holderType.GetFriendlyName()} must be a class and have parameterless constructor.", nameof(holderType));
             }
 
             if (holderType.GetInterfaces().All(i => i != typeof(ISpecificationHolder<>).MakeGenericType(specifiedType)))

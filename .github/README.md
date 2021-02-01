@@ -6,32 +6,38 @@
   <br />
 </h1>
 
-
- <h3 align="center">Tiny lib for advanced model validation. With performance in mind.</h3>
+ <p align="center">Validot is a performance-first, compact library for advanced model validation. Using a simple declarative fluent interface, it efficiently handles classes, structs, nested members, collections, nullables, plus any relation or combination of them. It also supports translations, custom logic extensions with tests, and DI containers.</p>
 
   <br />
 <p align="center">
-  <a href="https://github.com/bartoszlenar/Validot/actions?query=branch%3Amain+workflow%3ACI">
-    <img src="https://img.shields.io/github/workflow/status/bartoszlenar/Validot/CI/main?style=for-the-badge&label=CI&logo=github&logoColor=white&logoWidth=20">
-  </a>
-  <a href="https://codecov.io/gh/bartoszlenar/Validot/branch/main">
-    <img src="https://img.shields.io/codecov/c/gh/bartoszlenar/Validot/main?style=for-the-badge&logo=codecov&logoColor=white&logoWidth=20">
+  <a href="https://www.nuget.org/packages/Validot">
+      <img src="https://img.shields.io/nuget/v/Validot?style=for-the-badge&logo=nuget&logoColor=white&logoWidth=20&label=CURRENT%20VERSION">
   </a>
   <a href="https://www.nuget.org/packages/Validot">
-      <img src="https://img.shields.io/nuget/v/Validot?style=for-the-badge&logo=nuget&logoColor=white&logoWidth=20&label=STABLE%20VERSION">
+      <img src="https://img.shields.io/github/release-date/bartoszlenar/Validot?include_prereleases&style=for-the-badge&label=RELEASED">
   </a>
 </p>
 <p align="center">
   <a href="https://github.com/bartoszlenar/Validot/commits/main">
+    <img src="https://img.shields.io/github/commits-since/bartoszlenar/Validot/v1.2.0/main?logo=git&logoColor=white&style=flat-square">
+  </a>
+  <a href="https://github.com/bartoszlenar/Validot/commits/main">
     <img src="https://img.shields.io/github/last-commit/bartoszlenar/Validot/main?style=flat-square">
   </a>
-  <a href="https://github.com/bartoszlenar/Validot/releases">
-    <img src="https://img.shields.io/github/release-date-pre/bartoszlenar/Validot?include_prereleases&style=flat-square&label=last%20release">
+  <a href="https://github.com/bartoszlenar/Validot/actions?query=branch%3Amain+workflow%3ACI">
+    <img src="https://img.shields.io/github/workflow/status/bartoszlenar/Validot/CI/main?style=flat-square&label=build&logo=github&logoColor=white&logoWidth=20">
   </a>
-  <a href="https://github.com/bartoszlenar/Validot/releases">
-    <img src="https://img.shields.io/github/v/release/bartoszlenar/Validot?include_prereleases&style=flat-square&label=last%20release%20version">
+  <a href="https://codecov.io/gh/bartoszlenar/Validot/branch/main">
+    <img src="https://img.shields.io/codecov/c/gh/bartoszlenar/Validot/main?style=flat-square&logo=codecov&logoColor=white&logoWidth=20">
   </a>
 </p>
+<!--
+<p align="center">
+  <a href="https://github.com/bartoszlenar/Validot/releases">
+    <img src="https://img.shields.io/github/v/release/bartoszlenar/Validot?include_prereleases&style=for-the-badge&label=latest%20pre-release%20version&logo=nuget&logoColor=white&logoWidth=20">
+  </a>
+</p>
+ -->
 
 <div align="center">
   <h3>
@@ -72,6 +78,7 @@
     Built with 🤘🏻by <a href="https://lenar.dev">Bartosz Lenar</a>
 </p>
 
+
 ## Quickstart
 
 Add the Validot nuget package to your project using dotnet CLI:
@@ -92,18 +99,24 @@ And you're good to go! At first, create a specification for your model with the 
 ``` csharp
 Specification<UserModel> specification = _ => _
     .Member(m => m.Email, m => m
-        .Email().WithExtraCode("ERR_EMAIL")
+        .Email()
+        .WithExtraCode("ERR_EMAIL")
+        .And()
         .MaxLength(100)
     )
     .Member(m => m.Name, m => m
         .Optional()
+        .And()
         .LengthBetween(8, 100)
-        .Rule(name => name.All(char.IsLetterOrDigit)).WithMessage("Must contain only letter or digits")
+        .And()
+        .Rule(name => name.All(char.IsLetterOrDigit))
+        .WithMessage("Must contain only letter or digits")
     )
+    .And()
     .Rule(m => m.Age >= 18 || m.Name != null)
-        .WithPath("Name")
-        .WithMessage("Required for underaged user")
-        .WithExtraCode("ERR_NAME");
+    .WithPath("Name")
+    .WithMessage("Required for underaged user")
+    .WithExtraCode("ERR_NAME");
 ```
 
 The next step is to create a [validator](../docs/DOCUMENTATION.md#validator). As its name stands - it validates objects according to the [specification](../docs/DOCUMENTATION.md#specification). It's also thread-safe so you can seamlessly register it as a singleton in your DI container.
@@ -120,7 +133,7 @@ var model = new UserModel(email: "inv@lidv@lue", age: 14);
 var result = validator.Validate(model);
 ```
 
-The [result](../docs/DOCUMENTATION.md#result) object contains all information about the [errors](../docs/DOCUMENTATION.md#error-output). Without retriggering the validation process, you can extract the desired form of output.
+The [result](../docs/DOCUMENTATION.md#result) object contains all information about the [errors](../docs/DOCUMENTATION.md#error-output). Without retriggering the validation process, you can extract the desired form of an output.
 
 ``` csharp
 result.AnyErrors; // bool flag:
@@ -155,21 +168,31 @@ Specification<string> nameSpecification = s => s
 
 Specification<string> emailSpecification = s => s
     .Email()
-    .Rule(email => email.All(char.IsLower)).WithMessage("Must contain only lower case characters");
+    .And()
+    .Rule(email => email.All(char.IsLower))
+    .WithMessage("Must contain only lower case characters");
 
 Specification<UserModel> userSpecification = s => s
-    .Member(m => m.Name, nameSpecification).WithMessage("Must comply with name rules")
+    .Member(m => m.Name, nameSpecification)
+    .WithMessage("Must comply with name rules")
+    .And()
     .Member(m => m.PrimaryEmail, emailSpecification)
+    .And()
     .Member(m => m.AlternativeEmails, m => m
         .Optional()
-        .MaxCollectionSize(3).WithMessage("Must not contain more than 3 addresses")
+        .And()
+        .MaxCollectionSize(3)
+        .WithMessage("Must not contain more than 3 addresses")
+        .And()
         .AsCollection(emailSpecification)
     )
+    .And()
     .Rule(user => {
 
-        return user.PrimaryEmail == null || user.AlternativeEmails?.Contains(user.PrimaryEmail) == false;
+        return user.PrimaryEmail is null || user.AlternativeEmails?.Contains(user.PrimaryEmail) == false;
 
-    }).WithMessage("Alternative emails must not contain the primary email address");
+    })
+    .WithMessage("Alternative emails must not contain the primary email address");
 ```
 
 * [Guide through Validot's fluent API](../docs/DOCUMENTATION.md#fluent-api)
@@ -305,6 +328,40 @@ result.ToString(translationName: "Polish");
 * [Custom translation](../docs/DOCUMENTATION.md#custom-translation)
 * [How to selectively override built-in error messages](../docs/DOCUMENTATION.md#overriding-messages)
 
+### Dependency injection
+
+Although Validot doesn't contain direct support for the dependency injection containers (because it aims to rely solely on the .NET Standard 2.0), it includes helpers that can be used with any DI/IoC system.
+
+For example, if you're working with ASP.NET Core and looking for an easy way to register all of your validators with a single call (something like `services.AddValidators()`), wrap your specifications in the [specification holders](../docs/DOCUMENTATION.md#specification-holders), and use the following snippet:
+
+``` csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    // ... registering other dependencies ...
+
+    // Registering Validot's validators from the current domain's loaded assemblies
+    var holderAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+    var holders = Validator.Factory.FetchHolders(holderAssemblies)
+        .GroupBy(h => h.SpecifiedType)
+        .Select(s => new
+        {
+            ValidatorType = s.First().ValidatorType,
+            ValidatorInstance = s.First().CreateValidator()
+        });
+    foreach (var holder in holders)
+    {
+        services.AddSingleton(holder.ValidatorType, holder.ValidatorInstance);
+    }
+
+    // ... registering other dependencies ...
+}
+```
+
+* [What specification holders are and how to create them](../docs/DOCUMENTATION.md#specification-holders)
+* [Fetching specification holders from assemblies](../docs/DOCUMENTATION.md#fetching-holders)
+* [Writing the fully-featured `AddValidators` extension step-by-step](../docs/DOCUMENTATION.md#dependency-injection)
+
+
 ## Validot vs FluentValidation
 
 A short statement to start with - [@JeremySkinner](https://twitter.com/JeremySkinner)'s [FluentValidation](https://fluentvalidation.net/) is an excellent piece of work and has been a huge inspiration for this project. True, you can call Validot a direct competitor, but it differs in some fundamental decisions, and lot of attention has been focused on entirely different aspects. If - after reading this section - you think you can bear another approach, api and [limitations](#fluentValidations-features-that-validot-is-missing), at least give Validot a try. You might be positively surprised. Otherwise, FluentValidation is a good, safe choice, as Validot is certainly less hackable, and achieving some particular goals might be either difficult or impossible.
@@ -315,34 +372,34 @@ This document shows oversimplified results of [BenchmarkDotNet](https://benchmar
 
 There are three data sets, 10k models each; `ManyErrors` (every model has many errors), `HalfErrors` (circa 60% have errors, the rest are valid), `NoErrors` (all are valid) and the rules reflect each other as much as technically possible. I did my best to make sure that the tests are just and adequate, but I'm a human being and I make mistakes. Really, if you spot errors [in the code](https://github.com/bartoszlenar/Validot/tree/5219a8da7cc20cd5b9c5c49dd5c0940e829f6fe9/tests/Validot.Benchmarks), framework usage, applied methodology... or if you can provide any counterexample proving that Validot struggles with some particular scenarios - I'd be very very very happy to accept a PR and/or discuss it on [GitHub Issues](https://github.com/bartoszlenar/Validot/issues).
 
-To the point; the statement in the header is true, but it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over [flexibility and extra features](#fluentvalidations-features-that-validot-is-missing). Fine with that kind of trade-off? Good, because the validation process in Validot might be **~2.5x faster while consuming ~3.5x less memory**. Especially when it comes to memory consumption, Validot is usually far, far better than that (depending on the use case it might be even **~10x more efficient** comparing to FluentValidation):
+To the point; the statement in the header is true, but it doesn't come for free. Wherever possible and justified, Validot chooses performance and less allocations over [flexibility and extra features](#fluentvalidations-features-that-validot-is-missing). Fine with that kind of trade-off? Good, because the validation process in Validot might be **~2.5x faster while consuming ~3.5x less memory**. Especially when it comes to memory consumption, Validot is usually far, far better than that. Of course it depends on the use case, but it might be even **~25x more efficient** comparing to FluentValidation, like in `IsValid` test using `HalfErrors` data set. What's the secret? Read my blog post: [Validot's performance explained](https://lenar.dev/posts/validots-performance-explained).
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| Validate | `ManyErrors` | FluentValidation | `774.69` | `747.66` |
-| Validate | `ManyErrors` | Validot | `331.70` | `183.19` |
-| FailFast | `ManyErrors` | FluentValidation | `22.23` | `26.42` |
-| FailFast | `ManyErrors` | Validot | `14.23` | `31.90` |
-| Validate | `HalfErrors` | FluentValidation | `711.15` | `675.69` |
-| Validate | `HalfErrors` | Validot | `271.77` | `85.10` |
-| FailFast | `HalfErrors` | FluentValidation | `558.96` | `519.92` |
-| FailFast | `HalfErrors` | Validot | `182.89` | `64.96` |
-| Validate | `NoErrors` | FluentValidation | `659.07` | `660.00` |
-| Validate | `NoErrors` | Validot | `242.92` | `78.82 ` |
+| Validate | `ManyErrors` | FluentValidation | `764.82` | `768.00` |
+| Validate | `ManyErrors` | Validot | `375.13` | `180.73` |
+| FailFast | `ManyErrors` | FluentValidation | `19.44` | `26.89` |
+| FailFast | `ManyErrors` | Validot | `14.92` | `32.07` |
+| Validate | `HalfErrors` | FluentValidation | `624.39` | `674.39` |
+| Validate | `HalfErrors` | Validot | `285.48` | `81.40` |
+| FailFast | `HalfErrors` | FluentValidation | `532.18` | `518.34` |
+| FailFast | `HalfErrors` | Validot | `181.00` | `62.48` |
+| Validate | `NoErrors` | FluentValidation | `664.57` | `658.14` |
+| Validate | `NoErrors` | Validot | `234.33` | `75.10 ` |
 
 * [Validate benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated.
 * [FailFast benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, the process stops on the first error.
 
-FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors or not. Validot has [AnyErrors](../docs/DOCUMENTATION.md#anyerrors) that act exactly the same way, and [IsValid](../docs/DOCUMENTATION.md#isvalid) is a special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify the incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude:
+FluentValidation's `IsValid` is a property that wraps a simple check whether the validation result contains errors or not. Validot has [AnyErrors](../docs/DOCUMENTATION.md#anyerrors) that acts the same way, and [IsValid](../docs/DOCUMENTATION.md#isvalid) is a special mode that doesn't care about anything else but the first rule predicate that fails. If the mission is only to verify the incoming model whether it complies with the rules (discarding all of the details), this approach proves to be better up to one order of magnitude:
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| IsValid | `ManyErrors` | FluentValidation | `22.21` | `26.42` |
-| IsValid | `ManyErrors` | Validot | `13.29` | `31.21` |
-| IsValid | `HalfErrors` | FluentValidation | `545.65` | `519.92` |
-| IsValid | `HalfErrors` | Validot | `183.07` | `64.57` |
-| IsValid | `NoErrors` | FluentValidation | `667.74` | `660.00` |
-| IsValid | `NoErrors` | Validot | `240.49` | `78.82` |
+| IsValid | `ManyErrors` | FluentValidation | `22.96` | `26.89` |
+| IsValid | `ManyErrors` | Validot | `5.66` | `6.43` |
+| IsValid | `HalfErrors` | FluentValidation | `509.72` | `518.34` |
+| IsValid | `HalfErrors` | Validot | `82.76` | `19.87` |
+| IsValid | `NoErrors` | FluentValidation | `667.80` | `658.14` |
+| IsValid | `NoErrors` | Validot | `122.61` | `23.78` |
 
 * [IsValid benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, but only to check if they are valid or not.
 
@@ -357,16 +414,16 @@ if (!validator.IsValid(model))
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| Reporting | `ManyErrors` | FluentValidation | `795.90` | `781.86` |
-| Reporting | `ManyErrors` | Validot | `418.60` | `335.99` |
-| Reporting | `HalfErrors` | FluentValidation | `697.00` | `676.32` |
-| Reporting | `HalfErrors` | Validot | `367.20` | `123.74` |
+| Reporting | `ManyErrors` | FluentValidation | `727.00` | `779.48` |
+| Reporting | `ManyErrors` | Validot | `448.10` | `301.43` |
+| Reporting | `HalfErrors` | FluentValidation | `651.20` | `675.01` |
+| Reporting | `HalfErrors` | Validot | `289.30` | `76.60` |
 
 * [Reporting benchmark](../tests/Validot.Benchmarks/Comparisons/ReportingBenchmark.cs):
   * FluentValidation validates model, and `ToString()` is called if errors are detected.
   * Validot processes the model twice - at first, with its special mode, [IsValid](../docs/DOCUMENTATION.md#isvalid). Secondly - in case of errors detected - with the standard method, gathering all errors and printing them with `ToString()`.
 
-Benchmarks environment: Validot 1.1.0, FluentValidation 9.2.0, .NET Core 3.1.7, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Catalina.
+Benchmarks environment: Validot 2.0.0, FluentValidation 9.4.0, .NET 5.0.2, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Big Sur.
 
 ### Validot handles nulls on its own
 

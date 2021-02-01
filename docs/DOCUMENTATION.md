@@ -2975,7 +2975,6 @@ validator.Settings.ReferenceLoopProtection; // false
 - Use the overloaded `Create` method that accepts [specification](#specification) and `IValidatorSettings` instance.
   - You must pass `IValidatorSettings` instance acquired from a validator. Using custom implementations is not supported and will end up with an exception.
 
-
 _Below, `validator2` uses settings taken from the previously created `validator1`:_
 
 ``` csharp
@@ -3015,7 +3014,8 @@ object.ReferenceEquals(validator1.Settings, validator2.Settings) // true
 #### Fetching holders
 
 - Factory has `FetchHolders` method that scans the provided assemblies for [specification holders](#specification-holder).
-   -  If no assembly is provided as a method's argument (function is called in a form of `Validator.Factory.FetchHolders()`), the factory will attempt to get them with the code: `AppDomain.CurrentDomain.GetAssemblies()`.
+   -  You can get all loaded assemblies by calling `AppDomain.CurrentDomain.GetAssemblies()`, or anything else that in your specific case would produce an array of `System.Reflection.Assembly` objects.
+   -  You can also be more precise and pick only the desired assemblies. For example, by calling `typeof(TypeInTheAssembly).Assembly`.
   - [Specification holder](#specification-holder) is included in the result collection if it:
     -  is a class that implements `ISpecificationHolder<T>` interface.
     -  contains a parameterless constructor.
@@ -3071,15 +3071,57 @@ _Above, we can observe that the created validator respects the rules and the set
 - However, the [factory](#factory) is able to [fetch the holders](#fetching-holders) from the referenced assemblies and provides helpers to create [validators](#validator) out of them.
 - For example, if you want your validators to be automatically registered within the DI container, you can implement the following strategy:
   - Define [specifications](#specification) for your models in [specification holders](#specification-holder)
-    - Each in a separate class or everything in a big, single one - it doesn't matter.
-  - Call `Validator.Factory.FetchHolders()` to get the information about the holders and group the results by the `SpecifiedType`.
+    - Each in a separate class or everything in the single one - it doesn't matter.
+  - Call `Validator.Factory.FetchHolders(AppDomain.CurrentDomain.GetAssemblies())` to get the information about the holders and group the results by the `SpecifiedType`.
+    - instead of `AppDomain.CurrentDomain.GetAssemblies()` you can pass the array of `System.Reflection.Assembly` that the function will scan for `ISpecificationHolder` implementations.
     - Theoretically, you could define more than one specification for a single type. Let's assume it's not the case here, but as you will notice, the entire operation is merely a short LINQ call. You can easily adjust it to your needs and/or the used DI container's requirements.
   - Out of every group, take the `ValidatorType` (this is your registered type) and the result of `CreateValidator` (this is your implementation instance).
   - It's safe to register validators as singletons.
 
-_Below the code snippet for ASP.NET Core and its default `Microsoft.Extensions.DependencyInjection`:_
+
+_In ASP.NET Core the services registration by default takes place in the ConfigureServices method. Something like `AddValidators` is desirable._
 
 ``` csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    // it would be great if this line would scan all referenced projects ...
+    // ... and register validators based on the detected ISpecificationHolder implementations
+
+    // services.AddValidators();
+}
+```
+
+_Instead of `AddValidators` you can copy-paste the following lines of code:_
+
+``` csharp
+public void ConfigureServices(IServiceCollection services)
+{
+    // ... registering other dependencies ...
+
+    // Registering Validot's validators from the current domain's loaded assemblies
+    var holderAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+    var holders = Validator.Factory.FetchHolders(holderAssemblies)
+        .GroupBy(h => h.SpecifiedType)
+        .Select(s => new
+        {
+            ValidatorType = s.First().ValidatorType,
+            ValidatorInstance = s.First().CreateValidator()
+        });
+    foreach (var holder in holders)
+    {
+        services.AddSingleton(holder.ValidatorType, holder.ValidatorInstance);
+    }
+
+    // ... registering other dependencies ...
+}
+```
+
+_You can easily specify the exact assemblies for the Validot to scan (by setting up `holderAssemblies` collection). Validators are created only from the first  `ISpecificationHolder` implementation found for each type. To change this logic, adjust the LINQ statement that creates `holders` collection._
+
+_Of course, you can create the fully-featured `AddValidators` extension in the code by saving the following snippet as a new file somewhere in your namespace:_
+
+``` csharp
+using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
@@ -3089,7 +3131,11 @@ static class AddValidatorsExtensions
 {
     public static IServiceCollection AddValidators(this IServiceCollection @this, params Assembly[] assemblies)
     {
-        var holders = Validator.Factory.FetchHolders(assemblies)
+        var assembliesToScan = assemblies.Length > 0
+                ? assemblies
+                : AppDomain.CurrentDomain.GetAssemblies();
+
+        var holders = Validator.Factory.FetchHolders(assembliesToScan)
             .GroupBy(h => h.SpecifiedType)
             .Select(s => new
             {
@@ -3107,8 +3153,7 @@ static class AddValidatorsExtensions
 }
 ```
 
-_And the example of usage within the app's `Startup.cs`:_
-
+_So it can be used in the ASP.NET Core's `Startup.cs` as below:_
 
 ``` csharp
 public void ConfigureServices(IServiceCollection services)
@@ -3116,12 +3161,14 @@ public void ConfigureServices(IServiceCollection services)
     // ... registering other dependencies ...
 
     services.AddValidators();
+
+    // ... registering other dependencies ...
 }
 ```
 
 ### Settings
 
-- Settings is the object that holds configuration of the validation process that [validator] will perform:
+- Settings is the object that holds configuration of the validation process that [validator](#validator) will perform:
   - [Translations](#translations) - values for the message keys used in specification.
   - [Reference loop](#reference-loop) protection - prevention against stack overflow exception.
 - Settings are represented by `IValidatorSettings` interface (namespace `Validot.Settings`).
@@ -3639,7 +3686,7 @@ var result = validator.Validate(model);
 result.TranslationNames; // [ "English" ]
 ```
 
-- The list is exactly the same as in the [Validator](#validator) that produced the result.
+- The list is the same as in the [Validator](#validator) that produced the result.
 
 ``` csharp
 var validator = Validator.Factory.Create(specification, settings => settings

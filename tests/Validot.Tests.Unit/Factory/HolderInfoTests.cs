@@ -16,6 +16,22 @@ namespace Validot.Tests.Unit.Factory
         }
 
         [Fact]
+        public void Constructor_Should_ThrowException_When_HolderTypeIsNull()
+        {
+            Action action = () => _ = new HolderInfo(null, typeof(CustomClass));
+
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("holderType");
+        }
+
+        [Fact]
+        public void Constructor_Should_ThrowException_When_SpecifiedTypeIsNull()
+        {
+            Action action = () => _ = new HolderInfo(typeof(ObjectSpecificationHolder), null);
+
+            action.Should().ThrowExactly<ArgumentNullException>().And.ParamName.Should().Be("specifiedType");
+        }
+
+        [Fact]
         public void Should_AssignTypes()
         {
             var holderInfo = new HolderInfo(typeof(ObjectSpecificationHolder), typeof(CustomClass));
@@ -67,7 +83,18 @@ namespace Validot.Tests.Unit.Factory
             var exception = action.Should().ThrowExactly<ArgumentException>().And;
 
             exception.ParamName.Should().Be("holderType");
-            exception.Message.Should().StartWith("HolderWithoutDefaultConstructor must have parameterless constructor.");
+            exception.Message.Should().StartWith("HolderWithoutDefaultConstructor must be a class and have parameterless constructor.");
+        }
+
+        [Fact]
+        public void Should_ThrowException_When_HolderTypeIsNotClass()
+        {
+            Action action = () => _ = new HolderInfo(typeof(CustomStruct), typeof(CustomClass));
+
+            var exception = action.Should().ThrowExactly<ArgumentException>().And;
+
+            exception.ParamName.Should().Be("holderType");
+            exception.Message.Should().StartWith("CustomStruct must be a class and have parameterless constructor.");
         }
 
         [Fact]
@@ -308,6 +335,11 @@ namespace Validot.Tests.Unit.Factory
         }
 
         internal class CustomClass
+        {
+            public string CustomValue { get; set; }
+        }
+
+        internal struct CustomStruct
         {
             public string CustomValue { get; set; }
         }

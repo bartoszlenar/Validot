@@ -16,7 +16,9 @@ namespace Validot.MemoryLeak
             var validator = Validator.Factory.Create(StreamDataSet.Specification);
 
             var value = "";
-            
+
+            var dotCounter = 0;
+
             foreach (var model in StreamDataSet.Faker.GenerateForever())
             {
                 if (!validator.IsValid(model))
@@ -34,6 +36,11 @@ namespace Validot.MemoryLeak
                             result.MessageMap.Count.ToString() +
                             result.TranslationNames.ToString() +
                             result.ToString();
+
+                    if ((++dotCounter % 1000) == 0)
+                    {
+                        Console.Write(".");
+                    }
                 }
 
                 value = null;

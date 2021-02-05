@@ -332,7 +332,7 @@ result.ToString(translationName: "Polish");
 
 Although Validot doesn't contain direct support for the dependency injection containers (because it aims to rely solely on the .NET Standard 2.0), it includes helpers that can be used with any DI/IoC system.
 
-For example, if you're working with ASP.NET Core and looking for an easy way to register all of your validators with a single call (something like `services.AddValidators()`), wrap your specifications in the [specification holders](../docs/DOCUMENTATION.md#specification-holders), and use the following snippet:
+For example, if you're working with ASP.NET Core and looking for an easy way to register all of your validators with a single call (something like `services.AddValidators()`), wrap your specifications in the [specification holders](../docs/DOCUMENTATION.md#specification-holder), and use the following snippet:
 
 ``` csharp
 public void ConfigureServices(IServiceCollection services)
@@ -357,7 +357,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-* [What specification holders are and how to create them](../docs/DOCUMENTATION.md#specification-holders)
+* [What specification holders are and how to create them](../docs/DOCUMENTATION.md#specification-holder)
 * [Fetching specification holders from assemblies](../docs/DOCUMENTATION.md#fetching-holders)
 * [Writing the fully-featured `AddValidators` extension step-by-step](../docs/DOCUMENTATION.md#dependency-injection)
 

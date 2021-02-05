@@ -19,7 +19,7 @@
 </p>
 <p align="center">
   <a href="https://github.com/bartoszlenar/Validot/commits/main">
-    <img src="https://img.shields.io/github/commits-since/bartoszlenar/Validot/v1.2.0/main?logo=git&logoColor=white&style=flat-square">
+    <img src="https://img.shields.io/github/commits-since/bartoszlenar/Validot/v2.0.0/main?logo=git&logoColor=white&style=flat-square">
   </a>
   <a href="https://github.com/bartoszlenar/Validot/commits/main">
     <img src="https://img.shields.io/github/last-commit/bartoszlenar/Validot/main?style=flat-square">

@@ -19,7 +19,7 @@
 </p>
 <p align="center">
   <a href="https://github.com/bartoszlenar/Validot/commits/main">
-    <img src="https://img.shields.io/github/commits-since/bartoszlenar/Validot/v1.2.0/main?logo=git&logoColor=white&style=flat-square">
+    <img src="https://img.shields.io/github/commits-since/bartoszlenar/Validot/v2.0.0/main?logo=git&logoColor=white&style=flat-square">
   </a>
   <a href="https://github.com/bartoszlenar/Validot/commits/main">
     <img src="https://img.shields.io/github/last-commit/bartoszlenar/Validot/main?style=flat-square">
@@ -332,7 +332,7 @@ result.ToString(translationName: "Polish");
 
 Although Validot doesn't contain direct support for the dependency injection containers (because it aims to rely solely on the .NET Standard 2.0), it includes helpers that can be used with any DI/IoC system.
 
-For example, if you're working with ASP.NET Core and looking for an easy way to register all of your validators with a single call (something like `services.AddValidators()`), wrap your specifications in the [specification holders](../docs/DOCUMENTATION.md#specification-holders), and use the following snippet:
+For example, if you're working with ASP.NET Core and looking for an easy way to register all of your validators with a single call (something like `services.AddValidators()`), wrap your specifications in the [specification holders](../docs/DOCUMENTATION.md#specification-holder), and use the following snippet:
 
 ``` csharp
 public void ConfigureServices(IServiceCollection services)
@@ -357,7 +357,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-* [What specification holders are and how to create them](../docs/DOCUMENTATION.md#specification-holders)
+* [What specification holders are and how to create them](../docs/DOCUMENTATION.md#specification-holder)
 * [Fetching specification holders from assemblies](../docs/DOCUMENTATION.md#fetching-holders)
 * [Writing the fully-featured `AddValidators` extension step-by-step](../docs/DOCUMENTATION.md#dependency-injection)
 
@@ -478,10 +478,11 @@ Features that might be in the scope and are technically possible to implement in
 
 Features that are very unlikely to be in the scope as they contradict the project's principles, and/or would have a very negative impact on performance, and/or are impossible to implement:
 
+* Full integration with ASP.NET or other frameworks:
+  * Validot tries to remain a single-purpose library, depending only on .NET Standard 2.0. Thus all integrations need to be done individually.
+  * However, Validot delivers [FetchHolders method](../docs/DOCUMENTATION.md#fetching-holders) that makes such integrations possible to wrap within a few lines of code. The quick example is in the [Dependency Injection section of this readme file](#dependency-injection), more advanced solution with explanation is contained [in the documentation](../docs/DOCUMENTATION.md#dependency-injection).
 * Access to any stateful context in the rule condition predicate:
   * It implicates a lack of support for dynamic message content and/or amount.
-* Integration with ASP.NET or other frameworks:
-  * Making such a thing wouldn't be a difficult task at all, but Validot tries to remain a single-purpose library, and all integrations need to be done individually
 * Callbacks:
   * Please react on [failure/success](../docs/DOCUMENTATION.md#anyerrors) after getting [validation result](../docs/DOCUMENTATION.md#result).
 * Pre-validation:

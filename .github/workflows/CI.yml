@@ -105,6 +105,7 @@ jobs:
             name: Validot.${{ env.VALIDOT_VERSION }}.coverage_report
             path: artifacts/coverage_reports/Validot.${{ env.VALIDOT_VERSION }}.coverage_report
         - name: Publish code coverage
+          if: github.event_name != 'pull_request'
           run: pwsh build.ps1 --target publishcodecoverage --skip --dotnet 5.0.x --configuration debug --version ${{ env.VALIDOT_VERSION }} --commitsha ${{ github.sha }} --codecovapikey ${{ secrets.CODECOV_API_KEY }} --required
   nuget_package:
       needs: [ tests, tests_netframework ]

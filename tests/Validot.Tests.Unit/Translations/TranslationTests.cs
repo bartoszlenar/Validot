@@ -29,6 +29,29 @@ namespace Validot.Tests.Unit.Translations
             }
         }
 
+        public class Spanish
+        {
+            [Fact]
+            public void Spanish_Should_HaveValues_NonNull()
+            {
+                Translation.Polish.Values.Should().NotContainNulls();
+            }
+
+            [Fact]
+            public void Spanish_Should_HaveValues_ForKeysOnly()
+            {
+                MessageKey.All.Should().Contain(Translation.Spanish.Keys, because: "(reversed)");
+            }
+
+            [Fact]
+            public void WithSpanishTranslation_Should_AddTranslation()
+            {
+                var settings = new ValidatorSettings();
+                settings.WithSpanishTranslation();
+                ShouldAddSingleTranslation(settings.Translations, "Spanish", Translation.Spanish);
+            }
+        }
+
         public class Polish
         {
             [Fact]

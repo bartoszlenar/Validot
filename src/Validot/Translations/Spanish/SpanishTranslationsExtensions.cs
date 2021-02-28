@@ -7,7 +7,6 @@ namespace Validot
     {
         /// <summary>
         /// Adds Spanish translation dictionary for the error messages used in the built-in rules.
-        /// This added by default (for Validators created with Validator.Factory.Create).
         /// </summary>
         /// <param name="this">Settings fluent API builder - input.</param>
         /// <returns>Settings fluent API builder - output.</returns>

@@ -28,7 +28,7 @@ namespace Validot.Tests.Unit.Translations
                 selectedTranslation[pair.Key].Should().Be(pair.Value);
             }
         }
-		
+
         public class Russian
         {
             [Fact]

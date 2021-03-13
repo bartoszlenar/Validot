@@ -28,6 +28,29 @@ namespace Validot.Tests.Unit.Translations
                 selectedTranslation[pair.Key].Should().Be(pair.Value);
             }
         }
+		
+        public class Russian
+        {
+            [Fact]
+            public void Russian_Should_HaveValues_NonNull()
+            {
+                Translation.Russian.Values.Should().NotContainNulls();
+            }
+
+            [Fact]
+            public void Russian_Should_HaveValues_ForKeysOnly()
+            {
+                MessageKey.All.Should().Contain(Translation.Russian.Keys, because: "(reversed)");
+            }
+
+            [Fact]
+            public void WithRussianTranslation_Should_AddTranslation()
+            {
+                var settings = new ValidatorSettings();
+                settings.WithRussianTranslation();
+                ShouldAddSingleTranslation(settings.Translations, "Russian", Translation.Russian);
+            }
+        }
 
         public class Spanish
         {

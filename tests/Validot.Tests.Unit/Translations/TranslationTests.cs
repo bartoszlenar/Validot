@@ -34,7 +34,7 @@ namespace Validot.Tests.Unit.Translations
             [Fact]
             public void Spanish_Should_HaveValues_NonNull()
             {
-                Translation.Polish.Values.Should().NotContainNulls();
+                Translation.Spanish.Values.Should().NotContainNulls();
             }
 
             [Fact]

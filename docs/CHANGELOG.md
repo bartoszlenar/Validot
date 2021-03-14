@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
-- Spanish translation (along with `WithSpanishTranslation` extension to the settings builder). [#18](https://github.com/bartoszlenar/Validot/issues/18)
+- Spanish translation (along with `WithSpanishTranslation` extension to the settings builder). [#11](https://github.com/bartoszlenar/Validot/issues/18)
+- Russian translation (along with `WithRussianTranslation` extension to the settings builder). [#14](https://github.com/bartoszlenar/Validot/issues/19)
 
 ## [2.0.0] - 2021-02-01
 ### Added

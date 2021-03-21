@@ -28,5 +28,23 @@ namespace Validot.Tests.Unit.Translations
                 }
             }
         }
+
+        public static void ShouldContainSingleTranslation(IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> settingsTranslations, string translationName, IReadOnlyDictionary<string, string> translation)
+        {
+            settingsTranslations.Should().NotBeEmpty();
+            settingsTranslations.Should().HaveCount(1);
+            settingsTranslations.Keys.Should().ContainSingle(translationName);
+
+            var selectedTranslation = settingsTranslations[translationName];
+
+            selectedTranslation.Should().HaveCount(translation.Count);
+
+            foreach (var pair in translation)
+            {
+                selectedTranslation.Keys.Should().Contain(pair.Key);
+
+                selectedTranslation[pair.Key].Should().Be(pair.Value);
+            }
+        }
     }
 }

@@ -49,4 +49,11 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Translations\_TemplateTranslation\**" />
+    <Compile Remove="Translations\_TemplateTranslation\**" />
+    <Content Remove="Translations\_TemplateTranslation\**" />
+    <EmbeddedResource Remove="Translations\_TemplateTranslation\**" />
+  </ItemGroup>
+
 </Project>

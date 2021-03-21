@@ -59,6 +59,9 @@ class Build : NukeBuild
 
     [Parameter("Allow warnings")]
     readonly bool AllowWarnings;
+    
+    [Parameter("(only for target AddTranslation) Translation name")]
+    readonly string TranslationName;
 
     [Solution]
     readonly Solution Solution;
@@ -108,6 +111,31 @@ class Build : NukeBuild
 
         base.OnBuildFinished();
     }
+    
+    Target AddTranslation => _ => _
+        .Requires(() => TranslationName)
+        .Executes(() =>
+        {
+            CreateFromTemplate(SourceDirectory / "Validot" / "Translations" / "_Template");
+            
+            CreateFromTemplate(TestsDirectory / "Validot.Tests.Unit" / "Translations" / "_Template");
+
+            void CreateFromTemplate(AbsolutePath templatePath)
+            {
+                CopyDirectoryRecursively(templatePath, templatePath.Parent / TranslationName);
+
+                var files = new DirectoryInfo(templatePath.Parent / TranslationName).GetFiles();
+
+                foreach (var file in files)
+                {
+                    var finalFilePath = file.FullName.Replace("_Template", TranslationName).Replace(".txt", string.Empty);
+                    
+                    RenameFile(file.FullName, finalFilePath);
+                    
+                    File.WriteAllText(finalFilePath, File.ReadAllText(finalFilePath).Replace("_Template", TranslationName));
+                }
+            }
+        });
 
     Target Reset => _ => _
         .Executes(() =>

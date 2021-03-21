@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- A preview version of .NET 6 in the CI pipeline for all unit and functional tests. 
 - Translation template with script. To add a new translation all you need to do is call the build script, e.g. to add Korean, execute `pwsh build.ps1 --target AddTranslation --translationName Korean` (you can use `bash build.sh` instead of `pwsh build.ps1`) and the template with phrases will be created at `src/Validot/Translations/Korean` (plus unit tests in their own location). The only thing that is left to do is to enter translated phrases into the dictionary and make a PR! 
 - Spanish translation (along with `WithSpanishTranslation` extension to the settings builder). [#11](https://github.com/bartoszlenar/Validot/issues/18)
 - Russian translation (along with `WithRussianTranslation` extension to the settings builder). [#14](https://github.com/bartoszlenar/Validot/issues/19)

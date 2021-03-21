@@ -427,6 +427,11 @@ class Build : NukeBuild
             {
                 return "net5.0";
             }
+            
+            if (dotnet.StartsWith("6.0.", StringComparison.Ordinal))
+            {
+                return "net6.0";
+            }
 
             Logger.Warn("Unrecognized dotnet SDK version: " + dotnet);
 

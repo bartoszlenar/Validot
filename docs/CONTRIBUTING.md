@@ -35,3 +35,10 @@ If you're reading this file, it means that you are - more or less - interested i
   - `Added Hungarian translation`
   - `Fixed IsValid bug #XXX`
 - Ideally, PR has a single commit with all changes, but that's not a requirement. As long as the each commit has logical sense and complies with all the rules - it compiles, passes tests, contains the related documentation changes - then it's fine.
+
+## Translations
+- If you can help with expanding the list of built-it translations, that would be great! There is a build script helper there for you:
+  - Type `pwsh build.ps1 --target AddTranslation --translationName Gibberlish` (of course, plese replace `Gibberlish` with your language name).
+  - Navigate into `src/Validot/Translations/Gibberlish/GibberlishTranslation.cs` and replace the English phrases with their proper translations.
+- The script prepares everything, including `AddGibberlishTranslation()` settings extension and automatic unit tests. All you need to do next is to raise a PR.
+- You can replace `pwsh build.ps1` with `sh build.sh` or even execute windows command `bash.cmd`. It's all the same.

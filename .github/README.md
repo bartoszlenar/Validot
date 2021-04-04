@@ -19,7 +19,7 @@
 </p>
 <p align="center">
   <a href="https://github.com/bartoszlenar/Validot/commits/main">
-    <img src="https://img.shields.io/github/commits-since/bartoszlenar/Validot/v2.0.0/main?logo=git&logoColor=white&style=flat-square">
+    <img src="https://img.shields.io/github/commits-since/bartoszlenar/Validot/v2.1.0/main?logo=git&logoColor=white&style=flat-square">
   </a>
   <a href="https://github.com/bartoszlenar/Validot/commits/main">
     <img src="https://img.shields.io/github/last-commit/bartoszlenar/Validot/main?style=flat-square">
@@ -513,14 +513,15 @@ Before every major version update, at least one preview version is published.
 
 Unit tests coverage hits 100% very close, and it can be detaily verified on [codecov.io](https://codecov.io/gh/bartoszlenar/Validot/branch/main).
 
-Before publishing, each release is tested on the [latest versions](https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners#supported-runners-and-hardware-resources) of operating systems:
+Before publishing, each release is tested on the ["latest" version](https://help.github.com/en/actions/reference/virtual-environments-for-github-hosted-runners#supported-runners-and-hardware-resources) of the following operating systems:
 
 * macOS
 * Ubuntu
 * Windows Server
 
-using the current and all the supported [LTS versions](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) of the underlying frameworks:
+using the upcoming, the current and all also the supported [LTS versions](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) of the underlying frameworks:
 
+* .NET 6.0 (preview 2)
 * .NET 5.0
 * .NET Core 3.1
 * .NET Core 2.1

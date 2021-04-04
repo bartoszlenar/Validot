@@ -324,6 +324,8 @@ result.ToString(translationName: "Polish");
 // Name: Musi być długości pomiędzy 3 a 50 znaków
 ```
 
+At the moment Validot delivers the following translations out of the box: [Polish](../docs/DOCUMENTATION.md#withpolishtranslation), [Spanish](../docs/DOCUMENTATION.md#withspanishtranslation), [Russian](../docs/DOCUMENTATION.md#withrussiantranslation).
+
 * [How translations work](../docs/DOCUMENTATION.md#translations)
 * [Custom translation](../docs/DOCUMENTATION.md#custom-translation)
 * [How to selectively override built-in error messages](../docs/DOCUMENTATION.md#overriding-messages)

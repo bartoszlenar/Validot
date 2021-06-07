@@ -4,7 +4,7 @@ All notable changes to the [Validot project](https://github.com/bartoszlenar/Val
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.1.0] - 2021-04-04
+## [2.1.0] - 2021-07-07
 ### Added
 - Spanish translation (along with `WithSpanishTranslation` extension to the settings builder). [#11](https://github.com/bartoszlenar/Validot/issues/18)
 - Russian translation (along with `WithRussianTranslation` extension to the settings builder). [#14](https://github.com/bartoszlenar/Validot/issues/19)

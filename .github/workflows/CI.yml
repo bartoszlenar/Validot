@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        dotnet: ['2.1.x', '3.1.x', '5.0.x', '6.0.100-preview.2.21155.3']
+        dotnet: ['2.1.x', '3.1.x', '5.0.x', '6.0.100-preview.4.21255.9']
     runs-on: ${{ matrix.os }}
     name: Test on ${{ matrix.os }} using dotnet ${{ matrix.dotnet }}
     steps:

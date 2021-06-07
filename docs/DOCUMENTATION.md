@@ -76,6 +76,10 @@
     - [Path argument](#path-argument)
     - [Name argument](#name-argument)
   - [Translations](#translations)
+    - [Built-in translations](#built-in-translations)
+      - [WithPolishTranslation](#withpolishtranslation)
+      - [WithSpanishTranslation](#withspanishtranslation)
+      - [WithRussianTranslation](#withrussiantranslation)
     - [Overriding messages](#overriding-messages)
     - [Custom translation](#custom-translation)
   - [Development](#development)
@@ -4503,11 +4507,89 @@ _In the above code, [WithMessage](#withmessage) sets `"Must contain @ character"
   - [WithTranslation](#withtranslation) - setting entries in the translation dictionary.
   - [Message arguments](#message-arguments) - about message arguments (yes, translation phrases can use them!).
 
+### Built-in translations
+
+- Validot includes some translations out of the box. Technically they are nothing more than extensions that under the hood add phrases to the Validator's settings using [WithTranslation](#withtranslation) method.
+- You're more than welcome if you want to contribute new built-in translations to Validot. The process is briefly described in [CONTRIBUTING document](CONTRIBUTING.md#Translations).
+  - If you want just to create custom translation for your project only, see [Custom translation](#custom-translation) section.
+
+#### WithPolishTranslation
+
+- The Spanish translation name is just `"Polish"`
+- It can be included using `WithPolishTranslation()` extension.
+
+``` csharp
+Specification<string> specification = s => s
+    .NotEmpty()
+    .MaxLength(5);
+
+var validator = Validator.Factory.Create(specification, settings => settings
+    .WithPolishTranslation()
+);
+
+validator.Validate(null).ToString(translationName: "Polish");
+// Wymagane
+
+validator.Validate("").ToString(translationName: "Polish");
+// Musi nie być puste
+
+validator.Validate("1234567890").ToString(translationName: "Polish");
+// Musi być długości maksymalnie 5 znaków
+```
+
+#### WithSpanishTranslation
+
+- The Spanish translation name is just `"Spanish"`
+- It can be included using `WithSpanishTranslation()` extension.
+
+``` csharp
+Specification<string> specification = s => s
+    .NotEmpty()
+    .MaxLength(5);
+
+var validator = Validator.Factory.Create(specification, settings => settings
+    .WithSpanishTranslation()
+);
+
+validator.Validate(null).ToString(translationName: "Spanish");
+// Requerido
+
+validator.Validate("").ToString(translationName: "Spanish");
+// No debe estar vacío
+
+validator.Validate("1234567890").ToString(translationName: "Spanish");
+// Debe tener como máximo 5 caracteres
+```
+
+#### WithRussianTranslation
+
+- The Russian translation name is just `"Russian"`
+- It can be included using `WithRussianTranslation()` extension.
+
+``` csharp
+Specification<string> specification = s => s
+    .NotEmpty()
+    .MaxLength(5);
+
+var validator = Validator.Factory.Create(specification, settings => settings
+    .WithRussianTranslation()
+);
+
+validator.Validate(null).ToString(translationName: "Russian");
+// Требуется
+
+validator.Validate("").ToString(translationName: "Russian");
+// Не должен быть пуст
+
+validator.Validate("1234567890").ToString(translationName: "Russian");
+// Должен быть не больше 5 символов в длину
+```
+
 ### Overriding messages
 
 - Overriding the default error messages follows the process described in the main [Translations](#translations) section.
 - The only missing bit of information is; what are the message key of the default messages?
-  - And the answer is; there are all listed in [Rules](#rules) section.
+  - And the answer is; there are all listed in [Rules](#rules) section (column `Message key`).
 - If you want to override some default error message, find it in the [Rules](#rules) section and provide the new value for it using [WithTranslation](#withtranslation).
 
 ``` csharp
@@ -4554,9 +4636,9 @@ _`BetweenOrEqualTo` uses message key `Numbers.BetweenOrEqualTo` and two [number 
 
 - Custom translation is nothing more than a translation dictionary that delivers phrases for all the default message keys.
   - `English` translation is the default one, always present in the validator, and it contains all of the phrases.
-  - The code to copy-paste and adjust;
-    - [EnglishTranslation.cs](../src/Validot/Translations/English/EnglishTranslation.cs) - dictionary with all the message keys.
-    - [EnglishTranslationsExtensions.cs](../src/Validot/Translations/English/EnglishTranslationsExtensions.cs) - extension method.
+- To create your own custom translation within your project, you can copy-paste and adjust the following code;
+  - [EnglishTranslation.cs](../src/Validot/Translations/English/EnglishTranslation.cs) - dictionary with all the message keys.
+  - [EnglishTranslationsExtensions.cs](../src/Validot/Translations/English/EnglishTranslationsExtensions.cs) - extension method.
 - The pattern is to create extension method to the [settings object](#settings) that wraps [WithTranslation](#withtranslation) calls, delivering phrases for all of the [rules](#rules).
 
 ``` csharp
@@ -4598,6 +4680,8 @@ validator.Validate(20).ToString("YodaEnglish");
 ```
 
 - Good to read:
+  - [Built-in translations](#built-in-translations) - translations Validot delivers out of the box.
+  - [Contributing with new translations](CONTRIBUTING.md#translations) - how to contribute with a new translation to the Validot project.
   - [Translations](#translations) - how translations works.
   - [Overriding messages](#overriding-messages) - how to override messages.
   - [Rules](#rules) - list of message keys and arguments.

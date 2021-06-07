@@ -81,6 +81,90 @@ namespace Validot.Tests.Functional.Documentation
                 "Only numbers between 016.6600 and 666.6660 are valid!"
             );
         }
+
+        public class BuiltInTranslationsTests
+        {
+            [Fact]
+            public void WithPolishTranslation()
+            {
+                Specification<string> specification = s => s
+                    .NotEmpty()
+                    .MaxLength(5);
+
+                var validator = Validator.Factory.Create(specification, settings => settings
+                    .WithPolishTranslation()
+                );
+
+                validator.Validate(null).ToString(translationName: "Polish").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Wymagane"
+                );
+
+                validator.Validate("").ToString(translationName: "Polish").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Musi nie być puste"
+                );
+
+                validator.Validate("1234567890").ToString(translationName: "Polish").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Musi być długości maksymalnie 5 znaków"
+                );
+            }
+
+            [Fact]
+            public void WithSpanishTranslation()
+            {
+                Specification<string> specification = s => s
+                    .NotEmpty()
+                    .MaxLength(5);
+
+                var validator = Validator.Factory.Create(specification, settings => settings
+                    .WithSpanishTranslation()
+                );
+
+                validator.Validate(null).ToString(translationName: "Spanish").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Requerido"
+                );
+
+                validator.Validate("").ToString(translationName: "Spanish").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "No debe estar vacío"
+                );
+
+                validator.Validate("1234567890").ToString(translationName: "Spanish").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Debe tener como máximo 5 caracteres"
+                );
+            }
+
+            [Fact]
+            public void WithRussianTranslation()
+            {
+                Specification<string> specification = s => s
+                    .NotEmpty()
+                    .MaxLength(5);
+
+                var validator = Validator.Factory.Create(specification, settings => settings
+                    .WithRussianTranslation()
+                );
+
+                validator.Validate(null).ToString(translationName: "Russian").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Требуется"
+                );
+
+                validator.Validate("").ToString(translationName: "Russian").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Не должен быть пуст"
+                );
+
+                validator.Validate("1234567890").ToString(translationName: "Russian").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Должен быть не больше 5 символов в длину"
+                );
+            }
+        }
     }
 
     namespace CustomTranslation

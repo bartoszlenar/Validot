@@ -64,7 +64,7 @@ namespace Validot.Translations
             [MessageKey.Times.After] = "Debe ser posterior a {value}",
             [MessageKey.Times.AfterOrEqualTo] = "Debe ser igual o posterior a {value}",
             [MessageKey.Times.Before] = "Debe ser anterior a {value}",
-            [MessageKey.Times.BeforeOrEqualTo] = "Debe ser anterior a {value}",
+            [MessageKey.Times.BeforeOrEqualTo] = "Debe ser igual o anterior a {value}",
             [MessageKey.Times.Between] = "Debe estar entre {min} y {max} (exclusivo)",
             [MessageKey.Times.BetweenOrEqualTo] = "Debe estar entre {min} y {max} (inclusive)",
 

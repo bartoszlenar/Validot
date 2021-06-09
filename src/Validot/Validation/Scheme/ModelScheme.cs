@@ -73,9 +73,12 @@ namespace Validot.Validation.Scheme
 
         public string ResolvePath(string basePath, string relativePath)
         {
-            if (_pathMap.ContainsKey(basePath) && _pathMap[basePath].ContainsKey(relativePath))
+            if (_pathMap.TryGetValue(basePath, out var values))
             {
-                return _pathMap[basePath][relativePath];
+                if (values.TryGetValue(relativePath, out var value))
+                {
+                    return value;
+                }
             }
 
             return PathHelper.ResolvePath(basePath, relativePath);

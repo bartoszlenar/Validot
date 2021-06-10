@@ -922,7 +922,7 @@
         {
             Specification<TestClassA> specificationA = null;
             Specification<TestClassB> specificationB = null;
-            Specification<TestStructC> specificationc = null;
+            Specification<TestStructC> specificationC = null;
 
             specificationA = s => s
                 .Optional()
@@ -930,10 +930,10 @@
 
             specificationB = s => s
                 .Optional()
-                .Member(m => m.C, specificationc)
-                .Member(m => m.NullableC, m => m.AsNullable(specificationc));
+                .Member(m => m.C, specificationC)
+                .Member(m => m.NullableC, m => m.AsNullable(specificationC));
 
-            specificationc = s => s
+            specificationC = s => s
                 .Member(m => m.A, specificationA);
 
             var model1 = new TestClassA()

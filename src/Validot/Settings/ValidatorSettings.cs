@@ -38,7 +38,7 @@ namespace Validot.Settings
         }
 
         /// <summary>
-        /// Enables reference loop protection. It will be enabled automatically if the reference loop occurence is theoretically possible (based on the specification).
+        /// Enables reference loop protection. It will be enabled automatically if the reference loop occurrence is theoretically possible (based on the specification).
         /// Reference loop protection is the mechanism that tracks self-references and prevents infinite loop traversing during the validation process.
         /// </summary>
         /// <returns>Settings fluent API builder - output.</returns>
@@ -52,7 +52,7 @@ namespace Validot.Settings
         }
 
         /// <summary>
-        /// Disables reference loop protection, even if the reference loop occurence is theoretically possible (based on the specification).
+        /// Disables reference loop protection, even if the reference loop occurrence is theoretically possible (based on the specification).
         /// Reference loop protection is the mechanism that tracks self-references and prevents infinite loop traversing during the validation process.
         /// If the validated payloads are coming from untrustworthy sources, it might be dangerous to disable it.
         /// </summary>

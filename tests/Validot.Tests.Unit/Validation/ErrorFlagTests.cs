@@ -181,7 +181,7 @@ namespace Validot.Tests.Unit.Validation
             {
                 var errorFlag = new ErrorFlag();
 
-                errorFlag.IsDetectedAtAnylevel.Should().BeFalse();
+                errorFlag.IsDetectedAtAnyLevel.Should().BeFalse();
             }
 
             [Theory]
@@ -194,7 +194,7 @@ namespace Validot.Tests.Unit.Validation
 
                 errorFlag.SetEnabled(level, 1);
 
-                errorFlag.IsDetectedAtAnylevel.Should().BeFalse();
+                errorFlag.IsDetectedAtAnyLevel.Should().BeFalse();
             }
 
             [Theory]
@@ -208,7 +208,7 @@ namespace Validot.Tests.Unit.Validation
                 errorFlag.SetEnabled(level, 1);
                 errorFlag.SetDetected(level);
 
-                errorFlag.IsDetectedAtAnylevel.Should().BeTrue();
+                errorFlag.IsDetectedAtAnyLevel.Should().BeTrue();
             }
 
             [Theory]
@@ -222,7 +222,7 @@ namespace Validot.Tests.Unit.Validation
                 errorFlag.SetEnabled(level, 1);
                 errorFlag.SetDetected(level + 1);
 
-                errorFlag.IsDetectedAtAnylevel.Should().BeTrue();
+                errorFlag.IsDetectedAtAnyLevel.Should().BeTrue();
             }
 
             [Theory]
@@ -236,7 +236,7 @@ namespace Validot.Tests.Unit.Validation
                 errorFlag.SetEnabled(level, 1);
                 errorFlag.SetDetected(level - 1);
 
-                errorFlag.IsDetectedAtAnylevel.Should().BeFalse();
+                errorFlag.IsDetectedAtAnyLevel.Should().BeFalse();
             }
 
             [Fact]
@@ -248,7 +248,7 @@ namespace Validot.Tests.Unit.Validation
                 errorFlag.SetDetected(10);
                 errorFlag.LeaveLevelAndTryGetError(10, out _);
 
-                errorFlag.IsDetectedAtAnylevel.Should().BeFalse();
+                errorFlag.IsDetectedAtAnyLevel.Should().BeFalse();
             }
 
             [Fact]
@@ -261,17 +261,17 @@ namespace Validot.Tests.Unit.Validation
                 errorFlag.SetEnabled(666, 1);
                 errorFlag.SetDetected(1000);
 
-                errorFlag.IsDetectedAtAnylevel.Should().BeTrue();
+                errorFlag.IsDetectedAtAnyLevel.Should().BeTrue();
 
                 errorFlag.LeaveLevelAndTryGetError(1, out _);
-                errorFlag.IsDetectedAtAnylevel.Should().BeTrue();
+                errorFlag.IsDetectedAtAnyLevel.Should().BeTrue();
 
                 errorFlag.LeaveLevelAndTryGetError(10, out _);
-                errorFlag.IsDetectedAtAnylevel.Should().BeTrue();
+                errorFlag.IsDetectedAtAnyLevel.Should().BeTrue();
 
                 errorFlag.LeaveLevelAndTryGetError(666, out _);
 
-                errorFlag.IsDetectedAtAnylevel.Should().BeFalse();
+                errorFlag.IsDetectedAtAnyLevel.Should().BeFalse();
             }
         }
     }

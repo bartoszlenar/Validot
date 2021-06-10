@@ -49,7 +49,7 @@ namespace Validot.Validation
 
         public Dictionary<string, List<int>> Errors { get; private set; }
 
-        public bool ShouldFallBack => (FailFast && !(Errors is null) && Errors.Count > 0) || _overridingErrorFlag.IsDetectedAtAnylevel;
+        public bool ShouldFallBack => (FailFast && !(Errors is null) && Errors.Count > 0) || _overridingErrorFlag.IsDetectedAtAnyLevel;
 
         public void AddError(int errorId, bool skipIfDuplicateInPath = false)
         {

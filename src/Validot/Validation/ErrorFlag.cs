@@ -16,7 +16,7 @@ namespace Validot.Validation
 
         public bool IsEnabledAtAnyLevel => _errorsForLevels.Count > 0;
 
-        public bool IsDetectedAtAnylevel { get; private set; }
+        public bool IsDetectedAtAnyLevel { get; private set; }
 
         public void SetEnabled(int level, int errorId)
         {
@@ -41,7 +41,7 @@ namespace Validot.Validation
                 if (enabledLevel <= level)
                 {
                     _detectionForLevels[enabledLevel] = true;
-                    IsDetectedAtAnylevel = true;
+                    IsDetectedAtAnyLevel = true;
                 }
             }
         }
@@ -55,7 +55,7 @@ namespace Validot.Validation
                 _ = _errorsForLevels.Remove(level);
                 _ = _detectionForLevels.Remove(level);
 
-                IsDetectedAtAnylevel = _detectionForLevels.Count > 0 && _detectionForLevels.ContainsValue(true);
+                IsDetectedAtAnyLevel = _detectionForLevels.Count > 0 && _detectionForLevels.ContainsValue(true);
 
                 if (detected)
                 {

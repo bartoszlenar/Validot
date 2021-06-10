@@ -136,7 +136,7 @@ namespace Validot.Tests.Unit
             cases.AddRange(OverwritingCases.Select(c => RenamedClone(c, nameof(OverwritingCases))));
             cases.AddRange(FailFastCases.Select(c => RenamedClone(c, nameof(FailFastCases))));
             cases.AddRange(MixedCases.Select(c => RenamedClone(c, nameof(MixedCases))));
-            cases.AddRange(ReferecencesLoopCases().Select(c => RenamedClone(c, nameof(ReferecencesLoopCases))));
+            cases.AddRange(ReferencesLoopCases().Select(c => RenamedClone(c, nameof(ReferencesLoopCases))));
 
             return cases;
         }
@@ -5458,7 +5458,7 @@ namespace Validot.Tests.Unit
             },
         };
 
-        public static IEnumerable<TestCase> ReferecencesLoopCases()
+        public static IEnumerable<TestCase> ReferencesLoopCases()
         {
             Specification<TestClass> directSpecification = null;
 
@@ -5960,7 +5960,7 @@ namespace Validot.Tests.Unit
             var cases = new List<TestCase>();
 
             cases.AddRange(RulesCases.Select(c => RenamedClone(c, nameof(RulesCases))));
-            cases.AddRange(ReferecencesLoopCases().Select(c => RenamedClone(c, nameof(ReferecencesLoopCases))));
+            cases.AddRange(ReferencesLoopCases().Select(c => RenamedClone(c, nameof(ReferencesLoopCases))));
 
             foreach (var c in cases)
             {

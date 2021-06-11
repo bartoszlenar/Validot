@@ -4403,11 +4403,11 @@ result.ToString();
 | Placeholder | Path | Final form |
 | - | - | - |
 | `{_name}` | `someWeirdName123` | `someWeirdName123` |
-| `{_name|format=titleCase}` | `someWeirdName123` | `Some Weird Name 123` |
+| `{_name\|format=titleCase}` | `someWeirdName123` | `Some Weird Name 123` |
 | `{_name}` | `nested.path.someWeirdName123` | `someWeirdName123` |
-| `{_name|format=titleCase}` | `nested.path.someWeirdName123` | `Some Weird Name 123` |
+| `{_name\|format=titleCase}` | `nested.path.someWeirdName123` | `Some Weird Name 123` |
 | `{_name}` | `path.This_is_a_Test_of_Network123_in_12_days` | `path.This_is_a_Test_of_Network123_in_12_days` |
-| `{_name|format=titleCase}` | `path.This_is_a_Test_of_Network123_in_12_days` | `This Is A Test Of Network 123 In 12 Days` |
+| `{_name\|format=titleCase}` | `path.This_is_a_Test_of_Network123_in_12_days` | `This Is A Test Of Network 123 In 12 Days` |
 
 - It's more difficult (and sometimes it's even impossible) to cache such messages (they are less deterministic), so overusing name arguments might slightly decrease the performance.
 

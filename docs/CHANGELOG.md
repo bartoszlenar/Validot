@@ -4,10 +4,18 @@ All notable changes to the [Validot project](https://github.com/bartoszlenar/Val
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.1.0] - 2021-07-07
+## [Unreleased]
 ### Added
-- Spanish translation (along with `WithSpanishTranslation` extension to the settings builder). [#11](https://github.com/bartoszlenar/Validot/issues/18)
-- Russian translation (along with `WithRussianTranslation` extension to the settings builder). [#14](https://github.com/bartoszlenar/Validot/issues/19)
+- Portuguese translation (along with `WithPortugueseTranslation` extension to the settings builder). [#13](https://github.com/bartoszlenar/Validot/issues/13)
+
+### Fixes
+- Fix to Spanish translation in `Times.BeforeOrEqualTo` message key. [#20](https://github.com/bartoszlenar/Validot/pull/20/commits/6a68dcdc17589f3c9bd524bc2266238b5245ff50)
+- Minor performance fixes and code improvements. [#21](https://github.com/bartoszlenar/Validot/pulls/21) [#22](https://github.com/bartoszlenar/Validot/pulls/22)
+
+## [2.1.0] - 2021-06-07
+### Added
+- Spanish translation (along with `WithSpanishTranslation` extension to the settings builder). [#11](https://github.com/bartoszlenar/Validot/issues/11)
+- Russian translation (along with `WithRussianTranslation` extension to the settings builder). [#14](https://github.com/bartoszlenar/Validot/issues/14)
 - Translation template with script. To add a new translation all you need to do is call the build script, e.g. to add Korean, execute `pwsh build.ps1 --target AddTranslation --translationName Korean` (you can use `bash build.sh` instead of `pwsh build.ps1`) and the template with phrases will be created at `src/Validot/Translations/Korean` (plus unit tests in their own location). The only thing that is left to do is to enter translated phrases into the dictionary and make a PR!
 - A preview version of .NET 6 in the CI pipeline for all unit and functional tests.
 

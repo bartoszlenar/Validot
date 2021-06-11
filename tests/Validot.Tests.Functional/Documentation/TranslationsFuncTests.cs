@@ -164,6 +164,33 @@ namespace Validot.Tests.Functional.Documentation
                     "Должен быть не больше 5 символов в длину"
                 );
             }
+
+            [Fact]
+            public void WithPortugueseTranslation()
+            {
+                Specification<string> specification = s => s
+                    .NotEmpty()
+                    .MaxLength(5);
+
+                var validator = Validator.Factory.Create(specification, settings => settings
+                    .WithPortugueseTranslation()
+                );
+
+                validator.Validate(null).ToString(translationName: "Portuguese").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Obrigatório"
+                );
+
+                validator.Validate("").ToString(translationName: "Portuguese").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Não deve estar vazio"
+                );
+
+                validator.Validate("1234567890").ToString(translationName: "Portuguese").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Deve ter no máximo 5 caracteres"
+                );
+            }
         }
     }
 

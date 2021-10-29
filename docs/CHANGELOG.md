@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- German translation (along with `WithGermanTranslation` extension to the settings builder). [#12](https://github.com/bartoszlenar/Validot/issues/12)
 - Portuguese translation (along with `WithPortugueseTranslation` extension to the settings builder). [#13](https://github.com/bartoszlenar/Validot/issues/13)
 
 ### Fixes

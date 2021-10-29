@@ -13,3 +13,5 @@ csharp_style_expression_bodied_accessors = true:warning
 dotnet_diagnostic.CA1707.severity = none
 dotnet_diagnostic.CA2211.severity = none
 dotnet_diagnostic.CA1050.severity = none
+dotnet_diagnostic.CA1847.severity = none
+dotnet_diagnostic.CA1845.severity = none

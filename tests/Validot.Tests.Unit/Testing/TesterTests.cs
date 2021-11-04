@@ -5,7 +5,6 @@ namespace Validot.Tests.Unit.Testing
     using System.Linq;
 
     using FluentAssertions;
-    using FluentAssertions.Common;
 
     using Validot.Errors;
     using Validot.Testing;
@@ -43,7 +42,7 @@ namespace Validot.Tests.Unit.Testing
 
                 Exception result = Tester.TestExceptionOnInit(specification, typeof(InvalidOperationException));
 
-                result.IsSameOrEqualTo(exception);
+                result.Should().BeSameAs(exception);
             }
 
             [Fact]
@@ -55,7 +54,7 @@ namespace Validot.Tests.Unit.Testing
 
                 Exception result = Tester.TestExceptionOnInit(specification, typeof(Exception));
 
-                result.IsSameOrEqualTo(exception);
+                result.Should().BeSameAs(exception);
             }
 
             [Fact]

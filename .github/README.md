@@ -378,16 +378,16 @@ To the point; the statement in the header is true, but it doesn't come for free.
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| Validate | `ManyErrors` | FluentValidation | `532.92` | `507` |
-| Validate | `ManyErrors` | Validot | `284.94` | `181` |
-| FailFast | `ManyErrors` | FluentValidation | `14.06` | `22` |
-| FailFast | `ManyErrors` | Validot | `12.00` | `32` |
-| Validate | `HalfErrors` | FluentValidation | `386.39` | `388` |
-| Validate | `HalfErrors` | Validot | `241.26` | `81` |
-| FailFast | `HalfErrors` | FluentValidation | `257.25` | `266` |
-| FailFast | `HalfErrors` | Validot | `152.31` | `62` |
-| Validate | `NoErrors` | FluentValidation | `368.14` | `378` |
-| Validate | `NoErrors` | Validot | `239.32` | `75` |
+| Validate | `ManyErrors` | FluentValidation | `558.77` | `508` |
+| Validate | `ManyErrors` | Validot | `285.88` | `181` |
+| FailFast | `ManyErrors` | FluentValidation | `18.18` | `22` |
+| FailFast | `ManyErrors` | Validot | `14.69` | `32` |
+| Validate | `HalfErrors` | FluentValidation | `429.93` | `389` |
+| Validate | `HalfErrors` | Validot | `246.82` | `81` |
+| FailFast | `HalfErrors` | FluentValidation | `287.06` | `267` |
+| FailFast | `HalfErrors` | Validot | `156.31` | `62` |
+| Validate | `NoErrors` | FluentValidation | `384.56` | `379` |
+| Validate | `NoErrors` | Validot | `234.22` | `75` |
 
 * [Validate benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated.
 * [FailFast benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, the process stops on the first error.
@@ -396,12 +396,12 @@ FluentValidation's `IsValid` is a property that wraps a simple check whether the
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| IsValid | `ManyErrors` | FluentValidation | `13.46` | `22` |
-| IsValid | `ManyErrors` | Validot | `5.44` | `6` |
-| IsValid | `HalfErrors` | FluentValidation | `256.77` | `266` |
-| IsValid | `HalfErrors` | Validot | `80.31` | `20` |
-| IsValid | `NoErrors` | FluentValidation | `343.65` | `378` |
-| IsValid | `NoErrors` | Validot | `114.45` | `24` |
+| IsValid | `ManyErrors` | FluentValidation | `17.67` | `22` |
+| IsValid | `ManyErrors` | Validot | `7.82` | `6` |
+| IsValid | `HalfErrors` | FluentValidation | `307.68` | `267` |
+| IsValid | `HalfErrors` | Validot | `86.37` | `20` |
+| IsValid | `NoErrors` | FluentValidation | `382.21` | `379` |
+| IsValid | `NoErrors` | Validot | `119.94` | `24` |
 
 * [IsValid benchmark](../tests/Validot.Benchmarks/Comparisons/ValidationBenchmark.cs) - objects are validated, but only to check if they are valid or not.
 
@@ -416,16 +416,16 @@ if (!validator.IsValid(model))
 
 | Test | Data set | Library | Mean [ms] | Allocated [MB] |
 | - | - | - | -: | -: |
-| Reporting | `ManyErrors` | FluentValidation | `539.00` | `519` |
-| Reporting | `ManyErrors` | Validot | `377.40` | `301` |
-| Reporting | `HalfErrors` | FluentValidation | `387.40` | `388` |
-| Reporting | `HalfErrors` | Validot | `258.30` | `77` |
+| Reporting | `ManyErrors` | FluentValidation | `584.00` | `519` |
+| Reporting | `ManyErrors` | Validot | `388.20` | `301` |
+| Reporting | `HalfErrors` | FluentValidation | `413.80` | `389` |
+| Reporting | `HalfErrors` | Validot | `269.70` | `77` |
 
 * [Reporting benchmark](../tests/Validot.Benchmarks/Comparisons/ReportingBenchmark.cs):
   * FluentValidation validates model, and `ToString()` is called if errors are detected.
   * Validot processes the model twice - at first, with its special mode, [IsValid](https://github.com/bartoszlenar/Validot/blob/062dc2c146dc167a531aa513ac65dbadf6707d4b/docs/DOCUMENTATION.md#isvalid). Secondly - in case of errors detected - with the standard method, gathering all errors and printing them with `ToString()`.
 
-Benchmarks environment: Validot 2.1.0, FluentValidation 10.2.3, .NET 5.0.6, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Big Sur.
+Benchmarks environment: Validot 2.2.0, FluentValidation 10.3.4, .NET 5.0.11, i7-9750H (2.60GHz, 1 CPU, 12 logical and 6 physical cores), X64 RyuJIT, macOS Monterey.
 
 ### Validot handles nulls on its own
 

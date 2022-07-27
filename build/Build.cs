@@ -399,7 +399,7 @@ class Build : NukeBuild
 
     void ResetVersionInAssemblyInfo() => SetVersionInAssemblyInfo("0.0.0", null);
 
-    void ResetFrameworkInTests() => SetFrameworkInTests("net5.0");
+    void ResetFrameworkInTests() => SetFrameworkInTests(DefaultFrameworkId);
 
     string GetFramework(string dotnet)
     {

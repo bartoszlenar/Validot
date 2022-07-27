@@ -40,6 +40,7 @@ dotnet_diagnostic.CA1823.severity = suggestion
 dotnet_diagnostic.CA1825.severity = none
 dotnet_diagnostic.CA1845.severity = none
 dotnet_diagnostic.CA1847.severity = none
+dotnet_diagnostic.CA1852.severity = none
 
 dotnet_diagnostic.SA1118.severity = none
 dotnet_diagnostic.SA1122.severity = none
@@ -54,3 +55,4 @@ dotnet_diagnostic.SA1601.severity = none
 dotnet_diagnostic.SA1602.severity = none
 
 dotnet_diagnostic.NS1005.severity = none
+

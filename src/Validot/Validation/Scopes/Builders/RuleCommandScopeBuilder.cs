@@ -32,12 +32,11 @@ namespace Validot.Validation.Scopes.Builders
 
             var ruleCommandScope = new RuleCommandScope<T>
             {
-                IsValid = _ruleCommand.Predicate
+                IsValid = _ruleCommand.Predicate,
+                Path = _path,
+                ExecutionCondition = _executionCondition,
+                ErrorMode = _errorsBuilder.Mode
             };
-
-            ruleCommandScope.Path = _path;
-            ruleCommandScope.ExecutionCondition = _executionCondition;
-            ruleCommandScope.ErrorMode = _errorsBuilder.Mode;
 
             if (_errorsBuilder.IsEmpty)
             {

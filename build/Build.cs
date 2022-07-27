@@ -26,9 +26,9 @@ class Build : NukeBuild
 
     static readonly DateTimeOffset BuildTime = DateTimeOffset.UtcNow;
 
-    static readonly string DefaultFrameworkId = "net5.0";
+    static readonly string DefaultFrameworkId = "net6.0";
 
-    public static int Main () => Execute<Build>(x => x.Compile);
+    public static int Main() => Execute<Build>(x => x.Compile);
 
     [Parameter("Configuration to build. 'Debug' (default) or 'Release'.")]
     readonly Configuration Configuration = Configuration.Debug;
@@ -59,7 +59,7 @@ class Build : NukeBuild
 
     [Parameter("Allow warnings")]
     readonly bool AllowWarnings;
-    
+
     [Parameter("(only for target AddTranslation) Translation name")]
     readonly string TranslationName;
 
@@ -111,13 +111,13 @@ class Build : NukeBuild
 
         base.OnBuildFinished();
     }
-    
+
     Target AddTranslation => _ => _
         .Requires(() => TranslationName)
         .Executes(() =>
         {
             CreateFromTemplate(SourceDirectory / "Validot" / "Translations" / "_Template");
-            
+
             CreateFromTemplate(TestsDirectory / "Validot.Tests.Unit" / "Translations" / "_Template");
 
             void CreateFromTemplate(AbsolutePath templatePath)
@@ -129,9 +129,9 @@ class Build : NukeBuild
                 foreach (var file in files)
                 {
                     var finalFilePath = file.FullName.Replace("_Template", TranslationName).Replace(".txt", string.Empty);
-                    
+
                     RenameFile(file.FullName, finalFilePath);
-                    
+
                     File.WriteAllText(finalFilePath, File.ReadAllText(finalFilePath).Replace("_Template", TranslationName));
                 }
             }
@@ -427,10 +427,15 @@ class Build : NukeBuild
             {
                 return "net5.0";
             }
-            
+
             if (dotnet.StartsWith("6.0.", StringComparison.Ordinal))
             {
                 return "net6.0";
+            }
+
+            if (dotnet.StartsWith("7.0.", StringComparison.Ordinal))
+            {
+                return "net7.0";
             }
 
             Logger.Warn("Unrecognized dotnet SDK version: " + dotnet);

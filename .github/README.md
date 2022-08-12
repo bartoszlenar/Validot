@@ -446,7 +446,7 @@ All values are marked as required by default. In the above example, if `LastName
 LastName: Required
 ```
 
-The content of the message is, of course, [customizable](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withmessage)).
+The content of the message is, of course, [customizable](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withmessage).
 
 If null should be allowed, place [Optional](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#optional) command at the beginning:
 

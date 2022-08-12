@@ -522,10 +522,9 @@ Before publishing, each release is tested on the ["latest" version](https://help
 
 using the upcoming, the current and all also the supported [LTS versions](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) of the underlying frameworks:
 
-* .NET 6.0 (RC 2)
-* .NET 5.0
+* .NET 7.0 (preview 7)
+* .NET 6.0
 * .NET Core 3.1
-* .NET Core 2.1
 * .NET Framework 4.8 (Windows only)
 
 ### Performance

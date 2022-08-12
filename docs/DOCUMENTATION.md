@@ -20,6 +20,7 @@
       - [AsModel](#asmodel)
       - [AsCollection](#ascollection)
       - [AsNullable](#asnullable)
+      - [AsConverted](#asconverted)
       - [WithCondition](#withcondition)
       - [WithPath](#withpath)
       - [WithMessage](#withmessage)
@@ -1434,6 +1435,96 @@ bookValidator.Validate(book).ToString()
 ```
 
 _Above the example how two members - nullable `YearOfPublication` and non-nullable `YearOfFirstAnnouncement` - can be validated with the same specification `yearSpecification`._
+
+---
+
+#### AsConverted
+
+- `AsConverted` is a [scope command](#scope-commands).
+  - Can be placed after:
+    - any command except [Forbidden](#forbidden).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - any of the [parameter commands](#parameter-commands).
+- `AsConverted` validates the value as a different value.
+  - It could be a value of the same, or of a different type.
+  - The type of the specification is determined by the converter's output.
+- `AsConverted` accepts:
+  - A conversion function (of type `System.Converter<in TInput,out TOutput>`) that takes the current scope value and outputs the new value.
+  - A specification for type `TOutput` used to validate the converted value.
+- `AsConverted` executes the delivered specification within the same scope (so all errors are saved on the same level)
+  - So technically, it could be considered as [AsModel](#asmodel), but with a conversion method that's executed upon the scope value before the futher validation.
+
+_Below; a snippet presenting how to sanitize the value (for whatever reason that could be an actual case) before validating it with the predefined specification._
+
+``` csharp
+Specification<string> nameSpecification = s => s
+    .Rule(name => char.IsUpper(name.First())).WithMessage("Must start with a capital letter!")
+    .Rule(name => !name.Any(char.IsWhiteSpace)).WithMessage("Must not contain whitespace!");
+
+Converter<string, string> sanitizeName = firstName => firstName.Trim();
+
+Specification<string> nameValueSpecification = s => s
+    .AsConverted(sanitizeName, nameSpecification);
+
+var nameValidator = Validator.Factory.Create(nameValueSpecification);
+
+nameValidator.Validate("Bartosz").AnyErrors; // false
+
+nameValidator.Validate("      Bartosz    ").AnyErrors; // false
+
+nameValidator.Validate("      bartosz    ").ToString();
+// Must start with a capital letter!
+
+nameValidator.Validate("      Bart osz    ").ToString();
+// Must not contain whitespace!
+```
+
+_Of course, type can be different. It's the converter's output that determines the specification. Also, both arguments could be delivered inline:_
+
+``` csharp
+Specification<AuthorModel> authorSpecification = s => s
+    .Member(m => m.Name, m => m.AsConverted(
+        name => name.Length,
+        nameLength => nameLength.Rule(l => l % 2 == 0).WithMessage("Characters amount must be even"))
+    );
+
+var nameValidator = Validator.Factory.Create(authorSpecification);
+
+var author = new AuthorModel()
+{
+    Name = "Bartosz"
+};
+
+nameValidator.Validate(author).ToString();
+// Name: Characters amount must be even
+```
+
+- The [template](#template) will contain all errors from the delivered specification, which could lead to misleading case in which the "Required" error is listed as a possible outcome for a value type.
+  - This happens when a value type is converted to a reference type.
+  - If you want to "fix" te template, add [Optional](#optional) at the beginning in the converted value's specification.
+
+
+``` csharp
+Specification<int> specification1 = s => s
+    .AsConverted(
+        v => v.ToString(CultureInfo.InvariantCulture),
+        c => c.MaxLength(10).WithMessage("Number must be max 5 digits length")
+    );
+
+Validator.Factory.Create(specification1).Template.ToString();
+// Required
+// Number must be max 5 digits length
+
+Specification<int> specification2 = s => s
+    .AsConverted(
+        v => v.ToString(CultureInfo.InvariantCulture),
+        c => c.Optional().MaxLength(10).WithMessage("Number must be max 5 digits length")
+    );
+
+Validator.Factory.Create(specification2).Template.ToString();
+// Number must be max 5 digits length
+```
 
 ---
 

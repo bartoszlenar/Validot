@@ -7,7 +7,7 @@ If you're reading this file, it means that you are - more or less - interested i
 
 1. Let's have a discussion first!
    - It's really important that you visit the project's [Issues page](https://github.com/bartoszlenar/Validot/issues) and check if there is already an ongoing discussion around the same (or similar) idea.
-   - Let's have a short chat about a feature that you have in mind (or a bug that you found), _before_ any actual code work.
+   - Let's have a short chat about a feature that you have in mind (or a bug that you found), _before_ any actual code work. Validot is tweaked performance-wise and has a very sensitive codebase and for this reason I prefer to assign new features to myself by default. Of course, it's not a rule, but double please, let's have a chat about new features and breaking changes before you dedicate your time to Validot.
 2. Fork and code!
    - How to build, run unit and functional tests? How to analyse code coverage a execute benchmarks? It's all covered in the [documentation](./DOCUMENTATION.md#Development).
    - Please get familiar with Validot's [project principles](#project-principles), [git](#git) and [code standards](#code-standards)

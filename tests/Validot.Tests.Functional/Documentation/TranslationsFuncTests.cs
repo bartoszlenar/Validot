@@ -191,6 +191,33 @@ namespace Validot.Tests.Functional.Documentation
                     "Deve ter no máximo 5 caracteres"
                 );
             }
+
+            [Fact]
+            public void WithGermanTranslation()
+            {
+                Specification<string> specification = s => s
+                    .NotEmpty()
+                    .MaxLength(5);
+
+                var validator = Validator.Factory.Create(specification, settings => settings
+                    .WithGermanTranslation()
+                );
+
+                validator.Validate(null).ToString(translationName: "German").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Erforderlich"
+                );
+
+                validator.Validate("").ToString(translationName: "German").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Darf nicht leer sein"
+                );
+
+                validator.Validate("1234567890").ToString(translationName: "German").ShouldResultToStringHaveLines(
+                    ToStringContentType.Messages,
+                    "Muss maximal 5 Zeichen lang sein"
+                );
+            }
         }
     }
 

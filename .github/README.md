@@ -324,7 +324,7 @@ result.ToString(translationName: "Polish");
 // Name: Musi być długości pomiędzy 3 a 50 znaków
 ```
 
-At the moment Validot delivers the following translations out of the box: [Polish](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withpolishtranslation), [Spanish](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withspanishtranslation), [Russian](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withrussiantranslation).
+At the moment Validot delivers the following translations out of the box: [Polish](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withpolishtranslation), [Spanish](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withspanishtranslation), [Russian](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withrussiantranslation), [Portuguese](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withportuguesetranslation) and [German](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withgermantranslation).
 
 * [How translations work](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#translations)
 * [Custom translation](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#custom-translation)

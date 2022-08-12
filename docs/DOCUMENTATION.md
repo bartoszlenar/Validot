@@ -81,6 +81,8 @@
       - [WithPolishTranslation](#withpolishtranslation)
       - [WithSpanishTranslation](#withspanishtranslation)
       - [WithRussianTranslation](#withrussiantranslation)
+      - [WithPortugueseTranslation](#withportuguesetranslation)
+      - [WithGermanTranslation](#withgermantranslation)
     - [Overriding messages](#overriding-messages)
     - [Custom translation](#custom-translation)
   - [Development](#development)
@@ -4674,6 +4676,54 @@ validator.Validate("").ToString(translationName: "Russian");
 
 validator.Validate("1234567890").ToString(translationName: "Russian");
 // Должен быть не больше 5 символов в длину
+```
+
+#### WithPortugueseTranslation
+
+- The Portuguese translation name is just `"Portuguese"`
+- It can be included using `WithPortugueseTranslation()` extension.
+
+``` csharp
+Specification<string> specification = s => s
+    .NotEmpty()
+    .MaxLength(5);
+
+var validator = Validator.Factory.Create(specification, settings => settings
+    .WithPortugueseTranslation()
+);
+
+validator.Validate(null).ToString(translationName: "Portuguese");
+// Obrigatório
+
+validator.Validate("").ToString(translationName: "Portuguese");
+// Não deve estar vazio
+
+validator.Validate("1234567890").ToString(translationName: "Portuguese");
+// Deve ter no máximo 5 caracteres
+```
+
+#### WithGermanTranslation
+
+- The Portuguese translation name is just `"German"`
+- It can be included using `WithGermanTranslation()` extension.
+
+``` csharp
+Specification<string> specification = s => s
+    .NotEmpty()
+    .MaxLength(5);
+
+var validator = Validator.Factory.Create(specification, settings => settings
+    .WithGermanTranslation()
+);
+
+validator.Validate(null).ToString(translationName: "German");
+// Obrigatório
+
+validator.Validate("").ToString(translationName: "German");
+// Não deve estar vazio
+
+validator.Validate("1234567890").ToString(translationName: "German");
+// Deve ter no máximo 5 caracteres
 ```
 
 ### Overriding messages

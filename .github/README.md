@@ -324,7 +324,7 @@ result.ToString(translationName: "Polish");
 // Name: Musi być długości pomiędzy 3 a 50 znaków
 ```
 
-At the moment Validot delivers the following translations out of the box: [Polish](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withpolishtranslation), [Spanish](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withspanishtranslation), [Russian](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withrussiantranslation).
+At the moment Validot delivers the following translations out of the box: [Polish](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withpolishtranslation), [Spanish](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withspanishtranslation), [Russian](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withrussiantranslation), [Portuguese](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withportuguesetranslation) and [German](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withgermantranslation).
 
 * [How translations work](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#translations)
 * [Custom translation](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#custom-translation)
@@ -446,7 +446,7 @@ All values are marked as required by default. In the above example, if `LastName
 LastName: Required
 ```
 
-The content of the message is, of course, [customizable](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withmessage)).
+The content of the message is, of course, [customizable](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#withmessage).
 
 If null should be allowed, place [Optional](https://github.com/bartoszlenar/Validot/blob/efd22504b7715a85f7ce6125d04adad18e374eb1/docs/DOCUMENTATION.md#optional) command at the beginning:
 
@@ -522,10 +522,9 @@ Before publishing, each release is tested on the ["latest" version](https://help
 
 using the upcoming, the current and all also the supported [LTS versions](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) of the underlying frameworks:
 
-* .NET 6.0 (RC 2)
-* .NET 5.0
+* .NET 7.0 (preview 7)
+* .NET 6.0
 * .NET Core 3.1
-* .NET Core 2.1
 * .NET Framework 4.8 (Windows only)
 
 ### Performance

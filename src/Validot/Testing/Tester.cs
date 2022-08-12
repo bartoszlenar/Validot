@@ -2,6 +2,7 @@ namespace Validot.Testing
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
 
     using Validot.Errors;
@@ -150,14 +151,14 @@ namespace Validot.Testing
                         {
                             if (Math.Abs(d - (double)expectedArgValue) > 0.0000001d)
                             {
-                                return TestResult.Failed($"Expected error (for path `{path}`, index {j}) arg (name `{errorArg.Name}`) double value to be `{expectedArgValue}`, but found `{argValue}`");
+                                return TestResult.Failed($"Expected error (for path `{path}`, index {j}) arg (name `{errorArg.Name}`) double value to be `{((double)expectedArgValue).ToString(CultureInfo.InvariantCulture)}`, but found `{((double)argValue).ToString(CultureInfo.InvariantCulture)}`");
                             }
                         }
                         else if (argValue is float f)
                         {
                             if (Math.Abs(f - (float)expectedArgValue) > 0.0000001f)
                             {
-                                return TestResult.Failed($"Expected error (for path `{path}`, index {j}) arg (name `{errorArg.Name}`) float value to be `{expectedArgValue}`, but found `{argValue}`");
+                                return TestResult.Failed($"Expected error (for path `{path}`, index {j}) arg (name `{errorArg.Name}`) float value to be `{((float)expectedArgValue).ToString(CultureInfo.InvariantCulture)}`, but found `{((float)argValue).ToString(CultureInfo.InvariantCulture)}`");
                             }
                         }
                         else if (!expectedArgValue.Equals(argValue))

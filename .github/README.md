@@ -474,7 +474,6 @@ validator.Validate(model, failFast: true);
 
 Features that might be in the scope and are technically possible to implement in the future:
 
-* transforming values ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/3))
 * failing fast only in a single scope ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/5))
 * validated value in the error message ([discuss it on GitHub Issues](https://github.com/bartoszlenar/Validot/issues/6))
 

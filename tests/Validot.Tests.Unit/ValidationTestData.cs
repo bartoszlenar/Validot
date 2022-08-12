@@ -3,6 +3,7 @@ namespace Validot.Tests.Unit
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
 
     using Validot.Translations;
@@ -3388,6 +3389,83 @@ namespace Validot.Tests.Unit
                         Model = new TestClass() { Nullable = true },
                         Errors = NoErrors,
                         FailFastErrorKey = null
+                    },
+                },
+            },
+            new TestCase()
+            {
+                Name = "AsConverted",
+                Specification = s => s.Member(m => m.Value, m => m
+                    .AsConverted(value => value.ToString(CultureInfo.InvariantCulture), v => v.Rule(str => str.Length <= 4).WithMessage("Number must be written using no more than 4 digits."))
+                ),
+                ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                {
+                    [""] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[]
+                            {
+                                MessageKey.Global.Required
+                            }
+                        }
+                    },
+                    ["Value"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[]
+                            {
+                                MessageKey.Global.Required
+                            }
+                        },
+                        new ErrorTestCase()
+                        {
+                            Messages = new[]
+                            {
+                                "Number must be written using no more than 4 digits."
+                            }
+                        }
+                    }
+                },
+                ValidationCases = new[]
+                {
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            Value = 123456
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["Value"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[]
+                                    {
+                                        "Number must be written using no more than 4 digits."
+                                    }
+                                },
+                            }
+                        },
+                        FailFastErrorKey = "Value"
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            Value = 12
+                        },
+                        Errors = NoErrors, FailFastErrorKey = null
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            Nullable = true
+                        },
+                        Errors = NoErrors, FailFastErrorKey = null
                     },
                 },
             },

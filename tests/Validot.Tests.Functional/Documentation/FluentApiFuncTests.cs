@@ -3,6 +3,7 @@ namespace Validot.Tests.Functional.Documentation
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
 
     using FluentAssertions;
@@ -840,6 +841,84 @@ namespace Validot.Tests.Functional.Documentation
                 ToStringContentType.Messages,
                 "YearOfFirstAnnouncement: Minimum year is 3000 B.C.",
                 "YearOfPublication: Maximum year is 3000 A.D."
+            );
+        }
+
+        [Fact]
+        public void AsConverted_SameType()
+        {
+            Specification<string> nameSpecification = s => s
+                .Rule(name => char.IsUpper(name.First())).WithMessage("Must start with a capital letter!")
+                .Rule(name => !name.Any(char.IsWhiteSpace)).WithMessage("Must not contain whitespace!");
+
+            Converter<string, string> sanitizeName = firstName => firstName.Trim();
+
+            Specification<string> nameValueSpecification = s => s
+                .AsConverted(sanitizeName, nameSpecification);
+
+            var nameValidator = Validator.Factory.Create(nameValueSpecification);
+
+            nameValidator.Validate("Bartosz").AnyErrors.Should().BeFalse();
+
+            nameValidator.Validate("      Bartosz    ").AnyErrors.Should().BeFalse();
+
+            nameValidator.Validate("      bartosz    ").ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Must start with a capital letter!"
+            );
+
+            nameValidator.Validate("      Bart osz    ").ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Must not contain whitespace!"
+            );
+        }
+
+        [Fact]
+        public void AsConverted_DifferentTypeAndInline()
+        {
+            Specification<AuthorModel> authorSpecification = s => s
+                .Member(m => m.Name, m => m.AsConverted(
+                    name => name.Length,
+                    nameLength => nameLength.Rule(l => l % 2 == 0).WithMessage("Characters amount must be even"))
+                );
+
+            var nameValidator = Validator.Factory.Create(authorSpecification);
+
+            var author = new AuthorModel()
+            {
+                Name = "Bartosz"
+            };
+
+            nameValidator.Validate(author).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Name: Characters amount must be even"
+            );
+        }
+
+        [Fact]
+        public void AsConverted_RequiredForValueTypeInTemplate()
+        {
+            Specification<int> specification1 = s => s
+                .AsConverted(
+                    value => value.ToString(CultureInfo.InvariantCulture),
+                    c => c.MaxLength(10).WithMessage("Number must be max 5 digits length")
+                );
+
+            Validator.Factory.Create(specification1).Template.ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Required",
+                "Number must be max 5 digits length"
+            );
+
+            Specification<int> specification2 = s => s
+                .AsConverted(
+                    value => value.ToString(CultureInfo.InvariantCulture),
+                    c => c.Optional().MaxLength(10).WithMessage("Number must be max 5 digits length")
+                );
+
+            Validator.Factory.Create(specification2).Template.ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Number must be max 5 digits length"
             );
         }
 

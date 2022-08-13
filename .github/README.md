@@ -72,12 +72,13 @@
         📜 Blogged: Validot's performance explained
     </a>
 </p>
-<br/>
 
 <p align="center">
     Built with 🤘🏻by <a href="https://lenar.dev">Bartosz Lenar</a>
+    </br>
+    Supported by <a href="https://www.jetbrains.com/community/opensource/#support" target="_blank">JetBrains'</a> and <a href="https://opensource.microsoft.com/program/" target="_blank">Microsoft's</a> Open Source Programs (thanks!)
 </p>
-
+    </br>
 
 ## Quickstart
 

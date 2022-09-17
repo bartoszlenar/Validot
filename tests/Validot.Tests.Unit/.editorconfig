@@ -56,3 +56,4 @@ dotnet_diagnostic.SA1602.severity = none
 
 dotnet_diagnostic.NS1005.severity = none
 
+dotnet_diagnostic.SYSLIB1045.severity = none

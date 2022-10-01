@@ -4,6 +4,14 @@ All notable changes to the [Validot project](https://github.com/bartoszlenar/Val
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [2.4.0] - 2022-10-01
+### Added
+- Added `AsType` command. [#4](https://github.com/bartoszlenar/Validot/issues/24)
+
+### Fixed
+- Inline XML documentation for `AsConverted`.
+
 ## [2.3.0] - 2022-08-13
 ### Added
 - Added `AsConverted` command. [#3](https://github.com/bartoszlenar/Validot/issues/3)
@@ -16,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - German translation (along with `WithGermanTranslation` extension to the settings builder). [#12](https://github.com/bartoszlenar/Validot/issues/12)
 - Portuguese translation (along with `WithPortugueseTranslation` extension to the settings builder). [#13](https://github.com/bartoszlenar/Validot/issues/13)
 
-### Fixes
+### Fixed
 - Fix to Spanish translation in `Times.BeforeOrEqualTo` message key. [#20](https://github.com/bartoszlenar/Validot/pull/20/commits/6a68dcdc17589f3c9bd524bc2266238b5245ff50)
 - Minor performance fixes and code improvements. [#21](https://github.com/bartoszlenar/Validot/pulls/21) [#22](https://github.com/bartoszlenar/Validot/pulls/22)
 

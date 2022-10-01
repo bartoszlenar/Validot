@@ -71,6 +71,10 @@
     <a href="https://lenar.dev/posts/validots-performance-explained">
         📜 Blogged: Validot's performance explained
     </a>
+    </br>
+    <a href="https://lenar.dev/posts/crafting-model-specifications-using-validot">
+        📜 Blogged: Crafting model specifications using Validot
+    </a>
 </p>
 
 <p align="center">
@@ -196,6 +200,7 @@ Specification<UserModel> userSpecification = s => s
     .WithMessage("Alternative emails must not contain the primary email address");
 ```
 
+* [Blog post about constructing specifications in Validot](https://lenar.dev/posts/crafting-model-specifications-using-validot)
 * [Guide through Validot's fluent API](https://github.com/bartoszlenar/Validot/blob/1a744d1021b40c84f9ce27d0f60f073e3bc1ed06/docs/DOCUMENTATION.md#fluent-api)
 * [If you prefer the approach of having a separate class for just validation logic, it's also fully supported](https://github.com/bartoszlenar/Validot/blob/1a744d1021b40c84f9ce27d0f60f073e3bc1ed06/docs/DOCUMENTATION.md#specification-holder)
 

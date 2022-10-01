@@ -508,7 +508,7 @@ Features that are very unlikely to be in the scope as they contradict the projec
 
 Validot is a dotnet class library targeting .NET Standard 2.0. There are no extra dependencies.
 
-Please check the [official Microsoft document](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.0.md) that lists all the platforms that can use it on.
+Please check the [official Microsoft document](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0) that lists all the platforms that can use it on.
 
 ### Versioning
 

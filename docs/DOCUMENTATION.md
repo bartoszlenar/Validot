@@ -1857,7 +1857,7 @@ Specification<string> specification1 = s => s
 
 Specification<string> specification2 = s => s
     .Rule(email => email.Contains('@'))
-        .WithName("Characters")
+        .WithPath("Characters")
         .WithMessage("Must contain @ character!");
 
 var validator1 = Validator.Factory.Create(specification1);
@@ -1883,7 +1883,7 @@ _You can observe that the [error output](#error-output) coming from the `Rule` s
     - Going up always stops at the root level, so don't worry if you put too many of `<`.
       - This wouldn't result with an exception, but it could be very misleading if you use such [specification](#specification) in another specification. Please be careful because Validot won't warn you about this problem.
 
-| Current path | WithName parameter | Final path |
+| Current path | WithPath parameter | Final path |
 | - | - | - |
 | root level | `FirstLevel` | `FirstLevel` |
 | root level | `FirstLevel.SecondLevel` | `FirstLevel.SecondLevel` |
@@ -1948,7 +1948,7 @@ var validator = Validator.Factory.Create(specification); // throws ArgumentExcep
 
 ``` csharp
 Specification<PublisherModel> publisherSpecification = s => s
-    .Member(m => m.Name, nameSpecification).WithName("FirstName");
+    .Member(m => m.Name, nameSpecification).WithPath("FirstName");
 
 var publisherValidator = Validator.Factory.Create(publisherSpecification);
 

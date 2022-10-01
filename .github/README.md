@@ -71,6 +71,10 @@
     <a href="https://lenar.dev/posts/validots-performance-explained">
         📜 Blogged: Validot's performance explained
     </a>
+    </br>
+    <a href="https://lenar.dev/posts/crafting-model-specifications-using-validot">
+        📜 Blogged: Crafting model specifications using Validot
+    </a>
 </p>
 
 <p align="center">
@@ -196,6 +200,7 @@ Specification<UserModel> userSpecification = s => s
     .WithMessage("Alternative emails must not contain the primary email address");
 ```
 
+* [Blog post about constructing specifications in Validot](https://lenar.dev/posts/crafting-model-specifications-using-validot)
 * [Guide through Validot's fluent API](https://github.com/bartoszlenar/Validot/blob/1a744d1021b40c84f9ce27d0f60f073e3bc1ed06/docs/DOCUMENTATION.md#fluent-api)
 * [If you prefer the approach of having a separate class for just validation logic, it's also fully supported](https://github.com/bartoszlenar/Validot/blob/1a744d1021b40c84f9ce27d0f60f073e3bc1ed06/docs/DOCUMENTATION.md#specification-holder)
 
@@ -503,7 +508,7 @@ Features that are very unlikely to be in the scope as they contradict the projec
 
 Validot is a dotnet class library targeting .NET Standard 2.0. There are no extra dependencies.
 
-Please check the [official Microsoft document](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.0.md) that lists all the platforms that can use it on.
+Please check the [official Microsoft document](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0) that lists all the platforms that can use it on.
 
 ### Versioning
 
@@ -523,7 +528,7 @@ Before publishing, each release is tested on the ["latest" version](https://help
 
 using the upcoming, the current and all also the supported [LTS versions](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) of the underlying frameworks:
 
-* .NET 7.0 (preview 7)
+* .NET 7.0 (RC1)
 * .NET 6.0
 * .NET Core 3.1
 * .NET Framework 4.8 (Windows only)

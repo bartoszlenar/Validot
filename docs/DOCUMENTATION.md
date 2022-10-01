@@ -21,6 +21,7 @@
       - [AsCollection](#ascollection)
       - [AsNullable](#asnullable)
       - [AsConverted](#asconverted)
+      - [AsType](#astype)
       - [WithCondition](#withcondition)
       - [WithPath](#withpath)
       - [WithMessage](#withmessage)
@@ -1530,6 +1531,157 @@ Validator.Factory.Create(specification2).Template.ToString();
 
 ---
 
+#### AsType
+
+- `AsType` is a [scope command](#scope-commands).
+  - Can be placed after:
+    - any command except [Forbidden](#forbidden).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - any of the [parameter commands](#parameter-commands).
+- `AsType` validates the value as if it was of a different type.
+  - If the value can be cast into the target type (using `is`/`as` operators), the validation proceeds with the given specifiction.
+  - If the value can't be cast (`is` check returns false), nothing happens. No error output is recorded and the validation continues with the subsequent commands.
+- `AsType` accepts:
+  - A specification for type `TTarget` used to validate the cast value.
+- `AsType` executes the delivered specification within the same scope (so all errors are saved on the same level)
+  - So technically `.AsType(targetTypeSpecification)`, it could be considered as a shortcut for [AsConverted](#asmodel) command combined with [WithCondition](#withcondition): `.AsConverted(v => v as TargetType, targetTypeSpecification).WithCondition(v => v is TargetType)`.
+
+_Let's use the classic inheritance example, like: `Animal -> Mammal -> Elephant`_:
+
+``` csharp
+class Animal
+{
+    public int AnimalId { get; set; }
+}
+
+class Mammal : Animal
+{
+    public int MammalId { get; set; }
+}
+
+class Elephant : Mammal
+{
+    public int ElephantId { get; set; }
+}
+```
+
+_Contructing validator for the class at the bottom of the inheritance graph (`Elephant` in this case), you can use `AsType` and apply specifiction of any of its ancestors_:
+
+
+``` csharp
+Specification<int> idSpecification = s => s.NonZero();
+
+Specification<Animal> animalSpecification = s => s
+    .Member(m => m.AnimalId, idSpecification);
+
+Specification<Elephant> elephantSpecification = s => s
+    .Member(m => m.ElephantId, idSpecification)
+    .AsType(animalSpecification);
+
+var elephantValidator = Validator.Factory.Create(elephantSpecification);
+
+elephantValidator.Validate(new Elephant() { ElephantId = 10, AnimalId = 10 }).AnyErrors; // false
+
+elephantValidator.Validate(new Elephant() { ElephantId = 0, AnimalId = 10 }).ToString();
+// ElephantId: Must not be zero
+
+elephantValidator.Validate(new Elephant() { ElephantId = 10, AnimalId = 0 }).ToString();
+// AnimalId: Must not be zero
+```
+
+_It works also in opposite direction. You can create a validator for the ancestor type and use descendants' specifications:_
+
+``` csharp
+Specification<int> idSpecification = s => s.NonZero();
+
+Specification<Elephant> elephantSpecification = s => s
+    .Member(m => m.ElephantId, idSpecification);
+
+Specification<Animal> animalSpecification = s => s
+    .Member(m => m.AnimalId, idSpecification)
+    .AsType(elephantSpecification);
+
+var animalValidator = Validator.Factory.Create(animalSpecification);
+
+animalValidator.Validate(new Elephant() { ElephantId = 10, AnimalId = 10 }).AnyErrors; // false
+
+animalValidator.Validate(new Elephant() { ElephantId = 0, AnimalId = 10 }).ToString();
+// ElephantId: Must not be zero
+
+animalValidator.Validate(new Elephant() { ElephantId = 10, AnimalId = 0 }).ToString();
+// AnimalId: Must not be zero
+```
+
+_`AsType` executes only if the type can be cast (`value is TTargetType` is true), so you can use specifiction of unrelated types if for whatever reason you need something that works like a validation hub. Notice that you can construct the specification inline as well (but it's handy to do it with a constructor notation so the compiler can pick up the types from it):_
+
+``` csharp
+Specification<object> specification = s => s
+    .AsType(new Specification<int>(number => number.NonZero()))
+    .AsType(new Specification<string>(text => text.NotEmpty()));
+
+var validator = Validator.Factory.Create(specification);
+
+validator.Validate(12).AnyErrors // false
+validator.Validate("test").AnyErrors // false
+validator.Validate(0L).AnyErrors // false, because it's not an integer
+
+validator.Validate(0).ToString();
+// Must not be zero
+
+validator.Validate("").ToString();
+// Must not be empty
+```
+
+_Naturally, errors from all levels are ultimately grouped by the paths in the report. Below the example of the one containing messages from all three levels:_
+
+``` csharp
+Specification<int> idSpecification = s => s.NonZero();
+
+Specification<Animal> animalSpecification = s => s
+    .Member(m => m.AnimalId, idSpecification);
+
+Specification<Mammal> mammalSpecification = s => s
+    .Member(m => m.MammalId, idSpecification)
+    .And()
+    .Member(m => m.AnimalId, idSpecification)
+    .WithMessage("Something wrong with animal from mammal perspective")
+    .And()
+    .AsType(animalSpecification);
+
+Specification<Elephant> elephantSpecification = s => s
+    .Member(m => m.ElephantId, idSpecification)
+    .And()
+    .Member(m => m.MammalId, idSpecification)
+    .WithMessage("Something wrong with mammal from elephant perspective")
+    .And()
+    .Member(m => m.AnimalId, idSpecification)
+    .WithMessage("Something wrong with animal from elephant perspective")
+    .And()
+    .AsType(mammalSpecification);
+
+var elephantValidator = Validator.Factory.Create(elephantSpecification);
+
+elephantValidator.Validate(new Elephant() { ElephantId = 10, MammalId = 10, AnimalId = 10 }).AnyErrors; // false
+
+elephantValidator.Validate(new Elephant() { ElephantId = 0, MammalId = 10, AnimalId = 10 }).ToString();
+// ElephantId: Must not be zero
+
+elephantValidator.Validate(new Elephant() { ElephantId = 10, MammalId = 0, AnimalId = 10 }).ToString();
+// MammalId: Must not be zero
+// MammalId: Something wrong with mammal from elephant perspective
+
+elephantValidator.Validate(new Elephant() { ElephantId = 0, MammalId = 0, AnimalId = 0 }).ToString();
+// ElephantId: Must not be zero
+// MammalId: Must not be zero
+// MammalId: Something wrong with mammal from elephant perspective
+// AnimalId: Must not be zero
+// AnimalId: Something wrong with animal from mammal perspective
+// AnimalId: Something wrong with animal from elephant perspective
+```
+
+---
+
 #### WithCondition
 
 - `WithCondition` is a [parameter command](#parameter-commands).
@@ -1705,7 +1857,7 @@ Specification<string> specification1 = s => s
 
 Specification<string> specification2 = s => s
     .Rule(email => email.Contains('@'))
-        .WithName("Characters")
+        .WithPath("Characters")
         .WithMessage("Must contain @ character!");
 
 var validator1 = Validator.Factory.Create(specification1);
@@ -1731,7 +1883,7 @@ _You can observe that the [error output](#error-output) coming from the `Rule` s
     - Going up always stops at the root level, so don't worry if you put too many of `<`.
       - This wouldn't result with an exception, but it could be very misleading if you use such [specification](#specification) in another specification. Please be careful because Validot won't warn you about this problem.
 
-| Current path | WithName parameter | Final path |
+| Current path | WithPath parameter | Final path |
 | - | - | - |
 | root level | `FirstLevel` | `FirstLevel` |
 | root level | `FirstLevel.SecondLevel` | `FirstLevel.SecondLevel` |
@@ -1796,7 +1948,7 @@ var validator = Validator.Factory.Create(specification); // throws ArgumentExcep
 
 ``` csharp
 Specification<PublisherModel> publisherSpecification = s => s
-    .Member(m => m.Name, nameSpecification).WithName("FirstName");
+    .Member(m => m.Name, nameSpecification).WithPath("FirstName");
 
 var publisherValidator = Validator.Factory.Create(publisherSpecification);
 

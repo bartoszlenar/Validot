@@ -85,6 +85,16 @@ namespace Validot.Tests.Unit
             public int StructNumber { get; set; }
         }
 
+        public class TestParent
+        {
+            public int ParentNumber { get; set; }
+        }
+
+        public class TestChild : TestParent
+        {
+            public int ChildNumber { get; set; }
+        }
+
         public class TestClass
         {
             public string HybridField;
@@ -110,6 +120,8 @@ namespace Validot.Tests.Unit
             public TestStruct StructMember { get; set; }
 
             public TestCollection<TestMember> MembersCollection { get; set; }
+
+            public TestChild Child { get; set; }
         }
 
         private static readonly Dictionary<string, IReadOnlyList<ErrorTestCase>> NoErrors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>();
@@ -3466,6 +3478,81 @@ namespace Validot.Tests.Unit
                             Nullable = true
                         },
                         Errors = NoErrors, FailFastErrorKey = null
+                    },
+                },
+            },
+            new TestCase()
+            {
+                Name = "AsType",
+                Specification = s => s.Member(m => m.Child, m => m
+                    .AsType(new Specification<TestParent>(p => p
+                        .Member(p1 => p1.ParentNumber, n => n.NonZero().WithMessage("Must not be zero")))
+                    )
+                ),
+                ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                {
+                    [""] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[]
+                            {
+                                MessageKey.Global.Required
+                            }
+                        }
+                    },
+                    ["Child"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[]
+                            {
+                                MessageKey.Global.Required
+                            }
+                        }
+                    },
+                    ["Child.ParentNumber"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[]
+                            {
+                                "Must not be zero"
+                            }
+                        }
+                    }
+                },
+                ValidationCases = new[]
+                {
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            Child = new TestChild() { ParentNumber = 0 }
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["Child.ParentNumber"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[]
+                                    {
+                                        "Must not be zero"
+                                    }
+                                }
+                            },
+                        },
+                        FailFastErrorKey = "Child.ParentNumber"
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            Child = new TestChild() { ParentNumber = 10 }
+                        },
+                        Errors = NoErrors,
+                        FailFastErrorKey = null
                     },
                 },
             },

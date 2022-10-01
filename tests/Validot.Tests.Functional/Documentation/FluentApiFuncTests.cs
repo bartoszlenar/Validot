@@ -922,6 +922,152 @@ namespace Validot.Tests.Functional.Documentation
             );
         }
 
+        private class Animal
+        {
+            public int AnimalId { get; set; }
+        }
+
+        private class Mammal : Animal
+        {
+            public int MammalId { get; set; }
+        }
+
+        private class Elephant : Mammal
+        {
+            public int ElephantId { get; set; }
+        }
+
+        [Fact]
+        public void AsType_SpecificationOfParentInSpecificationOfChild()
+        {
+            Specification<int> idSpecification = s => s.NonZero();
+
+            Specification<Animal> animalSpecification = s => s
+                .Member(m => m.AnimalId, idSpecification);
+
+            Specification<Elephant> elephantSpecification = s => s
+                .Member(m => m.ElephantId, idSpecification)
+                .AsType(animalSpecification);
+
+            var elephantValidator = Validator.Factory.Create(elephantSpecification);
+
+            elephantValidator.Validate(new Elephant() { ElephantId = 10, AnimalId = 10 }).AnyErrors.Should().BeFalse();
+
+            elephantValidator.Validate(new Elephant() { ElephantId = 0, AnimalId = 10 }).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "ElephantId: Must not be zero"
+            );
+
+            elephantValidator.Validate(new Elephant() { ElephantId = 10, AnimalId = 0 }).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "AnimalId: Must not be zero"
+            );
+        }
+
+        [Fact]
+        public void AsType_SpecificationOfChildInSpecificationOfParent()
+        {
+            Specification<int> idSpecification = s => s.NonZero();
+
+            Specification<Elephant> elephantSpecification = s => s
+                .Member(m => m.ElephantId, idSpecification);
+
+            Specification<Animal> animalSpecification = s => s
+                .Member(m => m.AnimalId, idSpecification)
+                .AsType(elephantSpecification);
+
+            var animalValidator = Validator.Factory.Create(animalSpecification);
+
+            animalValidator.Validate(new Elephant() { ElephantId = 10, AnimalId = 10 }).AnyErrors.Should().BeFalse();
+
+            animalValidator.Validate(new Elephant() { ElephantId = 0, AnimalId = 10 }).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "ElephantId: Must not be zero"
+            );
+
+            animalValidator.Validate(new Elephant() { ElephantId = 10, AnimalId = 0 }).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "AnimalId: Must not be zero"
+            );
+        }
+
+        [Fact]
+        public void AsType_NonRelatedTypes()
+        {
+            Specification<object> specification = s => s
+                .AsType(new Specification<int>(number => number.NonZero()))
+                .AsType(new Specification<string>(text => text.NotEmpty()));
+
+            var validator = Validator.Factory.Create(specification);
+
+            validator.Validate(12).AnyErrors.Should().BeFalse();
+            validator.Validate("test").AnyErrors.Should().BeFalse();
+            validator.Validate(0L).AnyErrors.Should().BeFalse();
+
+            validator.Validate(0).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Must not be zero"
+            );
+
+            validator.Validate("").ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Must not be empty"
+            );
+        }
+
+        [Fact]
+        public void AsType_SummingAllLevels()
+        {
+            Specification<int> idSpecification = s => s.NonZero();
+
+            Specification<Animal> animalSpecification = s => s
+                .Member(m => m.AnimalId, idSpecification);
+
+            Specification<Mammal> mammalSpecification = s => s
+                .Member(m => m.MammalId, idSpecification)
+                .And()
+                .Member(m => m.AnimalId, idSpecification)
+                .WithMessage("Something wrong with animal from mammal perspective")
+                .And()
+                .AsType(animalSpecification);
+
+            Specification<Elephant> elephantSpecification = s => s
+                .Member(m => m.ElephantId, idSpecification)
+                .And()
+                .Member(m => m.MammalId, idSpecification)
+                .WithMessage("Something wrong with mammal from elephant perspective")
+                .And()
+                .Member(m => m.AnimalId, idSpecification)
+                .WithMessage("Something wrong with animal from elephant perspective")
+                .And()
+                .AsType(mammalSpecification);
+
+            var elephantValidator = Validator.Factory.Create(elephantSpecification);
+
+            elephantValidator.Validate(new Elephant() { ElephantId = 10, MammalId = 10, AnimalId = 10 }).AnyErrors.Should().BeFalse();
+
+            elephantValidator.Validate(new Elephant() { ElephantId = 0, MammalId = 10, AnimalId = 10 }).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "ElephantId: Must not be zero"
+            );
+
+            elephantValidator.Validate(new Elephant() { ElephantId = 10, MammalId = 0, AnimalId = 10 }).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "MammalId: Must not be zero",
+                "MammalId: Something wrong with mammal from elephant perspective"
+            );
+
+            elephantValidator.Validate(new Elephant() { ElephantId = 0, MammalId = 0, AnimalId = 0 }).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "ElephantId: Must not be zero",
+                "MammalId: Must not be zero",
+                "MammalId: Something wrong with mammal from elephant perspective",
+                "AnimalId: Must not be zero",
+                "AnimalId: Something wrong with animal from mammal perspective",
+                "AnimalId: Something wrong with animal from elephant perspective"
+            );
+        }
+
         [Fact]
         public void WithCondition()
         {

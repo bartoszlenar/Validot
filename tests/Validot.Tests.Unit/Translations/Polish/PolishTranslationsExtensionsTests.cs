@@ -24,6 +24,12 @@ namespace Validot.Tests.Unit.Translations.Polish
         }
 
         [Fact]
+        public void Polish_Should_HaveValues_OnlyWithAllowedPlaceholders()
+        {
+            Translation.Polish.ShouldContainOnlyValidPlaceholders();
+        }
+
+        [Fact]
         public void WithPolishTranslation_Should_AddTranslation()
         {
             var settings = new ValidatorSettings();

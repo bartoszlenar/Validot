@@ -31,6 +31,12 @@ namespace Validot.Tests.Unit.Translations.English
         }
 
         [Fact]
+        public void English_Should_HaveValues_OnlyWithAllowedPlaceholders()
+        {
+            Translation.English.ShouldContainOnlyValidPlaceholders();
+        }
+
+        [Fact]
         public void WithEnglishTranslation_Should_AddTranslation()
         {
             var settings = new ValidatorSettings();

@@ -24,6 +24,12 @@ namespace Validot.Tests.Unit.Translations.Portuguese
         }
 
         [Fact]
+        public void Portuguese_Should_HaveValues_OnlyWithAllowedPlaceholders()
+        {
+            Translation.Portuguese.ShouldContainOnlyValidPlaceholders();
+        }
+
+        [Fact]
         public void WithPortugueseTranslation_Should_AddTranslation()
         {
             var settings = new ValidatorSettings();

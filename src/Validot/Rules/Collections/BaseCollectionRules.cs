@@ -28,20 +28,20 @@ namespace Validot
             return @this.RuleTemplate(m => m.Count() == size, MessageKey.Collections.ExactCollectionSize, Arg.Number(nameof(size), size));
         }
 
-        public static IRuleOut<TCollection> MaxCollectionSize<TCollection, TItem>(this IRuleIn<TCollection> @this, int max)
-            where TCollection : IEnumerable<TItem>
-        {
-            ThrowHelper.BelowZero(max, nameof(max));
-
-            return @this.RuleTemplate(m => m.Count() <= max, MessageKey.Collections.MaxCollectionSize, Arg.Number(nameof(max), max));
-        }
-
         public static IRuleOut<TCollection> MinCollectionSize<TCollection, TItem>(this IRuleIn<TCollection> @this, int min)
             where TCollection : IEnumerable<TItem>
         {
             ThrowHelper.BelowZero(min, nameof(min));
 
             return @this.RuleTemplate(m => m.Count() >= min, MessageKey.Collections.MinCollectionSize, Arg.Number(nameof(min), min));
+        }
+
+        public static IRuleOut<TCollection> MaxCollectionSize<TCollection, TItem>(this IRuleIn<TCollection> @this, int max)
+            where TCollection : IEnumerable<TItem>
+        {
+            ThrowHelper.BelowZero(max, nameof(max));
+
+            return @this.RuleTemplate(m => m.Count() <= max, MessageKey.Collections.MaxCollectionSize, Arg.Number(nameof(max), max));
         }
 
         public static IRuleOut<TCollection> CollectionSizeBetween<TCollection, TItem>(this IRuleIn<TCollection> @this, int min, int max)

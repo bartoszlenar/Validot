@@ -24,6 +24,12 @@ namespace Validot.Tests.Unit.Translations.German
         }
 
         [Fact]
+        public void German_Should_HaveValues_OnlyWithAllowedPlaceholders()
+        {
+            Translation.German.ShouldContainOnlyValidPlaceholders();
+        }
+
+        [Fact]
         public void WithGermanTranslation_Should_AddTranslation()
         {
             var settings = new ValidatorSettings();

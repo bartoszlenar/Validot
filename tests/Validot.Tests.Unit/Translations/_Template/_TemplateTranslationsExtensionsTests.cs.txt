@@ -22,6 +22,12 @@ namespace Validot.Tests.Unit.Translations._Template
         {
             MessageKey.All.Should().Contain(Translation._Template.Keys);
         }
+        
+        [Fact]
+        public void _Template_Should_HaveValues_OnlyWithAllowedPlaceholders()
+        {
+            Translation._Template.ShouldContainOnlyValidPlaceholders();
+        }
 
         [Fact]
         public void With_TemplateTranslation_Should_AddTranslation()

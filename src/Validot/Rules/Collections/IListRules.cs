@@ -21,14 +21,14 @@ namespace Validot
             return @this.ExactCollectionSize<IList<TItem>, TItem>(size);
         }
 
-        public static IRuleOut<IList<TItem>> MaxCollectionSize<TItem>(this IRuleIn<IList<TItem>> @this, int max)
-        {
-            return @this.MaxCollectionSize<IList<TItem>, TItem>(max);
-        }
-
         public static IRuleOut<IList<TItem>> MinCollectionSize<TItem>(this IRuleIn<IList<TItem>> @this, int min)
         {
             return @this.MinCollectionSize<IList<TItem>, TItem>(min);
+        }
+
+        public static IRuleOut<IList<TItem>> MaxCollectionSize<TItem>(this IRuleIn<IList<TItem>> @this, int max)
+        {
+            return @this.MaxCollectionSize<IList<TItem>, TItem>(max);
         }
 
         public static IRuleOut<IList<TItem>> CollectionSizeBetween<TItem>(this IRuleIn<IList<TItem>> @this, int min, int max)

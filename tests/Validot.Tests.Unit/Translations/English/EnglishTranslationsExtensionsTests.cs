@@ -12,7 +12,7 @@ namespace Validot.Tests.Unit.Translations.English
     public class EnglishTranslationsExtensionsTests
     {
         [Fact]
-        public void Polish_Should_HaveValues_NonNullNorEmptyNorWhiteSpace()
+        public void English_Should_HaveValues_NonNullNorEmptyNorWhiteSpace()
         {
             Translation.English.Values.All(m => !string.IsNullOrWhiteSpace(m)).Should().BeTrue();
         }
@@ -28,6 +28,12 @@ namespace Validot.Tests.Unit.Translations.English
         public void English_Should_HaveValues_OnlyFromMessageKeys()
         {
             MessageKey.All.Should().Contain(Translation.English.Keys);
+        }
+
+        [Fact]
+        public void English_Should_HaveValues_OnlyWithAllowedPlaceholders()
+        {
+            Translation.English.ShouldContainOnlyValidPlaceholders();
         }
 
         [Fact]

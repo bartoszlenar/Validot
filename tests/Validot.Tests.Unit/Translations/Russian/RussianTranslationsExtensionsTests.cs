@@ -24,6 +24,12 @@ namespace Validot.Tests.Unit.Translations.Russian
         }
 
         [Fact]
+        public void Russian_Should_HaveValues_OnlyWithAllowedPlaceholders()
+        {
+            Translation.Russian.ShouldContainOnlyValidPlaceholders();
+        }
+
+        [Fact]
         public void WithRussianTranslation_Should_AddTranslation()
         {
             var settings = new ValidatorSettings();

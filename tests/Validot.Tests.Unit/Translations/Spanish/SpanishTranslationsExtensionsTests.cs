@@ -24,6 +24,12 @@ namespace Validot.Tests.Unit.Translations.Spanish
         }
 
         [Fact]
+        public void Spanish_Should_HaveValues_OnlyWithAllowedPlaceholders()
+        {
+            Translation.Spanish.ShouldContainOnlyValidPlaceholders();
+        }
+
+        [Fact]
         public void WithSpanishTranslation_Should_AddTranslation()
         {
             var settings = new ValidatorSettings();

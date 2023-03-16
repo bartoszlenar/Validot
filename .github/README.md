@@ -25,7 +25,7 @@
     <img src="https://img.shields.io/github/last-commit/bartoszlenar/Validot/main?style=flat-square">
   </a>
   <a href="https://github.com/bartoszlenar/Validot/actions?query=branch%3Amain+workflow%3ACI">
-    <img src="https://img.shields.io/github/workflow/status/bartoszlenar/Validot/CI/main?style=flat-square&label=build&logo=github&logoColor=white&logoWidth=20">
+    <img src="https://img.shields.io/github/actions/workflow/status/bartoszlenar/Validot/CI.yml?branch=main&style=flat-square&label=build&logo=github&logoColor=white&logoWidth=20">
   </a>
   <a href="https://codecov.io/gh/bartoszlenar/Validot/branch/main">
     <img src="https://img.shields.io/codecov/c/gh/bartoszlenar/Validot/main?style=flat-square&logo=codecov&logoColor=white&logoWidth=20">

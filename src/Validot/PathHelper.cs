@@ -176,6 +176,23 @@ namespace Validot
             return true;
         }
 
+        public static string NormalizePath(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                return " ";
+            }
+
+            path = path.TrimStart('<').Trim('.');
+
+            while (path.IndexOf("..", StringComparison.Ordinal) != -1)
+            {
+                path = path.Replace("..", ".");
+            }
+
+            return path;
+        }
+
         private static string FormatCollectionIndex(string index)
         {
             return $"{CollectionIndexPrefix}{index}";

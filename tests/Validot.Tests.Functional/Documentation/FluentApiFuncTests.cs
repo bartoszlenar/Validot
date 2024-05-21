@@ -1069,6 +1069,294 @@ namespace Validot.Tests.Functional.Documentation
         }
 
         [Fact]
+        public void AsDictionary_Simple()
+        {
+            Specification<int> intValueSpecification = s => s
+                .Rule(p => p % 2 == 0).WithMessage("Value must be even");
+
+            Specification<Dictionary<string, int>> specification = s => s
+                .AsDictionary(intValueSpecification);
+
+            var validator = Validator.Factory.Create(specification);
+
+            var dictionary = new Dictionary<string, int>()
+            {
+                ["One"] = 11,
+                ["Two"] = 22,
+                ["Three"] = 33,
+                ["Four"] = 44,
+                ["Five"] = 55
+            };
+
+            validator.Validate(dictionary).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "One: Value must be even",
+                "Three: Value must be even",
+                "Five: Value must be even"
+            );
+        }
+
+        [Fact]
+        public void AsDictionary_KeyStringifier()
+        {
+            Specification<Dictionary<string, int>> specification = s => s
+                .AsDictionary(
+                    s => s.Rule(p => p % 2 == 0).WithMessage("Value must be even"),
+                    k => k.ToUpperInvariant()
+                );
+
+            var validator = Validator.Factory.Create(specification);
+
+            var dictionary = new Dictionary<string, int>()
+            {
+                ["One"] = 11,
+                ["Two"] = 22,
+                ["Three"] = 33,
+                ["Four"] = 44,
+                ["Five"] = 55
+            };
+
+            validator.Validate(dictionary).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "ONE: Value must be even",
+                "THREE: Value must be even",
+                "FIVE: Value must be even"
+            );
+        }
+
+        [Fact]
+        public void AsDictionary_NullValues()
+        {
+            Specification<Dictionary<string, string>> specification = s => s
+                .AsDictionary(s => s
+                    .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
+                );
+
+            var validator = Validator.Factory.Create(specification);
+
+            var dictionary = new Dictionary<string, string>()
+            {
+                ["One"] = "11",
+                ["Two"] = "22222",
+                ["Three"] = null,
+                ["Four"] = null,
+                ["Five"] = "55"
+            };
+
+            validator.Validate(dictionary).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Two: Value length must be even",
+                "Three: Required",
+                "Four: Required"
+            );
+        }
+
+        [Fact]
+        public void AsDictionary_NullValues_Optional()
+        {
+            Specification<Dictionary<string, string>> specification = s => s
+                .AsDictionary(s => s
+                    .Optional()
+                    .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
+                );
+
+            var validator = Validator.Factory.Create(specification);
+
+            var dictionary = new Dictionary<string, string>()
+            {
+                ["One"] = "11",
+                ["Two"] = "22222",
+                ["Three"] = null,
+                ["Four"] = null,
+                ["Five"] = "55"
+            };
+
+            validator.Validate(dictionary).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Two: Value length must be even"
+            );
+        }
+
+        [Fact]
+        public void AsDictionary_Template()
+        {
+            Specification<Dictionary<string, string>> specification = s => s
+                .AsDictionary(s => s
+                    .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
+                );
+
+            var validator = Validator.Factory.Create(specification);
+
+            validator.Template.ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "Required",
+                "#: Required",
+                "#: Value length must be even"
+            );
+        }
+
+        [Fact]
+        public void AsDictionary_KeyNormalization()
+        {
+            Specification<Dictionary<string, int>> specification = s => s
+                .AsDictionary(
+                    s => s.Rule(p => p % 2 == 0).WithMessage("Value must be even"),
+                    k => k.ToLowerInvariant()
+                );
+
+            var validator = Validator.Factory.Create(specification);
+
+            var dictionary = new Dictionary<string, int>()
+            {
+                ["OnE..."] = 11,
+                ["ThR...eE"] = 33,
+                ["<<<...FiVe..."] = 55,
+                ["...SeVeN"] = 77,
+                ["<<<NiNe"] = 99,
+            };
+
+            validator.Validate(dictionary).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "one: Value must be even",
+                "thr.ee: Value must be even",
+                "five: Value must be even",
+                "seven: Value must be even",
+                "nine: Value must be even"
+            );
+        }
+
+        private class SimpleDictionary : IEnumerable<KeyValuePair<int, int>>
+        {
+            public SimpleDictionary(Dictionary<int, int> items)
+            {
+                Items = items;
+            }
+
+            private IEnumerable<KeyValuePair<int, int>> Items { get; }
+
+            IEnumerator<KeyValuePair<int, int>> IEnumerable<KeyValuePair<int, int>>.GetEnumerator() => Items.GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<int, int>>)this).GetEnumerator();
+        }
+
+        [Fact]
+        public void AsDictionary_CustomClass()
+        {
+            Specification<int> valueSpecification = s => s
+                .Rule(p => p % 2 == 0).WithMessage("Value must be even");
+
+            Func<int, string> keyStringifier = key =>
+            {
+                var keyString = "";
+
+                for (var i = 0; i < key; i++)
+                {
+                    keyString += "X";
+                }
+
+                return keyString;
+            };
+
+            Specification<SimpleDictionary> specification = s => s
+                .AsDictionary(valueSpecification, keyStringifier);
+
+            var validator = Validator.Factory.Create(specification);
+
+            var dictionary = new SimpleDictionary(new Dictionary<int, int>()
+            {
+                [1] = 11,
+                [2] = 22,
+                [3] = 33,
+                [4] = 44,
+                [5] = 55
+            });
+
+            validator.Validate(dictionary).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "X: Value must be even",
+                "XXX: Value must be even",
+                "XXXXX: Value must be even"
+            );
+        }
+
+        private class DoubleDictionary : IEnumerable<KeyValuePair<int, int>>, IEnumerable<KeyValuePair<string, string>>
+        {
+            private readonly IEnumerable<KeyValuePair<int, int>> _ints;
+
+            private readonly IEnumerable<KeyValuePair<string, string>> _strings;
+
+            public DoubleDictionary(Dictionary<int, int> ints, Dictionary<string, string> strings)
+            {
+                _ints = ints;
+                _strings = strings;
+            }
+
+            IEnumerator<KeyValuePair<int, int>> IEnumerable<KeyValuePair<int, int>>.GetEnumerator() => _ints.GetEnumerator();
+
+            IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator() => _strings.GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
+        }
+
+        [Fact]
+        public void AsDictionary_CustomClassDoubleDictionary()
+        {
+            Specification<int> intSpecification = s => s
+                .Rule(p => p % 2 == 0).WithMessage("Value must be even");
+
+            Func<int, string> intKeyStringifier = key =>
+            {
+                var keyString = "";
+
+                for (var i = 0; i < key; i++)
+                {
+                    keyString += "X";
+                }
+
+                return keyString;
+            };
+
+            Specification<string> stringSpecification = s => s
+                .Rule(p => p.Length < 3).WithMessage("Value must be shorter than 3 characters");
+
+            Func<string, string> stringKeyStringifier = key => key.ToUpperInvariant();
+
+            Specification<DoubleDictionary> specification = s => s
+                .AsDictionary(intSpecification, intKeyStringifier)
+                .AsDictionary(stringSpecification, stringKeyStringifier);
+
+            var validator = Validator.Factory.Create(specification);
+
+            var dictionary = new DoubleDictionary(
+                new Dictionary<int, int>()
+                {
+                    [1] = 11,
+                    [2] = 22,
+                    [3] = 33,
+                    [4] = 44,
+                    [5] = 55
+                },
+                new Dictionary<string, string>()
+                {
+                    ["One"] = "11",
+                    ["Two"] = "222",
+                    ["Three"] = "33",
+                    ["Four"] = "444",
+                    ["Five"] = "555"
+                });
+
+            validator.Validate(dictionary).ToString().ShouldResultToStringHaveLines(
+                ToStringContentType.Messages,
+                "X: Value must be even",
+                "XXX: Value must be even",
+                "XXXXX: Value must be even",
+                "TWO: Value must be shorter than 3 characters",
+                "FOUR: Value must be shorter than 3 characters",
+                "FIVE: Value must be shorter than 3 characters"
+            );
+        }
+
+        [Fact]
         public void WithCondition()
         {
             Predicate<string> isValidEmail = email => email.Substring(0, email.IndexOf('@')).All(char.IsLetterOrDigit);

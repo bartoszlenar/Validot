@@ -1,7 +1,10 @@
 namespace Validot.Tests.Functional.Readme
 {
+    using System.Collections.Generic;
     using System.Linq;
+
     using FluentAssertions;
+
     using Validot;
     using Validot.Testing;
     using Xunit;
@@ -22,6 +25,8 @@ namespace Validot.Tests.Functional.Readme
             public string Name { get; set; }
 
             public int Age { get; set; }
+
+            public Dictionary<string, string> Dict { get; set; }
         }
 
         [Fact]
@@ -41,6 +46,9 @@ namespace Validot.Tests.Functional.Readme
                     .And()
                     .Rule(name => name.All(char.IsLetterOrDigit))
                     .WithMessage("Must contain only letter or digits")
+                )
+                .Member(m => m.Dict, m => m
+                    .AsDictionary(v => v.NotEmpty())
                 )
                 .And()
                 .Rule(m => m.Age >= 18 || m.Name != null)

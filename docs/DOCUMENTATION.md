@@ -1780,7 +1780,7 @@ _Null values are handled in the same way as everywhere else: by default, the dic
 
 ``` csharp
 Specification<Dictionary<string, string>> specification = s => s
-    .AsDictionary(s => s
+    .AsDictionary(d => d
         .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
     );
 
@@ -1806,7 +1806,7 @@ _Null as a dictionary value could be enabled by placing `Optional()` as the spec
 
 ``` csharp
 Specification<Dictionary<string, string>> specification = s => s
-    .AsDictionary(s => s
+    .AsDictionary(d => d
         .Optional()
         .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
     );
@@ -1830,7 +1830,7 @@ _The path in the template uses `#` as dictionary key, so it's the same behavior 
 
 ``` csharp
 Specification<Dictionary<string, string>> specification = s => s
-    .AsDictionary(s => s
+    .AsDictionary(d => d
         .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
     );
 
@@ -1847,7 +1847,7 @@ _The keys are normalized, so they can't result in invalid error path or alter it
 ``` csharp
 Specification<Dictionary<string, int>> specification = s => s
     .AsDictionary(
-        s => s.Rule(p => p % 2 == 0).WithMessage("Value must be even"),
+        d => d.Rule(p => p % 2 == 0).WithMessage("Value must be even"),
         k => k.ToLowerInvariant()
     );
 

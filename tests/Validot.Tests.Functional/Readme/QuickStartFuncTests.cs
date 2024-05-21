@@ -47,9 +47,6 @@ namespace Validot.Tests.Functional.Readme
                     .Rule(name => name.All(char.IsLetterOrDigit))
                     .WithMessage("Must contain only letter or digits")
                 )
-                .Member(m => m.Dict, m => m
-                    .AsDictionary(v => v.NotEmpty())
-                )
                 .And()
                 .Rule(m => m.Age >= 18 || m.Name != null)
                 .WithPath("Name")

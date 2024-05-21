@@ -1101,7 +1101,7 @@ namespace Validot.Tests.Functional.Documentation
         {
             Specification<Dictionary<string, int>> specification = s => s
                 .AsDictionary(
-                    s => s.Rule(p => p % 2 == 0).WithMessage("Value must be even"),
+                    k => k.Rule(p => p % 2 == 0).WithMessage("Value must be even"),
                     k => k.ToUpperInvariant()
                 );
 
@@ -1128,7 +1128,7 @@ namespace Validot.Tests.Functional.Documentation
         public void AsDictionary_NullValues()
         {
             Specification<Dictionary<string, string>> specification = s => s
-                .AsDictionary(s => s
+                .AsDictionary(k => k
                     .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
                 );
 
@@ -1155,7 +1155,7 @@ namespace Validot.Tests.Functional.Documentation
         public void AsDictionary_NullValues_Optional()
         {
             Specification<Dictionary<string, string>> specification = s => s
-                .AsDictionary(s => s
+                .AsDictionary(k => k
                     .Optional()
                     .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
                 );
@@ -1181,7 +1181,7 @@ namespace Validot.Tests.Functional.Documentation
         public void AsDictionary_Template()
         {
             Specification<Dictionary<string, string>> specification = s => s
-                .AsDictionary(s => s
+                .AsDictionary(k => k
                     .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
                 );
 
@@ -1200,7 +1200,7 @@ namespace Validot.Tests.Functional.Documentation
         {
             Specification<Dictionary<string, int>> specification = s => s
                 .AsDictionary(
-                    s => s.Rule(p => p % 2 == 0).WithMessage("Value must be even"),
+                    k => k.Rule(p => p % 2 == 0).WithMessage("Value must be even"),
                     k => k.ToLowerInvariant()
                 );
 

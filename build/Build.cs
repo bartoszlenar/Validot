@@ -1,3 +1,8 @@
+#pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
+#pragma warning disable IDE0057 // Use range operator
+#pragma warning disable CA1852 // sealed class
+#pragma warning disable CA1865 // Use char overload
+
 using System;
 using System.Globalization;
 using System.IO;
@@ -6,17 +11,14 @@ using System.Text.RegularExpressions;
 
 using Nuke.Common;
 using Nuke.Common.CI;
-using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
 using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
-[CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
 class Build : NukeBuild
 {
@@ -26,7 +28,7 @@ class Build : NukeBuild
 
     static readonly DateTimeOffset BuildTime = DateTimeOffset.UtcNow;
 
-    static readonly string DefaultFrameworkId = "net6.0";
+    static readonly string DefaultFrameworkId = "net8.0";
 
     public static int Main() => Execute<Build>(x => x.Compile);
 
@@ -211,7 +213,7 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .SetProjectFile(TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj")
                 .SetFramework(DotNet)
-                .SetLogger($"junit;LogFilePath={TestsResultsDirectory / $"Validot.{Version}.testresults"/ $"Validot.{Version}.unit.junit"}")
+                .SetLoggers($"junit;LogFilePath={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.unit.junit"}")
             );
 
             DotNetTest(p => p
@@ -219,7 +221,7 @@ class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .SetProjectFile(TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj")
                 .SetFramework(DotNet)
-                .SetLogger($"junit;LogFilePath={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.functional.junit"}")
+                .SetLoggers($"junit;LogFilePath={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.functional.junit"}")
             );
         });
 
@@ -438,6 +440,11 @@ class Build : NukeBuild
                 return "net7.0";
             }
 
+            if (dotnet.StartsWith("8.0.", StringComparison.Ordinal))
+            {
+                return "net8.0";
+            }
+
             Logger.Warn("Unrecognized dotnet SDK version: " + dotnet);
 
             return dotnet;
@@ -479,7 +486,7 @@ class Build : NukeBuild
         ProcessTasks.StartProcess(ToolPathResolver.GetPathExecutable("dotnet"), toolPath + " -- " + parameters).AssertZeroExitCode();
     }
 
-    string InstallAndGetToolPath(string name, string version,  string executableFileName, string framework = null)
+    string InstallAndGetToolPath(string name, string version, string executableFileName, string framework = null)
     {
         var frameworkPart = framework is null ? $" (framework {framework})" : string.Empty;
 
@@ -487,7 +494,7 @@ class Build : NukeBuild
 
         Logger.Info($"Looking for tool: {toolStamp}");
 
-        var toolPath = GetToolPath();
+        var toolPath = ResolveToolPath();
 
         if (toolPath is null)
         {
@@ -498,7 +505,7 @@ class Build : NukeBuild
                     .SetGlobal(false));
         }
 
-        toolPath = GetToolPath();
+        toolPath = ResolveToolPath();
 
         if (toolPath is null)
         {
@@ -507,11 +514,29 @@ class Build : NukeBuild
 
         return toolPath;
 
-        string GetToolPath()
+        AbsolutePath ResolveToolPath()
         {
             var frameworkPart = framework != null ? (framework + "/**/") : string.Empty;
 
-            return GlobFiles(ToolsPath, $"**/{name}/{version}/**/{frameworkPart}{executableFileName}").FirstOrDefault();
+            Serilog.Log.Debug($"Looking for tool in {ToolsPath} using glob pattern: **/{name}/{version}/**/{frameworkPart}{executableFileName}");
+
+            var files = ToolsPath.GlobFiles($"**/{name}/{version}/**/{frameworkPart}{executableFileName}");
+
+            if (files.Count > 1)
+            {
+                foreach (var file in files)
+                {
+                    Serilog.Log.Warning($"Found tool candidate: {file}");
+                }
+
+                var toolPath = files.First();
+
+                Serilog.Log.Warning($"Found many tool candidates, so proceeding with the first one: {toolPath}");
+
+                return toolPath;
+            }
+
+            return files.FirstOrDefault();
         }
     }
 }

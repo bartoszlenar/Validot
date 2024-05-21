@@ -22,6 +22,7 @@
       - [AsNullable](#asnullable)
       - [AsConverted](#asconverted)
       - [AsType](#astype)
+      - [AsDictionary](#asdictionary)
       - [WithCondition](#withcondition)
       - [WithPath](#withpath)
       - [WithMessage](#withmessage)
@@ -1678,6 +1679,330 @@ elephantValidator.Validate(new Elephant() { ElephantId = 0, MammalId = 0, Animal
 // AnimalId: Must not be zero
 // AnimalId: Something wrong with animal from mammal perspective
 // AnimalId: Something wrong with animal from elephant perspective
+```
+
+---
+
+#### AsDictionary
+
+- `AsDictionary` is a [scope command](#scope-commands).
+  - Can be placed after:
+    - any command except [Forbidden](#forbidden).
+  - Can be followed by:
+    - any of the [scope commands](#scope-commands).
+    - any of the [parameter commands](#parameter-commands).
+- `AsDictionary` in its core has three generic type parameters: `AsDictionary<T, TKey, TValue>`, where:
+  - `T` - is the type of the key-value pair collection (to be exact: `IEnumerable<KeyValuePair<TKey, TValue>>`), which applies to many dotnet native dictionary-like types.
+  - `TKey` - is the type of the dictionary key.
+  - `TValue` - is the type of the dictionary value.
+- `AsDictionary` has dedicated versions for some dotnet native dictionary-like types, so you don't need to specify `T`, `TKey`, and `TValue` while dealing with:
+  - `Dictionary<TKey, TValue>`
+  - `IDictionary<TKey, TValue>`
+  - `IReadOnlyDictionary<TKey, TValue>`
+  - `IReadOnlyCollection<KeyValuePair<TKey, TValue>>`
+- `AsDictionary` accepts two parameters;
+  - dictionary value [specification](#specification) `Specification<TValue>`.
+  - dictionary key stringifier `Func<TKey, string> keyStringifier` (function that converts `TKey` to a `string` so it could become a part of the [path](#path)).
+- `AsDictionary` executes the passed [specification](#specification) upon each value in the dictionary.
+  - Internally, getting the items out of the `IEnumerable<KeyValuePair<TKey, TValue>>` collection is done using `foreach` loop.
+    - Validation doesn't materialize the collection. Elements are picked up using enumerator (as in standard `foreach` loop).
+    - So it might get very tricky when you implement `IEnumerable<KeyValuePair<TKey, TValue>>` yourself; there is no protection against an infinite stream of objects coming from the enumerator, etc.
+    - For some types, the results won't be deterministic, simple because the collection itself doesn't guarantee to keep the order. It might happen that the error output saved under path `#1` next time will be saved under `#13`. This could be a problem for custom collections or some particular use cases, like instance of `HashSet<TItem>` that gets modified between the two validations. But it will never happen for e.g. array or `List<T>`.
+- [Error output](#error-output) from every pair's value is saved under the path of the same pair's stringified key.
+  - After the key is stringified, it gets also also normalized so it could be used as a part of the path:
+    - If the key is null or empty, the path is ` ` (single space).
+    - `<` is trimmed from the beginning of the key and then `.` is trimmed from both ends.
+    - Multiple dots (e.g. `..`, or `.......`) are replaced with a single dot `.`.
+  - Normalization ensures that the error location isn't modified by the key's content.
+- `AsDictionary` has dedicated version for the dictionaries that have `string` keys, so you don't need to provide the key stringifier.
+  - The dedicated versions are the same as in the regular `AsDictionary`:
+    - `Dictionary<string, TValue>`
+    - `IDictionary<string, TValue>`
+    - `IReadOnlyDictionary<string, TValue>`
+    - `IReadOnlyCollection<KeyValuePair<string, TValue>>`
+  - Essentially, it's like the stringifier is `key => key`.
+
+_Let's start with validating an instance of `Dictionary<string, int>`._
+
+``` csharp
+Specification<int> intValueSpecification = s => s.Rule(p => p % 2 == 0).WithMessage("Value must be even");
+
+Specification<Dictionary<string, int>> specification = s => s.AsDictionary(intValueSpecification);
+
+var validator = Validator.Factory.Create(specification);
+
+var dictionary = new Dictionary<string, int>()
+{
+    ["One"] = 11,
+    ["Two"] = 22,
+    ["Three"] = 33,
+    ["Four"] = 44,
+    ["Five"] = 55
+};
+
+validator.Validate(dictionary).ToString();
+// One: Value must be even
+// Three: Value must be even
+// Five: Value must be even
+```
+
+_Above, `intValueSpecification` that specifies integer numbers is used to validate the dictionary values. The dictionary has string keys, and no key stringifier is provided, so the errors are saved under the path determined by the key._
+
+_Below, same example but the key stringifier upper-cases the key._
+
+``` csharp
+Specification<Dictionary<string, int>> specification = s => s
+    .AsDictionary(
+        // AsDictionary's first argument is inline specification for the value
+        s => s.Rule(p => p % 2 == 0).WithMessage("Value must be even"),
+        // AsDictionary's second argument is the key stringifier
+        k => k.ToUpperInvariant()
+    );
+
+var validator = Validator.Factory.Create(specification);
+
+var dictionary = new Dictionary<string, int>()
+{
+    ["One"] = 11,
+    ["Two"] = 22,
+    ["Three"] = 33,
+    ["Four"] = 44,
+    ["Five"] = 55
+};
+
+validator.Validate(dictionary).ToString();
+// ONE: Value must be even
+// THREE: Value must be even
+// FIVE: Value must be even
+```
+
+_Null values are handled in the same way as everywhere else: by default, the dictionary value is expected to be non-null._
+
+``` csharp
+Specification<Dictionary<string, string>> specification = s => s
+    .AsDictionary(s => s
+        .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
+    );
+
+var validator = Validator.Factory.Create(specification);
+
+var dictionary = new Dictionary<string, string>()
+{
+    ["One"] = "11",
+    ["Two"] = "22222",
+    ["Three"] = null,
+    ["Four"] = null,
+    ["Five"] = "55"
+};
+
+validator.Validate(dictionary).ToString();
+// Two: Value length must be even
+// Three: Required
+// Four: Required
+```
+
+_Null as a dictionary value could be enabled by placing `Optional()` as the specification's first command:_
+
+
+``` csharp
+Specification<Dictionary<string, string>> specification = s => s
+    .AsDictionary(s => s
+        .Optional()
+        .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
+    );
+
+var validator = Validator.Factory.Create(specification);
+
+var dictionary = new Dictionary<string, string>()
+{
+    ["One"] = "11",
+    ["Two"] = "22222",
+    ["Three"] = null,
+    ["Four"] = null,
+    ["Five"] = "55"
+};
+
+validator.Validate(dictionary).ToString();
+// Two: Value length must be even
+```
+
+_The path in the template uses `#` as dictionary key, so it's the same behavior as in [AsCollection](#ascollection)._
+
+``` csharp
+Specification<Dictionary<string, string>> specification = s => s
+    .AsDictionary(s => s
+        .Rule(p => p.Length % 2 == 0).WithMessage("Value length must be even")
+    );
+
+var validator = Validator.Factory.Create(specification);
+
+validator.Template.ToString();
+// Required
+// #: Required
+// #: Value length must be even
+```
+
+_The keys are normalized, so they can't result in invalid error path or alter it. No multiple dots `...` , no `<` at the beginning._
+
+``` csharp
+Specification<Dictionary<string, int>> specification = s => s
+    .AsDictionary(
+        s => s.Rule(p => p % 2 == 0).WithMessage("Value must be even"),
+        k => k.ToLowerInvariant()
+    );
+
+var validator = Validator.Factory.Create(specification);
+
+var dictionary = new Dictionary<string, int>()
+{
+    ["OnE..."] = 11,
+    ["ThR...eE"] = 33,
+    ["<<<...FiVe..."] = 55,
+    ["...SeVeN"] = 77,
+    ["<<<NiNe"] = 99,
+};
+
+validator.Validate(dictionary).ToString();
+// one: Value must be even
+// thr.ee: Value must be even
+// five: Value must be even
+// seven: Value must be even
+// nine: Value must be even
+```
+
+_Under the hood, `AsDictionary` processes not even a dictionary, but `IEnumerable<KeyValuePair<TKey, TValue>>`. So it's not a problem to use it with any class that implements this interface:_
+
+``` csharp
+class SimpleDictionary : IEnumerable<KeyValuePair<int, int>>
+{
+    public SimpleDictionary(Dictionary<int, int> items)
+    {
+        Items = items;
+    }
+
+    private IEnumerable<KeyValuePair<int, int>> Items { get; }
+
+    IEnumerator<KeyValuePair<int, int>> IEnumerable<KeyValuePair<int, int>>.GetEnumerator() => Items.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable<KeyValuePair<int, int>>)this).GetEnumerator();
+}
+```
+
+_Above, the custom class that implements `IEnumerable<KeyValuePair<int, int>>`. Below, the example presenting how straightforward is to validate it using `AsDictionary`:_
+
+``` csharp
+Specification<int> valueSpecification = s => s
+    .Rule(p => p % 2 == 0).WithMessage("Value must be even");
+
+Func<int, string> keyStringifier = key =>
+{
+    var keyString = "";
+
+    for (var i = 0; i < key; i++)
+    {
+        keyString += "X";
+    }
+
+    return keyString;
+};
+
+Specification<SimpleDictionary> specification = s => s
+    .AsDictionary(valueSpecification, keyStringifier);
+
+var validator = Validator.Factory.Create(specification);
+
+var dictionary = new SimpleDictionary(new Dictionary<int, int>()
+{
+    [1] = 11,
+    [2] = 22,
+    [3] = 33,
+    [4] = 44,
+    [5] = 55
+});
+
+validator.Validate(dictionary).ToString();
+// X: Value must be even
+// XXX: Value must be even
+// XXXXX: Value must be even
+```
+
+_This works also if a class implements multiple generic versions of `IEnumerable<KeyValuePair<TKey, TValue>>`:_
+
+``` csharp
+class DoubleDictionary : IEnumerable<KeyValuePair<int, int>>, IEnumerable<KeyValuePair<string, string>>
+{
+    private readonly IEnumerable<KeyValuePair<int, int>> _ints;
+
+    private readonly IEnumerable<KeyValuePair<string, string>> _strings;
+
+    public DoubleDictionary(Dictionary<int, int> ints, Dictionary<string, string> strings)
+    {
+        _ints = ints;
+        _strings = strings;
+    }
+
+    IEnumerator<KeyValuePair<int, int>> IEnumerable<KeyValuePair<int, int>>.GetEnumerator() => _ints.GetEnumerator();
+
+    IEnumerator<KeyValuePair<string, string>> IEnumerable<KeyValuePair<string, string>>.GetEnumerator() => _strings.GetEnumerator();
+
+    IEnumerator IEnumerable.GetEnumerator() => throw new NotImplementedException();
+}
+```
+
+_Above, the class that could be validated as dictionary of int keys and values, but also as a dictionary of string keys and values. Below, specification that validates both variants:_
+
+``` csharp
+Specification<int> intSpecification = s => s
+    .Rule(p => p % 2 == 0).WithMessage("Value must be even");
+
+Func<int, string> intKeyStringifier = key =>
+{
+    var keyString = "";
+
+    for (var i = 0; i < key; i++)
+    {
+        keyString += "X";
+    }
+
+    return keyString;
+};
+
+Specification<string> stringSpecification = s => s
+    .Rule(p => p.Length < 3).WithMessage("Value must be shorter than 3 characters");
+
+Func<string, string> stringKeyStringifier = key => key.ToUpperInvariant();
+
+Specification<DoubleDictionary> specification = s => s
+    .AsDictionary(intSpecification, intKeyStringifier)
+    .AsDictionary(stringSpecification, stringKeyStringifier);
+
+var validator = Validator.Factory.Create(specification);
+
+var dictionary = new DoubleDictionary(
+    new Dictionary<int, int>()
+    {
+        [1] = 11,
+        [2] = 22,
+        [3] = 33,
+        [4] = 44,
+        [5] = 55
+    },
+    new Dictionary<string, string>()
+    {
+        ["One"] = "11",
+        ["Two"] = "222",
+        ["Three"] = "33",
+        ["Four"] = "444",
+        ["Five"] = "555"
+    });
+
+validator.Validate(dictionary).ToString();
+// X: Value must be even
+// XXX: Value must be even
+// XXXXX: Value must be even
+// TWO: Value must be shorter than 3 characters
+// FOUR: Value must be shorter than 3 characters
+// FIVE: Value must be shorter than 3 characters
 ```
 
 ---

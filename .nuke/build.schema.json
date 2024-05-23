@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/build",
+  "title": "Build Schema",
+  "definitions": {
+    "build": {
+      "type": "object",
+      "properties": {
+        "AllowWarnings": {
+          "type": "boolean",
+          "description": "Allow warnings"
+        },
+        "BenchmarksFilter": {
+          "type": "string",
+          "description": "Benchmark filter. If empty, all benchmarks will be run"
+        },
+        "CodeCovApiKey": {
+          "type": "string",
+          "description": "CodeCov API key, allows to publish code coverage"
+        },
+        "CommitSha": {
+          "type": "string",
+          "description": "Commit SHA"
+        },
+        "Configuration": {
+          "type": "string",
+          "description": "Configuration to build. 'Debug' (default) or 'Release'",
+          "enum": [
+            "Debug",
+            "Release"
+          ]
+        },
+        "Continue": {
+          "type": "boolean",
+          "description": "Indicates to continue a previously failed build attempt"
+        },
+        "DotNet": {
+          "type": "string",
+          "description": "dotnet framework id or SDK version (if SDK version is provided, the highest framework available is selected). Default value is 'netcoreapp3.1'"
+        },
+        "FullBenchmark": {
+          "type": "boolean",
+          "description": "If true, BenchmarkDotNet will run full (time consuming, but more accurate) jobs"
+        },
+        "Help": {
+          "type": "boolean",
+          "description": "Shows the help text for this build assembly"
+        },
+        "Host": {
+          "type": "string",
+          "description": "Host for execution. Default is 'automatic'",
+          "enum": [
+            "AppVeyor",
+            "AzurePipelines",
+            "Bamboo",
+            "Bitbucket",
+            "Bitrise",
+            "GitHubActions",
+            "GitLab",
+            "Jenkins",
+            "Rider",
+            "SpaceAutomation",
+            "TeamCity",
+            "Terminal",
+            "TravisCI",
+            "VisualStudio",
+            "VSCode"
+          ]
+        },
+        "NoLogo": {
+          "type": "boolean",
+          "description": "Disables displaying the NUKE logo"
+        },
+        "NuGetApi": {
+          "type": "string",
+          "description": "NuGet API. Where to publish NuGet package. Default value is 'https://api.nuget.org/v3/index.json'"
+        },
+        "NuGetApiKey": {
+          "type": "string",
+          "description": "NuGet API key, allows to publish NuGet package"
+        },
+        "Partition": {
+          "type": "string",
+          "description": "Partition to use on CI"
+        },
+        "Plan": {
+          "type": "boolean",
+          "description": "Shows the execution plan (HTML)"
+        },
+        "Profile": {
+          "type": "array",
+          "description": "Defines the profiles to load",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Root": {
+          "type": "string",
+          "description": "Root directory during build execution"
+        },
+        "Skip": {
+          "type": "array",
+          "description": "List of targets to be skipped. Empty list skips all dependencies",
+          "items": {
+            "type": "string",
+            "enum": [
+              "AddTranslation",
+              "Benchmarks",
+              "Clean",
+              "CodeCoverage",
+              "CodeCoverageReport",
+              "Compile",
+              "CompileProject",
+              "CompileTests",
+              "NugetPackage",
+              "PublishCodeCoverage",
+              "PublishNugetPackage",
+              "Reset",
+              "Restore",
+              "Tests"
+            ]
+          }
+        },
+        "Solution": {
+          "type": "string",
+          "description": "Path to a solution file that is automatically loaded"
+        },
+        "Target": {
+          "type": "array",
+          "description": "List of targets to be invoked. Default is '{default_target}'",
+          "items": {
+            "type": "string",
+            "enum": [
+              "AddTranslation",
+              "Benchmarks",
+              "Clean",
+              "CodeCoverage",
+              "CodeCoverageReport",
+              "Compile",
+              "CompileProject",
+              "CompileTests",
+              "NugetPackage",
+              "PublishCodeCoverage",
+              "PublishNugetPackage",
+              "Reset",
+              "Restore",
+              "Tests"
+            ]
+          }
+        },
+        "TranslationName": {
+          "type": "string",
+          "description": "(only for target AddTranslation) Translation name"
+        },
+        "Verbosity": {
+          "type": "string",
+          "description": "Logging verbosity during build execution. Default is 'Normal'",
+          "enum": [
+            "Minimal",
+            "Normal",
+            "Quiet",
+            "Verbose"
+          ]
+        },
+        "Version": {
+          "type": "string",
+          "description": "Version. Default value is '0.0.0-timestamp'"
+        }
+      }
+    }
+  }
+}

@@ -233,5 +233,38 @@ namespace Validot.Tests.Unit
                 yield return new object[] { "path.#1.#2.#3.segment.#4.#5.#6", 6 };
             }
         }
+
+        public class NormalizePath
+        {
+            public static IEnumerable<object[]> DotsTrimmingAndSquashing()
+            {
+                yield return new object[] { "path1..path2", "path1.path2" };
+                yield return new object[] { "path1.......path2", "path1.path2" };
+                yield return new object[] { "path1.......path2..path3", "path1.path2.path3" };
+                yield return new object[] { "..path1.......path2..path3.", "path1.path2.path3" };
+                yield return new object[] { ".p..a...t....h.....", "p.a.t.h" };
+                yield return new object[] { ".path", "path" };
+                yield return new object[] { "....path", "path" };
+                yield return new object[] { ".path.", "path" };
+                yield return new object[] { "...path...", "path" };
+                yield return new object[] { ".p.a.t.h.", "p.a.t.h" };
+                yield return new object[] { "...p.a.t.h...", "p.a.t.h" };
+            }
+
+            public static IEnumerable<object[]> TrimmingInitialAngleBracts()
+            {
+                yield return new object[] { "<path", "path" };
+                yield return new object[] { "<<<<<path", "path" };
+                yield return new object[] { "<< <path", " <path" };
+                yield return new object[] { "<< <<<path", " <<<path" };
+                yield return new object[] { "< <path<", " <path<" };
+                yield return new object[] { "<<< <path<<<", " <path<<<" };
+                yield return new object[] { "path1..path2", "path1.path2" };
+                yield return new object[] { "path1.......path2", "path1.path2" };
+                yield return new object[] { "path1.......path2..path3", "path1.path2.path3" };
+                yield return new object[] { "..path1.......path2..path3.", "path1.path2.path3" };
+                yield return new object[] { ".p..a...t....h.....", "p.a.t.h" };
+            }
+        }
     }
 }

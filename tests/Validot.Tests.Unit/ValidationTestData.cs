@@ -122,6 +122,10 @@ namespace Validot.Tests.Unit
             public TestCollection<TestMember> MembersCollection { get; set; }
 
             public TestChild Child { get; set; }
+
+            public Dictionary<TestMember, TestClass> ComplexDictionary { get; set; }
+
+            public Dictionary<string, string> SimpleDictionary { get; set; }
         }
 
         private static readonly Dictionary<string, IReadOnlyList<ErrorTestCase>> NoErrors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>();
@@ -3622,6 +3626,886 @@ namespace Validot.Tests.Unit
                     },
                 },
             },
+            new TestCase()
+            {
+                Name = "AsDictionary_Simple",
+                Specification = s => s.Member(m => m.SimpleDictionary, m => m
+                    .AsDictionary(m1 => m1
+                        .Rule(v => v.Length == 3).WithMessage("message 3")
+                        .Rule(v => v.Contains("x")).WithMessage("message x")
+                    )
+                ),
+                ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                {
+                    [""] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { MessageKey.Global.Required }
+                        }
+                    },
+                    ["SimpleDictionary"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { MessageKey.Global.Required }
+                        }
+                    },
+                    ["SimpleDictionary.#"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { MessageKey.Global.Required }
+                        },
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { "message 3" }
+                        },
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { "message x" }
+                        }
+                    }
+                },
+                ValidationCases = new[]
+                {
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            SimpleDictionary = new Dictionary<string, string>()
+                            {
+                                { "key1", "xx1" },
+                                { "key2", "xxx2" },
+                                { "key3", "xx2" },
+                                { "key4", "xx4" },
+                                { "key5", "yy5" },
+                                { "key6", "xx6" },
+                                { "key7", "oops" },
+                                { "key8", "8xx" },
+                                { "key9", null },
+                            }
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["SimpleDictionary.key2"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.key5"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.key7"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.key9"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "Global.Required" }
+                                },
+                            },
+                        },
+                        FailFastErrorKey = "SimpleDictionary.key2"
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            SimpleDictionary = new Dictionary<string, string>()
+                            {
+                                { "key.", "x with dot at end" },
+                                { "key 2", "x with space" },
+                                { "key .", "x with space and dot" },
+                                { "k.e.y", "with dots" },
+                                { "...ke....y..", "with dots" },
+                                { "k e y", "with spaces" },
+                                { "   ", "x with three spaces" },
+                                { string.Empty, "x with empty" },
+                                { "<key3", "x with angle bracket" },
+                                { "<<<key4", "with angle brackets" },
+                                { "< < <key", "with angle brackets and spaces" },
+                                { "<< <k.e.y.", "with angle brackets, spaces and dots" },
+                            }
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["SimpleDictionary.key"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.key 2"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.key "] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.k.e.y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.ke.y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.k e y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.   "] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary. "] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.key3"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.key4"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary. < <key"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary. <k.e.y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                        },
+                        FailFastErrorKey = "SimpleDictionary.key",
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            SimpleDictionary = new Dictionary<string, string>()
+                            {
+                                { "<<key", "aaa" },
+                                { "<<<<key", "abcx" },
+                                { "...key2...", "x with space and dot" },
+                                { ".key2.", "abc" },
+                                { "<<.key3..", "abc" },
+                                { "<.key3.", "abc" },
+                                { "<<<<.key3....", "" },
+                            }
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["SimpleDictionary.key"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.key2"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.key3"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                        },
+                        FailFastErrorKey = "SimpleDictionary.key",
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            SimpleDictionary = new Dictionary<string, string>()
+                        },
+                        Errors = NoErrors,
+                        FailFastErrorKey = null,
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            SimpleDictionary = new Dictionary<string, string>()
+                            {
+                                { "key1", "xx1" },
+                                { "key2", "xx2" },
+                                { "key3", "xx3" },
+                                { "<<key4", "xx4" }
+                            }
+                        },
+                        Errors = NoErrors,
+                        FailFastErrorKey = null,
+                    },
+                }
+            },
+            new TestCase()
+            {
+                Name = "AsDictionary_Simple_WithKeyStringifier",
+                Specification = s => s.Member(m => m.SimpleDictionary, m => m
+                    .AsDictionary(
+                        m1 => m1
+                        .Rule(v => v.Length == 3).WithMessage("message 3")
+                        .Rule(v => v.Contains("x")).WithMessage("message x"),
+                        key => key.ToUpperInvariant()
+                    )
+                ),
+                ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                {
+                    [""] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { MessageKey.Global.Required }
+                        }
+                    },
+                    ["SimpleDictionary"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { MessageKey.Global.Required }
+                        }
+                    },
+                    ["SimpleDictionary.#"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { MessageKey.Global.Required }
+                        },
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { "message 3" }
+                        },
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { "message x" }
+                        }
+                    }
+                },
+                ValidationCases = new[]
+                {
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            SimpleDictionary = new Dictionary<string, string>()
+                            {
+                                { "key1", "xx1" },
+                                { "key2", "xxx2" },
+                                { "key3", "xx2" },
+                                { "key4", "xx4" },
+                                { "key5", "yy5" },
+                                { "key6", "xx6" },
+                                { "key7", "oops" },
+                                { "key8", "8xx" },
+                                { "key9", null },
+                            }
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["SimpleDictionary.KEY2"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.KEY5"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.KEY7"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.KEY9"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "Global.Required" }
+                                },
+                            },
+                        },
+                        FailFastErrorKey = "SimpleDictionary.KEY2"
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            SimpleDictionary = new Dictionary<string, string>()
+                            {
+                                { "key.", "x with dot at end" },
+                                { "key 2", "x with space" },
+                                { "key .", "x with space and dot" },
+                                { "k.e.y", "with dots" },
+                                { "...ke....y..", "with dots" },
+                                { "k e y", "with spaces" },
+                                { "   ", "x with three spaces" },
+                                { string.Empty, "x with empty" },
+                                { "<key3", "x with angle bracket" },
+                                { "<<<key4", "with angle brackets" },
+                                { "< < <key", "with angle brackets and spaces" },
+                                { "<< <k.e.y.", "with angle brackets, spaces and dots" },
+                            }
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["SimpleDictionary.KEY"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.KEY 2"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.KEY "] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.K.E.Y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.KE.Y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.K E Y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.   "] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary. "] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.KEY3"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.KEY4"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary. < <KEY"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary. <K.E.Y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                        },
+                        FailFastErrorKey = "SimpleDictionary.KEY",
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            SimpleDictionary = new Dictionary<string, string>()
+                            {
+                                { "<<key", "aaa" },
+                                { "<<<<key", "abcx" },
+                                { "...key2...", "x with space and dot" },
+                                { ".key2.", "abc" },
+                                { "<<.key3..", "abc" },
+                                { "<.key3.", "abc" },
+                                { "<<<<.key3....", "" },
+                            }
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["SimpleDictionary.KEY"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["SimpleDictionary.KEY2"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["SimpleDictionary.KEY3"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                        },
+                        FailFastErrorKey = "SimpleDictionary.KEY",
+                    },
+                }
+            },
+            new TestCase()
+            {
+                Name = "AsDictionary_Complex",
+                Specification = s => s.Member(m => m.ComplexDictionary, m => m.AsDictionary(
+                    m1 => m1
+                        .Rule(v => v.Hybrid?.Length == 3).WithMessage("message 3")
+                        .Rule(v => v.Hybrid?.Contains("x") == true).WithMessage("message x"),
+                    k => k.MemberText.ToUpperInvariant())
+                ),
+                ExpectedTemplate = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                {
+                    [""] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { MessageKey.Global.Required }
+                        }
+                    },
+                    ["ComplexDictionary"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { MessageKey.Global.Required }
+                        }
+                    },
+                    ["ComplexDictionary.#"] = new[]
+                    {
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { MessageKey.Global.Required }
+                        },
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { "message 3" }
+                        },
+                        new ErrorTestCase()
+                        {
+                            Messages = new[] { "message x" }
+                        }
+                    }
+                },
+                ValidationCases = new[]
+                {
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            ComplexDictionary = new Dictionary<TestMember, TestClass>()
+                            {
+                                { new TestMember() { MemberText = "key1" }, new TestClass() { Hybrid = "xx1" } },
+                                { new TestMember() { MemberText = "key2" }, new TestClass() { Hybrid = "xxx2" } },
+                                { new TestMember() { MemberText = "key3" }, new TestClass() { Hybrid = "xx2" } },
+                                { new TestMember() { MemberText = "key4" }, new TestClass() { Hybrid = "xx4" } },
+                                { new TestMember() { MemberText = "key5" }, new TestClass() { Hybrid = "yy5" } },
+                                { new TestMember() { MemberText = "key6" }, new TestClass() { Hybrid = "xx6" } },
+                                { new TestMember() { MemberText = "key7" }, new TestClass() { Hybrid = "oops" } },
+                                { new TestMember() { MemberText = "key8" }, new TestClass() { Hybrid = "8xx" } },
+                                { new TestMember() { MemberText = "key9" }, new TestClass() { Hybrid = null } },
+                                { new TestMember() { MemberText = "key10" }, null },
+                            }
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["ComplexDictionary.KEY2"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["ComplexDictionary.KEY5"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["ComplexDictionary.KEY7"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["ComplexDictionary.KEY9"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["ComplexDictionary.KEY10"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "Global.Required" }
+                                },
+                            },
+                        },
+                        FailFastErrorKey = "ComplexDictionary.KEY2"
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            ComplexDictionary = new Dictionary<TestMember, TestClass>()
+                            {
+                                { new TestMember() { MemberText = "key." }, new TestClass() { Hybrid = "x with dot at end" } },
+                                { new TestMember() { MemberText = "key 2" }, new TestClass() { Hybrid = "x with space" } },
+                                { new TestMember() { MemberText = "key ." }, new TestClass() { Hybrid = "x with space and dot" } },
+                                { new TestMember() { MemberText = "k.e.y" }, new TestClass() { Hybrid = "with dots" } },
+                                { new TestMember() { MemberText = "...ke....y.." }, new TestClass() { Hybrid = "with dots" } },
+                                { new TestMember() { MemberText = "k e y" }, new TestClass() { Hybrid = "with spaces" } },
+                                { new TestMember() { MemberText = "   " }, new TestClass() { Hybrid = "x with three spaces" } },
+                                { new TestMember() { MemberText = string.Empty }, new TestClass() { Hybrid = "x with empty" } },
+                                { new TestMember() { MemberText = "<key3" }, new TestClass() { Hybrid = "x with angle bracket" } },
+                                { new TestMember() { MemberText = "<<<key4" }, new TestClass() { Hybrid = "with angle brackets" } },
+                                { new TestMember() { MemberText = "< < <key" }, new TestClass() { Hybrid = "with angle brackets and spaces" } },
+                                { new TestMember() { MemberText = "<< <k.e.y." }, new TestClass() { Hybrid = "with angle brackets, spaces and dots" } },
+                            }
+                        },
+                        Errors = new Dictionary<string, IReadOnlyList<ErrorTestCase>>()
+                        {
+                            ["ComplexDictionary.KEY"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["ComplexDictionary.KEY 2"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["ComplexDictionary.KEY "] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["ComplexDictionary.K.E.Y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["ComplexDictionary.KE.Y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["ComplexDictionary.K E Y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["ComplexDictionary.   "] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["ComplexDictionary. "] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["ComplexDictionary.KEY3"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                            },
+                            ["ComplexDictionary.KEY4"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["ComplexDictionary. < <KEY"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                            ["ComplexDictionary. <K.E.Y"] = new[]
+                            {
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message 3" }
+                                },
+                                new ErrorTestCase()
+                                {
+                                    Messages = new[] { "message x" }
+                                },
+                            },
+                        },
+                        FailFastErrorKey = "ComplexDictionary.KEY",
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            ComplexDictionary = new Dictionary<TestMember, TestClass>()
+                        },
+                        Errors = NoErrors,
+                        FailFastErrorKey = null,
+                    },
+                    new ValidationTestCase()
+                    {
+                        Model = new TestClass()
+                        {
+                            ComplexDictionary = new Dictionary<TestMember, TestClass>()
+                            {
+                                { new TestMember() { MemberText = "key1" }, new TestClass() { Hybrid = "xx1" } },
+                                { new TestMember() { MemberText = "key2" }, new TestClass() { Hybrid = "xx2" } },
+                                { new TestMember() { MemberText = "<<key3" }, new TestClass() { Hybrid = "xx3" } },
+                                { new TestMember() { MemberText = "<<x.key4" }, new TestClass() { Hybrid = "xx4" } },
+                            }
+                        },
+                        Errors = NoErrors,
+                        FailFastErrorKey = null,
+                    },
+                }
+            }
         };
 
         public static IReadOnlyList<TestCase> PathCases { get; } = new[]

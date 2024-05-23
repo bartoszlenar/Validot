@@ -1,7 +1,10 @@
 namespace Validot.Tests.Functional.Readme
 {
+    using System.Collections.Generic;
     using System.Linq;
+
     using FluentAssertions;
+
     using Validot;
     using Validot.Testing;
     using Xunit;
@@ -22,6 +25,8 @@ namespace Validot.Tests.Functional.Readme
             public string Name { get; set; }
 
             public int Age { get; set; }
+
+            public Dictionary<string, string> Dict { get; set; }
         }
 
         [Fact]

@@ -354,5 +354,42 @@ namespace Validot.Tests.Unit
                 isValidAsPath.Should().Be(false);
             }
         }
+
+        public class NormalizePath
+        {
+            [Fact]
+            public void Should_ReturnSingleSpace_When_NullPath()
+            {
+                var normalized = PathHelper.NormalizePath(null);
+
+                normalized.Should().Be(" ");
+
+                PathHelper.IsValidAsPath(normalized).Should().BeTrue();
+            }
+
+            [Theory]
+            [MemberData(nameof(PathTestData.NormalizePath.TrimmingInitialAngleBracts), MemberType = typeof(PathTestData.NormalizePath))]
+            [MemberData(nameof(PathTestData.NormalizePath.DotsTrimmingAndSquashing), MemberType = typeof(PathTestData.NormalizePath))]
+            public void Should_NormalizeInvalidPaths(string path, string expectedNormalized)
+            {
+                var normalized = PathHelper.NormalizePath(path);
+
+                normalized.Should().Be(expectedNormalized);
+
+                PathHelper.IsValidAsPath(normalized).Should().BeTrue();
+            }
+
+            [Theory]
+            [InlineData("path1.path2")]
+            [InlineData("path1.path2.path3")]
+            [InlineData("path 1 . path2 . path3")]
+            [MemberData(nameof(PathTestData.ValidPaths), MemberType = typeof(PathTestData))]
+            public void Should_LeaveAsIs_If_PathIsValid(string path)
+            {
+                var isValidAsPath = PathHelper.IsValidAsPath(path);
+
+                isValidAsPath.Should().Be(true);
+            }
+        }
     }
 }

@@ -79,10 +79,16 @@
 
 <p align="center">
     Built with 🤘🏻by <a href="https://lenar.dev">Bartosz Lenar</a>
-    </br>
-    Supported by <a href="https://www.jetbrains.com/community/opensource/#support" target="_blank">JetBrains'</a> and <a href="https://opensource.microsoft.com/program/" target="_blank">Microsoft's</a> Open Source Programs (thanks!)
 </p>
     </br>
+
+
+## Announcement! Version 3.0 is coming!
+Brief update on the current state of the project:
+
+- Version 2.5 is the last version that will be released before the 3.0.
+- The upcoming version 3.0 will bring a few breaking changes, but the migration should be smooth and straightforward. And of course, it will be fully documented.
+- Version 2.5 is the last one targeting .NET Standard 2.0. The 3.0 will focus on the newest versions of .NET.
 
 ## Quickstart
 
@@ -529,7 +535,8 @@ Before publishing, each release is tested on the ["latest" version](https://help
 using the upcoming, the current and all also the supported [LTS versions](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) of the underlying frameworks:
 
 * .NET 8.0
-* .NET Framework 4.8 (Windows only)
+* .NET 6.0
+* .NET Framework 4.8 (Windows 2019 only)
 
 ### Performance
 

@@ -1,74 +1,70 @@
-namespace Validot.Errors.Args
+namespace Validot.Errors.Args;
+
+using System.Globalization;
+
+public sealed class GuidArg : IArg<Guid>
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Globalization;
+    private const string FormatParameter = "format";
 
-    public sealed class GuidArg : IArg<Guid>
+    private const string DefaultFormat = "D";
+
+    private const string CaseParameter = "case";
+
+    private const string UpperCaseParameterValue = "upper";
+
+    private const string LowerCaseParameterValue = "lower";
+
+    public GuidArg(string name, Guid value)
     {
-        private const string FormatParameter = "format";
+        ThrowHelper.NullArgument(name, nameof(name));
 
-        private const string DefaultFormat = "D";
+        Name = name;
+        Value = value;
+    }
 
-        private const string CaseParameter = "case";
+    public string Name { get; }
 
-        private const string UpperCaseParameterValue = "upper";
+    public Guid Value { get; }
 
-        private const string LowerCaseParameterValue = "lower";
+    public IReadOnlyCollection<string> AllowedParameters { get; } = new[]
+    {
+        FormatParameter,
+        CaseParameter,
+    };
 
-        public GuidArg(string name, Guid value)
+    public string ToString(IReadOnlyDictionary<string, string>? parameters)
+    {
+        var caseParameter = parameters?.ContainsKey(CaseParameter) == true
+            ? parameters[CaseParameter]
+            : null;
+
+        if (caseParameter is not null and
+            not UpperCaseParameterValue and
+            not LowerCaseParameterValue)
         {
-            ThrowHelper.NullArgument(name, nameof(name));
-
-            Name = name;
-            Value = value;
+            caseParameter = null;
         }
 
-        public string Name { get; }
+        var format = parameters?.ContainsKey(FormatParameter) == true
+            ? parameters[FormatParameter]
+            : null;
 
-        public Guid Value { get; }
+        format ??= DefaultFormat;
 
-        public IReadOnlyCollection<string> AllowedParameters { get; } = new[]
+        var stringifiedGuid = Value.ToString(format, CultureInfo.InvariantCulture);
+
+        if (caseParameter == UpperCaseParameterValue)
         {
-            FormatParameter,
-            CaseParameter
-        };
-
-        public string ToString(IReadOnlyDictionary<string, string> parameters)
-        {
-            var caseParameter = parameters?.ContainsKey(CaseParameter) == true
-                ? parameters[CaseParameter]
-                : null;
-
-            if (caseParameter != null &&
-                caseParameter != UpperCaseParameterValue &&
-                caseParameter != LowerCaseParameterValue)
-            {
-                caseParameter = null;
-            }
-
-            var format = parameters?.ContainsKey(FormatParameter) == true
-                ? parameters[FormatParameter]
-                : null;
-
-            if (format == null)
-            {
-                format = DefaultFormat;
-            }
-
-            var stringifiedGuid = Value.ToString(format, CultureInfo.InvariantCulture);
-
-            if (caseParameter == UpperCaseParameterValue)
-            {
-                return stringifiedGuid.ToUpper(CultureInfo.InvariantCulture);
-            }
-
-            if (caseParameter == LowerCaseParameterValue)
-            {
-                return stringifiedGuid.ToLower(CultureInfo.InvariantCulture);
-            }
-
-            return stringifiedGuid;
+            return stringifiedGuid.ToUpper(CultureInfo.InvariantCulture);
         }
+
+        if (caseParameter == LowerCaseParameterValue)
+        {
+#pragma warning disable CA1308 // Normalize strings to uppercase
+            return stringifiedGuid.ToLower(CultureInfo.InvariantCulture);
+#pragma warning restore CA1308 // Normalize strings to uppercase
+        }
+
+        return stringifiedGuid;
     }
 }

@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Validot", "Validot\Validot.csproj", "{C5B62CBF-3CAB-48E6-AE17-B8F6AF550C73}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{BC780229-7501-4A3E-B34E-26190E41C38F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Validot.Tests.Unit", "tests\Validot.Tests.Unit\Validot.Tests.Unit.csproj", "{B8AC1725-F079-4B14-A6F4-1DDE2839BC6E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "_build", "..\build\_build.csproj", "{88A10F13-6DA1-43FE-8B80-C074B45A2342}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88A10F13-6DA1-43FE-8B80-C074B45A2342}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88A10F13-6DA1-43FE-8B80-C074B45A2342}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5B62CBF-3CAB-48E6-AE17-B8F6AF550C73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5B62CBF-3CAB-48E6-AE17-B8F6AF550C73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5B62CBF-3CAB-48E6-AE17-B8F6AF550C73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5B62CBF-3CAB-48E6-AE17-B8F6AF550C73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8AC1725-F079-4B14-A6F4-1DDE2839BC6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8AC1725-F079-4B14-A6F4-1DDE2839BC6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8AC1725-F079-4B14-A6F4-1DDE2839BC6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8AC1725-F079-4B14-A6F4-1DDE2839BC6E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B8AC1725-F079-4B14-A6F4-1DDE2839BC6E} = {BC780229-7501-4A3E-B34E-26190E41C38F}
+	EndGlobalSection
+EndGlobal

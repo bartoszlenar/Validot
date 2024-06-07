@@ -1,4 +1,4 @@
 {
   "$schema": "./build.schema.json",
-  "Solution": "Validot.sln"
+  "Solution": "src/Validot.sln"
 }

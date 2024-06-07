@@ -1,52 +1,48 @@
-﻿namespace Validot.Errors.Args
+﻿namespace Validot.Errors.Args;
+
+public sealed class EnumArg<T> : IArg<T>
+    where T : struct
 {
-    using System;
-    using System.Collections.Generic;
+    private const string TranslationParameter = "translation";
 
-    public sealed class EnumArg<T> : IArg<T>
-        where T : struct
+    private const string TranslationParameterValue = "true";
+
+    private const string FormatParameter = "format";
+
+    private const string DefaultFormat = "G";
+
+    public EnumArg(string name, T value)
     {
-        private const string TranslationParameter = "translation";
+        ThrowHelper.NullArgument(name, nameof(name));
 
-        private const string TranslationParameterValue = "true";
+        Name = name;
+        Value = value;
+    }
 
-        private const string FormatParameter = "format";
+    public string Name { get; }
 
-        private const string DefaultFormat = "G";
+    public T Value { get; }
 
-        public EnumArg(string name, T value)
+    public IReadOnlyCollection<string> AllowedParameters { get; } = new[]
+    {
+        FormatParameter,
+        TranslationParameter,
+    };
+
+    public string ToString(IReadOnlyDictionary<string, string>? parameters)
+    {
+        if (parameters?.ContainsKey(TranslationParameter) == true &&
+            parameters[TranslationParameter] == TranslationParameterValue)
         {
-            ThrowHelper.NullArgument(name, nameof(name));
+            var key = Enum.Format(typeof(T), Value, "f");
 
-            Name = name;
-            Value = value;
+            return TranslationArg.CreatePlaceholder($"Enum.{typeof(T).FullName}.{key}");
         }
 
-        public string Name { get; }
+        var format = parameters?.ContainsKey(FormatParameter) == true
+            ? parameters[FormatParameter]
+            : DefaultFormat;
 
-        public T Value { get; }
-
-        public IReadOnlyCollection<string> AllowedParameters { get; } = new[]
-        {
-            FormatParameter,
-            TranslationParameter
-        };
-
-        public string ToString(IReadOnlyDictionary<string, string> parameters)
-        {
-            if (parameters?.ContainsKey(TranslationParameter) == true &&
-                parameters[TranslationParameter] == TranslationParameterValue)
-            {
-                var key = Enum.Format(typeof(T), Value, "f");
-
-                return TranslationArg.CreatePlaceholder($"Enum.{typeof(T).FullName}.{key}");
-            }
-
-            var format = parameters?.ContainsKey(FormatParameter) == true
-                ? parameters[FormatParameter]
-                : DefaultFormat;
-
-            return Enum.Format(typeof(T), Value, format);
-        }
+        return Enum.Format(typeof(T), Value, format);
     }
 }

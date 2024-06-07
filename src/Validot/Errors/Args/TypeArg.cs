@@ -1,65 +1,64 @@
-namespace Validot.Errors.Args
+namespace Validot.Errors.Args;
+
+using System;
+using System.Collections.Generic;
+
+public sealed class TypeArg : IArg<Type>
 {
-    using System;
-    using System.Collections.Generic;
+    private const string TranslationParameter = "translation";
 
-    public sealed class TypeArg : IArg<Type>
+    private const string TranslationParameterValue = "true";
+
+    private const string FormatParameter = "format";
+
+    private const string NameFormat = "name";
+
+    private const string ToStringFormat = "toString";
+
+    private const string FullNameFormat = "fullName";
+
+    private const string DefaultFormat = NameFormat;
+
+    public TypeArg(string name, Type value)
     {
-        private const string TranslationParameter = "translation";
+        ThrowHelper.NullArgument(name, nameof(name));
 
-        private const string TranslationParameterValue = "true";
+        Name = name;
+        Value = value;
+    }
 
-        private const string FormatParameter = "format";
+    public string Name { get; }
 
-        private const string NameFormat = "name";
+    public Type Value { get; }
 
-        private const string ToStringFormat = "toString";
+    public IReadOnlyCollection<string> AllowedParameters { get; } = new[]
+    {
+        TranslationParameter,
+        FormatParameter,
+    };
 
-        private const string FullNameFormat = "fullName";
-
-        private const string DefaultFormat = NameFormat;
-
-        public TypeArg(string name, Type value)
+    public string ToString(IReadOnlyDictionary<string, string>? parameters)
+    {
+        if (parameters?.ContainsKey(TranslationParameter) == true &&
+            parameters[TranslationParameter] == TranslationParameterValue)
         {
-            ThrowHelper.NullArgument(name, nameof(name));
-
-            Name = name;
-            Value = value;
+            return $"{{_translation|key=Type.{Value.GetFriendlyName(true)}}}";
         }
 
-        public string Name { get; }
+        var format = parameters?.ContainsKey(FormatParameter) == true
+            ? parameters[FormatParameter]
+            : DefaultFormat;
 
-        public Type Value { get; }
-
-        public IReadOnlyCollection<string> AllowedParameters { get; } = new[]
+        if (format == ToStringFormat)
         {
-            TranslationParameter,
-            FormatParameter
-        };
-
-        public string ToString(IReadOnlyDictionary<string, string> parameters)
-        {
-            if (parameters?.ContainsKey(TranslationParameter) == true &&
-                parameters[TranslationParameter] == TranslationParameterValue)
-            {
-                return $"{{_translation|key=Type.{Value.GetFriendlyName(true)}}}";
-            }
-
-            var format = parameters?.ContainsKey(FormatParameter) == true
-                ? parameters[FormatParameter]
-                : DefaultFormat;
-
-            if (format == ToStringFormat)
-            {
-                return Value.ToString();
-            }
-
-            if (format == FullNameFormat)
-            {
-                return Value.GetFriendlyName(true);
-            }
-
-            return Value.GetFriendlyName(format == FullNameFormat);
+            return Value.ToString();
         }
+
+        if (format == FullNameFormat)
+        {
+            return Value.GetFriendlyName(true);
+        }
+
+        return Value.GetFriendlyName(format == FullNameFormat);
     }
 }

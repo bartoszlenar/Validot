@@ -1,507 +1,268 @@
-#pragma warning disable SYSLIB1045 // Convert to 'GeneratedRegexAttribute'.
-#pragma warning disable IDE0057 // Use range operator
-#pragma warning disable CA1852 // sealed class
-#pragma warning disable CA1865 // Use char overload
-
 using System;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-
 using Nuke.Common;
-using Nuke.Common.CI;
 using Nuke.Common.IO;
-using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
-using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using System.Text.RegularExpressions;
+using System.Globalization;
+using Nuke.Common.Tools.Coverlet;
+using Nuke.Common.Utilities;
+using System.IO;
 
-[ShutdownDotNetAfterServerBuild]
 class Build : NukeBuild
 {
-    static readonly Regex SemVerRegex = new Regex(@"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$", RegexOptions.Compiled);
+    record ToolInfo(string Name, string Version, string ExecutableFileName, string? Framework);
 
-    static readonly Regex TargetFrameworkRegex = new Regex(@"<TargetFramework>.+<\/TargetFramework>", RegexOptions.Compiled);
+    static readonly ToolInfo ReportGeneratorToolInfo = new ToolInfo("dotnet-reportgenerator-globaltool", "5.3.4", "ReportGenerator.dll", "net8.0");
+
+    static readonly ToolInfo DotNetOutdatedToolInfo = new ToolInfo("dotnet-outdated-tool", "4.6.4", "dotnet-outdated.dll", "net8.0");
+
+    const string RepositoryUrl = "https://github.com/bartoszlenar/Validot";
 
     static readonly DateTimeOffset BuildTime = DateTimeOffset.UtcNow;
 
-    static readonly string DefaultFrameworkId = "net8.0";
-
-    public static int Main() => Execute<Build>(x => x.Compile);
-
-    [Parameter("Configuration to build. 'Debug' (default) or 'Release'.")]
-    readonly Configuration Configuration = Configuration.Debug;
-
-    [Parameter("dotnet framework id or SDK version (if SDK version is provided, the highest framework available is selected). Default value is 'netcoreapp3.1'")]
-    string DotNet;
-
-    [Parameter("Version. Default value is '0.0.0-timestamp'")]
-    string Version;
-
-    [Parameter("NuGet API. Where to publish NuGet package. Default value is 'https://api.nuget.org/v3/index.json'")]
-    readonly string NuGetApi = "https://api.nuget.org/v3/index.json";
-
-    [Parameter("NuGet API key, allows to publish NuGet package.")]
-    readonly string NuGetApiKey;
-
-    [Parameter("CodeCov API key, allows to publish code coverage.")]
-    readonly string CodeCovApiKey;
-
-    [Parameter("Commit SHA")]
-    readonly string CommitSha;
-
-    [Parameter("If true, BenchmarkDotNet will run full (time consuming, but more accurate) jobs.")]
-    readonly bool FullBenchmark;
-
-    [Parameter("Benchmark filter. If empty, all benchmarks will be run.")]
-    readonly string BenchmarksFilter;
-
-    [Parameter("Allow warnings")]
-    readonly bool AllowWarnings;
-
-    [Parameter("(only for target AddTranslation) Translation name")]
-    readonly string TranslationName;
-
-    [Solution]
-    readonly Solution Solution;
+    public static int Main() => Execute<Build>(x => x.BuildRelease);
 
     AbsolutePath SourceDirectory => RootDirectory / "src";
-    AbsolutePath TestsDirectory => RootDirectory / "tests";
-    AbsolutePath ToolsPath => RootDirectory / "tools";
+    AbsolutePath SolutionFilePath => SourceDirectory / "Validot.sln";
+    AbsolutePath ValidotProjectFilePath => SourceDirectory / "Validot" / "Validot.csproj";
     AbsolutePath ArtifactsDirectory => RootDirectory / "artifacts";
-    AbsolutePath TestsResultsDirectory => ArtifactsDirectory / "tests";
-    AbsolutePath CodeCoverageDirectory => ArtifactsDirectory / "coverage";
-    AbsolutePath CodeCoverageReportsDirectory => ArtifactsDirectory / "coverage_reports";
-    AbsolutePath BenchmarksDirectory => ArtifactsDirectory / "benchmarks";
-    AbsolutePath NuGetDirectory => ArtifactsDirectory / "nuget";
+    AbsolutePath BuildArtifactsDirectory => ArtifactsDirectory / Version;
+    AbsolutePath TestArtifactsDirectory => BuildArtifactsDirectory / "tests";
+    AbsolutePath ToolsDirectory => RootDirectory / "tools";
+    AbsolutePath TestsDirectory => SourceDirectory / "tests";
+    AbsolutePath ValidotUnitTestsProjectFilePath => TestsDirectory / "Validot.Tests.Unit";
+
+    [Parameter("Allows warning during the build. Default is false. Set to true to stop the warnings from breaking the build.")]
+    readonly bool AllowWarnings;
+
+    [Parameter("Version. If not provided it will be generated automatically as 0.0.0-timestamp")]
+    string Version = null!;
+
+    [Parameter($"Open the results automatically after work is completed (e.g., CoverageReport opens the final report in the browser). Default is false.")]
+    readonly bool Open = false;
+
+    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+    readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+
+    [Parameter("Commit SHA")]
+    readonly string? CommitSha;
 
     protected override void OnBuildInitialized()
     {
         base.OnBuildCreated();
 
-        DotNet = GetFramework(DotNet);
-        Logger.Info($"DotNet: {DotNet}");
+        Version = ResolveVersion(Version);
 
-        Version = GetVersion(Version);
-        Logger.Info($"Version: {Version}");
-
-        Logger.Info($"NuGetApi: {NuGetApi ?? "MISSING"}");
-        Logger.Info($"Configuration: {Configuration}");
-        Logger.Info($"CommitSha: {CommitSha ?? "MISSING"}");
-        Logger.Info($"AllowWarnings: {AllowWarnings}");
-
-        Logger.Info($"FullBenchmark: {FullBenchmark}");
-        Logger.Info($"BenchmarkFilter: {FullBenchmark}");
-
-        var nuGetApiKeyPresence = (NuGetApiKey is null) ? "MISSING" : "present";
-        Logger.Info($"NuGetApiKey: {nuGetApiKeyPresence}");
-
-        var codeCovApiKeyPresence = (CodeCovApiKey is null) ? "MISSING" : "present";
-        Logger.Info($"CodeCovApiKey: {codeCovApiKeyPresence}");
-
-        SetFrameworkInTests(DotNet);
-        SetVersionInAssemblyInfo(Version, CommitSha);
+        Serilog.Log.Information($"Version: {Version}");
     }
 
-    protected override void OnBuildFinished()
-    {
-        ResetFrameworkInTests();
-        ResetVersionInAssemblyInfo();
+    Target Outdated => _ => _
+       .Description("Upgrades all outdated dependencies.")
+       .Executes(() =>
+       {
+           var tool = GetTool(DotNetOutdatedToolInfo);
 
-        base.OnBuildFinished();
-    }
+           var outdatedReportsDirectory = ArtifactsDirectory / "outdated-reports";
 
-    Target AddTranslation => _ => _
-        .Requires(() => TranslationName)
-        .Executes(() =>
-        {
-            CreateFromTemplate(SourceDirectory / "Validot" / "Translations" / "_Template");
+           if (!outdatedReportsDirectory.Exists())
+           {
+               outdatedReportsDirectory.CreateDirectory();
+           }
 
-            CreateFromTemplate(TestsDirectory / "Validot.Tests.Unit" / "Translations" / "_Template");
+           var toolParameters = new[]
+           {
+                SolutionFilePath.ToString(),
+                 "-o",
+                 $"{outdatedReportsDirectory / ("outdated." + BuildTime.ToString("yyyyMMdd_HHmmss", CultureInfo.InvariantCulture) + ".json") }",
+                 "-u",
+           };
 
-            void CreateFromTemplate(AbsolutePath templatePath)
-            {
-                CopyDirectoryRecursively(templatePath, templatePath.Parent / TranslationName);
+           ProcessTasks.StartProcess(ToolPathResolver.GetPathExecutable("dotnet"), tool + " " + toolParameters.JoinSpace()).AssertZeroExitCode();
+       })
+       .Triggers(Lock)
+       .Triggers(Test);
 
-                var files = new DirectoryInfo(templatePath.Parent / TranslationName).GetFiles();
-
-                foreach (var file in files)
-                {
-                    var finalFilePath = file.FullName.Replace("_Template", TranslationName).Replace(".txt", string.Empty);
-
-                    RenameFile(file.FullName, finalFilePath);
-
-                    File.WriteAllText(finalFilePath, File.ReadAllText(finalFilePath).Replace("_Template", TranslationName));
-                }
-            }
-        });
-
-    Target Reset => _ => _
-        .Executes(() =>
-        {
-            EnsureCleanDirectory(TemporaryDirectory);
-            EnsureCleanDirectory(ArtifactsDirectory);
-            EnsureCleanDirectory(ToolsPath);
-            ResetFrameworkInTests();
-        })
-        .Triggers(Clean);
-
-    Target Clean => _ => _
-        .Before(Restore)
-        .Executes(() =>
-        {
-            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-            TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-        });
-
-    Target Restore => _ => _
-        .Executes(() =>
-        {
-            DotNetRestore(_ => _
-                .SetProjectFile(Solution));
-        });
-
-    Target CompileProject => _ => _
-        .DependsOn(Clean, Restore)
-        .Executes(() =>
-        {
-            DotNetBuild(c => c
-                .EnableNoRestore()
-                .SetTreatWarningsAsErrors(!AllowWarnings)
-                .SetProjectFile(SourceDirectory / "Validot/Validot.csproj")
-                .SetConfiguration(Configuration)
-                .SetFramework("netstandard2.0")
-            );
-        });
-
-    Target CompileTests => _ => _
-        .DependsOn(Clean, Restore)
-        .After(CompileProject)
-        .Executes(() =>
-        {
-            var testsProjects = new[]
-            {
-                TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj",
-                TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj"
-            };
-
-            foreach (var testProject in testsProjects)
-            {
-                DotNetBuild(c => c
-                    .EnableNoRestore()
-                    .SetTreatWarningsAsErrors(!AllowWarnings)
-                    .SetProjectFile(testProject)
-                    .SetConfiguration(Configuration)
-                    .SetFramework(DotNet)
-                    .AddProperty("DisableSourceLink", "1")
-                );
-            }
-        });
-
-    Target Compile => _ => _
-        .DependsOn(CompileProject, CompileTests);
-
-    Target Tests => _ => _
-        .DependsOn(CompileTests)
-        .Executes(() =>
-        {
-            DotNetTest(p => p
-                .EnableNoBuild()
-                .SetConfiguration(Configuration)
-                .SetProjectFile(TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj")
-                .SetFramework(DotNet)
-                .SetLoggers($"junit;LogFilePath={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.unit.junit"}")
-            );
-
-            DotNetTest(p => p
-                .EnableNoBuild()
-                .SetConfiguration(Configuration)
-                .SetProjectFile(TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj")
-                .SetFramework(DotNet)
-                .SetLoggers($"junit;LogFilePath={TestsResultsDirectory / $"Validot.{Version}.testresults" / $"Validot.{Version}.functional.junit"}")
-            );
-        });
-
-    Target CodeCoverage => _ => _
-        .DependsOn(CompileTests)
-        .Requires(() => Configuration == Configuration.Debug)
-        .Executes(() =>
-        {
-            var reportFile = CodeCoverageDirectory / $"Validot.{Version}.opencover.xml";
-
-            DotNetTest(p => p
-                .EnableNoBuild()
-                .SetProjectFile(TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj")
-                .SetConfiguration(Configuration.Debug)
-                .SetFramework(DotNet)
-                .AddProperty("CollectCoverage", "true")
-                .AddProperty("CoverletOutput", reportFile)
-                .AddProperty("CoverletOutputFormat", "opencover")
-                .AddProperty("DisableSourceLink", "1")
-            );
-
-            Logger.Info($"CodeCoverage opencover format file location: {reportFile} ({new FileInfo(reportFile).Length} bytes)");
-        });
-
-    Target CodeCoverageReport => _ => _
-        .DependsOn(CodeCoverage)
-        .Requires(() => Configuration == Configuration.Debug)
-        .Executes(() =>
-        {
-            var toolPath = InstallAndGetToolPath("dotnet-reportgenerator-globaltool", "4.8.1", "ReportGenerator.dll", "net5.0");
-
-            var toolParameters = new[]
-            {
-                $"-reports:{CodeCoverageDirectory / $"Validot.{Version}.opencover.xml"}",
-                $"-reporttypes:HtmlInline_AzurePipelines;JsonSummary",
-                $"-targetdir:{CodeCoverageReportsDirectory / $"Validot.{Version}.coverage_report"}",
-                $"-historydir:{CodeCoverageReportsDirectory / "_history"}",
-                $"-title:Validot unit tests code coverage report",
-                $"-tag:v{Version}" + (CommitSha is null ? "" : $"+{CommitSha}"),
-            };
-
-            ExecuteTool(toolPath, string.Join(" ", toolParameters.Select(p => $"\"{p}\"")));
-
-            File.Move(CodeCoverageReportsDirectory / $"Validot.{Version}.coverage_report/Summary.json", CodeCoverageReportsDirectory / $"Validot.{Version}.coverage_summary.json");
-        });
-
-    Target Benchmarks => _ => _
+    Target Lock => _ => _
+        .Description("Restore and re-lock the dependencies.")
         .DependsOn(Clean)
         .Executes(() =>
         {
-            var benchmarksPath = BenchmarksDirectory / $"Validot.{Version}.benchmarks";
-
-            var jobShort = FullBenchmark ? string.Empty : "--job short";
-            var filter = BenchmarksFilter is null ? "*" : BenchmarksFilter;
-
-            DotNetRun(p => p
-                .SetProjectFile(TestsDirectory / "Validot.Benchmarks/Validot.Benchmarks.csproj")
-                .SetConfiguration(Configuration.Release)
-                .SetProcessArgumentConfigurator(a => a
-                    .Add("--")
-                    .Add($"--artifacts {benchmarksPath} {jobShort}")
-                    .Add("--exporters GitHub StackOverflow JSON HTML")
-                    .Add($"--filter {filter}")
-                )
-            );
+            new[] { ValidotProjectFilePath, ValidotUnitTestsProjectFilePath, }.ForEach(path =>
+            {
+                DotNetRestore(s => s
+                    .SetLockedMode(false)
+                    .SetForceEvaluate(true)
+                    .SetProjectFile(path)
+                );
+            });
         });
 
-    Target NugetPackage => _ => _
-        .DependsOn(Compile)
-        .Requires(() => Configuration == Configuration.Release)
+    Target CleanAll => _ => _
+        .Description("Clean all generated directories (artifacts, tools, builds, temps, etc.)")
         .Executes(() =>
         {
-            DotNetPack(p => p
-                .EnableNoBuild()
+            new[] { ArtifactsDirectory, BuildArtifactsDirectory, ToolsDirectory }.ForEach(dir => dir.DeleteDirectory());
+            RootDirectory.GlobDirectories("**/bin", "**/obj").ForEach(dir => dir.DeleteDirectory());
+        });
+
+    Target Clean => _ => _
+        .Description("Clean all compiled content (bin, obj) of the project.")
+        .Executes(() =>
+        {
+            SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(dir => dir.DeleteDirectory());
+        });
+
+
+    Target BuildRelease => _ => _
+        .Executes(() =>
+        {
+            DotNetRestore(s => s
+                .SetProjectFile(ValidotProjectFilePath)
+                .SetLockedMode(true));
+
+            DotNetBuild(s => s
+                .EnableNoRestore()
                 .SetConfiguration(Configuration.Release)
-                .SetProject(SourceDirectory / "Validot/Validot.csproj")
+                .SetProjectFile(ValidotProjectFilePath)
+                .SetTreatWarningsAsErrors(true)
                 .SetVersion(Version)
-                .SetOutputDirectory(NuGetDirectory / Version)
+                .AddProperty("RepositoryUrl", RepositoryUrl));
+        })
+        .Unlisted();
+
+    Target Pack => _ => _
+        .Description("Packs the project into a nuget package.")
+        .DependsOn(BuildRelease)
+        .Executes(() =>
+        {
+            DotNetPack(s => s
+                .SetConfiguration(Configuration.Release)
+                .EnableNoBuild()
+                .SetProject(ValidotProjectFilePath)
+                .SetOutputDirectory(BuildArtifactsDirectory)
+                .SetRepositoryUrl(RepositoryUrl)
+                .SetProperty("PackageVersion", Version)
             );
         });
 
-    Target PublishNugetPackage => _ => _
-        .DependsOn(NugetPackage)
-        .Requires(() => NuGetApiKey != null)
-        .Requires(() => Configuration == Configuration.Release)
+    Target BuildDebug => _ => _
         .Executes(() =>
         {
-            DotNetNuGetPush(p => p
-                .SetSource(NuGetApi)
-                .SetApiKey(NuGetApiKey)
-                .SetTargetPath(NuGetDirectory / Version / $"Validot.{Version}.nupkg")
-            );
+            new[] { ValidotProjectFilePath, ValidotUnitTestsProjectFilePath }.ForEach(path =>
+            {
+                DotNetRestore(s => s
+                    .SetProjectFile(path)
+                    .SetLockedMode(true));
+
+                DotNetBuild(s => s
+                        .EnableNoRestore()
+                        .SetConfiguration(Configuration.Debug)
+                        .SetProjectFile(path)
+                        .SetTreatWarningsAsErrors(!AllowWarnings));
+            });
+        })
+        .Unlisted();
+
+    Target Test => _ => _
+        .DependsOn(BuildDebug)
+        .Executes(() =>
+        {
+            DotNetTest(p => p
+                .EnableNoBuild()
+                .SetConfiguration(Configuration.Debug)
+                .SetProjectFile(ValidotUnitTestsProjectFilePath)
+                .SetLoggers($"junit;LogFilePath={TestArtifactsDirectory / $"report.junit"}")
+                .SetProcessArgumentConfigurator(args => args
+                    .Add(@"--collect:""XPlat Code Coverage""")
+                    .Add(@$"--results-directory:""{TestArtifactsDirectory}"""))
+                );
+
+            var coverageFile = TestArtifactsDirectory.GlobFiles("**/coverage.cobertura.xml").FirstOrDefault();
+
+            if (coverageFile is null)
+            {
+                Serilog.Log.Warning("No coverage report file found.");
+                return;
+            }
+
+            Serilog.Log.Information($"Moving coverage file {coverageFile} to the artifacts directory {TestArtifactsDirectory}.");
+            coverageFile.MoveToDirectory(TestArtifactsDirectory);
+            coverageFile.Parent.DeleteDirectory();
+
+            if (Open)
+            {
+                TestArtifactsDirectory.Open();
+            }
         });
 
-    Target PublishCodeCoverage => _ => _
-        .DependsOn(CodeCoverage)
-        .Requires(() => CodeCovApiKey != null)
-        .Requires(() => Configuration == Configuration.Debug)
+    Target CoverageReport => _ => _
+        .Description("Generates the human-readable coverage report.")
+        .DependsOn(Test)
         .Executes(() =>
         {
-            var reportFile = CodeCoverageDirectory / $"Validot.{Version}.opencover.xml";
+            var coverageFile = TestArtifactsDirectory / "coverage.cobertura.xml";
 
-            var toolPath = InstallAndGetToolPath("codecov.tool", "1.13.0", "codecov.dll", "net5.0");
+            var coverageReportDirectory = BuildArtifactsDirectory / "tests_report";
+
+            var coverageReportHistoryDirectory = ArtifactsDirectory / "_code_coverage_history";
 
             var toolParameters = new[]
             {
-                $"--sha {CommitSha}",
-                $"--file {reportFile}",
-                $"--token {CodeCovApiKey}",
-                $"--required"
+                $"-reports:{coverageFile}",
+                $"-reporttypes:HtmlInline_AzurePipelines;JsonSummary",
+                $"-targetdir:{coverageReportDirectory}",
+                $"-historydir:{coverageReportHistoryDirectory}",
+                $"-title:dotnet-fences unit tests code coverage report",
+                $"-tag:v{Version}" + (CommitSha is null ? "" : $"+{CommitSha}"),
             };
 
-            ExecuteTool(toolPath, string.Join(" ", toolParameters));
+            var tool = GetTool(ReportGeneratorToolInfo);
+
+            ExecuteTool(tool, toolParameters.Select(p => $"\"{p}\"").JoinSpace());
+
+            if (Open)
+            {
+                Serilog.Log.Information($"Report generated in {coverageReportDirectory} and will be opened in the browser.");
+                (coverageReportDirectory / "index.html").Open();
+            }
         });
 
-    void SetFrameworkInTests(string framework)
-    {
-        var testsCsprojs = new[]
-        {
-            TestsDirectory / "Validot.Tests.Unit/Validot.Tests.Unit.csproj",
-            TestsDirectory / "Validot.Tests.Functional/Validot.Tests.Functional.csproj",
-            TestsDirectory / "Validot.Benchmarks/Validot.Benchmarks.csproj",
-        };
 
-        foreach (var csproj in testsCsprojs)
-        {
-            SetFrameworkInCsProj(framework, csproj);
-        }
-    }
-
-    void SetFrameworkInCsProj(string framework, string csProjPath)
-    {
-        Logger.Info($"Setting framework {framework} in {csProjPath}");
-
-        var content = TargetFrameworkRegex.Replace(File.ReadAllText(csProjPath), $"<TargetFramework>{framework}</TargetFramework>");
-
-        File.WriteAllText(csProjPath, content);
-    }
-
-    void SetVersionInAssemblyInfo(string version, string commitSha)
-    {
-        var assemblyVersion = "0.0.0.0";
-        var assemblyFileVersion = "0.0.0.0";
-
-        if (SemVerRegex.IsMatch(version))
-        {
-            assemblyVersion = version.Substring(0, version.IndexOf(".", StringComparison.InvariantCulture)) + ".0.0.0";
-
-            assemblyFileVersion = version.Contains("-", StringComparison.InvariantCulture)
-                ? version.Substring(0, version.IndexOf("-", StringComparison.InvariantCulture)) + ".0"
-                : version + ".0";
-        }
-
-        Logger.Info("Setting AssemblyVersion: " + assemblyVersion);
-        Logger.Info("Setting AssemblyFileVersion: " + assemblyFileVersion);
-
-        var assemblyInfoPath = SourceDirectory / "Validot/Properties/AssemblyInfo.cs";
-
-        var assemblyInfoLines = File.ReadAllLines(assemblyInfoPath);
-
-        var autogeneratedPostfix = "// this line is autogenerated by the build script";
-
-        for (var i = 0; i < assemblyInfoLines.Length; ++i)
-        {
-            if (assemblyInfoLines[i].Contains("AssemblyVersion", StringComparison.InvariantCulture))
-            {
-                assemblyInfoLines[i] = $"[assembly: System.Reflection.AssemblyVersion(\"{assemblyVersion}\")] {autogeneratedPostfix}";
-            }
-            else if (assemblyInfoLines[i].Contains("AssemblyFileVersion", StringComparison.InvariantCulture))
-            {
-                assemblyInfoLines[i] = $"[assembly: System.Reflection.AssemblyFileVersion(\"{assemblyFileVersion}\")] {autogeneratedPostfix}";
-            }
-        }
-
-        File.WriteAllLines(assemblyInfoPath, assemblyInfoLines);
-    }
-
-    void ResetVersionInAssemblyInfo() => SetVersionInAssemblyInfo("0.0.0", null);
-
-    void ResetFrameworkInTests() => SetFrameworkInTests(DefaultFrameworkId);
-
-    string GetFramework(string dotnet)
-    {
-        if (string.IsNullOrWhiteSpace(dotnet))
-        {
-            Logger.Warn("DotNet: parameter not provided");
-            return DefaultFrameworkId;
-        }
-
-        if (char.IsDigit(dotnet.First()))
-        {
-            Logger.Info($"DotNet parameter recognized as SDK version: " + dotnet);
-
-            if (dotnet.StartsWith("2.1.", StringComparison.Ordinal))
-            {
-                return "netcoreapp2.1";
-            }
-
-            if (dotnet.StartsWith("3.1.", StringComparison.Ordinal))
-            {
-                return "netcoreapp3.1";
-            }
-
-            if (dotnet.StartsWith("5.0.", StringComparison.Ordinal))
-            {
-                return "net5.0";
-            }
-
-            if (dotnet.StartsWith("6.0.", StringComparison.Ordinal))
-            {
-                return "net6.0";
-            }
-
-            if (dotnet.StartsWith("7.0.", StringComparison.Ordinal))
-            {
-                return "net7.0";
-            }
-
-            if (dotnet.StartsWith("8.0.", StringComparison.Ordinal))
-            {
-                return "net8.0";
-            }
-
-            Logger.Warn("Unrecognized dotnet SDK version: " + dotnet);
-
-            return dotnet;
-        }
-
-        if (dotnet.StartsWith("netcoreapp", StringComparison.Ordinal) && dotnet["netcoreapp".Length..].All(c => char.IsDigit(c) || c == '.'))
-        {
-            Logger.Info("DotNet parameter recognized as .NET Core target: " + DotNet);
-
-            return dotnet;
-        }
-
-        if (dotnet.StartsWith("net", StringComparison.Ordinal) && DotNet["net".Length..].All(char.IsDigit))
-        {
-            Logger.Info("DotNet parameter recognized as .NET Framework target: " + dotnet);
-
-            return dotnet;
-        }
-
-        Logger.Warn("Unrecognized dotnet framework id: " + dotnet);
-
-        return dotnet;
-    }
-
-    string GetVersion(string version)
+    string ResolveVersion(string? version)
     {
         if (version is null)
         {
-            Logger.Warn("Version: not provided.");
+            Serilog.Log.Warning($"Version missing, it will be generated automatically.");
+            return $"0.0.0-{BuildTime.ToString("yyyyMMdd-HHmmss", CultureInfo.InvariantCulture)}";
+        }
 
-            return $"0.0.0-{BuildTime.DayOfYear}{BuildTime.ToString("HHmmss", CultureInfo.InvariantCulture)}";
+        var semVerRegex = new Regex(@"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$", RegexOptions.Compiled);
+
+        if (!semVerRegex.IsMatch(version))
+        {
+            Serilog.Log.Fatal($"Version is set to: {version} which is not a valid semver value. Please provide a valid semver value or leave it empty to generate it automatically.");
+            throw new Exception($"Version {version} is not a valid semver value");
         }
 
         return version;
     }
 
-    void ExecuteTool(string toolPath, string parameters)
+    AbsolutePath GetTool(ToolInfo toolInfo)
     {
-        ProcessTasks.StartProcess(ToolPathResolver.GetPathExecutable("dotnet"), toolPath + " -- " + parameters).AssertZeroExitCode();
-    }
-
-    string InstallAndGetToolPath(string name, string version, string executableFileName, string framework = null)
-    {
-        var frameworkPart = framework is null ? $" (framework {framework})" : string.Empty;
-
-        var toolStamp = $"{name} {version}{frameworkPart}, executable file: {executableFileName}";
-
-        Logger.Info($"Looking for tool: {toolStamp}");
+        Serilog.Log.Information($"Looking for tool: {toolInfo}");
 
         var toolPath = ResolveToolPath();
 
         if (toolPath is null)
         {
             DotNetToolInstall(c => c
-                    .SetPackageName(name)
-                    .SetVersion(version)
-                    .SetToolInstallationPath(ToolsPath)
+                    .SetPackageName(toolInfo.Name)
+                    .SetVersion(toolInfo.Version)
+                    .SetToolInstallationPath(ToolsDirectory)
                     .SetGlobal(false));
         }
 
@@ -509,18 +270,19 @@ class Build : NukeBuild
 
         if (toolPath is null)
         {
-            Logger.Error($"Unable to find tool path: {name} {version} {executableFileName} {framework}");
+            Serilog.Log.Fatal($"Tool {toolInfo}: not found in the tools directory after intallation. Enable more detailed logging to see the search pattern and more details.");
+            throw new Exception($"Could not find tool {toolInfo}");
         }
 
         return toolPath;
 
-        AbsolutePath ResolveToolPath()
+        AbsolutePath? ResolveToolPath()
         {
-            var frameworkPart = framework != null ? (framework + "/**/") : string.Empty;
+            var frameworkPart = toolInfo.Framework != null ? (toolInfo.Framework + "/**/") : string.Empty;
 
-            Serilog.Log.Debug($"Looking for tool in {ToolsPath} using glob pattern: **/{name}/{version}/**/{frameworkPart}{executableFileName}");
+            Serilog.Log.Debug($"Looking for tool in {ToolsDirectory} using glob pattern: **/{toolInfo.Name}/{toolInfo.Version}/**/{frameworkPart}{toolInfo.ExecutableFileName}");
 
-            var files = ToolsPath.GlobFiles($"**/{name}/{version}/**/{frameworkPart}{executableFileName}");
+            var files = ToolsDirectory.GlobFiles($"**/{toolInfo.Name}/{toolInfo.Version}/**/{frameworkPart}{toolInfo.ExecutableFileName}");
 
             if (files.Count > 1)
             {
@@ -539,4 +301,10 @@ class Build : NukeBuild
             return files.FirstOrDefault();
         }
     }
+
+    void ExecuteTool(AbsolutePath tool, string parameters)
+    {
+        ProcessTasks.StartProcess(ToolPathResolver.GetPathExecutable("dotnet"), tool + " -- " + parameters).AssertZeroExitCode();
+    }
+
 }

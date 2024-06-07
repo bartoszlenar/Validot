@@ -8,15 +8,7 @@
       "properties": {
         "AllowWarnings": {
           "type": "boolean",
-          "description": "Allow warnings"
-        },
-        "BenchmarksFilter": {
-          "type": "string",
-          "description": "Benchmark filter. If empty, all benchmarks will be run"
-        },
-        "CodeCovApiKey": {
-          "type": "string",
-          "description": "CodeCov API key, allows to publish code coverage"
+          "description": "Allows warning during the build. Default is false. Set to true to stop the warnings from breaking the build"
         },
         "CommitSha": {
           "type": "string",
@@ -24,7 +16,7 @@
         },
         "Configuration": {
           "type": "string",
-          "description": "Configuration to build. 'Debug' (default) or 'Release'",
+          "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
           "enum": [
             "Debug",
             "Release"
@@ -33,14 +25,6 @@
         "Continue": {
           "type": "boolean",
           "description": "Indicates to continue a previously failed build attempt"
-        },
-        "DotNet": {
-          "type": "string",
-          "description": "dotnet framework id or SDK version (if SDK version is provided, the highest framework available is selected). Default value is 'netcoreapp3.1'"
-        },
-        "FullBenchmark": {
-          "type": "boolean",
-          "description": "If true, BenchmarkDotNet will run full (time consuming, but more accurate) jobs"
         },
         "Help": {
           "type": "boolean",
@@ -71,13 +55,9 @@
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
         },
-        "NuGetApi": {
-          "type": "string",
-          "description": "NuGet API. Where to publish NuGet package. Default value is 'https://api.nuget.org/v3/index.json'"
-        },
-        "NuGetApiKey": {
-          "type": "string",
-          "description": "NuGet API key, allows to publish NuGet package"
+        "Open": {
+          "type": "boolean",
+          "description": "Open the results automatically after work is completed (e.g., CoverageReport opens the final report in the browser). Default is false"
         },
         "Partition": {
           "type": "string",
@@ -104,26 +84,17 @@
           "items": {
             "type": "string",
             "enum": [
-              "AddTranslation",
-              "Benchmarks",
+              "BuildDebug",
+              "BuildRelease",
               "Clean",
-              "CodeCoverage",
-              "CodeCoverageReport",
-              "Compile",
-              "CompileProject",
-              "CompileTests",
-              "NugetPackage",
-              "PublishCodeCoverage",
-              "PublishNugetPackage",
-              "Reset",
-              "Restore",
-              "Tests"
+              "CleanAll",
+              "CoverageReport",
+              "Lock",
+              "Outdated",
+              "Pack",
+              "Test"
             ]
           }
-        },
-        "Solution": {
-          "type": "string",
-          "description": "Path to a solution file that is automatically loaded"
         },
         "Target": {
           "type": "array",
@@ -131,26 +102,17 @@
           "items": {
             "type": "string",
             "enum": [
-              "AddTranslation",
-              "Benchmarks",
+              "BuildDebug",
+              "BuildRelease",
               "Clean",
-              "CodeCoverage",
-              "CodeCoverageReport",
-              "Compile",
-              "CompileProject",
-              "CompileTests",
-              "NugetPackage",
-              "PublishCodeCoverage",
-              "PublishNugetPackage",
-              "Reset",
-              "Restore",
-              "Tests"
+              "CleanAll",
+              "CoverageReport",
+              "Lock",
+              "Outdated",
+              "Pack",
+              "Test"
             ]
           }
-        },
-        "TranslationName": {
-          "type": "string",
-          "description": "(only for target AddTranslation) Translation name"
         },
         "Verbosity": {
           "type": "string",
@@ -164,7 +126,7 @@
         },
         "Version": {
           "type": "string",
-          "description": "Version. Default value is '0.0.0-timestamp'"
+          "description": "Version. If not provided it will be generated automatically as 0.0.0-timestamp"
         }
       }
     }

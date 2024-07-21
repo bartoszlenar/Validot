@@ -1,15 +1,14 @@
-namespace Validot.Errors.Translator
+namespace Validot.Errors.Translator;
+
+using System.Collections.Generic;
+
+using Validot.Errors.Args;
+
+internal class TranslationResult
 {
-    using System.Collections.Generic;
+    public required IReadOnlyList<string> Messages { get; init; }
 
-    using Validot.Errors.Args;
+    public required IReadOnlyDictionary<int, IReadOnlyList<ArgPlaceholder>> IndexedPathPlaceholders { get; init; }
 
-    internal class TranslationResult
-    {
-        public IReadOnlyList<string> Messages { get; set; }
-
-        public IReadOnlyDictionary<int, IReadOnlyList<ArgPlaceholder>> IndexedPathPlaceholders { get; set; }
-
-        public bool AnyPathPlaceholders => IndexedPathPlaceholders != null && IndexedPathPlaceholders.Count > 0;
-    }
+    public bool AnyPathPlaceholders => IndexedPathPlaceholders.Count > 0;
 }

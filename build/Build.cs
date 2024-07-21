@@ -82,9 +82,7 @@ class Build : NukeBuild
            };
 
            ProcessTasks.StartProcess(ToolPathResolver.GetPathExecutable("dotnet"), tool + " " + toolParameters.JoinSpace()).AssertZeroExitCode();
-       })
-       .Triggers(Lock)
-       .Triggers(Test);
+       });
 
     Target Lock => _ => _
         .Description("Restore and re-lock the dependencies.")

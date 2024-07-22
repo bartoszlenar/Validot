@@ -11,9 +11,9 @@ internal static class ArgHelper
 
     public static char Assignment { get; } = '=';
 
-    public static string FormatMessage(string message, IReadOnlyList<ArgPlaceholder> placeholders, IReadOnlyList<IArg> args)
+    public static string FormatMessage(string? message, IReadOnlyList<ArgPlaceholder>? placeholders, IReadOnlyList<IArg>? args)
     {
-        if (message == null)
+        if (message is null)
         {
             return string.Empty;
         }
@@ -34,7 +34,7 @@ internal static class ArgHelper
         {
             var arg = args.SingleOrDefault(a => a.Name == placeholder.Name);
 
-            if (arg == null)
+            if (arg is null)
             {
                 continue;
             }

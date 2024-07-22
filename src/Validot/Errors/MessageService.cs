@@ -1,146 +1,145 @@
-namespace Validot.Errors
+namespace Validot.Errors;
+
+using System.Collections.Generic;
+using System.Linq;
+
+using Validot.Errors.Translator;
+using Validot.Translations;
+
+internal class MessageService : IMessageService
 {
-    using System.Collections.Generic;
-    using System.Linq;
+    private readonly MessageCache _cache;
 
-    using Validot.Errors.Translator;
-    using Validot.Translations;
+    private readonly MessageTranslator _translator;
 
-    internal class MessageService : IMessageService
+    public MessageService(
+        IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations,
+        IReadOnlyDictionary<int, IError> errors,
+        IReadOnlyDictionary<string, IReadOnlyList<int>> template)
     {
-        private readonly MessageCache _cache;
+        _translator = new MessageTranslator(translations);
 
-        private readonly MessageTranslator _translator;
+        _cache = BuildMessageCache(_translator, errors, template);
+    }
 
-        public MessageService(
-            IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>> translations,
-            IReadOnlyDictionary<int, IError> errors,
-            IReadOnlyDictionary<string, IReadOnlyList<int>> template)
+    public IReadOnlyList<string> TranslationNames => _translator.TranslationNames;
+
+    public IReadOnlyDictionary<string, string> GetTranslation(string translationName)
+    {
+        return _translator.Translations[translationName];
+    }
+
+    public IReadOnlyDictionary<string, IReadOnlyList<string>> GetMessages(Dictionary<string, List<int>> errors, string? translationName = null)
+    {
+        var results = new Dictionary<string, IReadOnlyList<string>>(errors.Count);
+
+        translationName ??= nameof(Translation.English);
+
+        foreach (var pair in errors)
         {
-            _translator = new MessageTranslator(translations);
+            var path = pair.Key;
+            var errorsIds = pair.Value;
 
-            _cache = BuildMessageCache(_translator, errors, template);
-        }
+            var capacity = _cache.GetMessageAmount(errorsIds);
 
-        public IReadOnlyList<string> TranslationNames => _translator.TranslationNames;
-
-        public IReadOnlyDictionary<string, string> GetTranslation(string translationName)
-        {
-            return _translator.Translations[translationName];
-        }
-
-        public IReadOnlyDictionary<string, IReadOnlyList<string>> GetMessages(Dictionary<string, List<int>> errors, string translationName = null)
-        {
-            var results = new Dictionary<string, IReadOnlyList<string>>(errors.Count);
-
-            translationName = translationName ?? nameof(Translation.English);
-
-            foreach (var pair in errors)
+            if (capacity == 0)
             {
-                var path = pair.Key;
-                var errorsIds = pair.Value;
-
-                var capacity = _cache.GetMessageAmount(errorsIds);
-
-                if (capacity == 0)
-                {
-                    continue;
-                }
-
-                var allMessages = new string[capacity];
-
-                var index = 0;
-
-                for (var i = 0; i < errorsIds.Count; ++i)
-                {
-                    var errorId = errorsIds[i];
-
-                    IReadOnlyList<string> messages;
-
-                    if (!_cache.ContainsPathArgs(translationName, errorId))
-                    {
-                        messages = _cache.GetMessages(translationName, errorId);
-                    }
-                    else if (_cache.IsMessageWithPathArgsCached(translationName, path, errorId))
-                    {
-                        messages = _cache.GetMessagesWithPathArgs(translationName, path, errorId);
-                    }
-                    else
-                    {
-                        var cachedMessages = _cache.GetMessages(translationName, errorId);
-                        var indexedPathPlaceholders = _cache.GetIndexedPathPlaceholders(translationName, errorId);
-
-                        messages = MessageTranslator.TranslateMessagesWithPathPlaceholders(path, cachedMessages, indexedPathPlaceholders);
-                    }
-
-                    CopyMessages(messages, allMessages, ref index);
-                }
-
-                results.Add(path, allMessages);
+                continue;
             }
 
-            return results;
-        }
+            var allMessages = new string[capacity];
 
-        private void CopyMessages(IReadOnlyList<string> source, string[] target, ref int targetIndex)
-        {
-            for (var i = 0; i < source.Count; ++i)
+            var index = 0;
+
+            for (var i = 0; i < errorsIds.Count; ++i)
             {
-                target[targetIndex + i] = source[i];
+                var errorId = errorsIds[i];
+
+                IReadOnlyList<string> messages;
+
+                if (!_cache.ContainsPathArgs(translationName, errorId))
+                {
+                    messages = _cache.GetMessages(translationName, errorId);
+                }
+                else if (_cache.IsMessageWithPathArgsCached(translationName, path, errorId))
+                {
+                    messages = _cache.GetMessagesWithPathArgs(translationName, path, errorId);
+                }
+                else
+                {
+                    var cachedMessages = _cache.GetMessages(translationName, errorId);
+                    var indexedPathPlaceholders = _cache.GetIndexedPathPlaceholders(translationName, errorId);
+
+                    messages = MessageTranslator.TranslateMessagesWithPathPlaceholders(path, cachedMessages, indexedPathPlaceholders);
+                }
+
+                CopyMessages(messages, allMessages, ref index);
             }
 
-            targetIndex += source.Count;
+            results.Add(path, allMessages);
         }
 
-        private MessageCache BuildMessageCache(MessageTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> template)
+        return results;
+    }
+
+    private static void CopyMessages(IReadOnlyList<string> source, string[] target, ref int targetIndex)
+    {
+        for (var i = 0; i < source.Count; ++i)
         {
-            ThrowHelper.NullArgument(errors, nameof(errors));
-            ThrowHelper.NullArgument(template, nameof(template));
-            ThrowHelper.NullInCollection(template.Values.ToArray(), $"{nameof(template)}.{nameof(template.Values)}");
+            target[targetIndex + i] = source[i];
+        }
 
-            var uniqueErrorsIds = template.SelectMany(b => b.Value).Distinct().ToArray();
+        targetIndex += source.Count;
+    }
 
-            var cache = new MessageCache();
+    private MessageCache BuildMessageCache(MessageTranslator translator, IReadOnlyDictionary<int, IError> errors, IReadOnlyDictionary<string, IReadOnlyList<int>> template)
+    {
+        ThrowHelper.NullArgument(errors, nameof(errors));
+        ThrowHelper.NullArgument(template, nameof(template));
+        ThrowHelper.NullInCollection(template.Values.ToArray(), $"{nameof(template)}.{nameof(template.Values)}");
 
-            foreach (var translationName in TranslationNames)
+        var uniqueErrorsIds = template.SelectMany(b => b.Value).Distinct().ToArray();
+
+        var cache = new MessageCache();
+
+        foreach (var translationName in TranslationNames)
+        {
+            foreach (var errorId in uniqueErrorsIds)
             {
-                foreach (var errorId in uniqueErrorsIds)
+                var translationResult = translator.TranslateMessages(translationName, errors[errorId]);
+
+                cache.AddMessage(translationName, errorId, translationResult.Messages);
+
+                if (translationResult.AnyPathPlaceholders)
                 {
-                    var translationResult = translator.TranslateMessages(translationName, errors[errorId]);
-
-                    cache.AddMessage(translationName, errorId, translationResult.Messages);
-
-                    if (translationResult.AnyPathPlaceholders)
-                    {
-                        cache.AddIndexedPathPlaceholders(translationName, errorId, translationResult.IndexedPathPlaceholders);
-                    }
+                    cache.AddIndexedPathPlaceholders(translationName, errorId, translationResult.IndexedPathPlaceholders);
                 }
             }
+        }
 
-            foreach (var translationName in TranslationNames)
+        foreach (var translationName in TranslationNames)
+        {
+            foreach (var templatePair in template)
             {
-                foreach (var templatePair in template)
+                var path = templatePair.Key;
+
+                foreach (var errorId in templatePair.Value)
                 {
-                    var path = templatePair.Key;
-
-                    foreach (var errorId in templatePair.Value)
+                    if (!cache.ContainsPathArgs(translationName, errorId) || PathHelper.ContainsIndexes(path))
                     {
-                        if (!cache.ContainsPathArgs(translationName, errorId) || PathHelper.ContainsIndexes(path))
-                        {
-                            continue;
-                        }
-
-                        var cachedMessages = cache.GetMessages(translationName, errorId);
-                        var indexedPlaceholders = cache.GetIndexedPathPlaceholders(translationName, errorId);
-
-                        var errorMessagesWithSpecials = MessageTranslator.TranslateMessagesWithPathPlaceholders(path, cachedMessages, indexedPlaceholders);
-
-                        cache.AddMessageWithPathArgs(translationName, path, errorId, errorMessagesWithSpecials);
+                        continue;
                     }
+
+                    var cachedMessages = cache.GetMessages(translationName, errorId);
+                    var indexedPlaceholders = cache.GetIndexedPathPlaceholders(translationName, errorId);
+
+                    var errorMessagesWithSpecials = MessageTranslator.TranslateMessagesWithPathPlaceholders(path, cachedMessages, indexedPlaceholders);
+
+                    cache.AddMessageWithPathArgs(translationName, path, errorId, errorMessagesWithSpecials);
                 }
             }
-
-            return cache;
         }
+
+        return cache;
     }
 }

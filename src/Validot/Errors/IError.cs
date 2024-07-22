@@ -1,15 +1,12 @@
-namespace Validot.Errors
+namespace Validot.Errors;
+
+using Validot.Errors.Args;
+
+public interface IError
 {
-    using System.Collections.Generic;
+    IReadOnlyList<string> Messages { get; }
 
-    using Validot.Errors.Args;
+    IReadOnlyList<string> Codes { get; }
 
-    public interface IError
-    {
-        IReadOnlyList<string> Messages { get; }
-
-        IReadOnlyList<string> Codes { get; }
-
-        IReadOnlyList<IArg> Args { get; }
-    }
+    IReadOnlyList<IArg> Args { get; }
 }

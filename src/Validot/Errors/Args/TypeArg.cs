@@ -1,8 +1,5 @@
 namespace Validot.Errors.Args;
 
-using System;
-using System.Collections.Generic;
-
 public sealed class TypeArg : IArg<Type>
 {
     private const string TranslationParameter = "translation";

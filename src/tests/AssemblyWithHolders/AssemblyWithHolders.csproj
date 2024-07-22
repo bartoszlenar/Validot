@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Validot\Validot.csproj" />
+    <ProjectReference Include="..\..\Validot\Validot.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

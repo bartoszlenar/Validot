@@ -1,6 +1,5 @@
 ﻿namespace Validot.Errors.Args;
 
-using System.Collections.Generic;
 using System.Globalization;
 
 public sealed class TextArg : IArg<string>

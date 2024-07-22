@@ -1,7 +1,5 @@
 namespace Validot.Errors.Translator;
 
-using System.Collections.Generic;
-
 using Validot.Errors.Args;
 
 internal class TranslationResult

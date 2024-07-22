@@ -1,10 +1,5 @@
-namespace Validot.Errors
+namespace Validot.Errors;
+
+public sealed class CacheIntegrityException(string message) : ValidotException(message)
 {
-    public sealed class CacheIntegrityException : ValidotException
-    {
-        public CacheIntegrityException(string message)
-            : base(message)
-        {
-        }
-    }
 }

@@ -1,7 +1,5 @@
 namespace Validot.Errors.Args;
 
-using System.Collections.Generic;
-
 public interface IArg
 {
     string Name { get; }

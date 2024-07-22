@@ -1,32 +1,19 @@
-namespace Validot.Errors
+namespace Validot.Errors;
+
+using Validot.Errors.Args;
+using Validot.Translations;
+
+internal class ReferenceLoopError(Type type) : IError
 {
-    using System;
-    using System.Collections.Generic;
-
-    using Validot.Errors.Args;
-    using Validot.Translations;
-
-    internal class ReferenceLoopError : IError
-    {
-        public ReferenceLoopError(Type type)
+    public IReadOnlyList<string> Messages { get; } = new[]
         {
-            Messages = new[]
-            {
-                MessageKey.Global.ReferenceLoop
-            };
+            MessageKey.Global.ReferenceLoop,
+        };
 
-            Args = new[]
-            {
-                Arg.Type("type", type)
-            };
+    public IReadOnlyList<string> Codes { get; } = Array.Empty<string>();
 
-            Codes = Array.Empty<string>();
-        }
-
-        public IReadOnlyList<string> Messages { get; }
-
-        public IReadOnlyList<string> Codes { get; }
-
-        public IReadOnlyList<IArg> Args { get; }
-    }
+    public IReadOnlyList<IArg> Args { get; } = new[]
+        {
+            Arg.Type("type", type),
+        };
 }

@@ -523,14 +523,22 @@ dotnet_diagnostic.SA1601.severity = none # Partial elements should be documented
 dotnet_diagnostic.SA1101.severity = none # Prefix local calls with 'this' or 'Me'
 dotnet_diagnostic.SA1633.severity = none # File should have header
 
+##########################################
+# Roslynator
+##########################################
+dotnet_diagnostic.RCS1124.severity = suggestion # Inline local variable
+dotnet_diagnostic.RCS1194.severity = suggestion # Implement exception constructors
+
 
 ##########################################
 # Code Analysis
 ##########################################
 
+dotnet_diagnostic.CA1032.severity = suggestion # Implement standard exception constructors
 dotnet_diagnostic.CA1848.severity = suggestion # Use the LoggerMessage delegates
 dotnet_diagnostic.CA1859.severity = suggestion # Use concrete types when possible for improved performance
 dotnet_diagnostic.CA2007.severity = none # Consider calling ConfigureAwait on the awaited task
+
 
 ##########################################
 # Code Style

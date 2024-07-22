@@ -1,11 +1,10 @@
-namespace Validot.Factory
+namespace Validot.Factory;
+
+using System;
+
+using Validot.Settings;
+
+public interface ISettingsHolder
 {
-    using System;
-
-    using Validot.Settings;
-
-    public interface ISettingsHolder
-    {
-        Func<ValidatorSettings, ValidatorSettings> Settings { get; }
-    }
+    Func<ValidatorSettings, ValidatorSettings> Settings { get; }
 }

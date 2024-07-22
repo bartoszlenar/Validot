@@ -11,6 +11,18 @@
   </PropertyGroup>
 
 
+  <PropertyGroup>
+    <PackageId>Validot</PackageId>
+    <Authors>Bartosz Lenar</Authors>
+    <PackageProjectUrl>https://github.com/bartoszlenar/Validot</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/bartoszlenar/Validot.git</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIcon>assets/logo/validot-icon.png</PackageIcon>
+    <Description>Validot is a performance-first, compact library for advanced model validation. Using a simple declarative fluent interface, it efficiently handles classes, structs, nested members, collections, nullables, plus any relation or combination of them. It also supports translations, custom logic extensions with tests, and DI containers.</Description>
+    <PackageTags>validation validation-library validator specification fluent-api model-validation</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Roslynator.Analyzers" Version="4.12.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,17 +38,8 @@
     </PackageReference>
   </ItemGroup>
 
-  <PropertyGroup>
-    <PackageId>Validot</PackageId>
-    <Authors>Bartosz Lenar</Authors>
-    <PackageProjectUrl>https://github.com/bartoszlenar/Validot</PackageProjectUrl>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/bartoszlenar/Validot.git</RepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIcon>assets/logo/validot-icon.png</PackageIcon>
-    <Description>Validot is a performance-first, compact library for advanced model validation. Using a simple declarative fluent interface, it efficiently handles classes, structs, nested members, collections, nullables, plus any relation or combination of them. It also supports translations, custom logic extensions with tests, and DI containers.</Description>
-    <PackageTags>validation validation-library validator specification fluent-api model-validation</PackageTags>
-  </PropertyGroup>
+  <ItemGroup>
+  </ItemGroup>
 
   <ItemGroup>
     <None Include="../../assets/logo/validot-icon.png" Pack="true" PackagePath="assets/logo" />

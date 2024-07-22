@@ -1,15 +1,13 @@
-namespace Validot.Errors
+namespace Validot.Errors;
+
+using Validot.Errors.Args;
+
+// todo: nice immutable
+internal class Error : IError
 {
-    using System.Collections.Generic;
+    public IReadOnlyList<string> Messages { get; set; } = null!;
 
-    using Validot.Errors.Args;
+    public IReadOnlyList<string> Codes { get; set; } = null!;
 
-    internal class Error : IError
-    {
-        public IReadOnlyList<string> Messages { get; set; }
-
-        public IReadOnlyList<string> Codes { get; set; }
-
-        public IReadOnlyList<IArg> Args { get; set; }
-    }
+    public IReadOnlyList<IArg> Args { get; set; } = null!;
 }

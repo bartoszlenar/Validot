@@ -1,32 +1,28 @@
-namespace Validot.Validation.Scheme
+namespace Validot.Validation.Scheme;
+
+using Validot.Errors;
+using Validot.Validation.Scopes;
+
+internal interface IModelScheme
 {
-    using System;
-    using System.Collections.Generic;
+    int RootSpecificationScopeId { get; }
 
-    using Validot.Errors;
-    using Validot.Validation.Scopes;
+    Type RootModelType { get; }
 
-    internal interface IModelScheme
-    {
-        int RootSpecificationScopeId { get; }
+    ISpecificationScope<T> GetSpecificationScope<T>(int specificationScopeId);
 
-        Type RootModelType { get; }
+    string ResolvePath(string basePath, string relativePath);
 
-        ISpecificationScope<T> GetSpecificationScope<T>(int specificationScopeId);
+    string GetPathWithIndexes(string path, IReadOnlyCollection<string> indexesStack);
+}
 
-        string ResolvePath(string basePath, string relativePath);
+internal interface IModelScheme<T> : IModelScheme
+{
+    bool IsReferenceLoopPossible { get; }
 
-        string GetPathWithIndexes(string path, IReadOnlyCollection<string> indexesStack);
-    }
+    ISpecificationScope<T> RootSpecificationScope { get; }
 
-    internal interface IModelScheme<T> : IModelScheme
-    {
-        bool IsReferenceLoopPossible { get; }
+    IReadOnlyDictionary<string, IReadOnlyList<int>> Template { get; }
 
-        ISpecificationScope<T> RootSpecificationScope { get; }
-
-        IReadOnlyDictionary<string, IReadOnlyList<int>> Template { get; }
-
-        IReadOnlyDictionary<int, IError> ErrorRegistry { get; }
-    }
+    IReadOnlyDictionary<int, IError> ErrorRegistry { get; }
 }

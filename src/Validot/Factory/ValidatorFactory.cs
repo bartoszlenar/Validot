@@ -20,7 +20,7 @@ public sealed class ValidatorFactory
     /// <param name="settings">Settings builder that helps adjust the created <see cref="IValidator{T}"/>'s settings. If not present, the default values are provided.</param>
     /// <typeparam name="T">Type of the models that this instance of <see cref="IValidator{T}"/> can validate.</typeparam>
     /// <returns>Instance of <see cref="IValidator{T}"/>, fully initialized and ready to work.</returns>
-    public IValidator<T> Create<T>(Specification<T> specification, Func<ValidatorSettings, ValidatorSettings> settings = null)
+    public IValidator<T> Create<T>(Specification<T> specification, Func<ValidatorSettings, ValidatorSettings>? settings = null)
     {
         var resolvedSettings = GetResolvedSettings(ValidatorSettings.GetDefault(), settings);
 
@@ -39,8 +39,9 @@ public sealed class ValidatorFactory
     /// <typeparam name="T">Type of the models that this instance of <see cref="IValidator{T}"/> can validate.</typeparam>
     /// <returns>Instance of <see cref="IValidator{T}"/>, fully initialized and ready to work.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="specificationHolder"/> is null.</exception>
+    /// <exception cref="ArgumentException">Throw if <paramref name="specificationHolder"/> implements <see cref="ISettingsHolder"/> and settings (<see cref="ISettingsHolder.Settings"/>) is null.</exception>
     /// <exception cref="InvalidOperationException">Thrown if <paramref name="specificationHolder"/>'s <see cref="ISettingsHolder.Settings"/> is null.</exception>
-    public IValidator<T> Create<T>(ISpecificationHolder<T> specificationHolder, Func<ValidatorSettings, ValidatorSettings> settings = null)
+    public IValidator<T> Create<T>(ISpecificationHolder<T> specificationHolder, Func<ValidatorSettings, ValidatorSettings>? settings = null)
     {
         ArgumentNullException.ThrowIfNull(specificationHolder);
 
@@ -80,7 +81,7 @@ public sealed class ValidatorFactory
 
         ArgumentNullException.ThrowIfNull(settings);
 
-        if (!(settings is ValidatorSettings validatorSettings))
+        if (settings is not ValidatorSettings validatorSettings)
         {
             throw new ArgumentException($"Custom {nameof(IValidatorSettings)} implementations are not supported.", nameof(settings));
         }
@@ -95,6 +96,7 @@ public sealed class ValidatorFactory
     /// </summary>
     /// <param name="assemblies">Assemblies to scan for specification holders. Must not be empty. If you don't know what to do, try passing AppDomain.CurrentDomain.GetAssemblies().</param>
     /// <returns>Collection of items containing information about the specification holders found in provided assembly and a method to create the validators out of them.</returns>
+    /// <exception cref="ArgumentException">Thrown if assembly collection is empty.</exception>
     public IReadOnlyList<HolderInfo> FetchHolders(params Assembly[] assemblies)
     {
         ThrowHelper.NullArgument(assemblies, nameof(assemblies));
@@ -123,20 +125,14 @@ public sealed class ValidatorFactory
 
         return holders;
 
-        IReadOnlyList<Type> GetAllSpecificationHoldersFromAssembly(Assembly assembly)
-        {
-            return assembly
+        IReadOnlyList<Type> GetAllSpecificationHoldersFromAssembly(Assembly assembly) => assembly
                 .GetTypes()
                 .Where(type => type.IsClass &&
                                type.GetConstructor(Type.EmptyTypes) != null &&
                                type.GetInterfaces().Any(IsSpecificationHolderInterface))
                 .ToArray();
-        }
 
-        bool IsSpecificationHolderInterface(Type @interface)
-        {
-            return @interface.IsGenericType && @interface.GetGenericTypeDefinition() == typeof(ISpecificationHolder<>).GetGenericTypeDefinition();
-        }
+        bool IsSpecificationHolderInterface(Type @interface) => @interface.IsGenericType && @interface.GetGenericTypeDefinition() == typeof(ISpecificationHolder<>).GetGenericTypeDefinition();
     }
 
     private static void SetReferenceLoopProtection(ValidatorSettings settings, bool isReferenceLoopPossible)
@@ -149,7 +145,7 @@ public sealed class ValidatorFactory
         }
     }
 
-    private static ValidatorSettings GetResolvedSettings(ValidatorSettings initSettings, Func<ValidatorSettings, ValidatorSettings> settingsBuilder)
+    private static ValidatorSettings GetResolvedSettings(ValidatorSettings initSettings, Func<ValidatorSettings, ValidatorSettings>? settingsBuilder)
     {
         var resolvedSettings = settingsBuilder is null
             ? initSettings

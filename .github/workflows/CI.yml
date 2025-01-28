@@ -138,27 +138,27 @@ jobs:
       - name: Init workflow variables
         run: pwsh .github/workflows/Init-WorkflowVariables.ps1
       - name: Download artifact; nuget package
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.nupkg
           path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.nuget
       - name: Download artifact; nuget package symbols
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.snupkg
           path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.nuget
       - name: Download artifact; code coverage data
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.opencover.xml
           path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.coverage/data
       - name: Download artifact; code coverage summary
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.coverage_summary.json
           path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.coverage
       - name: Download artifact; code coverage report
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v4.1.7
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.coverage_report
           path: artifacts/Validot.${{ env.VALIDOT_VERSION }}.coverage/report

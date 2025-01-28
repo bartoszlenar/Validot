@@ -68,12 +68,12 @@
     </a>
     </br>
     </br>
-    <a href="https://lenar.dev/posts/validots-performance-explained">
-        📜 Blogged: Validot's performance explained
+    <a href="../docs/articles/validots-performance-explained.md">
+        📜 Article: Validot's performance explained
     </a>
     </br>
-    <a href="https://lenar.dev/posts/crafting-model-specifications-using-validot">
-        📜 Blogged: Crafting model specifications using Validot
+    <a href="../docs/articles/crafting-model-specifications-using-validot.md">
+        📜 Article: Crafting model specifications using Validot
     </a>
 </p>
 
@@ -86,9 +86,9 @@
 ## Announcement! Version 3.0 is coming!
 Brief update on the current state of the project:
 
-- Version 2.5 is the last version that will be released before the 3.0.
+- Version ~~2.5~~ 2.6 will be the last version that will be released before the 3.0.
 - The upcoming version 3.0 will bring a few breaking changes, but the migration should be smooth and straightforward. And of course, it will be fully documented.
-- Version 2.5 is the last one targeting .NET Standard 2.0. The 3.0 will focus on the newest versions of .NET.
+- Version ~~2.5~~ 2.6 will be the last one targeting .NET Standard 2.0. The 3.0 will focus on the newest versions of .NET.
 
 ## Quickstart
 

@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
-        dotnet: ["6.0.x", "8.0.x"]
+        dotnet: ["8.0.x"]
     runs-on: ${{ matrix.os }}
     name: Test on ${{ matrix.os }} using dotnet ${{ matrix.dotnet }}
     steps:
@@ -34,7 +34,7 @@ jobs:
       - name: Tests
         run: pwsh build.ps1 --target tests --skip --dotnet ${{ matrix.dotnet }} --configuration release  --version ${{ env.VALIDOT_VERSION }}
       - name: Upload artifact; details of failed tests
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.${{ matrix.dotnet }}.${{ matrix.os }}.testresults
@@ -60,7 +60,7 @@ jobs:
       - name: Tests
         run: pwsh build.ps1 --target tests --skip --dotnet ${{ matrix.dotnet }} --configuration release  --version ${{ env.VALIDOT_VERSION }}
       - name: Upload artifact; details of failed tests
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.${{ matrix.dotnet }}.${{ matrix.os }}.testresults
@@ -84,18 +84,18 @@ jobs:
       - name: Analyze code coverage
         run: pwsh build.ps1 --target codecoveragereport --dotnet 6.0.x --configuration debug --version ${{ env.VALIDOT_VERSION }}
       - name: Upload artifact; code coverage data
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.opencover.xml
           path: artifacts/coverage/Validot.${{ env.VALIDOT_VERSION }}.opencover.xml
       - name: Upload artifact; code coverage summary
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.coverage_summary.json
           path: artifacts/coverage_reports/Validot.${{ env.VALIDOT_VERSION }}.coverage_summary.json
       - name: Upload artifact; code coverage report
         if: github.event_name == 'release'
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.coverage_report
           path: artifacts/coverage_reports/Validot.${{ env.VALIDOT_VERSION }}.coverage_report
@@ -116,12 +116,12 @@ jobs:
       - name: Create package
         run: pwsh build.ps1 --target nugetpackage --dotnet 8.0.x --configuration release --commitsha ${{ github.sha }}  --version ${{ env.VALIDOT_VERSION }}
       - name: Upload artifact; nuget package
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.nupkg
           path: artifacts/nuget/${{ env.VALIDOT_VERSION }}/Validot.${{ env.VALIDOT_VERSION }}.nupkg
       - name: Upload artifact; nuget package symbols
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: Validot.${{ env.VALIDOT_VERSION }}.snupkg
           path: artifacts/nuget/${{ env.VALIDOT_VERSION }}/Validot.${{ env.VALIDOT_VERSION }}.snupkg

@@ -22,7 +22,7 @@ namespace Validot.Tests.Unit.Translations.Chinese
         {
             MessageKey.All.Should().Contain(Translation.Chinese.Keys);
         }
-        
+
         [Fact]
         public void Chinese_Should_HaveValues_OnlyWithAllowedPlaceholders()
         {

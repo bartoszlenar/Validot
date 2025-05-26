@@ -17,7 +17,7 @@
       <img src="https://img.shields.io/github/release-date/bartoszlenar/Validot?include_prereleases&style=for-the-badge&label=RELEASED">
   </a>
 </p>
-<p align="center">
+<!-- <p align="center">
   <a href="https://github.com/bartoszlenar/Validot/commits/main">
     <img src="https://img.shields.io/github/commits-since/bartoszlenar/Validot/v2.4.1/main?logo=git&logoColor=white&style=flat-square">
   </a>
@@ -30,7 +30,7 @@
   <a href="https://codecov.io/gh/bartoszlenar/Validot/branch/main">
     <img src="https://img.shields.io/codecov/c/gh/bartoszlenar/Validot/main?style=flat-square&logo=codecov&logoColor=white&logoWidth=20">
   </a>
-</p>
+</p> -->
 <!--
 <p align="center">
   <a href="https://github.com/bartoszlenar/Validot/releases">
@@ -83,12 +83,13 @@
     </br>
 
 
-## Announcement! Version 3.0 is coming!
-Brief update on the current state of the project:
+## Announcement! Validot is archived!
 
-- Version ~~2.5~~ 2.6 will be the last version that will be released before the 3.0.
-- The upcoming version 3.0 will bring a few breaking changes, but the migration should be smooth and straightforward. And of course, it will be fully documented.
-- Version ~~2.5~~ 2.6 will be the last one targeting .NET Standard 2.0. The 3.0 will focus on the newest versions of .NET.
+Validot has been my public pet project since 2020, a proof-of-concept turned into a standalone, fully-featured NuGet library. Its core focus is on performance and a low-allocation approach. On release day, Validot was 2.5 times faster while consuming 8 times less memory than the industry's gold standard: FluentValidation! I pushed dotnet memory performance and optimizations to their limits. And I'm proud of my work.
+
+Given my daily responsibilities and other coding projects, I have to confess that it seems improbable I'll have time to keep working on Validot.
+
+I appreciate all the contributors, and especially, I extend my gratitude to Jeremy Skinner for his work on FluentValidation. I genuinely believe I played a role in the open source community by motivating Jeremy to enhance FluentValidation's performance.
 
 ## Quickstart
 
